@@ -24,8 +24,11 @@ const SHORE := 50.0                       # land beyond the outer roads
 const LAND := HALF + SHORE                # half-size of an island
 const SEA := 4500.0
 const FACADE_SHADER := preload("res://shaders/facade.gdshader")
-const DISTRICTS := ["Star City", "Central City", "National City", "Freeland"]
-const ISLAND_CENTERS := [Vector2(-560, -560), Vector2(560, -560), Vector2(-560, 560), Vector2(560, 560)]
+const DISTRICTS := ["Star City", "Central City", "National City", "Freeland", "Gotham City", "Smallville"]
+const ISLAND_CENTERS := [Vector2(-560, -560), Vector2(560, -560), Vector2(-560, 560), Vector2(560, 560),
+	Vector2(-560, 1720), Vector2(1840, 560)]
+const REALM_NAMES := {"western": "Old West", "speedforce": "The Speed Force", "antimatter": "The Anti-Matter Universe",
+	"vanishing_point": "Vanishing Point", "argo": "Argo City"}
 const DISTRICT_CENTERS := ISLAND_CENTERS  # kept for older callers
 const LIAN_YU := Vector2(-1560, -1400)
 const IRON_HEIGHTS := Vector2(1280, -560)
@@ -40,6 +43,12 @@ const STYLES := [
 		"lights": 1.0, "trees": true, "palms": true, "fog": 0.0},
 	{"facades": ["#8a6a4a", "#6b5a4b", "#a28c6c"], "glass": "#5a5048", "min_h": 6.0, "max_h": 34.0, "towers": 0.0,
 		"lights": 0.9, "trees": true, "fog": 0.0},
+	# Gotham: soot-black gothic towers under a permanent overcast.
+	{"facades": ["#3a3634", "#2e2c2e", "#4a4038"], "glass": "#22303a", "min_h": 18.0, "max_h": 230.0, "towers": 0.5,
+		"lights": 0.55, "trees": false, "fog": 0.0, "gothic": true, "sky": ["#14161c", "#3a3c46", 0.8], "haze": 3.0},
+	# Smallville: farmland around a small Main Street.
+	{"facades": ["#c8b89a", "#a8402a", "#e8e0d0"], "glass": "#5a6a78", "min_h": 5.0, "max_h": 12.0, "towers": 0.0,
+		"lights": 0.9, "trees": true, "fog": 0.0, "rural": true, "sky": ["#4a9aff", "#ffe8c0", 0.3]},
 ]
 
 var spec: Dictionary = {}
@@ -80,6 +89,12 @@ func generate(p_seed := 1987, p_spec: Dictionary = {}) -> void:
 			_build_western()
 		"speedforce":
 			_build_speed_force()
+		"antimatter":
+			_build_antimatter()
+		"vanishing_point":
+			_build_vanishing_point()
+		"argo":
+			_build_argo()
 		_:
 			_build_sea()
 			for i in ISLAND_CENTERS.size():
@@ -128,10 +143,8 @@ func district_at(p: Vector3) -> String:
 	var room := Interiors.room_at(p)
 	if room != "":
 		return Interiors.NAMES[room]
-	if kind == "western":
-		return "Old West"
-	if kind == "speedforce":
-		return "The Speed Force"
+	if REALM_NAMES.has(kind):
+		return REALM_NAMES[kind]
 	var q := Vector2(p.x, p.z)
 	for e in extra_land:
 		if e["rect"].has_point(q):
@@ -161,7 +174,7 @@ func district_index(p: Vector3) -> int:
 func district_center(index: int) -> Vector3:
 	if kind != "metro":
 		return Vector3(0, 0.2, 0)
-	var c: Vector2 = ISLAND_CENTERS[clampi(index, 0, 3)]
+	var c: Vector2 = ISLAND_CENTERS[clampi(index, 0, ISLAND_CENTERS.size() - 1)]
 	return Vector3(c.x, 0.2, c.y)
 
 
@@ -512,6 +525,8 @@ const LANDMARK_BLOCKS := {
 	1: {Vector2i(6, 1): "star_labs", Vector2i(3, 3): "ccpd", Vector2i(4, 3): "jitters", Vector2i(3, 4): "park", Vector2i(4, 5): "picture_news"},
 	2: {Vector2i(3, 3): "catco", Vector2i(5, 2): "deo", Vector2i(4, 5): "park", Vector2i(2, 5): "lcorp"},
 	3: {Vector2i(3, 3): "garfield", Vector2i(5, 4): "court", Vector2i(2, 5): "clinic", Vector2i(4, 4): "park"},
+	4: {Vector2i(3, 3): "wayne_tower", Vector2i(5, 2): "gcpd", Vector2i(1, 6): "arkham", Vector2i(4, 5): "park", Vector2i(6, 4): "crows"},
+	5: {Vector2i(2, 5): "kent_farm", Vector2i(4, 3): "water_tower", Vector2i(5, 4): "smallville_high", Vector2i(3, 3): "main_street"},
 }
 
 
@@ -529,6 +544,9 @@ func _build_block(index: int, i: int, j: int) -> void:
 			_build_park(rect, true, st.get("palms", false))
 		elif what == "court":
 			_build_court(rect)
+		return
+	if st.get("rural", false) and absi(i - 3) + absi(j - 3) > 1:
+		_build_farm(rect)
 		return
 	var glades := index == 0 and i >= 5 and j >= 5
 	var edge := i == 0 or j == 0 or i == N - 1 or j == N - 1
@@ -593,6 +611,8 @@ func _build_block(index: int, i: int, j: int) -> void:
 				add_box(Vector3(tc.x, h + 15.0, tc.y), Vector3(1.0, 30.0, 1.0), _plain(Color("#3affff"), 0.3, 3.0), false)
 		else:
 			_add_building(fr, h, m)
+		if st.get("gothic", false) and not spec.get("ruined", false):
+			_gothic_crown(fr, h, m)
 		if spec.get("banners", false) and h > 20.0 and rng.randf() < 0.4:
 			# Earth-X: long red banners hang down the facades.
 			var bcx := fr.get_center()
@@ -603,6 +623,60 @@ func _build_block(index: int, i: int, j: int) -> void:
 	for side in 4:
 		if not spec.get("ruined", false) and rng.randf() < 0.45:
 			_park_car(rect, side)
+
+
+## Gotham: stepped crowns, spires and gargoyles on the rooftops.
+func _gothic_crown(r: Rect2, h: float, m: Material) -> void:
+	var c := r.get_center()
+	if h > 60.0:
+		var w := r.size * 0.55
+		add_box(Vector3(c.x, h + 6.0, c.y), Vector3(w.x, 12.0, w.y), m)
+		add_box(Vector3(c.x, h + 15.0, c.y), Vector3(w.x * 0.5, 6.0, w.y * 0.5), m)
+		add_box(Vector3(c.x, h + 30.0, c.y), Vector3(1.2, 24.0, 1.2), _dark_mat, false)
+		buildings.append({"rect": Rect2(c - w * 0.5, w), "h": h + 12.0})
+	for k in 4:
+		var corner := Vector2(r.position.x + (1.5 if k % 2 == 0 else r.size.x - 1.5), r.position.y + (1.5 if k < 2 else r.size.y - 1.5))
+		add_box(Vector3(corner.x, h + 1.4, corner.y), Vector3(1.2, 1.6, 1.8), _dark_mat, false, k * PI * 0.5)
+		add_box(Vector3(corner.x, h + 2.6, corner.y), Vector3(0.6, 0.8, 0.6), _dark_mat, false)
+
+
+## Smallville: a field (corn, wheat or pasture), sometimes with a farmstead.
+func _build_farm(rect: Rect2) -> void:
+	var c := rect.get_center()
+	var crops := [Color("#c8a83a"), Color("#5a8a2a"), Color("#7a9a3a"), Color("#a8803a")]
+	var col: Color = crops[rng.randi() % crops.size()]
+	add_box(Vector3(c.x, 0.18, c.y), Vector3(rect.size.x - 2.0, 0.1, rect.size.y - 2.0), _plain(col.darkened(0.25)), false)
+	var rows := _plain(col)
+	for k in 10:
+		add_box(Vector3(c.x - rect.size.x * 0.42 + k * rect.size.x * 0.093, 0.7, c.y), Vector3(1.2, 1.1, rect.size.y - 8.0), rows, false)
+	# Fence
+	var fence := _trunk_mat
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(c.x, 0.6, c.y + side * (rect.size.y * 0.5 - 0.5)), Vector3(rect.size.x, 0.15, 0.15), fence, false)
+		add_box(Vector3(c.x + side * (rect.size.x * 0.5 - 0.5), 0.6, c.y), Vector3(0.15, 0.15, rect.size.y), fence, false)
+	if rng.randf() < 0.35:
+		var house := Rect2(rect.position + Vector2(4, 4), Vector2(14, 12))
+		_farmhouse(house, _plain(Color("#e8e0d0")))
+	if rng.randf() < 0.3:
+		_tree(Vector3(rect.end.x - 6.0, 0, rect.position.y + 6.0))
+
+
+func _farmhouse(r: Rect2, m: Material) -> void:
+	_add_building(r, 6.0, m)
+	var c := r.get_center()
+	var roof := _plain(Color("#5a3a2a"))
+	add_box(Vector3(c.x, 7.2, c.y - r.size.y * 0.22), Vector3(r.size.x + 1.0, 0.4, r.size.y * 0.6), roof, false, 0.0)
+	add_box(Vector3(c.x, 8.0, c.y), Vector3(r.size.x + 1.0, 1.6, r.size.y * 0.35), roof, false)
+	add_box(Vector3(c.x, 1.0, r.position.y - 1.5), Vector3(r.size.x, 0.2, 3.0), _trunk_mat)
+
+
+func _red_barn(r: Rect2) -> void:
+	var red := _plain(Color("#9a2a1e"))
+	_add_building(r, 10.0, red)
+	var c := r.get_center()
+	add_box(Vector3(c.x, 11.5, c.y), Vector3(r.size.x * 0.75, 3.0, r.size.y + 0.6), _plain(Color("#3a2a24")), true)
+	add_box(Vector3(c.x, 3.0, r.position.y - 0.1), Vector3(6.0, 6.0, 0.2), _plain(Color("#f0e8d8")), false)
+	add_box(Vector3(c.x, 3.0, r.position.y - 0.15), Vector3(0.3, 6.0, 0.2), red, false)
 
 
 func _ruin(r: Rect2, h: float, m: Material) -> void:
@@ -737,6 +811,8 @@ func _build_bridges() -> void:
 		[Vector2(-560 + LAND, 560), Vector2(560 - LAND, 560)],
 		[Vector2(-560, -560 + LAND), Vector2(-560, 560 - LAND)],
 		[Vector2(560, -560 + LAND), Vector2(560, 560 - LAND)],
+		[Vector2(-560, 560 + LAND), Vector2(-560, 1720 - LAND)],   # National City - Gotham
+		[Vector2(560 + LAND, 560), Vector2(1840 - LAND, 560)],     # Freeland - Smallville
 	]
 	for s in specs:
 		_bridge(s[0], s[1], ROAD + 6.0)
@@ -851,6 +927,78 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_add_building(rect.grow(-6.0), 12.0, facade_mats[3][0])
 				_label("GARFIELD HIGH", base + Vector3(0, 15, 0), 3.0, Color("#ffe0a0"))
 				_add_landmark("Garfield High", front, district)
+			"wayne_tower":
+				var wr := rect.grow(-16.0)
+				_tower(wr, 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1], Color("#c8a050"))
+				_gothic_crown(wr, 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1])
+				_label("W", base + Vector3(0, 240, -(wr.size.y * 0.5) - 0.5), 14.0, Color("#ffd27a"))
+				_label("WAYNE TOWER", base + Vector3(0, 26, -(wr.size.y * 0.5) - 1.0), 3.0, Color("#e8d8b0"))
+				_add_landmark("Wayne Tower", front, district, "batcave")
+			"gcpd":
+				_add_building(rect.grow(-8.0), 34.0, facade_mats[4][2])
+				_label("GCPD", base + Vector3(0, 38, 0), 4.0, Color("#bcd4ff"))
+				# The Bat-Signal and its beam into the clouds
+				add_box(base + Vector3(0, 36, 0), Vector3(3.0, 2.4, 3.0), _steel_mat)
+				add_box(base + Vector3(0, 37.6, 0), Vector3(2.6, 0.2, 2.6), _plain(Color("#fff2c0"), 0.2, 4.0), false)
+				var beam := CylinderMesh.new()
+				beam.top_radius = 14.0
+				beam.bottom_radius = 1.3
+				beam.height = 320.0
+				var bm := StandardMaterial3D.new()
+				bm.albedo_color = Color(1.0, 0.95, 0.7, 0.07)
+				bm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				bm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				bm.cull_mode = BaseMaterial3D.CULL_DISABLED
+				var tilt := Basis(Vector3.RIGHT, -0.35)
+				_mesh_instance(beam, Transform3D(tilt, base + Vector3(0, 38, 0) + tilt * Vector3(0, 160, 0)), bm)
+				_label("GCPD - BAT-SIGNAL", base + Vector3(0, 4, -(rect.size.y * 0.5) + 6.0), 1.5, Color("#ffe8a0"))
+				_add_landmark("GCPD", front, district)
+			"arkham":
+				var ar := rect.grow(-6.0)
+				_add_building(ar, 16.0, facade_mats[4][0])
+				_gothic_crown(Rect2(ar.get_center() - Vector2(8, 8), Vector2(16, 16)), 34.0, facade_mats[4][0])
+				_add_building(Rect2(ar.get_center() - Vector2(8, 8), Vector2(16, 16)), 34.0, facade_mats[4][0])
+				for side in [-1.0, 1.0]:
+					add_box(Vector3(bc.x + side * (BLOCK * 0.5 - 1.0), 2.0, bc.y), Vector3(0.5, 4.0, BLOCK), _steel_mat)
+				_label("ARKHAM ASYLUM", base + Vector3(0, 40, 0), 3.0, Color("#c8e0c0"))
+				_add_landmark("Arkham Asylum", front, district)
+			"crows":
+				_tower(rect.grow(-14.0), 140.0, _glass_mats[4], Color("#ff3a3a"))
+				_label("CROWS SECURITY", base + Vector3(0, 146, 0), 4.0, Color("#ff9a9a"))
+				_add_landmark("Crows Security", front, district)
+			"kent_farm":
+				_red_barn(Rect2(rect.position + Vector2(30, 24), Vector2(22, 30)))
+				_farmhouse(Rect2(rect.position + Vector2(6, 8), Vector2(16, 14)), _plain(Color("#f0ece0")))
+				var silo := CylinderMesh.new()
+				silo.top_radius = 3.2
+				silo.bottom_radius = 3.2
+				silo.height = 18.0
+				_mesh_instance(silo, Transform3D(Basis(), Vector3(rect.end.x - 6.0, 9.0, rect.end.y - 6.0)), _plain(Color("#b8bcc0"), 0.5))
+				add_cylinder_collision(Vector3(rect.end.x - 6.0, 9.0, rect.end.y - 6.0), 3.2, 18.0)
+				add_box(Vector3(bc.x, 0.18, bc.y), Vector3(BLOCK - 2.0, 0.1, BLOCK - 2.0), _grass_mat, false)
+				_label("KENT FARM", Vector3(bc.x, 3.0, rect.position.y - 1.0), 1.5, Color("#ffffff"))
+				_add_landmark("Kent Farm", Vector3(rect.position.x + 41.0, 0.5, rect.position.y + 20.0), district, "kent_barn")
+			"water_tower":
+				for k in 4:
+					var off := Vector2(-4 if k % 2 == 0 else 4, -4 if k < 2 else 4)
+					add_box(Vector3(bc.x + off.x, 10.0, bc.y + off.y), Vector3(0.6, 20.0, 0.6), _steel_mat)
+				var tank := CylinderMesh.new()
+				tank.top_radius = 7.0
+				tank.bottom_radius = 7.0
+				tank.height = 8.0
+				_mesh_instance(tank, Transform3D(Basis(), Vector3(bc.x, 24.0, bc.y)), _plain(Color("#d8dce0"), 0.5))
+				_label("SMALLVILLE", Vector3(bc.x, 24.0, bc.y - 7.2), 2.5, Color("#2a4a8a"))
+				_add_landmark("Smallville Water Tower", front, district)
+			"smallville_high":
+				_add_building(rect.grow(-8.0), 10.0, facade_mats[5][1])
+				_label("SMALLVILLE HIGH - HOME OF THE CROWS", base + Vector3(0, 13, 0), 2.0, Color("#ffe0a0"))
+				_add_landmark("Smallville High", front, district)
+			"main_street":
+				for k in 4:
+					var sr := Rect2(rect.position + Vector2(2 + k * 15.5, 2), Vector2(13, 18))
+					_add_building(sr, rng.randf_range(6.0, 9.0), facade_mats[5][k % 3])
+				_label("MAIN STREET", Vector3(bc.x, 12, rect.position.y), 1.8, Color("#ffffff"))
+				_add_landmark("Smallville Main Street", front, district)
 			"clinic":
 				_add_building(rect.grow(-10.0), 14.0, _plain(Color("#d8d0c4")))
 				add_box(Vector3(bc.x, 9.0, rect.position.y + 9.7), Vector3(3.0, 3.0, 0.3), _plain(Color("#e03030"), 0.4, 2.0), false)
@@ -1013,6 +1161,90 @@ func _build_western() -> void:
 
 ## The Speed Force: a glowing plain under a storm of lightning, with
 ## fragments of memories (pieces of the city) floating in the haze.
+## A floating realm: a platform with a single road grid so spawning works.
+func _realm_island(name: String, size: float) -> void:
+	var grid := Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
+	islands.append({"name": name, "center": Vector2.ZERO, "land": Rect2(-size, -size, size * 2.0, size * 2.0), "grid": grid, "style": STYLES[1], "index": 1})
+
+
+## The Anti-Matter Universe: a cracked red-black wasteland under the
+## Anti-Monitor's tower, with chunks of destroyed Earths drifting overhead.
+func _build_antimatter() -> void:
+	add_box(Vector3(0, -1.0, 0), Vector3(1600, 2.0, 1600), _plain(Color("#1a0a0e"), 0.6))
+	_realm_island("The Anti-Matter Universe", 800.0)
+	var crack := _plain(Color("#ff2a3a"), 0.3, 2.5)
+	for k in 60:
+		var p := Vector3(rng.randf_range(-600, 600), 0.02, rng.randf_range(-600, 600))
+		add_box(p, Vector3(rng.randf_range(10, 60), 0.05, rng.randf_range(0.4, 1.2)), crack, false, rng.randf() * TAU)
+	var rock := _plain(Color("#2a1a1e"), 0.8)
+	for k in 50:
+		var p := Vector3(rng.randf_range(-700, 700), rng.randf_range(30, 220), rng.randf_range(-700, 700))
+		var sz := Vector3(rng.randf_range(10, 50), rng.randf_range(6, 24), rng.randf_range(10, 50))
+		add_box(p, sz, rock if k % 3 else facade_mats[rng.randi() % 4][0], false, rng.randf() * TAU)
+	for k in 20:
+		var p := Vector3(rng.randf_range(-500, 500), 0, rng.randf_range(-500, 500))
+		if p.length() < 80.0:
+			continue
+		add_box(p + Vector3.UP * 8.0, Vector3(rng.randf_range(4, 10), 16.0, rng.randf_range(4, 10)), rock, true, rng.randf() * TAU)
+	# The Anti-Monitor's tower
+	add_box(Vector3(0, 90, -300), Vector3(40, 180, 40), _plain(Color("#120608"), 0.4))
+	add_box(Vector3(0, 200, -300), Vector3(20, 40, 20), _plain(Color("#120608"), 0.4))
+	add_box(Vector3(0, 150, -279), Vector3(10, 10, 1), _plain(Color("#ff2a3a"), 0.3, 5.0), false)
+	_label("THE ANTI-MATTER UNIVERSE", Vector3(0, 60, -150), 10.0, Color("#ff8a9a"))
+	landmarks.append({"name": "Anti-Monitor's Tower", "pos": Vector3(0, 0.5, -250), "district": "The Anti-Matter Universe"})
+	landmarks.append({"name": "Anti-Matter Plains", "pos": Vector3(0, 0.5, 0), "district": "The Anti-Matter Universe"})
+	add_box(Vector3(0, 40, 60), Vector3(3, 80, 3), _plain(Color("#ffffff"), 0.2, 4.0), false)
+	_label("THE WAY HOME", Vector3(0, 6, 60), 2.0, Color("#ffffff"))
+	doors.append({"name": "Way home", "pos": Vector3(0, 0.5, 60), "interior": "exit_speedforce"})
+
+
+## Vanishing Point: the Time Bureau's station at the end of time, a metal
+## deck floating in the Temporal Zone.
+func _build_vanishing_point() -> void:
+	var deck := _plain(Color("#5a6470"), 0.4)
+	add_box(Vector3(0, -1.0, 0), Vector3(500, 2.0, 500), deck)
+	_realm_island("Vanishing Point", 250.0)
+	var trim := _plain(Color("#a58aff"), 0.3, 2.0)
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(side * 250.0, 0.6, 0), Vector3(0.5, 1.2, 500), _steel_mat)
+		add_box(Vector3(0, 0.6, side * 250.0), Vector3(500, 1.2, 0.5), _steel_mat)
+	for k in 12:
+		var x := -220.0 + k * 40.0
+		add_box(Vector3(x, 0.02, 0), Vector3(1.0, 0.05, 480), trim, false)
+	# The Bureau: a tall central building and timeship hangars
+	_add_building(Rect2(-40, -160, 80, 60), 70.0, facade_mats[2][1])
+	_label("TIME BUREAU", Vector3(0, 76, -130), 6.0, Color("#e0d8ff"))
+	for k in 4:
+		var hx := -150.0 + k * 100.0
+		_add_building(Rect2(hx - 20, 60, 40, 30), 18.0, _dark_mat)
+		add_box(Vector3(hx, 0.05, 40), Vector3(24, 0.1, 24), trim, false)
+	landmarks.append({"name": "Time Bureau HQ", "pos": Vector3(0, 0.5, -90), "district": "Vanishing Point"})
+	landmarks.append({"name": "Timeship Hangars", "pos": Vector3(0, 0.5, 30), "district": "Vanishing Point"})
+
+
+## Argo City: Kryptonian crystal towers on a rock adrift in space.
+func _build_argo() -> void:
+	add_box(Vector3(0, -6.0, 0), Vector3(700, 12.0, 700), _plain(Color("#5a5048"), 0.9))
+	add_box(Vector3(0, -20.0, 0), Vector3(500, 20.0, 500), _plain(Color("#4a4038"), 0.9))
+	_realm_island("Argo City", 350.0)
+	var crystal := _plain(Color("#bfe8ff"), 0.1, 1.2)
+	var white := _plain(Color("#aab4c0"), 0.4)
+	add_box(Vector3(0, 0.05, 0), Vector3(120, 0.1, 120), _plain(Color("#6a7484"), 0.3), false)
+	for k in 24:
+		var ang := k * TAU / 24.0
+		var d := rng.randf_range(80.0, 300.0)
+		var p := Vector3(cos(ang) * d, 0, sin(ang) * d)
+		var h := rng.randf_range(20.0, 110.0)
+		_add_building(Rect2(p.x - 8, p.z - 8, 16, 16), h, white)
+		add_box(p + Vector3(0, h + 10.0, 0), Vector3(4.0, 20.0, 4.0), crystal, false, ang)
+	for k in 6:
+		var ang := k * TAU / 6.0
+		add_box(Vector3(cos(ang) * 30.0, 18.0, sin(ang) * 30.0), Vector3(3.0, 36.0, 3.0), crystal, true, ang)
+	_label("ARGO CITY", Vector3(0, 50, 0), 8.0, Color("#bfe8ff"))
+	_label("THE HOUSE OF EL", Vector3(0, 6, -40), 2.0, Color("#ffd23a"))
+	landmarks.append({"name": "Argo City Plaza", "pos": Vector3(0, 0.5, 20), "district": "Argo City"})
+
+
 func _build_speed_force() -> void:
 	var floor_mat := _plain(Color("#22305a"), 0.3, 0.5)
 	add_box(Vector3(0, -1.0, 0), Vector3(1600, 2.0, 1600), floor_mat)

@@ -3,8 +3,9 @@ extends RefCounted
 ## Places you can travel to: other Earths (by breach or by running), other
 ## eras (in the Waverider) and the Speed Force. Each one is a City spec.
 
-const EARTHS := ["earth1", "earth2", "earth3", "earthx", "earth38", "earth19"]
-const ERAS := ["1942", "old_west", "2046", "3030", "earth1"]
+const EARTHS := ["earth1", "earth2", "earth3", "earthx", "earth38", "earth19", "earth90", "earth99", "earth167",
+	"earth_prime", "argo", "antimatter"]
+const ERAS := ["1942", "old_west", "2046", "3030", "vanishing_point", "earth1"]
 const DESTS := {
 	"earth1": {"name": "Earth-1", "desc": "Home: the present day.", "spec": {}},
 	"earth2": {"name": "Earth-2", "desc": "Zoom's Earth: taller, gold-tinted art-deco towers.",
@@ -25,6 +26,24 @@ const DESTS := {
 		"spec": {"era": "2046", "label": "2046", "ruined": true, "tint": "#4a4a40", "tint_amount": 0.4, "sky": ["#2a2620", "#7a6a4a", 0.8], "haze": 4.0, "sun": "#c8a070", "lit": 0.3}},
 	"3030": {"name": "3030", "desc": "The far future: neon megatowers.",
 		"spec": {"era": "3030", "label": "3030", "neon": true, "height": 1.6, "tint": "#2a2050", "tint_amount": 0.35, "sky": ["#14082e", "#c04aa0", 0.8], "haze": 1.5, "sun": "#ff80d0"}},
+	"earth90": {"name": "Earth-90", "desc": "Being erased by the anti-matter wave. Red skies and falling cities.",
+		"spec": {"earth": "Earth-90", "label": "EARTH-90", "ruined": true, "tint": "#3a1a2a", "tint_amount": 0.4,
+			"sky": ["#2a0610", "#d04a5a", 0.85], "haze": 3.0, "sun": "#ff6a6a", "antimatter_storm": true}},
+	"earth99": {"name": "Earth-99", "desc": "A darker world, where Batwoman's justice is final. Lights out.",
+		"spec": {"earth": "Earth-99", "label": "EARTH-99", "tint": "#202028", "tint_amount": 0.5, "lit": 0.4,
+			"sky": ["#0e1018", "#2a2c3a", 0.85], "haze": 2.5}},
+	"earth167": {"name": "Earth-167", "desc": "Clark and Lana's Earth: sunny, small-town, and lower skylines.",
+		"spec": {"earth": "Earth-167", "label": "EARTH-167", "tint": "#f0d090", "tint_amount": 0.3, "height": 0.6,
+			"sky": ["#5aa0ff", "#ffe0a0", 0.4], "sun": "#fff0c8"}},
+	"earth_prime": {"name": "Earth-Prime", "desc": "After the Crisis: one merged Earth, taller and brighter.",
+		"spec": {"earth": "Earth-Prime", "label": "EARTH-PRIME", "tint": "#e0e8ff", "tint_amount": 0.12, "height": 1.15,
+			"sky": ["#3a7aff", "#d8e8ff", 0.25]}},
+	"argo": {"name": "Argo City", "desc": "The last Kryptonian city, drifting through space.",
+		"spec": {"kind": "argo", "sky": ["#02030a", "#1a2a5a", 0.95], "haze": 0.5, "sun": "#fff0d0"}},
+	"antimatter": {"name": "The Anti-Matter Universe", "desc": "The Anti-Monitor's realm. Shadow Demons everywhere.",
+		"spec": {"kind": "antimatter", "sky": ["#0a0204", "#6a0a1a", 0.95], "haze": 2.0, "sun": "#ff4a5a"}},
+	"vanishing_point": {"name": "Vanishing Point", "desc": "The Time Bureau's station at the end of time.",
+		"spec": {"kind": "vanishing_point", "sky": ["#140a30", "#a58aff", 0.9], "haze": 0.8, "sun": "#e0d8ff"}},
 	"speedforce": {"name": "The Speed Force", "desc": "Where all speed comes from. Watch for Time Wraiths.",
 		"spec": {"kind": "speedforce", "sky": ["#060c28", "#4a7aff", 0.9], "haze": 1.5, "sun": "#bcd4ff"}},
 }

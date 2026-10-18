@@ -17,6 +17,10 @@ func _ready() -> void:
 		await _closeups(args[2].split(","), args[3] if args.size() > 3 else "")
 		get_tree().quit()
 		return
+	if only == "new":
+		await _new_places()
+		get_tree().quit()
+		return
 	if only == "places":
 		await _places()
 		get_tree().quit()
@@ -282,3 +286,58 @@ func _places() -> void:
 		for i in 60:
 			await get_tree().physics_frame
 		await _snap("place_" + id, 10)
+
+
+func _new_places() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = true
+	w.events.cooldown = 9999.0
+	w.day_night.frozen = true
+	w.day_night.hour = 15.0
+	var spots := [["gotham", Vector3(-600, 0.5, 1640), 0.3], ["gotham_air", Vector3(-560, 160, 1400), 0.0],
+		["smallville", Vector3(1760, 0.5, 520), 0.8], ["kent_farm", Vector3(1720, 0.5, 790), 0.0]]
+	for sp in spots:
+		w.spawn_player("batwoman" if str(sp[0]).begins_with("gotham") else "superman", sp[1])
+		if sp[1].y > 5.0:
+			w.player.flying = true
+		w.cam.yaw = sp[2]
+		w.cam.pitch = -0.12 if sp[1].y < 5.0 else -0.35
+		for i in 60:
+			await get_tree().physics_frame
+		await _snap("new_" + str(sp[0]), 10)
+	w.population.enabled = false
+	for id in ["batcave", "kent_barn"]:
+		w.enter_interior(id)
+		w.cam.yaw = 0.0
+		w.cam.pitch = -0.12
+		w.cam.zoom = 7.0
+		for i in 20:
+			await get_tree().physics_frame
+		await _snap("new_inside_" + id, 5)
+	w.leave_interior("kent_barn")
+	for id in ["antimatter", "argo", "vanishing_point", "earth90", "earth99"]:
+		w.travel_to(id, "breach")
+		w.cam.yaw = 0.6 if id != "antimatter" else 0.0
+		w.cam.pitch = -0.05
+		w.cam.zoom = 6.0
+		if w.city.kind == "metro":
+			w.teleport_player(w.city.district_center(1) + Vector3(0, 0.5, 0))
+		for i in 60:
+			await get_tree().physics_frame
+		await _snap("new_" + id, 10)
+	# An ultimate in action
+	w.travel_to("earth1", "breach")
+	w.population.enabled = false
+	w.clear_npcs()
+	w.spawn_player("black_lightning", Vector3(560, 0.5, -440))
+	for i in 5:
+		w.population.spawn_thug(Vector3(556 + i * 2.5, 0.5, -455))
+	w.cam.yaw = 0.0
+	w.cam.pitch = -0.05
+	w.player.ult = 100.0
+	w.player.in_ultimate = true
+	w.player._abilities(0.016)
+	for i in 50:
+		await get_tree().physics_frame
+	await _snap("new_ultimate", 1)

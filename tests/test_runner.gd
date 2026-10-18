@@ -85,7 +85,7 @@ func test_city_is_deterministic() -> void:
 	check(not a.is_water(Vector3(0, 0, -560)), "the bridge between Star City and Central City is walkable")
 	check(a.district_at(Vector3(-1560, 0, -1400)) == "Lian Yu", "Lian Yu is its own island")
 	check(a.district_at(Vector3(-330, 0, -330)) == "The Glades", "the Glades are part of Star City")
-	check(a.islands.size() == 4, "four separate city islands")
+	check(a.islands.size() == 6, "six separate city islands")
 	check(not a.doors.is_empty(), "landmarks have doors into interiors")
 	var road := a.snap_to_road(Vector3(123, 0, 37))
 	check(is_zero_approx(fmod(absf(road.x), City.CELL)) or is_zero_approx(fmod(absf(road.z), City.CELL)), "snap_to_road lands on a street")
@@ -345,7 +345,13 @@ func test_places() -> void:
 	for d in world.city.doors:
 		if d["interior"] in Interiors.ORDER:
 			outside += 1
-	check(outside >= 5, "city doors lead inside (%d)" % outside)
+	check(outside >= 7, "city doors lead inside (%d)" % outside)
+	check(world.city.islands.size() >= 6, "six city islands (with Gotham and Smallville)")
+	check(world.city.district_at(Vector3(-560, 1, 1720)) == "Gotham City", "Gotham is south of National City")
+	check(world.city.district_at(Vector3(1840, 1, 560)) == "Smallville", "Smallville is east of Freeland")
+	check(not world.city.is_water(Vector3(-560, 0, 1150)), "a bridge reaches Gotham")
+	check(not world.city.is_water(Vector3(1200, 0, 560)), "a bridge reaches Smallville")
+	check(not world.city.landmark("Wayne Tower").is_empty() and not world.city.landmark("Kent Farm").is_empty(), "Wayne Tower and Kent Farm")
 	# Walk through S.T.A.R. Labs' front door and back out.
 	var labs: Dictionary = {}
 	for d in world.city.doors:
@@ -377,6 +383,8 @@ func test_places() -> void:
 	# Board the Waverider, fly it, and come back to the bridge.
 	world.teleport_player(world.ship.boarding_point())
 	await _frames(3)
+	await get_tree().process_frame
+	await get_tree().process_frame
 	check(world.door.get("interior", "") == "waverider", "the ship's ramp is a door")
 	world.interact()
 	await _frames(3)
@@ -401,7 +409,7 @@ func test_places() -> void:
 	world.leave_interior("waverider")
 	await _frames(5)
 	check(world.inside == "" and world.player.global_position.y > -2.0, "step off the ship in 2046")
-	for id in ["old_west", "earthx", "speedforce", "earth1"]:
+	for id in ["old_west", "earthx", "speedforce", "antimatter", "argo", "vanishing_point", "earth90", "earth1"]:
 		world.travel_to(id, "breach")
 		await _frames(5)
 		check(world.place_id == id and world.city.islands.size() > 0, "travelled to " + id)
@@ -420,7 +428,7 @@ func test_places() -> void:
 	await _frames(3)
 	check(world.place_id == "earth1" and world.city.kind == "metro", "the way home leads back to Earth-1")
 	world.travel_menu.open("speed")
-	check(world.travel_menu._list.get_child_count() == 7, "speedster travel menu lists the Speed Force and six Earths")
+	check(world.travel_menu._list.get_child_count() == Multiverse.EARTHS.size() + 1, "speedster travel menu lists the Speed Force and every Earth")
 	world.travel_menu.close()
 
 

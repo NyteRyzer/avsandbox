@@ -37,8 +37,8 @@ func _process(delta: float) -> void:
 		return
 	_tick = 0.5
 	var p: Vector3 = world.player.global_position
-	if world.city.kind == "speedforce":
-		_speed_force()
+	if world.city.kind != "metro" and world.city.kind != "western":
+		_realm()
 		return
 	var counts := {"civilian": 0, "police": 0, "thug": 0}
 	var total := 0
@@ -105,7 +105,11 @@ func spawn_traffic(on_road: Vector3) -> Prop:
 var _wraith_t := 25.0
 
 
-func _speed_force() -> void:
+## The Speed Force has Time Wraiths and the Anti-Matter Universe has Shadow
+## Demons; Argo City and Vanishing Point are peaceful.
+func _realm() -> void:
+	if not world.city.kind in ["speedforce", "antimatter"]:
+		return
 	_wraith_t -= 0.5
 	if _wraith_t <= 0.0:
 		_wraith_t = 30.0
@@ -113,19 +117,31 @@ func _speed_force() -> void:
 			spawn_wraiths(2)
 
 
-## Time Wraiths: the Speed Force's hunters, out for any speedster.
+## Time Wraiths (Speed Force) or Shadow Demons (anti-matter): realm hunters.
 func spawn_wraiths(count: int) -> void:
 	var p: Vector3 = world.player.global_position
 	for k in count:
 		var ang := rng.randf() * TAU
 		var pos := p + Vector3(cos(ang) * 40.0, 6.0, sin(ang) * 40.0)
 		var team := "villain" if Game.player_side() == 1 else "hero"
-		var a := spawn_character(wraith_def(), team, pos)
+		var a := spawn_character(wraith_def() if world.city.kind != "antimatter" else shadow_demon_def(), team, pos)
 		a.add_to_group("wraiths")
 		a.brain.detect = 300.0
 		a.brain.leash = 0.0
 		a.grudges[world.player.get_instance_id()] = 9999.0
 		FX.portal(world, a.chest(), Color("#a8c8ff"))
+
+
+func shadow_demon_def() -> Dictionary:
+	return {
+		"id": "shadow_demon", "name": "Shadow Demon", "alias": "Shadow Demon", "side": "villain", "home": "any",
+		"health": 90, "speed": 1.2, "power": 0.9, "movement": "flight", "fly_speed": 1.2,
+		"primary": {"kind": "melee", "damage": 11, "style": "claw"},
+		"secondary": {"kind": "bolt", "damage": 10, "color": "#ff2a3a", "style": "antimatter"},
+		"special": {"kind": "rage"},
+		"look": {"suit": "#0a0406", "legs": "#0a0406", "accent": "#3a0a10", "skin": "#140808", "hair": "#000000",
+			"extras": ["wings"], "eye_glow": "#ff2a3a", "build": "bulky", "scale": 1.1},
+	}
 
 
 func wraith_def() -> Dictionary:

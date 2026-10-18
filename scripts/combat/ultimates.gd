@@ -278,10 +278,10 @@ func _barrage() -> void:
 	var style := str(spec.get("style", "arrow"))
 	var center: Vector3 = actor.aim_point
 	var foes := _foes(50.0, 8)
-	if not foes.is_empty() and (center.distance_to(actor.global_position) < 3.0 or randf() < 0.5):
+	if not foes.is_empty():
 		center = foes[_step % foes.size()].global_position
 	var p := Projectile.new()
-	var target := center + Vector3(randf_range(-6, 6), 0, randf_range(-6, 6))
+	var target := center + Vector3(randf_range(-2.5, 2.5), 0, randf_range(-2.5, 2.5))
 	var dmg := 14.0 * actor.power
 	match style:
 		"bullet":
@@ -397,7 +397,7 @@ func _inferno() -> void:
 
 ## Freeze everything near you solid, then shatter the ice.
 func _absolute_zero() -> void:
-	if t < 0.05 and _step == 0:
+	if _step == 0:
 		for o in _foes(32.0, 14):
 			_hit(o, 18.0, "ice", 2.0)
 			o.frozen_t = maxf(o.frozen_t, 4.0)

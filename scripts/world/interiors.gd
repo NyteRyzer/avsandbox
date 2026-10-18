@@ -8,10 +8,11 @@ extends RefCounted
 
 const DEPTH := -320.0
 const SPACING := 140.0
-const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider"]
+const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider", "batcave", "kent_barn"]
 const BUNKER_SUITS := ["green_arrow", "speedy", "black_canary", "spartan", "wild_dog", "arsenal"]
 const NAMES := {"star_labs": "S.T.A.R. Labs", "bunker": "The Arrow Bunker", "jitters": "Jitters",
-	"catco": "CatCo Worldwide", "deo": "The D.E.O.", "waverider": "The Waverider"}
+	"catco": "CatCo Worldwide", "deo": "The D.E.O.", "waverider": "The Waverider",
+	"batcave": "The Batcave", "kent_barn": "The Kent Barn"}
 
 var city: City
 var base := Vector3.ZERO
@@ -300,3 +301,55 @@ func _waverider() -> void:
 			box(Vector3(side * 9.5, 1.0, -3 + k * 3.0), Vector3(1.4, 1.2, 2.2), "#4a525c")
 	spawn(Vector3(0, 0.5, 6))
 	exit_door(Vector3(0, 0, 9.7), "The Waverider")
+
+
+func _batcave() -> void:
+	# Under Wayne Tower: rough stone, a wall of screens, the suits.
+	room(Vector3(36, 9, 28), "#2a2a2e", "#34343a", "#1a1a1e")
+	light(Vector3(-10, 8, 0), Color(0.55, 0.65, 0.9), 1.4, 22.0)
+	light(Vector3(10, 8, 0), Color(0.55, 0.65, 0.9), 1.4, 22.0)
+	light(Vector3(0, 3.0, -9), Color(0.4, 0.6, 1.0), 2.0, 12.0)
+	for k in 14:
+		var x := -16.0 + k * 2.5
+		box(Vector3(x, 4.5 + sin(k * 1.7) * 1.5, -13.4), Vector3(2.4, 9.0, 1.2), "#2e2e33", true, 0.0, k * 0.3)
+	box(Vector3(0, 0.75, -9), Vector3(10, 0.12, 2.4), "#1a1a1e")
+	for k in 5:
+		screen(Vector3(-6 + k * 3.0, 2.6, -10.4), Vector2(2.8, 1.7), "#2a5aff")
+	screen(Vector3(0, 5.2, -10.6), Vector2(8.0, 2.2), "#1e3a9a")
+	box(Vector3(0, 7.2, -12.6), Vector3(3.6, 1.4, 0.2), "#c8102e", false, 1.5)
+	label("WAYNE ENTERPRISES", Vector3(0, 5.2, -10.4), 0.6, Color("#ffffff"))
+	mannequin("batwoman", Vector3(-12, 0.2, 2), 1.0)
+	label("THE BATCAVE", Vector3(-12, 3.6, -1), 0.7, Color("#ffd23a"))
+	# A car on its turntable
+	box(Vector3(10, 0.1, 4), Vector3(9, 0.2, 9), "#3a3a40")
+	box(Vector3(10, 0.9, 4), Vector3(2.6, 1.0, 6.0), "#101014")
+	box(Vector3(10, 1.6, 4.6), Vector3(2.0, 0.6, 2.6), "#101014")
+	box(Vector3(10, 1.0, 1.0), Vector3(2.0, 0.2, 0.1), "#ff3a3a", false, 2.0)
+	spawn(Vector3(0, 0.5, 9))
+	exit_door(Vector3(0, 0, 13.7), "Wayne Tower")
+
+
+func _kent_barn() -> void:
+	room(Vector3(24, 8, 30), "#6a5034", "#8a3a26", "#4a3424")
+	light(Vector3(0, 7, 0), Color(1, 0.85, 0.6), 1.6, 22.0)
+	light(Vector3(0, 3, 8), Color(1, 0.8, 0.5), 1.0, 10.0)
+	# Hay bales and the loft
+	for k in 8:
+		box(Vector3(-9.0 + (k % 2) * 1.6, 0.6 + (k / 4) * 1.2, -12 + (k % 4) * 2.6), Vector3(1.5, 1.2, 2.4), "#c8a858")
+	box(Vector3(6, 4.0, -9), Vector3(11, 0.3, 11), "#5a4024")
+	for k in 4:
+		box(Vector3(1.0 + (k % 2) * 10.0, 2.0, -4.0 - (k / 2) * 10.0), Vector3(0.4, 4.0, 0.4), "#4a3420")
+	# Tractor
+	box(Vector3(-7, 1.0, 6), Vector3(2.4, 1.4, 3.4), "#2a7a2a")
+	box(Vector3(-7, 2.2, 5), Vector3(1.6, 1.2, 1.4), "#2a7a2a")
+	for sx in [-1.0, 1.0]:
+		box(Vector3(-7 + sx * 1.4, 0.8, 7), Vector3(0.5, 1.6, 1.6), "#1a1a1a")
+	# The ship that brought Kal-El, and the suits
+	box(Vector3(6, 0.6, 6), Vector3(2.4, 1.2, 3.6), "#c8ccd4")
+	box(Vector3(6, 1.25, 6), Vector3(1.8, 0.1, 2.8), "#7ad0ff", false, 1.5)
+	label("THE SHIP FROM KRYPTON", Vector3(6, 2.4, 6), 0.4, Color("#bfe8ff"))
+	mannequin("superman", Vector3(-3, 0.2, -12.5), 1.0)
+	mannequin("supergirl", Vector3(0.5, 0.2, -12.5), 1.0)
+	label("KENT FARM", Vector3(0, 6.0, -14.6), 0.9, Color("#ffe0a0"))
+	spawn(Vector3(0, 0.5, 10))
+	exit_door(Vector3(0, 0, 14.7), "Kent Farm")

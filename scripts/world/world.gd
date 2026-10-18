@@ -140,7 +140,7 @@ func spawn_player(id: String, at = null) -> void:
 
 
 func spawn_point_for(c: Dictionary) -> Vector3:
-	var idx := {"star": 0, "central": 1, "national": 2, "freeland": 3}
+	var idx := {"star": 0, "central": 1, "national": 2, "freeland": 3, "gotham": 4, "smallville": 5}
 	var home: String = c.get("home", "any")
 	var center := Vector3(20, 0, 20)
 	if idx.has(home):
@@ -185,12 +185,13 @@ func _process(delta: float) -> void:
 		inside = Interiors.room_at(player.global_position)
 		day_night.indoors = inside != ""
 		population.enabled = inside == "" and not ship.piloted
-		events.enabled = inside == "" and city.kind != "speedforce"
+		events.enabled = inside == "" and city.kind in ["metro", "western"]
 		door = _nearest_door()
-		if city.kind == "speedforce" and randf() < delta * 1.5:
+		var storm := "#ffe48a" if city.kind == "speedforce" else ("#ff3a4a" if city.kind == "antimatter" or city.spec.get("antimatter_storm", false) else "")
+		if storm != "" and inside == "" and randf() < delta * 1.5:
 			var c := player.global_position
 			var a := c + Vector3(randf_range(-80, 80), randf_range(40, 90), randf_range(-80, 80))
-			FX.lightning(self, a, a + Vector3(randf_range(-40, 40), randf_range(-30, 10), randf_range(-40, 40)), Color("#ffe48a"), 0.25, 3.0, 8, 2)
+			FX.lightning(self, a, a + Vector3(randf_range(-40, 40), randf_range(-30, 10), randf_range(-40, 40)), Color(storm), 0.25, 3.0, 8, 2)
 		var d := place_name(player.global_position)
 		if d != _last_district:
 			_last_district = d
@@ -387,6 +388,9 @@ func travel_to(id: String, how := "breach") -> void:
 	notify("%s %s" % [verb.get(how, "Welcome to"), d["name"]], color)
 	if city.kind == "speedforce":
 		notify("Time Wraiths hunt speedsters here. Find the way home (or press G at the light).", Color("#ffd27a"))
+		population.spawn_wraiths(3)
+	elif city.kind == "antimatter":
+		notify("Shadow Demons swarm the Anti-Matter Universe. The way home is the column of light.", Color("#ff9a9a"))
 		population.spawn_wraiths(3)
 
 

@@ -132,8 +132,13 @@ func _apply() -> void:
 		horizon = horizon.lerp(Color(0.35, 0.37, 0.4) * (0.3 + day * 0.7), 0.8)
 		sun.light_energy *= 0.45
 	var spec: Dictionary = city.spec if city else {}
-	if spec.has("sky"):
-		var look: Array = spec["sky"]
+	var island_look: Dictionary = {}
+	if city and follow and is_instance_valid(follow) and not spec.has("sky"):
+		var isl := city.island_at(follow.global_position)
+		if not isl.is_empty() and isl["style"].has("sky"):
+			island_look = isl["style"]
+	if spec.has("sky") or island_look.has("sky"):
+		var look: Array = spec["sky"] if spec.has("sky") else island_look["sky"]
 		var amt := float(look[2])
 		top = top.lerp(Color(str(look[0])) * (0.35 + day * 0.65), amt)
 		horizon = horizon.lerp(Color(str(look[1])) * (0.35 + day * 0.65), amt)
@@ -150,7 +155,7 @@ func _apply() -> void:
 	env.ambient_light_energy = lerpf(0.3, 0.75, day) + (2.0 if _flash_t > 0.0 else 0.0)
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
-	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", 1.0))
+	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0)))
 	env.fog_enabled = not indoors
 	if indoors:
 		sun.light_energy = 0.0
