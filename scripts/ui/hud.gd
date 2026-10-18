@@ -280,12 +280,11 @@ func _process(delta: float) -> void:
 	ability_labels[1].text = "[RMB]  " + Abilities.describe(d["secondary"]) + _cd(p, "secondary")
 	ability_labels[2].text = "[Q]  " + str(d["special"].get("name", d["special"]["kind"])) + _cd(p, "special")
 	var e_text := ""
-	match p.movement:
-		"grapple":
-			e_text = "[E]  Grappling line"
-		_:
-			if p.strength:
-				e_text = "[E]  Lift / throw objects"
+	var util := p.utility_name()
+	if util != "":
+		e_text = "[E]  " + util + _cd(p, "utility")
+	if p.strength:
+		e_text += ("  ·  " if e_text != "" else "[E]  ") + "Lift / throw"
 	ability_labels[3].text = e_text
 	var move_text := ""
 	match p.movement:
@@ -293,10 +292,17 @@ func _process(delta: float) -> void:
 			move_text = "[Shift]  Super speed  (run up walls, across water)"
 		"flight":
 			move_text = "[F]  Fly  ·  [Space/Ctrl] up/down  ·  [Shift] boost"
+		"hover":
+			move_text = "Hover chair  ·  [Space/Ctrl] up/down"
 		"superjump":
 			move_text = "[Space]  Super jump"
+		"ice":
+			move_text = "[Shift]  Ice slide"
 		_:
 			move_text = "[Shift]  Sprint"
+	move_text += "   ·   [V] Dodge"
+	if p.combo_count >= 3:
+		move_text += "   ·   %d HIT COMBO" % p.combo_count
 	ability_labels[4].text = move_text
 	ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT if p.cooldowns["special"] <= 0.0 and p.energy >= Abilities.special_cost(d["special"]) else UITheme.DIM)
 

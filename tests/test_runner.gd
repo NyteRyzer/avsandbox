@@ -112,7 +112,7 @@ func test_world_smoke() -> void:
 		Abilities.fire(p, c["primary"])
 		Abilities.fire(p, c["secondary"])
 		if c["primary"]["kind"] == "beam":
-			Abilities.beam_tick(p, c["primary"], 0.1, "primary")
+			Abilities.held_tick(p, c["primary"], 0.1, "primary")
 		Abilities.special(p, c["special"])
 		Game.end_slowmo()
 		await get_tree().physics_frame
@@ -242,7 +242,7 @@ func test_player_input() -> void:
 	# Heat vision fires a beam while held.
 	world.cam.pitch = -0.3
 	await _hold("secondary", 20)
-	check(world.player.beam_mesh != null, "holding RMB fires heat vision")
+	check(world.player.beams.size() >= 2, "holding RMB fires twin heat-vision beams from the eyes")
 	await _tap("fly")
 	check(not world.player.flying, "F again stops flying")
 	# Super jumpers jump high.

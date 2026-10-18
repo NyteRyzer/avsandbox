@@ -3,3 +3,5 @@
 # Export output
 build/
 *.tmp
+*.import
+!icon.svg.import

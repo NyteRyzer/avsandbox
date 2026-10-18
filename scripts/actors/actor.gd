@@ -62,7 +62,6 @@ var event_tag := ""
 var grapple_point = null
 var grapple_line: MeshInstance3D = null
 var held_prop: RigidBody3D = null
-var beam_mesh: MeshInstance3D = null
 var beam_sound_t := 0.0
 var dash_t := 0.0
 var dash_hit: Dictionary = {}
@@ -81,6 +80,47 @@ var shrunk := false
 var swimming := false
 var _jump_buffer := 0.0
 var _coyote := 0.0
+
+# Combat state for the upgraded kits.
+var in_dodge := false
+var combo_step := 0
+var combo_window := 0.0
+var combo_count := 0
+var combo_timer := 0.0
+var flurry_count := 0
+var hand_flip := 1.0
+var beams: Array[MeshInstance3D] = []
+var beam_slot := ""
+var stream: CPUParticles3D = null
+var stream_t := 0.0
+var stretch_t := 0.0
+var eye_glow_t := 0.0
+var dodge_t := 0.0
+var dampened_t := 0.0
+var shield_t := 0.0
+var field_t := 0.0
+var phase_t := 0.0
+var storm_t := 0.0
+var _storm_tick := 0.0
+var t_spheres_t := 0.0
+var _sphere_tick := 0.0
+var _sphere_nodes: Array[Node3D] = []
+var breath_t := 0.0
+var breath_spec: Dictionary = {}
+var blitz_queue: Array = []
+var blitz_t := 0.0
+var lift_t := 0.0
+var lifter: Actor = null
+var lift_damage := 0.0
+var controlled_t := 0.0
+var _orig_team := ""
+var _orig_follow: Actor = null
+var boss := false
+var hp_bar: Node3D = null
+var hp_bar_t := 0.0
+var _ice: Node3D = null
+var _burn_fx: CPUParticles3D = null
+var _ice_trail_t := 0.0
 
 
 func setup(character: Dictionary, team_name: String) -> void:
@@ -111,9 +151,18 @@ func setup(character: Dictionary, team_name: String) -> void:
 	if not is_player:
 		for m in model.meshes:
 			m.visibility_range_end = 180.0
+	cooldowns["utility"] = 0.0
+	if movement == "hover":
+		flying = true
 	add_to_group("actors")
 	if team == "civilian":
 		add_to_group("civilians")
+
+
+func make_boss(mult := 2.5) -> void:
+	boss = true
+	max_hp *= mult
+	hp = max_hp
 
 
 func _apply_size(s: float) -> void:
@@ -137,6 +186,8 @@ func head_pos() -> Vector3:
 
 
 func hand_pos() -> Vector3:
+	if model and model.hand_r:
+		return model.hand_point(1.0) + forward() * 0.15 * _cur_scale()
 	return global_position + Vector3.UP * 1.4 * _cur_scale() + forward() * 0.45 * _cur_scale()
 
 
@@ -220,6 +271,7 @@ func _physics_process(delta: float) -> void:
 	in_fly_toggle = false
 	in_special = false
 	in_ability = false
+	in_dodge = false
 	if brain:
 		brain.update(self, delta)
 	if not can_act():
@@ -229,6 +281,9 @@ func _physics_process(delta: float) -> void:
 		in_secondary = false
 		in_special = false
 		in_ability = false
+		in_dodge = false
+	if lift_t > 0.0:
+		_lifted(delta)
 	_move(delta)
 	_abilities(delta)
 	var hv := Vector3(velocity.x, 0, velocity.z)
@@ -254,6 +309,66 @@ func _tick_status(delta: float) -> void:
 	stun_t = maxf(0.0, stun_t - delta)
 	invuln_t = maxf(0.0, invuln_t - delta)
 	rage_t = maxf(0.0, rage_t - delta)
+	dampened_t = maxf(0.0, dampened_t - delta)
+	shield_t = maxf(0.0, shield_t - delta)
+	field_t = maxf(0.0, field_t - delta)
+	eye_glow_t = maxf(0.0, eye_glow_t - delta)
+	dodge_t = maxf(0.0, dodge_t - delta)
+	combo_window = maxf(0.0, combo_window - delta)
+	if combo_window <= 0.0:
+		combo_step = 0
+	combo_timer = maxf(0.0, combo_timer - delta)
+	if combo_timer <= 0.0:
+		combo_count = 0
+	if stretch_t > 0.0:
+		stretch_t -= delta
+		if stretch_t <= 0.0:
+			model.set_stretch(1.0)
+	if phase_t > 0.0:
+		phase_t -= delta
+		collision_mask = Game.LAYER_WORLD if phase_t > 0.0 else Game.LAYER_WORLD | Game.LAYER_PROPS | Game.LAYER_ACTORS
+	if stream_t > 0.0:
+		stream_t -= delta
+		if stream_t <= 0.0 and stream:
+			stream.emitting = false
+	if storm_t > 0.0:
+		storm_t -= delta
+		_storm_tick -= delta
+		if _storm_tick <= 0.0:
+			_storm_tick = 0.4
+			Abilities.storm_tick(self)
+	_tick_spheres(delta)
+	if breath_t > 0.0:
+		breath_t -= delta
+		face_dir = Vector3(aim_dir(head_pos()).x, 0, aim_dir(head_pos()).z)
+		Abilities.held_tick(self, breath_spec, delta, "special")
+	if not blitz_queue.is_empty():
+		blitz_t -= delta
+		if blitz_t <= 0.0:
+			blitz_t = 0.09
+			Abilities.blitz_step(self)
+	if controlled_t > 0.0:
+		controlled_t -= delta
+		if controlled_t <= 0.0:
+			release_control()
+	if hp_bar:
+		hp_bar_t -= delta
+		hp_bar.visible = hp_bar_t > 0.0 or boss
+	if frozen_t > 0.0 and _ice == null:
+		_ice = FX.ice_block(self, size)
+	elif frozen_t <= 0.0 and _ice:
+		FX.sparks(world, chest(), Color("#dff4ff"), 14, 5.0, 0.5)
+		_ice.queue_free()
+		_ice = null
+	if burn_t > 0.0 and _burn_fx == null and world:
+		_burn_fx = FX.stream_emitter("burn")
+		add_child(_burn_fx)
+		_burn_fx.position = Vector3(0, 1.0 * size, 0)
+		_burn_fx.emitting = true
+	elif burn_t <= 0.0 and _burn_fx:
+		_burn_fx.emitting = false
+		_burn_fx.queue_free()
+		_burn_fx = null
 	if frozen_t > 0.0:
 		frozen_t -= delta
 	if invis_t > 0.0:
@@ -264,6 +379,10 @@ func _tick_status(delta: float) -> void:
 	# Visual state, most important first.
 	if frozen_t > 0.0:
 		model.set_override(CharacterModel.mat(STATUS_COLORS["frozen"], 0.15, false, 0.9))
+	elif phase_t > 0.0:
+		model.set_override(CharacterModel.mat(STATUS_COLORS["ghost"], 0.4, true, 0.35))
+	elif controlled_t > 0.0:
+		model.set_override(CharacterModel.mat(Color("#c47aff"), 0.3, false, 0.9))
 	elif invis_t > 0.0:
 		model.set_override(CharacterModel.mat(STATUS_COLORS["ghost"], 0.3, true, 0.18 if is_player else 0.06))
 	elif invuln_t > 0.0:
@@ -290,6 +409,8 @@ func _move(delta: float) -> void:
 			sprint = base * 1.9
 		"grapple":
 			jump = 9.5
+		"ice":
+			sprint = 26.0 * speed_mult
 	if shrunk:
 		base *= 0.55
 		sprint *= 0.6
@@ -298,6 +419,19 @@ func _move(delta: float) -> void:
 		sprint *= 1.2
 	var target_speed := sprint if in_sprint else base
 
+	if in_dodge and dodge_t <= 0.0 and can_act() and grapple_point == null:
+		var dir := Vector3(in_move.x, 0, in_move.z)
+		if dir.length() < 0.2:
+			dir = -forward()
+		dodge_t = 0.55
+		invuln_t = maxf(invuln_t, 0.3)
+		velocity = dir.normalized() * (22.0 if movement != "speed" else 45.0) + Vector3.UP * (2.0 if is_on_floor() else 0.0)
+		model.play("dodge", 0.3)
+		Sfx.play("whoosh", global_position, -4.0)
+		if movement == "speed" and world:
+			FX.lightning(world, chest(), chest() + dir.normalized() * 8.0, Color(str(def["look"].get("trail", "#ffcc22"))), 0.25, 0.4, 4, 0)
+	if movement == "hover":
+		flying = true
 	if in_fly_toggle and movement == "flight":
 		flying = not flying
 		if flying:
@@ -315,8 +449,10 @@ func _move(delta: float) -> void:
 		Abilities.dash_tick(self)
 	elif flying:
 		var fly_speed := 42.0 * speed_mult if in_sprint else 13.0 * speed_mult
-		if def.get("id", "") in ["superman", "supergirl", "reign", "overgirl", "mon_el"]:
-			fly_speed *= 1.6 if in_sprint else 1.0
+		fly_speed *= float(def.get("fly_speed", 1.0)) if in_sprint else 1.0
+		if movement == "hover":
+			fly_speed = 9.0 if not in_sprint else 18.0
+		var was_fast := Vector3(velocity.x, 0, velocity.z).length() > 55.0
 		var desired := in_move * fly_speed
 		var vert := 0.0
 		if in_up:
@@ -325,7 +461,14 @@ func _move(delta: float) -> void:
 			vert -= 1.0
 		desired.y += vert * 10.0 * speed_mult
 		velocity = velocity.lerp(desired, clampf(delta * 3.5, 0.0, 1.0))
-		if is_on_floor() and in_down:
+		if movement == "hover" and not in_up and not in_down:
+			# The Thinker's chair floats a little above whatever is below it.
+			var floor_hit := Abilities.ray(self, global_position + Vector3.UP, global_position + Vector3.DOWN * 4.0, [get_rid()])
+			if not floor_hit.is_empty():
+				velocity.y = lerpf(velocity.y, (floor_hit["position"].y + 1.2 - global_position.y) * 3.0, 0.2)
+		if not was_fast and velocity.length() > 55.0 and world:
+			FX.sonic_boom(world, chest(), velocity.normalized())
+		if is_on_floor() and in_down and movement != "hover":
 			flying = false
 	elif grapple_point != null:
 		var gp: Vector3 = grapple_point
@@ -370,6 +513,11 @@ func _move(delta: float) -> void:
 				velocity.y = maxf(velocity.y, (0.05 - global_position.y) * 20.0)
 				if randf() < 0.3:
 					FX.sparks(world, global_position, Color("#cfe8ff"), 2, 3.0)
+		if movement == "ice" and in_sprint and hv.length() > 10.0 and world:
+			_ice_trail_t -= delta
+			if _ice_trail_t <= 0.0:
+				_ice_trail_t = 0.05
+				FX.sparks(world, global_position + Vector3.UP * 0.1, Color("#dff4ff"), 3, 1.5, 0.8)
 		if slam_pending and is_on_floor():
 			slam_pending = false
 			Abilities.ground_slam_impact(self)
@@ -398,22 +546,17 @@ func _abilities(delta: float) -> void:
 		Abilities.throw_prop(self)
 		cooldowns["primary"] = 0.4
 		return
-	if in_ability:
-		if movement == "grapple":
-			if grapple_point != null:
-				_release_grapple()
-			else:
-				Abilities.fire_grapple(self)
-		elif strength:
-			Abilities.pick_up(self)
+	if in_ability and cooldowns["utility"] <= 0.0 and can_act():
+		_use_utility()
+	var any_beam := false
 	for slot in ["primary", "secondary"]:
 		var atk: Dictionary = def[slot]
 		var held := in_primary if slot == "primary" else in_secondary
-		if atk["kind"] == "beam":
+		if atk["kind"] in Abilities.HELD_KINDS:
 			if held and energy > 2.0 and can_act():
-				Abilities.beam_tick(self, atk, delta, slot)
-			elif beam_mesh and beam_mesh.get_meta("slot", "") == slot:
-				beam_mesh.visible = false
+				Abilities.held_tick(self, atk, delta, slot)
+				if atk["kind"] == "beam":
+					any_beam = true
 			continue
 		if held and cooldowns[slot] <= 0.0 and can_act():
 			var cost := Abilities.energy_cost(atk)
@@ -421,13 +564,126 @@ func _abilities(delta: float) -> void:
 				energy -= cost
 				cooldowns[slot] = Abilities.cooldown(atk)
 				Abilities.fire(self, atk)
-	if in_special and cooldowns["special"] <= 0.0:
+	if not any_beam:
+		for b in beams:
+			b.visible = false
+	if in_special and cooldowns["special"] <= 0.0 and dampened_t <= 0.0:
 		var sp: Dictionary = def["special"]
 		var cost := Abilities.special_cost(sp)
 		if energy >= cost or (is_player and Game.cheats["infinite_energy"]):
 			if Abilities.special(self, sp):
 				energy -= cost
 				cooldowns["special"] = Abilities.special_cooldown(sp)
+
+
+## E: lift something heavy if there is something to lift, otherwise use the
+## character's utility power (grapple, blitz, breach, phase...).
+func _use_utility() -> void:
+	if strength and held_prop == null:
+		for prop in get_tree().get_nodes_in_group("props"):
+			if prop.global_position.distance_to(global_position) < 5.0 * size:
+				Abilities.pick_up(self)
+				cooldowns["utility"] = 0.3
+				return
+	var util: Dictionary = def.get("utility", {})
+	if util.is_empty():
+		if movement == "grapple":
+			util = {"kind": "grapple"}
+		else:
+			return
+	if dampened_t > 0.0 and util["kind"] != "grapple":
+		return
+	var cost := Abilities.special_cost(util)
+	if energy < cost and not (is_player and Game.cheats["infinite_energy"]):
+		return
+	if Abilities.special(self, util):
+		energy -= cost
+		cooldowns["utility"] = Abilities.special_cooldown(util)
+
+
+func utility_name() -> String:
+	if def.has("utility"):
+		return str(def["utility"].get("name", def["utility"]["kind"]))
+	if movement == "grapple":
+		return "Grappling line"
+	return ""
+
+
+func combo_hit(n: int) -> void:
+	combo_count += n
+	combo_timer = 2.5
+
+
+func _tick_spheres(delta: float) -> void:
+	if t_spheres_t <= 0.0:
+		if not _sphere_nodes.is_empty():
+			for n in _sphere_nodes:
+				n.queue_free()
+			_sphere_nodes.clear()
+		return
+	t_spheres_t -= delta
+	if _sphere_nodes.is_empty():
+		for i in 3:
+			var mi := MeshInstance3D.new()
+			var sm := SphereMesh.new()
+			sm.radius = 0.11
+			sm.height = 0.22
+			mi.mesh = sm
+			mi.material_override = CharacterModel.mat(Color("#d02020"), 1.5)
+			add_child(mi)
+			_sphere_nodes.append(mi)
+	var t := Time.get_ticks_msec() * 0.003
+	for i in _sphere_nodes.size():
+		var a := t + i * TAU / 3.0
+		_sphere_nodes[i].position = Vector3(cos(a) * 0.9, 1.9 + sin(t * 2.0 + i) * 0.15, sin(a) * 0.9)
+	_sphere_tick -= delta
+	if _sphere_tick <= 0.0:
+		_sphere_tick = 0.8
+		Abilities.t_sphere_tick(self)
+
+
+## Held in someone's telekinetic grip: float up, take damage, then get thrown.
+func lift_by(holder: Actor, seconds: float, damage: float, color: Color) -> void:
+	lifter = holder
+	lift_t = seconds
+	lift_damage = damage
+	flying = false
+	FX.aura(self, color, size, seconds)
+
+
+func _lifted(delta: float) -> void:
+	lift_t -= delta
+	stun_t = maxf(stun_t, 0.1)
+	if lifter == null or not is_instance_valid(lifter):
+		lift_t = 0.0
+		return
+	var hold := lifter.global_position + lifter.forward() * 5.0 + Vector3.UP * 3.0
+	velocity = (hold - global_position) * 5.0
+	_raw_damage(lift_damage * 0.3 * delta / 1.4, lifter)
+	if lift_t <= 0.0 and not dead:
+		take_damage(lift_damage, lifter, "", lifter.aim_dir(chest()) * 26.0 + Vector3.UP * 6.0)
+		model.tumble(14.0)
+		lifter = null
+
+
+func mind_control(controller: Actor, seconds: float) -> void:
+	if controlled_t <= 0.0:
+		_orig_team = team
+		_orig_follow = follow_target
+	controlled_t = seconds
+	team = controller.team
+	follow_target = controller
+	grudges.clear()
+	if brain:
+		brain.target = null
+
+
+func release_control() -> void:
+	controlled_t = 0.0
+	if _orig_team != "":
+		team = _orig_team
+	follow_target = _orig_follow
+	_orig_team = ""
 
 
 func _speed_trail(delta: float, hspeed: float) -> void:
@@ -483,6 +739,24 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 	if invuln_t > 0.0:
 		amount *= 0.1
 		knock *= 0.2
+	if field_t > 0.0:
+		amount = 0.0
+		knock = Vector3.ZERO
+		if world:
+			FX.flash(world, chest(), Color("#5ce07a"), 1.2 * size, 0.15, 0.3)
+	if shield_t > 0.0 and source and is_instance_valid(source):
+		var to_src := (source.global_position - global_position).normalized()
+		if to_src.dot(forward()) > 0.2:
+			amount *= 0.1
+			knock *= 0.1
+			if world:
+				FX.sparks(world, chest() + forward() * 0.5, Color("#e8eef4"), 6, 4.0)
+	if not is_player and world and amount > 0.5:
+		if hp_bar == null:
+			hp_bar = FX.health_bar()
+			add_child(hp_bar)
+			hp_bar.position = Vector3(0, 2.25 * size, 0)
+		hp_bar_t = 4.0
 	if is_player and Game.cheats["god_mode"]:
 		amount = 0.0
 	if size > 1.5:
@@ -510,6 +784,12 @@ func _raw_damage(amount: float, source: Actor) -> void:
 	if dead:
 		return
 	hp -= amount
+	if hp_bar:
+		var fill: MeshInstance3D = hp_bar.get_node("Fill")
+		var q: QuadMesh = fill.mesh
+		var ratio := clampf(hp / max_hp, 0.0, 1.0)
+		q.size.x = 0.86 * maxf(ratio, 0.001)
+		q.center_offset.x = -0.43 + 0.43 * ratio
 	damaged.emit(self, amount)
 	if hp <= 0.0:
 		die(source if source else last_attacker)
@@ -537,8 +817,10 @@ func die(source: Actor) -> void:
 	_release_grapple()
 	if held_prop and is_instance_valid(held_prop):
 		Abilities.drop_prop(self)
-	if beam_mesh:
-		beam_mesh.visible = false
+	for b in beams:
+		b.visible = false
+	if stream:
+		stream.emitting = false
 	collision_layer = 0
 	collision_mask = Game.LAYER_WORLD
 	model.set_override(null)
@@ -559,8 +841,7 @@ func revive() -> void:
 	invuln_t = 2.0
 	collision_layer = Game.LAYER_ACTORS
 	collision_mask = Game.LAYER_WORLD | Game.LAYER_PROPS | Game.LAYER_ACTORS
-	model.body.rotation = Vector3.ZERO
-	model.body.position = Vector3.ZERO
+	model.hips.rotation = Vector3.ZERO
 
 
 func set_shrunk(value: bool) -> void:
@@ -573,5 +854,8 @@ func set_shrunk(value: bool) -> void:
 func _exit_tree() -> void:
 	if grapple_line and is_instance_valid(grapple_line):
 		grapple_line.queue_free()
-	if beam_mesh and is_instance_valid(beam_mesh):
-		beam_mesh.queue_free()
+	for b in beams:
+		if is_instance_valid(b):
+			b.queue_free()
+	if stream and is_instance_valid(stream):
+		stream.queue_free()

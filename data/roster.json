@@ -1,5 +1,5 @@
 {
- "version": 1,
+ "version": 2,
  "characters": [
   {
    "id": "green_arrow",
@@ -9,7 +9,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "Five years on a hell of an island made him a weapon. Now he protects Star City from the rooftops.",
-   "health": 110,
+   "health": 115,
    "speed": 1.0,
    "power": 1.0,
    "movement": "grapple",
@@ -23,20 +23,37 @@
     "name": "Explosive Arrow"
    },
    "special": {
-    "kind": "smoke_bomb",
-    "name": "Smoke Bomb"
+    "kind": "arrow_storm",
+    "name": "Arrow Volley"
    },
    "look": {
-    "suit": "#24552c",
-    "accent": "#12301a",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "suit": "#2c5a2e",
+    "accent": "#16301a",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
      "hood",
-     "bow",
-     "quiver",
-     "mask_dark"
-    ]
+     "mask_dark",
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#2f5f31",
+    "pants": "#24452a",
+    "boots": "#1a1a1a",
+    "gloves": "#1a1a1a",
+    "belt": "#1a1a1a",
+    "hair_style": "short",
+    "facial": "stubble",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver",
+    "glove_length": 0.45,
+    "boot_height": 0.5
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
    }
   },
   {
@@ -55,31 +72,49 @@
    "primary": {
     "kind": "melee",
     "name": "Speed Punches",
-    "cooldown": 0.14,
-    "damage": 8
+    "style": "flurry",
+    "damage": 7,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#ffd23a",
     "element": "shock",
-    "name": "Lightning Throw",
-    "speed": 90
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "time_slow",
     "name": "Speed Force Slow-Mo"
    },
    "look": {
-    "suit": "#a3111a",
-    "accent": "#f2c21b",
-    "skin": "#e3b896",
+    "suit": "#8e0f16",
+    "accent": "#e6b422",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "cowl",
      "bolt_wings",
-     "emblem_bolt"
+     "leather"
     ],
-    "trail": "#ffcc22"
+    "trim": "#e6b422",
+    "belt": "#e6b422",
+    "boots": "#8e0f16",
+    "gloves": "#8e0f16",
+    "emblem": {
+     "kind": "bolt",
+     "c1": "#f4f0e4",
+     "c2": "#e6b422",
+     "size": 0.15
+    },
+    "trail": "#ffcc22",
+    "boot_height": 0.3
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -90,39 +125,53 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "Kal-El's cousin from Krypton, National City's protector, and a reporter at CatCo.",
-   "health": 170,
+   "health": 180,
    "speed": 1.0,
-   "power": 1.2,
+   "power": 1.25,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "melee",
-    "name": "Kryptonian Punch",
-    "damage": 18
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
+    "damage": 20
    },
    "secondary": {
     "kind": "beam",
-    "color": "#ff3322",
-    "element": "fire",
-    "name": "Heat Vision"
+    "name": "Heat Vision",
+    "style": "eyes",
+    "color": "#ff2a1a",
+    "element": "fire"
    },
    "special": {
-    "kind": "nova",
-    "element": "ice",
-    "name": "Freeze Breath"
+    "kind": "breath",
+    "name": "Freeze Breath",
+    "element": "ice"
    },
    "look": {
-    "suit": "#1d3fa8",
-    "accent": "#c81d25",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "suit": "#1d3c9a",
+    "accent": "#b81820",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
-     "cape",
-     "hair_long",
-     "emblem_s",
-     "boots_red"
-    ]
-   }
+     "cape"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "boots": "#b81820",
+    "belt": "#e6b422",
+    "gloves": "#1d3c9a",
+    "glove_length": 0.0,
+    "emblem": {
+     "kind": "s_shield",
+     "c1": "#c8102e",
+     "c2": "#f2c21b",
+     "size": 0.17
+    },
+    "cape": "#b81820",
+    "boot_height": 0.62
+   },
+   "fly_speed": 1.5
   },
   {
    "id": "superman",
@@ -132,37 +181,57 @@
    "show": "Superman & Lois",
    "home": "national",
    "bio": "The Man of Steel. Farm boy, father, and the strongest hero on any Earth.",
-   "health": 210,
+   "health": 220,
    "speed": 1.0,
-   "power": 1.35,
+   "power": 1.4,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "melee",
-    "name": "Super Punch",
-    "damage": 22
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
+    "damage": 24
    },
    "secondary": {
     "kind": "beam",
-    "color": "#ff3322",
-    "element": "fire",
-    "name": "Heat Vision"
+    "name": "Heat Vision",
+    "style": "eyes",
+    "color": "#ff2a1a",
+    "element": "fire"
    },
    "special": {
     "kind": "ground_slam",
     "name": "Thunderclap Slam"
    },
    "look": {
-    "suit": "#1f3c9e",
-    "accent": "#c81d25",
-    "skin": "#e3b896",
+    "suit": "#1b3a94",
+    "accent": "#b81820",
+    "skin": "#e0b896",
     "hair": "#16110e",
     "extras": [
-     "cape",
-     "emblem_s",
-     "boots_red"
-    ]
-   }
+     "cape"
+    ],
+    "build": "bulky",
+    "hair_style": "slick",
+    "boots": "#b81820",
+    "belt": "#b81820",
+    "gloves": "#1b3a94",
+    "glove_length": 0.0,
+    "emblem": {
+     "kind": "s_shield",
+     "c1": "#c8102e",
+     "c2": "#f2c21b",
+     "size": 0.19
+    },
+    "cape": "#b81820",
+    "boot_height": 0.6
+   },
+   "utility": {
+    "kind": "breath",
+    "name": "Super Breath",
+    "element": "push"
+   },
+   "fly_speed": 1.6
   },
   {
    "id": "atom",
@@ -171,36 +240,50 @@
    "side": "hero",
    "show": "Legends of Tomorrow",
    "home": "star",
-   "bio": "A billionaire genius in an exo-suit that can fly, fire blasts, and shrink to the size of an atom.",
-   "health": 100,
+   "bio": "A billionaire genius in an exo-suit that can fly, fire blasts and shrink to the size of an atom.",
+   "health": 120,
    "speed": 1.0,
    "power": 1.0,
    "movement": "flight",
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Gauntlet Blast",
+    "style": "energy",
     "color": "#4fc3ff",
-    "element": "",
-    "name": "Gauntlet Blast"
+    "origin": "hands",
+    "speed": 70
    },
    "secondary": {
-    "kind": "melee",
-    "name": "Suit Punch"
+    "kind": "missiles",
+    "name": "Micro Missiles"
    },
    "special": {
     "kind": "shrink",
     "name": "Shrink"
    },
    "look": {
-    "suit": "#8a8f99",
+    "suit": "#9aa2ad",
     "accent": "#2d6bd6",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "helmet",
-     "armor",
-     "emblem"
-    ]
+     "armor"
+    ],
+    "build": "armored",
+    "trim": "#2d6bd6",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#7fd8ff",
+     "c2": "#2d6bd6",
+     "size": 0.1
+    },
+    "gear": {
+     "right": "gauntlet",
+     "left": "gauntlet"
+    },
+    "glow": "#4fc3ff"
    }
   },
   {
@@ -219,28 +302,42 @@
    "primary": {
     "kind": "melee",
     "name": "Bo Staff",
+    "style": "staff",
     "damage": 15,
     "range": 3.0
    },
    "secondary": {
     "kind": "throw",
     "name": "Throwing Knife",
-    "color": "#e8e8e8"
+    "model": "knife"
    },
    "special": {
     "kind": "smoke_bomb",
     "name": "Canary Smoke"
    },
    "look": {
-    "suit": "#eeeeee",
-    "accent": "#c9c9c9",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "suit": "#ececec",
+    "accent": "#cfcfcf",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
-     "hair_long",
      "mask_dark",
-     "staff"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#f2f2f2",
+    "boots": "#e6e6e6",
+    "gloves": "#dcdcdc",
+    "gear": {
+     "right": "staff"
+    },
+    "staff_color": "#d8d8d8"
+   },
+   "utility": {
+    "kind": "dodge_flip",
+    "name": "League Flip"
    }
   },
   {
@@ -259,27 +356,32 @@
    "primary": {
     "kind": "melee",
     "name": "Kickboxing",
+    "style": "kick",
     "damage": 13
    },
    "secondary": {
     "kind": "sonic",
-    "color": "#dfe8ff",
-    "name": "Canary Cry"
+    "name": "Canary Cry",
+    "origin": "mouth"
    },
    "special": {
     "kind": "sonic_scream",
     "name": "Sonic Scream"
    },
    "look": {
-    "suit": "#151515",
-    "accent": "#333333",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "suit": "#141416",
+    "accent": "#2a2a2e",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
-     "hair_long",
      "mask_dark",
-     "coat_short"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#18181b",
+    "boots": "#101012"
    }
   },
   {
@@ -290,7 +392,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "Ex-soldier, Oliver's brother-in-arms, and the steadiest man in Team Arrow.",
-   "health": 130,
+   "health": 135,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -298,25 +400,36 @@
    "primary": {
     "kind": "melee",
     "name": "Tactical Strikes",
+    "style": "punch",
     "damage": 15
    },
    "secondary": {
     "kind": "gun",
-    "name": "Sidearm"
+    "name": "Service Pistol",
+    "damage": 9,
+    "cooldown": 0.22
    },
    "special": {
-    "kind": "rage",
-    "name": "Battle Focus"
+    "kind": "frag_grenade",
+    "name": "Frag Grenade"
    },
    "look": {
     "suit": "#2b2f35",
-    "accent": "#5a6170",
+    "accent": "#555c66",
     "skin": "#5e3a26",
     "hair": "#16110e",
     "extras": [
      "helmet",
-     "armor"
-    ]
+     "armor",
+     "leather"
+    ],
+    "build": "armored",
+    "hair_style": "buzz",
+    "gear": {
+     "right": "pistol"
+    },
+    "boots": "#1a1a1a",
+    "gloves": "#1a1a1a"
    }
   },
   {
@@ -339,7 +452,8 @@
    },
    "secondary": {
     "kind": "melee",
-    "name": "Martial Arts"
+    "name": "Martial Arts",
+    "style": "kick"
    },
    "special": {
     "kind": "smoke_bomb",
@@ -347,15 +461,29 @@
    },
    "look": {
     "suit": "#8b1a1a",
-    "accent": "#4a0c0c",
-    "skin": "#e3b896",
+    "accent": "#3a0c0c",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "hood",
-     "bow",
-     "quiver",
-     "mask_dark"
-    ]
+     "mask_dark",
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#8b1a1a",
+    "pants": "#2a1414",
+    "boots": "#1a1010",
+    "gloves": "#1a1010",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
    }
   },
   {
@@ -374,31 +502,49 @@
    "primary": {
     "kind": "melee",
     "name": "Speed Punches",
-    "cooldown": 0.14,
-    "damage": 8
+    "style": "flurry",
+    "damage": 7,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#ffd23a",
     "element": "shock",
-    "name": "Lightning Throw",
-    "speed": 90
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "tornado",
     "name": "Speed Vortex"
    },
    "look": {
-    "suit": "#d8a514",
+    "suit": "#d4a017",
     "accent": "#a3111a",
     "skin": "#5e3a26",
     "hair": "#16110e",
     "extras": [
      "cowl",
      "bolt_wings",
-     "emblem_bolt"
+     "leather"
     ],
-    "trail": "#ffd23a"
+    "trim": "#a3111a",
+    "belt": "#a3111a",
+    "boots": "#a3111a",
+    "gloves": "#a3111a",
+    "emblem": {
+     "kind": "bolt",
+     "c1": "#a3111a",
+     "c2": "#f2d24a",
+     "size": 0.14
+    },
+    "trail": "#ffd23a",
+    "boot_height": 0.35
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -416,29 +562,45 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
-    "color": "#4fa8ff",
-    "element": "",
     "name": "Vibe Blast",
-    "speed": 70
+    "style": "vibe",
+    "color": "#4fa8ff",
+    "origin": "hands",
+    "speed": 75
    },
    "secondary": {
     "kind": "sonic",
+    "name": "Vibrational Wave",
     "color": "#4fa8ff",
-    "name": "Vibrational Wave"
+    "origin": "hands"
    },
    "special": {
     "kind": "teleport",
     "name": "Breach"
    },
    "look": {
-    "suit": "#1b1f2b",
+    "suit": "#1d2130",
     "accent": "#3b6fd1",
-    "skin": "#c99a78",
+    "skin": "#c99a74",
     "hair": "#16110e",
     "extras": [
      "goggles",
-     "coat"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "hair_style": "long",
+    "coat_color": "#22273a",
+    "gloves": "#3b6fd1",
+    "goggle_glow": "#4fa8ff",
+    "gear": {
+     "right": "gauntlet",
+     "left": "gauntlet"
+    },
+    "glow": "#4fa8ff"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Breach"
    }
   },
   {
@@ -452,34 +614,49 @@
    "health": 100,
    "speed": 1.0,
    "power": 1.0,
-   "movement": "run",
+   "movement": "ice",
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Ice Shard",
+    "style": "ice",
     "color": "#a8e8ff",
     "element": "ice",
-    "name": "Ice Shard"
+    "origin": "hands"
    },
    "secondary": {
     "kind": "beam",
+    "name": "Frost Beam",
+    "style": "hands",
     "color": "#bff0ff",
-    "element": "ice",
-    "name": "Frost Beam"
+    "element": "ice"
    },
    "special": {
     "kind": "nova",
-    "element": "ice",
-    "name": "Blizzard"
+    "name": "Blizzard",
+    "element": "ice"
    },
    "look": {
-    "suit": "#1c2a44",
+    "suit": "#1a2440",
     "accent": "#8fd6ff",
-    "skin": "#e3b896",
-    "hair": "#eef4ff",
+    "skin": "#efd2bb",
+    "hair": "#e8eef4",
     "extras": [
-     "hair_long",
-     "glow_eyes"
-    ]
+     "glow_eyes",
+     "leather",
+     "coat_short"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#1e2c4c",
+    "eye_glow": "#9fe6ff",
+    "gloves": "#1a2440",
+    "glove_length": 0.0,
+    "boots": "#141c30"
+   },
+   "utility": {
+    "kind": "ice_wall",
+    "name": "Ice Wall"
    }
   },
   {
@@ -497,31 +674,44 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Fireball",
+    "style": "fireball",
     "color": "#ff8a1e",
     "element": "fire",
-    "name": "Fireball",
+    "origin": "hands",
     "speed": 60
    },
    "secondary": {
     "kind": "beam",
+    "name": "Nuclear Beam",
+    "style": "hands",
     "color": "#ffb347",
-    "element": "fire",
-    "name": "Nuclear Beam"
+    "element": "fire"
    },
    "special": {
     "kind": "nova",
-    "element": "fire",
-    "name": "Nuclear Burst"
+    "name": "Nuclear Burst",
+    "element": "fire"
    },
    "look": {
     "suit": "#b33c12",
-    "accent": "#ffcf3a",
+    "accent": "#e8e0d0",
     "skin": "#5e3a26",
     "hair": "#16110e",
     "extras": [
      "flame_head",
-     "emblem"
-    ]
+     "leather"
+    ],
+    "trim": "#ffcf3a",
+    "gloves": "#e8e0d0",
+    "boots": "#e8e0d0",
+    "emblem": {
+     "kind": "atom",
+     "c1": "#ffcf3a",
+     "c2": "#b33c12",
+     "size": 0.15
+    },
+    "glow": "#ff8a1e"
    }
   },
   {
@@ -532,7 +722,7 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "Last son of Mars and director of the DEO. A shapeshifter with the strength of a Kryptonian.",
-   "health": 180,
+   "health": 190,
    "speed": 1.0,
    "power": 1.2,
    "movement": "flight",
@@ -540,30 +730,43 @@
    "primary": {
     "kind": "melee",
     "name": "Martian Strength",
+    "style": "heavy_punch",
     "damage": 20
    },
    "secondary": {
     "kind": "beam",
-    "color": "#ff5522",
-    "element": "fire",
-    "name": "Martian Vision"
+    "name": "Martian Vision",
+    "style": "eyes",
+    "color": "#ff5a2a",
+    "element": "fire"
    },
    "special": {
     "kind": "invisibility",
     "name": "Phase & Vanish"
    },
    "look": {
-    "suit": "#1b2f73",
+    "suit": "#1b2a63",
     "accent": "#b01c22",
     "skin": "#2f7a3a",
     "hair": "#2f7a3a",
     "extras": [
      "cape",
-     "bald",
-     "emblem_x",
-     "armor"
+     "emblem_x"
     ],
-    "scale": 1.08
+    "build": "bulky",
+    "hair_style": "bald",
+    "cape": "#1b2f73",
+    "cape_lining": "#0e1840",
+    "boots": "#b01c22",
+    "gloves": "#1b2a63",
+    "glove_length": 0.0,
+    "belt": "#b01c22",
+    "eye_color": "#c01818",
+    "scale": 1.06
+   },
+   "utility": {
+    "kind": "phase",
+    "name": "Density Shift"
    }
   },
   {
@@ -582,29 +785,50 @@
    "primary": {
     "kind": "melee",
     "name": "Combat Strikes",
+    "style": "punch",
     "damage": 14
    },
    "secondary": {
     "kind": "throw",
     "name": "Batarang",
-    "color": "#222222"
+    "model": "batarang",
+    "color": "#202022"
    },
    "special": {
     "kind": "smoke_bomb",
     "name": "Smoke Pellet"
    },
    "look": {
-    "suit": "#141414",
+    "suit": "#141416",
     "accent": "#b0101a",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#b3261e",
     "extras": [
      "cowl",
      "bat_ears",
      "cape",
-     "hair_long",
-     "emblem_bat"
-    ]
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "cape": "#121214",
+    "cape_lining": "#5a0a10",
+    "belt": "#b0101a",
+    "gloves": "#b0101a",
+    "boots": "#b0101a",
+    "glove_length": 0.5,
+    "emblem": {
+     "kind": "bat",
+     "c1": "#c8101e",
+     "c2": "#c8101e",
+     "size": 0.22,
+     "dy": 0.01
+    },
+    "boot_height": 0.5
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grapnel Gun"
    }
   },
   {
@@ -615,25 +839,28 @@
    "show": "Black Lightning",
    "home": "freeland",
    "bio": "A high-school principal who returns to the streets of Freeland with the power of electricity.",
-   "health": 130,
+   "health": 135,
    "speed": 1.0,
    "power": 1.0,
    "movement": "flight",
    "strength": false,
    "primary": {
     "kind": "lightning",
+    "name": "Lightning Strike",
     "color": "#8fd0ff",
-    "name": "Lightning Strike"
+    "origin": "hands"
    },
    "secondary": {
     "kind": "melee",
     "name": "Charged Punch",
-    "element": "shock"
+    "style": "punch",
+    "element": "shock",
+    "damage": 16
    },
    "special": {
     "kind": "nova",
-    "element": "shock",
-    "name": "Lightning Storm"
+    "name": "Lightning Storm",
+    "element": "shock"
    },
    "look": {
     "suit": "#121212",
@@ -642,9 +869,21 @@
     "hair": "#16110e",
     "extras": [
      "goggles",
-     "emblem_bolt"
-    ]
-   }
+     "leather"
+    ],
+    "hair_style": "buzz",
+    "facial": "goatee",
+    "trim": "#3aa0ff",
+    "goggle_glow": "#7fd0ff",
+    "emblem": {
+     "kind": "bolt_plain",
+     "c1": "#3aa0ff",
+     "c2": "#5ab8ff",
+     "size": 0.16
+    },
+    "gloves": "#141414"
+   },
+   "fly_speed": 0.8
   },
   {
    "id": "thunder",
@@ -654,7 +893,7 @@
    "show": "Black Lightning",
    "home": "freeland",
    "bio": "Jefferson's daughter. Controls her density to become nearly unbreakable and hit like a freight train.",
-   "health": 150,
+   "health": 155,
    "speed": 1.0,
    "power": 1.0,
    "movement": "superjump",
@@ -662,12 +901,14 @@
    "primary": {
     "kind": "melee",
     "name": "Density Punch",
+    "style": "heavy_punch",
     "damage": 20
    },
    "secondary": {
     "kind": "sonic",
+    "name": "Thunderclap",
     "color": "#d8c068",
-    "name": "Thunderclap"
+    "origin": "hands"
    },
    "special": {
     "kind": "ground_slam",
@@ -676,12 +917,26 @@
    "look": {
     "suit": "#3a3a3a",
     "accent": "#c9b34a",
-    "skin": "#5e3a26",
+    "skin": "#8d5a3b",
     "hair": "#16110e",
     "extras": [
      "mask_dark",
-     "hair_long"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "curly",
+    "coat_color": "#2a2a2a",
+    "emblem": {
+     "kind": "diamond_l",
+     "c1": "#c9b34a",
+     "c2": "#2a2a2a",
+     "size": 0.13
+    }
+   },
+   "utility": {
+    "kind": "invulnerable",
+    "name": "Max Density"
    }
   },
   {
@@ -699,30 +954,38 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Energy Bolt",
+    "style": "energy",
     "color": "#ffcc66",
     "element": "shock",
-    "name": "Energy Bolt",
-    "speed": 70
+    "origin": "hands",
+    "speed": 72
    },
    "secondary": {
     "kind": "lightning",
+    "name": "Arc Blast",
     "color": "#ffd88a",
-    "name": "Arc Blast"
+    "origin": "hands"
    },
    "special": {
     "kind": "nova",
-    "element": "shock",
-    "name": "Overload"
+    "name": "Overload",
+    "element": "shock"
    },
    "look": {
     "suit": "#262626",
     "accent": "#ffb02e",
-    "skin": "#5e3a26",
+    "skin": "#8d5a3b",
     "hair": "#16110e",
     "extras": [
-     "hair_long",
-     "glow_eyes"
-    ]
+     "glow_eyes",
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "trim": "#ffb02e",
+    "eye_glow": "#ffd27a",
+    "glow": "#ffcc66"
    }
   },
   {
@@ -739,31 +1002,45 @@
    "movement": "run",
    "strength": false,
    "primary": {
-    "kind": "bolt",
-    "color": "#ff4040",
-    "element": "shock",
-    "name": "T-Sphere",
-    "speed": 50
+    "kind": "melee",
+    "name": "Decathlete Strikes",
+    "style": "kick",
+    "damage": 13
    },
    "secondary": {
-    "kind": "melee",
-    "name": "Decathlete Strikes"
+    "kind": "bolt",
+    "name": "T-Sphere Shot",
+    "style": "tsphere",
+    "color": "#ff4040",
+    "element": "shock",
+    "speed": 55
    },
    "special": {
-    "kind": "nova",
-    "element": "shock",
-    "name": "EMP Pulse"
+    "kind": "t_spheres",
+    "name": "T-Sphere Swarm"
    },
    "look": {
     "suit": "#1b1b1b",
     "accent": "#d02020",
-    "skin": "#5e3a26",
+    "skin": "#8d5a3b",
     "hair": "#16110e",
     "extras": [
-     "bald",
      "mask_t",
-     "coat_short"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "hair_style": "bald",
+    "coat_color": "#202020",
+    "emblem": {
+     "kind": "t",
+     "c1": "#d02020",
+     "c2": "#d02020",
+     "size": 0.11
+    }
+   },
+   "utility": {
+    "kind": "emp",
+    "name": "EMP Pulse"
    }
   },
   {
@@ -782,14 +1059,16 @@
    "primary": {
     "kind": "melee",
     "name": "Animal Strikes",
+    "style": "claw",
     "damage": 16
    },
    "secondary": {
     "kind": "dash",
-    "name": "Cheetah Pounce"
+    "name": "Cheetah Pounce",
+    "style": "pounce"
    },
    "special": {
-    "kind": "rage",
+    "kind": "animal_spirit",
     "name": "Spirit of the Gorilla"
    },
    "look": {
@@ -798,8 +1077,19 @@
     "skin": "#5e3a26",
     "hair": "#16110e",
     "extras": [
-     "hair_long"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "curly",
+    "coat_color": "#6a5236",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#c9a24a",
+     "c2": "#3a2a18",
+     "size": 0.07,
+     "dy": 0.06
+    }
    }
   },
   {
@@ -810,7 +1100,7 @@
    "show": "Legends of Tomorrow",
    "home": "any",
    "bio": "An Egyptian priestess reborn across millennia, with Nth-metal wings and a mace.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "flight",
@@ -818,13 +1108,15 @@
    "primary": {
     "kind": "melee",
     "name": "Nth Metal Mace",
-    "damage": 19,
+    "style": "mace",
+    "damage": 20,
     "range": 2.8
    },
    "secondary": {
     "kind": "throw",
     "name": "Mace Toss",
-    "color": "#c9a24a"
+    "model": "mace",
+    "damage": 18
    },
    "special": {
     "kind": "ground_slam",
@@ -833,14 +1125,21 @@
    "look": {
     "suit": "#5a3a1e",
     "accent": "#c9a24a",
-    "skin": "#c99a78",
-    "hair": "#4a3020",
+    "skin": "#c99a74",
+    "hair": "#7a3a22",
     "extras": [
      "wings",
-     "hair_long",
-     "helmet_hawk"
-    ]
-   }
+     "helmet_hawk",
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "gear": {
+     "right": "mace"
+    },
+    "boots": "#3a2412"
+   },
+   "fly_speed": 1.15
   },
   {
    "id": "citizen_steel",
@@ -850,7 +1149,7 @@
    "show": "Legends of Tomorrow",
    "home": "any",
    "bio": "A historian who can turn his whole body into living steel.",
-   "health": 150,
+   "health": 160,
    "speed": 1.0,
    "power": 1.0,
    "movement": "superjump",
@@ -858,22 +1157,30 @@
    "primary": {
     "kind": "melee",
     "name": "Steel Fist",
-    "damage": 20
+    "style": "heavy_punch",
+    "damage": 21
    },
    "secondary": {
     "kind": "dash",
-    "name": "Steel Charge"
+    "name": "Steel Charge",
+    "style": "charge"
    },
    "special": {
     "kind": "invulnerable",
     "name": "Steel Skin"
    },
    "look": {
-    "suit": "#7c8590",
-    "accent": "#b8c1cc",
-    "skin": "#e3b896",
+    "suit": "#8a929c",
+    "accent": "#c0c8d2",
+    "skin": "#e0b896",
     "hair": "#4a3020",
-    "extras": []
+    "extras": [
+     "leather"
+    ],
+    "build": "bulky",
+    "hair_style": "short",
+    "trim": "#c0c8d2",
+    "gloves": "#8a929c"
    }
   },
   {
@@ -891,33 +1198,47 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
-    "color": "#ffe066",
-    "element": "",
     "name": "Cosmic Blast",
-    "speed": 70
+    "style": "cosmic",
+    "color": "#ffe066",
+    "origin": "muzzle",
+    "speed": 72
    },
    "secondary": {
     "kind": "beam",
-    "color": "#fff3a0",
-    "element": "",
-    "name": "Cosmic Ray"
+    "name": "Cosmic Ray",
+    "style": "muzzle",
+    "color": "#fff3a0"
    },
    "special": {
     "kind": "nova",
-    "element": "shock",
-    "name": "Star Burst"
+    "name": "Star Burst",
+    "element": "shock"
    },
    "look": {
     "suit": "#1d3fa8",
     "accent": "#e8e8e8",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
-     "hair_long",
      "mask_dark",
-     "staff",
-     "emblem_star"
-    ]
+     "skirt"
+    ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "boots": "#c8102e",
+    "gloves": "#e8e8e8",
+    "emblem": {
+     "kind": "star",
+     "c1": "#f5f5f5",
+     "c2": "#f5f5f5",
+     "size": 0.12
+    },
+    "gear": {
+     "right": "cosmic_staff"
+    },
+    "skirt_color": "#c8102e",
+    "scale": 0.95
    }
   },
   {
@@ -936,28 +1257,46 @@
    "primary": {
     "kind": "melee",
     "name": "Speed Punches",
-    "cooldown": 0.16,
-    "damage": 8
+    "style": "flurry",
+    "damage": 7,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "throw",
     "name": "Helmet Throw",
-    "color": "#b8b8b8"
+    "model": "helmet",
+    "color": "#b8b8b8",
+    "damage": 18
    },
    "special": {
     "kind": "tornado",
     "name": "Speed Vortex"
    },
    "look": {
-    "suit": "#a3111a",
+    "suit": "#b0141c",
     "accent": "#c9a227",
-    "skin": "#e3b896",
-    "hair": "#cfcfcf",
+    "skin": "#e0b896",
+    "hair": "#8a8a8a",
     "extras": [
-     "winged_helmet",
-     "emblem_bolt"
+     "winged_helmet"
     ],
-    "trail": "#ffcc22"
+    "pants": "#2a3a6a",
+    "boots": "#b0141c",
+    "gloves": "#b0141c",
+    "glove_length": 0.0,
+    "emblem": {
+     "kind": "bolt_plain",
+     "c1": "#e6e6e6",
+     "c2": "#e6e6e6",
+     "size": 0.2
+    },
+    "hair_style": "short",
+    "trail": "#ffcc22",
+    "no_belt": true
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -976,15 +1315,18 @@
    "primary": {
     "kind": "melee",
     "name": "Speed Punches",
-    "cooldown": 0.14,
-    "damage": 8
+    "style": "flurry",
+    "damage": 7,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#ffd23a",
     "element": "shock",
-    "name": "Lightning Throw",
-    "speed": 90
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "time_slow",
@@ -992,15 +1334,27 @@
    },
    "look": {
     "suit": "#c9971a",
-    "accent": "#a3111a",
-    "skin": "#e3b896",
+    "accent": "#8a1414",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
-     "hair_long",
-     "emblem_bolt"
+     "leather"
     ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "trim": "#8a1414",
+    "emblem": {
+     "kind": "bolt",
+     "c1": "#8a1414",
+     "c2": "#f2d24a",
+     "size": 0.13
+    },
     "trail": "#ffe14d"
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -1019,15 +1373,18 @@
    "primary": {
     "kind": "melee",
     "name": "Speed Punches",
-    "cooldown": 0.14,
-    "damage": 8
+    "style": "flurry",
+    "damage": 7,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#b46cff",
     "element": "shock",
-    "name": "Purple Lightning",
-    "speed": 90
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "time_slow",
@@ -1036,14 +1393,27 @@
    "look": {
     "suit": "#5b2a86",
     "accent": "#efe9ff",
-    "skin": "#c99a78",
+    "skin": "#c99a74",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
-     "hair_long",
-     "emblem_bolt"
+     "leather"
     ],
+    "build": "female",
+    "hair_style": "long",
+    "trim": "#efe9ff",
+    "boots": "#efe9ff",
+    "emblem": {
+     "kind": "bolt",
+     "c1": "#efe9ff",
+     "c2": "#b46cff",
+     "size": 0.13
+    },
     "trail": "#c48bff"
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -1054,7 +1424,7 @@
    "show": "The Flash",
    "home": "central",
    "bio": "A private eye with a body like rubber. Long reach, big mouth, bigger heart.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -1062,26 +1432,35 @@
    "primary": {
     "kind": "melee",
     "name": "Stretch Punch",
-    "damage": 14,
-    "range": 6.5
+    "style": "stretch",
+    "damage": 15,
+    "range": 7.0
    },
    "secondary": {
     "kind": "dash",
-    "name": "Slingshot"
+    "name": "Slingshot",
+    "style": "slingshot"
    },
    "special": {
     "kind": "invulnerable",
     "name": "Rubber Body"
    },
    "look": {
-    "suit": "#8a1c2a",
+    "suit": "#9a1a28",
     "accent": "#1d1d1d",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
-     "emblem"
-    ]
+     "leather"
+    ],
+    "trim": "#1d1d1d",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#1d1d1d",
+     "c2": "#e6c040",
+     "size": 0.1
+    }
    }
   },
   {
@@ -1092,7 +1471,7 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "Photographer turned armored vigilante, with a shield that doubles as a battering ram.",
-   "health": 140,
+   "health": 150,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -1100,14 +1479,16 @@
    "primary": {
     "kind": "melee",
     "name": "Shield Strike",
-    "damage": 15
+    "style": "shield_bash",
+    "damage": 16
    },
    "secondary": {
     "kind": "dash",
-    "name": "Shield Charge"
+    "name": "Shield Charge",
+    "style": "charge"
    },
    "special": {
-    "kind": "invulnerable",
+    "kind": "shield_wall",
     "name": "Shield Wall"
    },
    "look": {
@@ -1117,9 +1498,12 @@
     "hair": "#16110e",
     "extras": [
      "helmet",
-     "armor",
-     "shield"
-    ]
+     "armor"
+    ],
+    "build": "armored",
+    "gear": {
+     "left_arm": "shield"
+    }
    }
   },
   {
@@ -1130,20 +1514,21 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "A Daxamite prince who found his heroism on Earth, and later in the 31st century.",
-   "health": 170,
+   "health": 175,
    "speed": 1.0,
    "power": 1.15,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "melee",
-    "name": "Daxamite Punch",
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
     "damage": 19
    },
    "secondary": {
-    "kind": "sonic",
-    "color": "#e6f2ff",
-    "name": "Super Breath"
+    "kind": "breath",
+    "name": "Super Breath",
+    "element": "push"
    },
    "special": {
     "kind": "ground_slam",
@@ -1152,13 +1537,24 @@
    "look": {
     "suit": "#1b2440",
     "accent": "#c8102e",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "cape",
-     "emblem"
-    ]
-   }
+     "leather"
+    ],
+    "build": "bulky",
+    "hair_style": "short",
+    "facial": "stubble",
+    "cape": "#c8102e",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#c8102e",
+     "c2": "#e6e6e6",
+     "size": 0.1
+    }
+   },
+   "fly_speed": 1.3
   },
   {
    "id": "dreamer",
@@ -1175,15 +1571,17 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
-    "color": "#8fd8ff",
-    "element": "",
     "name": "Dream Blast",
+    "style": "dream",
+    "color": "#8fd8ff",
+    "origin": "hands",
     "speed": 65
    },
    "secondary": {
     "kind": "sonic",
+    "name": "Dream Wave",
     "color": "#b8e6ff",
-    "name": "Dream Wave"
+    "origin": "hands"
    },
    "special": {
     "kind": "teleport",
@@ -1192,12 +1590,26 @@
    "look": {
     "suit": "#1f3a6e",
     "accent": "#e0c068",
-    "skin": "#c99a78",
+    "skin": "#c99a74",
     "hair": "#16110e",
     "extras": [
-     "hair_long",
-     "mask_star"
-    ]
+     "mask_star",
+     "cape"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "cape": "#14284e",
+    "emblem": {
+     "kind": "star_ring",
+     "c1": "#e0c068",
+     "c2": "#1f3a6e",
+     "size": 0.13
+    },
+    "belt": "#e0c068"
+   },
+   "utility": {
+    "kind": "foresight",
+    "name": "Precognition"
    }
   },
   {
@@ -1215,26 +1627,42 @@
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Coluan Blast",
+    "style": "energy",
     "color": "#4dff8a",
     "element": "shock",
-    "name": "Coluan Blast"
+    "origin": "hands"
    },
    "secondary": {
     "kind": "melee",
-    "name": "Force Field Punch"
+    "name": "Force Field Punch",
+    "style": "punch"
    },
    "special": {
-    "kind": "teleport",
-    "name": "Legion Flight Ring"
+    "kind": "force_field",
+    "name": "Force Field"
    },
    "look": {
     "suit": "#3a1f5c",
     "accent": "#5ce07a",
     "skin": "#7ad16a",
-    "hair": "#e8d27a",
+    "hair": "#d9b468",
     "extras": [
-     "emblem"
-    ]
+     "leather"
+    ],
+    "hair_style": "slick",
+    "trim": "#5ce07a",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#5ce07a",
+     "c2": "#2a1240",
+     "size": 0.09
+    },
+    "eye_color": "#2a6a2a"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Legion Flight Ring"
    }
   },
   {
@@ -1256,23 +1684,35 @@
    },
    "secondary": {
     "kind": "melee",
-    "name": "Street Fighting"
+    "name": "Street Fighting",
+    "style": "punch"
    },
    "special": {
-    "kind": "rage",
-    "name": "Mirakuru Rage"
+    "kind": "arrow_storm",
+    "name": "Arrow Volley"
    },
    "look": {
     "suit": "#8b1a1a",
     "accent": "#3a0a0a",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "hood",
-     "bow",
-     "quiver",
-     "mask_dark"
-    ]
+     "mask_dark",
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#8b1a1a",
+    "pants": "#2a1a1a",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver",
+    "boots": "#1a1010"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
    }
   },
   {
@@ -1283,32 +1723,42 @@
    "show": "Arrow",
    "home": "star",
    "bio": "A former marine from the Glades with a hockey mask and no patience.",
-   "health": 115,
+   "health": 120,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
    "strength": false,
    "primary": {
     "kind": "gun",
-    "name": "Twin Pistols"
+    "name": "Twin Pistols",
+    "dual": true,
+    "damage": 7,
+    "cooldown": 0.13
    },
    "secondary": {
     "kind": "melee",
-    "name": "Brawling"
+    "name": "Brawling",
+    "style": "punch"
    },
    "special": {
-    "kind": "rage",
-    "name": "Junkyard Dog"
+    "kind": "frag_grenade",
+    "name": "Flashbang"
    },
    "look": {
     "suit": "#2c2f33",
     "accent": "#e8e8e8",
-    "skin": "#c99a78",
+    "skin": "#b07b56",
     "hair": "#16110e",
     "extras": [
      "mask_hockey",
-     "coat_short"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#26282b",
+    "gear": {
+     "right": "pistol",
+     "left": "pistol"
+    }
    }
   },
   {
@@ -1319,36 +1769,46 @@
    "show": "Legends of Tomorrow",
    "home": "any",
    "bio": "A pyromaniac thief who became a Legend. He still loves to watch things burn.",
-   "health": 140,
+   "health": 145,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
    "strength": false,
    "primary": {
-    "kind": "beam",
+    "kind": "flame",
+    "name": "Heat Gun",
     "color": "#ff7a1a",
-    "element": "fire",
-    "name": "Heat Gun"
+    "element": "fire"
    },
    "secondary": {
     "kind": "melee",
     "name": "Haymaker",
-    "damage": 16
+    "style": "heavy_punch",
+    "damage": 17
    },
    "special": {
     "kind": "nova",
-    "element": "fire",
-    "name": "Inferno"
+    "name": "Inferno",
+    "element": "fire"
    },
    "look": {
     "suit": "#5a3a22",
     "accent": "#2a1a10",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "goggles",
-     "coat"
-    ]
+     "coat",
+     "leather"
+    ],
+    "build": "bulky",
+    "hair_style": "buzz",
+    "facial": "stubble",
+    "coat_color": "#5a3a22",
+    "gear": {
+     "right": "heat_gun"
+    },
+    "back": "tank"
    }
   },
   {
@@ -1359,34 +1819,45 @@
    "show": "Arrow",
    "home": "star",
    "bio": "The man behind the Undertaking, and later Ra's al Ghul himself.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "grapple",
    "strength": false,
    "primary": {
     "kind": "arrow",
-    "name": "Arrow"
+    "name": "Arrow",
+    "color": "#d0d0d0"
    },
    "secondary": {
     "kind": "explosive_arrow",
     "name": "Explosive Arrow"
    },
    "special": {
-    "kind": "smoke_bomb",
-    "name": "Smoke Bomb"
+    "kind": "arrow_storm",
+    "name": "Arrow Volley"
    },
    "look": {
     "suit": "#141414",
-    "accent": "#3a3a3a",
-    "skin": "#e3b896",
+    "accent": "#2e2e2e",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "hood",
-     "bow",
-     "quiver",
-     "mask_dark"
-    ]
+     "mask_dark",
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#161616",
+    "facial": "beard",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
    }
   },
   {
@@ -1397,7 +1868,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "A soldier supercharged by the Mirakuru, out for revenge on the man he trained.",
-   "health": 150,
+   "health": 160,
    "speed": 1.0,
    "power": 1.15,
    "movement": "run",
@@ -1405,27 +1876,34 @@
    "primary": {
     "kind": "melee",
     "name": "Katana",
-    "damage": 17,
+    "style": "blade",
+    "damage": 18,
     "range": 2.9
    },
    "secondary": {
     "kind": "gun",
-    "name": "Sidearm"
+    "name": "Sidearm",
+    "damage": 9,
+    "cooldown": 0.22
    },
    "special": {
     "kind": "rage",
     "name": "Mirakuru"
    },
    "look": {
-    "suit": "#1a1a1a",
-    "accent": "#e07a1a",
-    "skin": "#e3b896",
-    "hair": "#cfcfcf",
+    "suit": "#161616",
+    "accent": "#d8761a",
+    "skin": "#e0b896",
+    "hair": "#8a8a8a",
     "extras": [
      "mask_deathstroke",
-     "armor",
-     "sword"
-    ]
+     "armor"
+    ],
+    "build": "armored",
+    "gear": {
+     "right": "katana"
+    },
+    "back": "katana"
    }
   },
   {
@@ -1436,7 +1914,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "Star City's District Attorney and its most patient serial killer.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "grapple",
@@ -1444,12 +1922,14 @@
    "primary": {
     "kind": "throw",
     "name": "Shuriken",
+    "model": "shuriken",
     "color": "#c0c0c0"
    },
    "secondary": {
     "kind": "melee",
     "name": "Sword",
-    "damage": 16,
+    "style": "blade",
+    "damage": 17,
     "range": 2.8
    },
    "special": {
@@ -1457,16 +1937,25 @@
     "name": "Vanish"
    },
    "look": {
-    "suit": "#1f1f1f",
+    "suit": "#1c1c1c",
     "accent": "#8a6a2a",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "hood",
      "mask_dark",
-     "sword",
-     "quiver"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#1a1a1a",
+    "gear": {
+     "right": "sword"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Line"
    }
   },
   {
@@ -1477,35 +1966,40 @@
    "show": "Arrow",
    "home": "star",
    "bio": "Leader of H.I.V.E. who wields a mystical idol's dark magic.",
-   "health": 130,
+   "health": 135,
    "speed": 1.0,
    "power": 1.1,
    "movement": "run",
    "strength": false,
    "primary": {
-    "kind": "sonic",
-    "color": "#9b4dff",
-    "name": "Telekinetic Push",
-    "damage": 14
+    "kind": "telekinesis",
+    "name": "Telekinetic Grip",
+    "color": "#9b4dff"
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Dark Magic",
+    "style": "magic",
     "color": "#7a2bd6",
-    "element": "",
-    "name": "Dark Magic"
+    "origin": "hands"
    },
    "special": {
     "kind": "drain",
     "name": "Life Drain"
    },
    "look": {
-    "suit": "#1c1c22",
+    "suit": "#22232a",
     "accent": "#6a2bb0",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#d8d8d8",
     "extras": [
      "coat"
-    ]
+    ],
+    "hair_style": "slick",
+    "coat_color": "#2a2b33",
+    "collar": "#e8e8e8",
+    "pants": "#22232a",
+    "boots": "#111111"
    }
   },
   {
@@ -1523,16 +2017,19 @@
    "strength": false,
    "primary": {
     "kind": "melee",
-    "name": "Speed Punches",
-    "cooldown": 0.13,
-    "damage": 9
+    "name": "Phasing Strike",
+    "style": "flurry",
+    "damage": 9,
+    "cooldown": 0.12
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#ff2a2a",
     "element": "shock",
-    "name": "Red Lightning",
-    "speed": 95
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "time_slow",
@@ -1541,15 +2038,29 @@
    "look": {
     "suit": "#d8a514",
     "accent": "#a3111a",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
      "cowl",
      "bolt_wings",
-     "emblem_bolt",
-     "glow_eyes_red"
+     "glow_eyes_red",
+     "leather"
     ],
+    "trim": "#a3111a",
+    "belt": "#a3111a",
+    "boots": "#a3111a",
+    "gloves": "#d8a514",
+    "emblem": {
+     "kind": "bolt",
+     "c1": "#141414",
+     "c2": "#d8141a",
+     "size": 0.15
+    },
     "trail": "#ff2a2a"
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -1568,28 +2079,37 @@
    "primary": {
     "kind": "melee",
     "name": "Clawed Strikes",
-    "cooldown": 0.14,
-    "damage": 10
+    "style": "claw",
+    "damage": 11,
+    "cooldown": 0.13
    },
    "secondary": {
     "kind": "lightning",
+    "name": "Blue Lightning",
     "color": "#3aa0ff",
-    "name": "Blue Lightning"
+    "origin": "hands"
    },
    "special": {
     "kind": "tornado",
     "name": "Speed Vortex"
    },
    "look": {
-    "suit": "#0e0e12",
-    "accent": "#1d1d26",
-    "skin": "#e3b896",
+    "suit": "#0d0d10",
+    "accent": "#1a1a20",
+    "skin": "#efd2bb",
     "hair": "#16110e",
     "extras": [
      "cowl",
-     "glow_eyes"
+     "glow_eyes",
+     "leather"
     ],
-    "trail": "#3aa0ff"
+    "eye_glow": "#5ab8ff",
+    "trail": "#3aa0ff",
+    "no_belt": true
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -1600,7 +2120,7 @@
    "show": "The Flash",
    "home": "central",
    "bio": "The self-proclaimed god of speed, encased in a towering suit of armor.",
-   "health": 200,
+   "health": 210,
    "speed": 1.0,
    "power": 1.25,
    "movement": "speed",
@@ -1608,32 +2128,45 @@
    "primary": {
     "kind": "melee",
     "name": "Blade Claws",
-    "cooldown": 0.2,
-    "damage": 16
+    "style": "claw",
+    "damage": 17,
+    "cooldown": 0.2
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Lightning Throw",
+    "style": "lightning",
     "color": "#bfe8ff",
     "element": "shock",
-    "name": "Lightning Bolt",
-    "speed": 90
+    "speed": 95,
+    "damage": 18
    },
    "special": {
     "kind": "rage",
     "name": "God of Speed"
    },
    "look": {
-    "suit": "#c9d2db",
+    "suit": "#cdd5de",
     "accent": "#5a6470",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#16110e",
     "extras": [
      "armor",
      "helmet_savitar",
      "glow_eyes"
     ],
-    "scale": 1.35,
-    "trail": "#bfe8ff"
+    "build": "armored",
+    "eye_glow": "#8fe0ff",
+    "gear": {
+     "right": "heavy_claws",
+     "left": "heavy_claws"
+    },
+    "trail": "#bfe8ff",
+    "scale": 1.35
+   },
+   "utility": {
+    "kind": "blitz",
+    "name": "Speed Blitz"
    }
   },
   {
@@ -1647,18 +2180,20 @@
    "health": 100,
    "speed": 1.0,
    "power": 1.0,
-   "movement": "flight",
+   "movement": "hover",
    "strength": false,
    "primary": {
     "kind": "bolt",
+    "name": "Mind Bolt",
+    "style": "magic",
     "color": "#c0a0ff",
     "element": "shock",
-    "name": "Mind Bolt"
+    "origin": "head"
    },
    "secondary": {
-    "kind": "sonic",
-    "color": "#c0a0ff",
-    "name": "Telekinesis"
+    "kind": "telekinesis",
+    "name": "Telekinesis",
+    "color": "#c0a0ff"
    },
    "special": {
     "kind": "teleport",
@@ -1667,12 +2202,15 @@
    "look": {
     "suit": "#2a2a33",
     "accent": "#7a5cff",
-    "skin": "#e3b896",
+    "skin": "#efd2bb",
     "hair": "#7a5cff",
     "extras": [
-     "bald",
-     "glow_head"
-    ]
+     "glow_head",
+     "chair",
+     "coat_short"
+    ],
+    "hair_style": "bald",
+    "coat_color": "#2e2e38"
    }
   },
   {
@@ -1683,37 +2221,42 @@
    "show": "The Flash",
    "home": "central",
    "bio": "A master thief with a cold gun and a plan for everything.",
-   "health": 110,
+   "health": 115,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
    "strength": false,
    "primary": {
     "kind": "beam",
+    "name": "Cold Gun",
+    "style": "cold",
     "color": "#a8e8ff",
-    "element": "ice",
-    "name": "Cold Gun"
+    "element": "ice"
    },
    "secondary": {
-    "kind": "bolt",
-    "color": "#bff0ff",
-    "element": "ice",
-    "name": "Ice Blast"
+    "kind": "melee",
+    "name": "Pistol Whip",
+    "style": "punch"
    },
    "special": {
     "kind": "nova",
-    "element": "ice",
-    "name": "Absolute Zero"
+    "name": "Absolute Zero",
+    "element": "ice"
    },
    "look": {
     "suit": "#4a5a6a",
     "accent": "#2a3540",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "goggles",
      "coat"
-    ]
+    ],
+    "hair_style": "buzz",
+    "coat_color": "#4c5e70",
+    "gear": {
+     "right": "cold_gun"
+    }
    }
   },
   {
@@ -1724,36 +2267,46 @@
    "show": "The Flash",
    "home": "central",
    "bio": "Snart's partner in crime and in fire.",
-   "health": 140,
+   "health": 145,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
    "strength": false,
    "primary": {
-    "kind": "beam",
+    "kind": "flame",
+    "name": "Heat Gun",
     "color": "#ff7a1a",
-    "element": "fire",
-    "name": "Heat Gun"
+    "element": "fire"
    },
    "secondary": {
     "kind": "melee",
     "name": "Haymaker",
-    "damage": 16
+    "style": "heavy_punch",
+    "damage": 17
    },
    "special": {
     "kind": "nova",
-    "element": "fire",
-    "name": "Inferno"
+    "name": "Inferno",
+    "element": "fire"
    },
    "look": {
     "suit": "#5a3a22",
     "accent": "#2a1a10",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "goggles",
-     "coat"
-    ]
+     "coat",
+     "leather"
+    ],
+    "build": "bulky",
+    "hair_style": "buzz",
+    "facial": "stubble",
+    "coat_color": "#5a3a22",
+    "gear": {
+     "right": "heat_gun"
+    },
+    "back": "tank"
    }
   },
   {
@@ -1771,26 +2324,34 @@
    "strength": false,
    "primary": {
     "kind": "lightning",
+    "name": "Lightning Call",
     "color": "#d6e6ff",
-    "name": "Lightning Call"
+    "origin": "sky"
    },
    "secondary": {
     "kind": "sonic",
+    "name": "Gale Force",
     "color": "#9fb3c8",
-    "name": "Gale Force"
+    "origin": "hands"
    },
    "special": {
-    "kind": "tornado",
-    "name": "Twister"
+    "kind": "storm",
+    "name": "Superstorm"
    },
    "look": {
     "suit": "#2f3540",
     "accent": "#5a6b80",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "coat"
-    ]
+    ],
+    "hair_style": "short",
+    "facial": "stubble",
+    "coat_color": "#30343c",
+    "gear": {
+     "right": "weather_wand"
+    }
    }
   },
   {
@@ -1801,38 +2362,50 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "A Worldkiller from Krypton's darkest legend. Judge, jury and executioner.",
-   "health": 200,
+   "health": 210,
    "speed": 1.0,
    "power": 1.3,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "melee",
-    "name": "Worldkiller Strike",
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
     "damage": 22
    },
    "secondary": {
     "kind": "beam",
-    "color": "#ff2222",
-    "element": "fire",
-    "name": "Heat Vision"
+    "name": "Heat Vision",
+    "style": "eyes",
+    "color": "#ff2a1a",
+    "element": "fire"
    },
    "special": {
     "kind": "rage",
     "name": "Purge"
    },
    "look": {
-    "suit": "#141414",
+    "suit": "#121214",
     "accent": "#a00000",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#16110e",
     "extras": [
      "cape",
      "mask_reign",
-     "hair_long",
-     "emblem"
-    ]
-   }
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "cape": "#121214",
+    "cape_lining": "#3a0000",
+    "emblem": {
+     "kind": "glyph",
+     "c1": "#a00000",
+     "c2": "#2a2a2a",
+     "size": 0.14
+    }
+   },
+   "fly_speed": 1.5
   },
   {
    "id": "lex_luthor",
@@ -1842,37 +2415,50 @@
    "show": "Supergirl",
    "home": "national",
    "bio": "Genius, billionaire, and the most dangerous man alive, in his warsuit.",
-   "health": 170,
+   "health": 180,
    "speed": 1.0,
    "power": 1.2,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "bolt",
-    "color": "#6bff6b",
-    "element": "",
     "name": "Warsuit Blast",
-    "speed": 70
+    "style": "energy",
+    "color": "#6bff6b",
+    "origin": "hands",
+    "speed": 72
    },
    "secondary": {
-    "kind": "gun",
-    "name": "Wrist Cannon",
-    "damage": 9
+    "kind": "missiles",
+    "name": "Missile Salvo"
    },
    "special": {
-    "kind": "ground_slam",
-    "name": "Kryptonite Shockwave"
+    "kind": "missile_barrage",
+    "name": "Kryptonite Barrage"
    },
    "look": {
-    "suit": "#2e7d32",
-    "accent": "#6a1b9a",
-    "skin": "#e3b896",
-    "hair": "#e3b896",
+    "suit": "#2e6a32",
+    "accent": "#5a1b8a",
+    "skin": "#e0b896",
+    "hair": "#e0b896",
     "extras": [
      "armor",
-     "bald",
-     "emblem"
-    ]
+     "helmet"
+    ],
+    "build": "armored",
+    "hair_style": "bald",
+    "trim": "#5a1b8a",
+    "emblem": {
+     "kind": "circle",
+     "c1": "#6bff6b",
+     "c2": "#1a3a1c",
+     "size": 0.1
+    },
+    "gear": {
+     "right": "gauntlet",
+     "left": "gauntlet"
+    },
+    "glow": "#6bff6b"
    }
   },
   {
@@ -1883,7 +2469,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "The immortal head of the League of Assassins.",
-   "health": 150,
+   "health": 155,
    "speed": 1.0,
    "power": 1.1,
    "movement": "run",
@@ -1891,13 +2477,14 @@
    "primary": {
     "kind": "melee",
     "name": "Scimitar",
-    "damage": 18,
+    "style": "blade",
+    "damage": 19,
     "range": 2.9
    },
    "secondary": {
     "kind": "throw",
     "name": "Throwing Dagger",
-    "color": "#c0c0c0"
+    "model": "knife"
    },
    "special": {
     "kind": "smoke_bomb",
@@ -1906,12 +2493,17 @@
    "look": {
     "suit": "#3a2a1a",
     "accent": "#7a5a2a",
-    "skin": "#c99a78",
-    "hair": "#6a6a6a",
+    "skin": "#b07b56",
+    "hair": "#8a8a8a",
     "extras": [
-     "coat",
-     "sword"
-    ]
+     "coat"
+    ],
+    "hair_style": "short",
+    "facial": "beard",
+    "coat_color": "#2a1e14",
+    "gear": {
+     "right": "scimitar"
+    }
    }
   },
   {
@@ -1922,7 +2514,7 @@
    "show": "The Flash",
    "home": "central",
    "bio": "A metahuman hunter with a power-dampening lightning dagger.",
-   "health": 150,
+   "health": 160,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -1930,29 +2522,36 @@
    "primary": {
     "kind": "throw",
     "name": "Dagger Throw",
+    "model": "cicada_dagger",
     "color": "#ff3a3a",
-    "element": "shock"
+    "element": "shock",
+    "returns": true
    },
    "secondary": {
     "kind": "melee",
     "name": "Dagger Slash",
-    "damage": 17
+    "style": "blade",
+    "damage": 18
    },
    "special": {
-    "kind": "nova",
-    "element": "shock",
+    "kind": "dampen",
     "name": "Dampening Pulse"
    },
    "look": {
     "suit": "#1a1a1a",
     "accent": "#a00000",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
      "coat",
      "glow_eyes_red"
-    ]
+    ],
+    "coat_color": "#151515",
+    "facial": "stubble",
+    "gear": {
+     "right": "cicada_dagger"
+    }
    }
   },
   {
@@ -1963,7 +2562,7 @@
    "show": "The Flash",
    "home": "central",
    "bio": "A telepathic super-gorilla who wants Gorilla City to rule the world.",
-   "health": 260,
+   "health": 270,
    "speed": 1.05,
    "power": 1.3,
    "movement": "superjump",
@@ -1971,28 +2570,30 @@
    "primary": {
     "kind": "melee",
     "name": "Gorilla Smash",
-    "damage": 24,
+    "style": "heavy",
+    "damage": 25,
     "range": 3.2
    },
    "secondary": {
-    "kind": "sonic",
-    "color": "#c47aff",
-    "name": "Psychic Blast"
+    "kind": "psychic",
+    "name": "Psychic Blast",
+    "color": "#c47aff"
    },
    "special": {
-    "kind": "ground_slam",
-    "name": "Ground Pound"
+    "kind": "mind_control",
+    "name": "Mind Control"
    },
    "look": {
     "suit": "#3a3530",
     "accent": "#2a2622",
-    "skin": "#5a4f45",
+    "skin": "#4a4038",
     "hair": "#3a3530",
     "extras": [
-     "gorilla",
      "glow_eyes"
     ],
-    "scale": 1.7
+    "build": "gorilla",
+    "eye_glow": "#ff8a3a",
+    "scale": 1.55
    }
   },
   {
@@ -2003,7 +2604,7 @@
    "show": "Legends of Tomorrow",
    "home": "any",
    "bio": "An immortal tyrant who has killed Hawkgirl and Hawkman across four thousand years.",
-   "health": 190,
+   "health": 200,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -2011,13 +2612,14 @@
    "primary": {
     "kind": "melee",
     "name": "Ancient Blade",
-    "damage": 18,
+    "style": "blade",
+    "damage": 19,
     "range": 2.9
    },
    "secondary": {
     "kind": "throw",
     "name": "Knife Throw",
-    "color": "#c0c0c0"
+    "model": "knife"
    },
    "special": {
     "kind": "rage",
@@ -2026,12 +2628,18 @@
    "look": {
     "suit": "#2a2a2a",
     "accent": "#5a1a1a",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#16110e",
     "extras": [
-     "coat",
-     "sword"
-    ]
+     "coat"
+    ],
+    "build": "bulky",
+    "hair_style": "slick",
+    "facial": "beard",
+    "coat_color": "#1e1e22",
+    "gear": {
+     "right": "sword"
+    }
    }
   },
   {
@@ -2049,27 +2657,31 @@
    "strength": false,
    "primary": {
     "kind": "sonic",
-    "color": "#dfe8ff",
     "name": "Siren Cry",
-    "damage": 14
+    "damage": 14,
+    "origin": "mouth"
    },
    "secondary": {
     "kind": "melee",
-    "name": "Street Fighting"
+    "name": "Street Fighting",
+    "style": "kick"
    },
    "special": {
     "kind": "sonic_scream",
     "name": "Siren Scream"
    },
    "look": {
-    "suit": "#151515",
-    "accent": "#333333",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "suit": "#141414",
+    "accent": "#2a2a2a",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
-     "hair_long",
-     "coat_short"
-    ]
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#121212"
    }
   },
   {
@@ -2080,32 +2692,43 @@
    "show": "Arrow",
    "home": "star",
    "bio": "A Glades kid who became Star City's kingpin.",
-   "health": 130,
+   "health": 135,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
    "strength": false,
    "primary": {
     "kind": "gun",
-    "name": "Pistol"
+    "name": "Pistol",
+    "damage": 9,
+    "cooldown": 0.2
    },
    "secondary": {
     "kind": "melee",
     "name": "Knife Fighting",
-    "damage": 14
+    "style": "blade",
+    "damage": 15
    },
    "special": {
     "kind": "rage",
     "name": "Dragon's Wrath"
    },
    "look": {
-    "suit": "#1a1a1a",
+    "suit": "#161616",
     "accent": "#2e2e2e",
-    "skin": "#c99a78",
+    "skin": "#b07b56",
     "hair": "#16110e",
     "extras": [
-     "coat_short"
-    ]
+     "jacket",
+     "leather"
+    ],
+    "hair_style": "buzz",
+    "facial": "beard",
+    "coat_color": "#1a1a1a",
+    "gear": {
+     "right": "pistol",
+     "left": "dagger"
+    }
    }
   },
   {
@@ -2124,11 +2747,12 @@
    "primary": {
     "kind": "throw",
     "name": "Knife Throw",
-    "color": "#c0c0c0"
+    "model": "knife"
    },
    "secondary": {
     "kind": "melee",
     "name": "Knife Slash",
+    "style": "blade",
     "damage": 14
    },
    "special": {
@@ -2136,14 +2760,22 @@
     "name": "Down the Rabbit Hole"
    },
    "look": {
-    "suit": "#e8e0d0",
+    "suit": "#e2d8c6",
     "accent": "#7a1a2a",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "skin": "#efd2bb",
+    "hair": "#eadcb0",
     "extras": [
-     "hair_long",
-     "coat_short"
-    ]
+     "skirt"
+    ],
+    "build": "female",
+    "hair_style": "wild",
+    "skirt_color": "#e2d8c6",
+    "boots": "#2a1a1a",
+    "gloves": "#e2d8c6",
+    "glove_length": 0.0,
+    "gear": {
+     "right": "dagger"
+    }
    }
   },
   {
@@ -2154,7 +2786,7 @@
    "show": "Arrow",
    "home": "star",
    "bio": "A former A.S.I.S. agent with a grudge and a bag of explosive boomerangs.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -2162,26 +2794,35 @@
    "primary": {
     "kind": "throw",
     "name": "Boomerang",
-    "color": "#d8d8d8"
+    "model": "boomerang",
+    "returns": true,
+    "damage": 16
    },
    "secondary": {
     "kind": "explosive_arrow",
     "name": "Explosive Boomerang",
+    "model": "boomerang",
     "color": "#ffaa33"
    },
    "special": {
-    "kind": "rage",
-    "name": "Bloodlust"
+    "kind": "boomerang_storm",
+    "name": "Boomerang Storm"
    },
    "look": {
     "suit": "#2a3a5a",
     "accent": "#d8d8d8",
-    "skin": "#e3b896",
+    "skin": "#e0b896",
     "hair": "#4a3020",
     "extras": [
-     "coat_short",
-     "goggles"
-    ]
+     "goggles",
+     "jacket",
+     "leather"
+    ],
+    "coat_color": "#2a3a5a",
+    "facial": "stubble",
+    "gear": {
+     "right": "boomerang"
+    }
    }
   },
   {
@@ -2192,40 +2833,43 @@
    "show": "Crisis on Infinite Earths",
    "home": "any",
    "bio": "The being of antimatter who erased the multiverse in the Crisis.",
-   "health": 380,
+   "health": 400,
    "speed": 0.9,
    "power": 1.4,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "beam",
-    "color": "#ff4fd8",
-    "element": "",
-    "name": "Antimatter Beam"
+    "name": "Antimatter Beam",
+    "style": "eyes",
+    "color": "#ff4fd8"
    },
    "secondary": {
     "kind": "bolt",
+    "name": "Antimatter Orb",
+    "style": "antimatter",
     "color": "#ff6ae0",
     "element": "shock",
-    "name": "Antimatter Orb",
     "speed": 50
    },
    "special": {
     "kind": "nova",
-    "element": "shock",
-    "name": "Wave of Destruction"
+    "name": "Wave of Destruction",
+    "element": "shock"
    },
    "look": {
-    "suit": "#3a2a4a",
+    "suit": "#2a1e38",
     "accent": "#ff4fd8",
-    "skin": "#3a2a4a",
-    "hair": "#3a2a4a",
+    "skin": "#2a1e38",
+    "hair": "#2a1e38",
     "extras": [
      "armor",
      "helmet_savitar",
-     "glow_eyes",
-     "bald"
+     "glow_eyes"
     ],
+    "build": "armored",
+    "eye_glow": "#ff4fd8",
+    "trim": "#ff4fd8",
     "scale": 2.2
    }
   },
@@ -2237,38 +2881,50 @@
    "show": "Crisis on Earth-X",
    "home": "national",
    "bio": "Earth-X's Kara, the Kryptonian enforcer of a tyrannical regime.",
-   "health": 180,
+   "health": 190,
    "speed": 1.0,
    "power": 1.25,
    "movement": "flight",
    "strength": true,
    "primary": {
     "kind": "melee",
-    "name": "Kryptonian Punch",
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
     "damage": 20
    },
    "secondary": {
     "kind": "beam",
-    "color": "#ff2222",
-    "element": "fire",
-    "name": "Heat Vision"
+    "name": "Heat Vision",
+    "style": "eyes",
+    "color": "#ff2a1a",
+    "element": "fire"
    },
    "special": {
     "kind": "nova",
-    "element": "fire",
-    "name": "Solar Overload"
+    "name": "Solar Overload",
+    "element": "fire"
    },
    "look": {
-    "suit": "#141414",
+    "suit": "#121214",
     "accent": "#b00000",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
      "cape",
-     "hair_long",
-     "emblem"
-    ]
-   }
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "bob",
+    "cape": "#b00000",
+    "boots": "#121214",
+    "emblem": {
+     "kind": "glyph",
+     "c1": "#b00000",
+     "c2": "#121214",
+     "size": 0.13
+    }
+   },
+   "fly_speed": 1.5
   },
   {
    "id": "dark_arrow",
@@ -2278,7 +2934,7 @@
    "show": "Crisis on Earth-X",
    "home": "star",
    "bio": "Earth-X's Oliver, dictator of a world where tyranny won.",
-   "health": 120,
+   "health": 125,
    "speed": 1.0,
    "power": 1.0,
    "movement": "grapple",
@@ -2292,20 +2948,30 @@
     "name": "Explosive Arrow"
    },
    "special": {
-    "kind": "smoke_bomb",
-    "name": "Smoke Bomb"
+    "kind": "arrow_storm",
+    "name": "Arrow Volley"
    },
    "look": {
-    "suit": "#141c14",
+    "suit": "#14161a",
     "accent": "#3a0a0a",
-    "skin": "#e3b896",
-    "hair": "#e2c172",
+    "skin": "#e0b896",
+    "hair": "#d9b468",
     "extras": [
      "hood",
-     "bow",
-     "quiver",
-     "mask_dark"
-    ]
+     "mask_dark",
+     "leather",
+     "jacket"
+    ],
+    "coat_color": "#16181c",
+    "facial": "stubble",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
    }
   },
   {
@@ -2316,7 +2982,7 @@
    "show": "Black Lightning",
    "home": "freeland",
    "bio": "Freeland's ruthless crime boss, leader of the 100 gang.",
-   "health": 150,
+   "health": 155,
    "speed": 1.0,
    "power": 1.0,
    "movement": "run",
@@ -2324,26 +2990,35 @@
    "primary": {
     "kind": "gun",
     "name": "Revolver",
-    "damage": 9
+    "damage": 11,
+    "cooldown": 0.3
    },
    "secondary": {
     "kind": "melee",
     "name": "Brutal Strikes",
-    "damage": 17
+    "style": "heavy_punch",
+    "damage": 18
    },
    "special": {
     "kind": "rage",
     "name": "Kingpin Fury"
    },
    "look": {
-    "suit": "#e8e4dc",
+    "suit": "#ece8e0",
     "accent": "#2a2a2a",
-    "skin": "#f2ebe4",
-    "hair": "#f2ebe4",
+    "skin": "#f4ece6",
+    "hair": "#f4ece6",
     "extras": [
-     "coat",
-     "bald"
-    ]
+     "coat"
+    ],
+    "build": "bulky",
+    "hair_style": "bald",
+    "coat_color": "#ece8e0",
+    "pants": "#ece8e0",
+    "collar": "#2a2a2a",
+    "gear": {
+     "right": "pistol_big"
+    }
    }
   }
  ]

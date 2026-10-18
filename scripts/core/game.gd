@@ -13,11 +13,16 @@ const LAYER_WORLD := 1
 const LAYER_ACTORS := 2
 const LAYER_PROPS := 4
 
-const ATTACK_KINDS := ["melee", "arrow", "explosive_arrow", "throw", "bolt", "beam", "sonic", "lightning", "gun", "dash"]
+const ATTACK_KINDS := ["melee", "arrow", "explosive_arrow", "throw", "bolt", "beam", "sonic", "lightning", "gun", "dash",
+	"flame", "breath", "missiles", "telekinesis", "psychic"]
 const SPECIAL_KINDS := ["time_slow", "tornado", "ground_slam", "smoke_bomb", "nova", "rage", "shrink",
-	"invisibility", "invulnerable", "teleport", "drain", "sonic_scream"]
-const MOVEMENTS := ["run", "speed", "flight", "grapple", "superjump"]
-const ELEMENTS := ["", "fire", "ice", "shock"]
+	"invisibility", "invulnerable", "teleport", "drain", "sonic_scream", "arrow_storm", "boomerang_storm",
+	"breath", "frag_grenade", "t_spheres", "animal_spirit", "shield_wall", "force_field", "storm",
+	"missile_barrage", "dampen", "mind_control"]
+const UTILITY_KINDS := ["grapple", "blitz", "dodge_flip", "emp", "foresight", "ice_wall", "phase", "teleport",
+	"breath", "invulnerable"]
+const MOVEMENTS := ["run", "speed", "flight", "grapple", "superjump", "ice", "hover"]
+const ELEMENTS := ["", "fire", "ice", "shock", "push"]
 const HOMES := ["star", "central", "national", "freeland", "any"]
 
 var roster: Array = []
@@ -115,6 +120,8 @@ func validate_character(c: Dictionary) -> PackedStringArray:
 	var sp = c["special"]
 	if typeof(sp) != TYPE_DICTIONARY or not sp.get("kind", "") in SPECIAL_KINDS:
 		out.append("bad special")
+	if c.has("utility") and not c["utility"].get("kind", "") in UTILITY_KINDS:
+		out.append("bad utility")
 	var look = c["look"]
 	for key in ["suit", "accent", "skin", "hair", "extras"]:
 		if not look.has(key):
@@ -189,6 +196,19 @@ func start_slowmo(seconds: float) -> void:
 	Engine.time_scale = 0.25
 
 
+## A brief freeze on heavy hits so they land with weight.
+func hit_stop(seconds: float) -> void:
+	if slowmo_left > 0.0 or DisplayServer.get_name() == "headless":
+		return
+	Engine.time_scale = 0.06
+	get_tree().create_timer(seconds, true, false, true).timeout.connect(_end_hit_stop)
+
+
+func _end_hit_stop() -> void:
+	if slowmo_left <= 0.0:
+		Engine.time_scale = 1.0
+
+
 func end_slowmo() -> void:
 	slowmo_left = 0.0
 	Engine.time_scale = 1.0
@@ -216,6 +236,7 @@ func setup_input() -> void:
 	_bind("special", [_key(KEY_Q), _button(JOY_BUTTON_Y)])
 	_bind("ability", [_key(KEY_E), _button(JOY_BUTTON_RIGHT_SHOULDER)])
 	_bind("fly", [_key(KEY_F), _button(JOY_BUTTON_LEFT_SHOULDER)])
+	_bind("dodge", [_key(KEY_V), _button(JOY_BUTTON_X)])
 	_bind("sandbox_menu", [_key(KEY_TAB), _button(JOY_BUTTON_BACK)])
 	_bind("pause", [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
 	_bind("toggle_hud", [_key(KEY_F1)])

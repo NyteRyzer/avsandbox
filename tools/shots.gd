@@ -13,6 +13,10 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	get_window().size = Vector2i(1600, 900)
 	var only := args[1] if args.size() > 1 else ""
+	if only == "close":
+		await _closeups(args[2].split(","), args[3] if args.size() > 3 else "")
+		get_tree().quit()
+		return
 	if only == "" or only == "roster":
 		await _roster()
 	if only == "roster":
@@ -84,6 +88,64 @@ func _roster() -> void:
 	get_window().size = Vector2i(1600, 900)
 	root.queue_free()
 	await get_tree().process_frame
+
+
+## Renders characters large, four to an image, for checking model detail.
+## An optional pose plays on every model (e.g. "punch", "bow", "two_hands").
+func _closeups(ids: Array, pose: String) -> void:
+	var root := Node3D.new()
+	add_child(root)
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.32, 0.36, 0.42)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.7, 0.72, 0.8)
+	env.ambient_light_energy = 0.55
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	var we := WorldEnvironment.new()
+	we.environment = env
+	root.add_child(we)
+	var light := DirectionalLight3D.new()
+	light.rotation = Vector3(-0.6, 0.5, 0)
+	light.light_energy = 1.0
+	light.shadow_enabled = true
+	root.add_child(light)
+	var cam := Camera3D.new()
+	cam.position = Vector3(2.4, 1.15, 4.6)
+	cam.fov = 38
+	cam.current = true
+	root.add_child(cam)
+	if pose == "face":
+		cam.position = Vector3(2.4, 1.62, 1.9)
+		cam.fov = 26
+		pose = ""
+	var batch := 0
+	while batch * 4 < ids.size():
+		var models: Array = []
+		for i in 4:
+			var idx := batch * 4 + i
+			if idx >= ids.size():
+				break
+			var c := Game.get_character(ids[idx])
+			var m := CharacterModel.new()
+			root.add_child(m)
+			m.build(c["look"])
+			var s := float(c["look"].get("scale", 1.0))
+			m.scale = Vector3.ONE * minf(1.0, 1.25 / s)
+			m.position = Vector3(i * 1.6, 0, 0) if cam.fov > 30 else Vector3(1.65 + i * 0.5, 0, 0)
+			m.rotation.y = PI + 0.5
+			models.append(m)
+		for f in 30:
+			for m in models:
+				if pose != "" and f % 12 == 0:
+					m.play(pose, 0.8, f / 12)
+				m.animate(1.0 / 60.0, 0.0, true, false, 0.0, false)
+			await get_tree().process_frame
+		await _snap("close_%d" % batch, 2)
+		for m in models:
+			m.queue_free()
+		batch += 1
+	root.queue_free()
 
 
 func _title() -> void:
@@ -168,6 +230,6 @@ func _world() -> void:
 	target.flying = true
 	for i in 30:
 		w.player.aim_point = target.chest()
-		Abilities.beam_tick(w.player, w.player.def["secondary"], 1.0 / 60.0, "secondary")
+		Abilities.held_tick(w.player, w.player.def["secondary"], 1.0 / 60.0, "secondary")
 		await get_tree().process_frame
 	await _snap("heat_vision", 1)

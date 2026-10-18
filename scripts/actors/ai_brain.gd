@@ -75,6 +75,14 @@ func _range_for(atk: Dictionary) -> float:
 			return 22.0
 		"lightning":
 			return 20.0
+		"flame", "breath":
+			return 8.0
+		"psychic":
+			return 11.0
+		"telekinesis":
+			return 18.0
+		"missiles":
+			return 26.0
 	return 18.0
 
 
@@ -141,7 +149,7 @@ func _fight(a: Actor, delta: float) -> void:
 		atk_slot = "primary" if atk_slot == "secondary" else "secondary"
 		atk = a.def[atk_slot]
 	var in_range := dist < _range_for(atk) * 1.3 + 1.0
-	if atk["kind"] == "beam":
+	if atk["kind"] in Abilities.HELD_KINDS:
 		if in_range and _beam_t <= 0.0 and randf() < delta * 1.5:
 			_beam_t = randf_range(0.8, 1.6)
 		if _beam_t > 0.0:
@@ -151,6 +159,19 @@ func _fight(a: Actor, delta: float) -> void:
 		_press(a, atk_slot)
 	if dist < 14.0 and a.energy > 70.0 and randf() < delta * 0.12:
 		a.in_special = true
+	# Utility powers: speedsters blitz crowds, others breach, flip or phase.
+	if a.def.has("utility") and a.energy > 50.0 and randf() < delta * 0.15:
+		var u: String = a.def["utility"]["kind"]
+		if u == "blitz" and dist < 30.0:
+			a.in_ability = true
+		elif u in ["teleport"] and dist > 25.0:
+			a.aim_point = target.global_position + Vector3.UP
+			a.in_ability = true
+		elif u in ["dodge_flip", "phase", "foresight", "invulnerable", "emp", "ice_wall"] and dist < 10.0:
+			a.in_ability = true
+	# Dodge when the player is swinging at us up close.
+	if target.is_player and dist < 4.0 and target.combo_window > 0.6 and randf() < delta * 2.0:
+		a.in_dodge = true
 
 
 func _press(a: Actor, slot: String) -> void:
