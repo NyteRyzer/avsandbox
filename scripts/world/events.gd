@@ -6,8 +6,8 @@ extends Node
 
 signal changed
 
-const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war"]
-const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach"]
+const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak"]
+const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators"]
 
 var world
 var active: Dictionary = {}
@@ -52,8 +52,12 @@ func start_random(kind := "") -> void:
 	if kind == "":
 		var pool: Array = HERO_EVENTS if hero else VILLAIN_EVENTS
 		kind = pool[rng.randi() % pool.size()]
+	if kind == "jailbreak" and world.city.kind != "metro":
+		kind = "robbery"
 	var p: Vector3 = world.player.global_position
 	var pos: Vector3 = world.city.random_road_point(Vector3(p.x, 0, p.z), 90.0, 220.0, rng)
+	if kind == "jailbreak":
+		pos = world.city.landmark("Iron Heights").get("pos", pos) + Vector3(60, 0, 0)
 	var district: String = world.city.district_at(pos)
 	var pop: Population = world.population
 	var actors: Array = []
@@ -87,6 +91,27 @@ func start_random(kind := "") -> void:
 				a.display_name = "Earth-%d %s" % [rng.randi_range(2, 52), c["alias"]]
 				actors.append(a)
 			FX.portal(world, pos + Vector3.UP * 3.0, Color("#4fa8ff"))
+		"dominators":
+			title = "Dominator invasion!"
+			color = Color("#c47aff")
+			for k in 6:
+				var a: Actor = pop.spawn_character(dominator_def(), "villain" if hero else "hero", _near(pos, 10.0) + Vector3.UP * 20.0)
+				a.grudges[world.player.get_instance_id()] = 60.0
+				actors.append(a)
+			FX.portal(world, pos + Vector3.UP * 20.0, Color("#c47aff"))
+		"jailbreak":
+			title = "Jailbreak at Iron Heights!"
+			color = Color("#ff9a3a")
+			for k in 2:
+				var v := Game.random_character("villain")
+				actors.append(pop.spawn_character(v, "villain", _near(pos, 8.0)))
+			for k in 5:
+				var d: Dictionary = pop.thug_def(0)
+				d["alias"] = "Escaped Inmate"
+				d["look"]["suit"] = "#e86a1a"
+				d["look"]["legs"] = "#e86a1a"
+				d["look"]["extras"] = []
+				actors.append(pop.spawn_character(d, "thug", _near(pos, 10.0)))
 		"police_raid":
 			title = "Police raid in %s" % district
 			color = Color("#4f8aff")
@@ -119,6 +144,19 @@ func start_random(kind := "") -> void:
 	world.notify("NEW EVENT: " + title, color)
 	Sfx.play("event", null, -2.0)
 	changed.emit()
+
+
+## Dominators: big-headed alien invaders with psychic blasts.
+func dominator_def() -> Dictionary:
+	return {
+		"id": "dominator", "name": "Dominator", "alias": "Dominator", "side": "villain", "home": "any",
+		"health": 110, "speed": 0.9, "power": 1.0, "movement": "flight", "fly_speed": 0.9,
+		"primary": {"kind": "bolt", "damage": 12, "color": "#c47aff", "style": "energy"},
+		"secondary": {"kind": "psychic", "damage": 12},
+		"special": {"kind": "rage"},
+		"look": {"suit": "#4a3a5a", "legs": "#3a2a4a", "accent": "#c47aff", "skin": "#8a8a7a", "hair": "#8a8a7a",
+			"extras": ["glow_eyes", "armor"], "hair_style": "bald", "eye_glow": "#ffd23a", "build": "armored", "scale": 1.2},
+	}
 
 
 func _near(pos: Vector3, r: float) -> Vector3:

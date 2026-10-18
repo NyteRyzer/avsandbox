@@ -262,7 +262,7 @@ func _refresh_heat() -> void:
 
 func _refresh_score() -> void:
 	var villain := Game.player_side() == -1
-	score_label.text = "%s: %d" % ["Infamy" if villain else "Reputation", Game.score]
+	score_label.text = "%s: %d\nRank %d · %s" % ["Infamy" if villain else "Reputation", Game.score, Game.rank(), Game.rank_title(Game.player_side())]
 
 
 func _process(delta: float) -> void:
@@ -344,6 +344,8 @@ func _process(delta: float) -> void:
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
 	mission_label.text = world.missions.tracker()
+	if world.race.active:
+		mission_label.text = world.race.tracker() + "\n\n" + mission_label.text
 	var ev: Dictionary = world.events.active
 	if ev.is_empty():
 		event_label.text = ""

@@ -11,6 +11,7 @@ var day_night: DayNight
 var population: Population
 var events: Events
 var missions: Missions
+var race: Race
 var actors_root: Node3D
 var props_root: Node3D
 var fx_root: Node3D
@@ -83,6 +84,28 @@ func _ready() -> void:
 	add_child(ship)
 	ship.park(city.waverider_dock)
 	Game.notify.connect(notify)
+	Game.rank_up.connect(_on_rank_up)
+	race = Race.new()
+	race.world = self
+	add_child(race)
+
+
+func _apply_rank(a: Actor) -> void:
+	var b := Game.rank_bonus()
+	a.max_hp = float(a.def.get("health", 100)) * b
+	a.hp = a.max_hp
+	a.power = float(a.def.get("power", 1.0)) * b
+
+
+func _on_rank_up(r: int) -> void:
+	hud.show_banner("RANK %d: %s" % [r, Game.rank_title(Game.player_side()).to_upper()], Color("#ffd23a"))
+	notify("Rank up! +3%% health and power for every character (now +%d%%)." % int((Game.rank_bonus() - 1.0) * 100.0), Color("#ffd23a"))
+	Sfx.play("event", null, 2.0)
+	if player and is_instance_valid(player):
+		var frac := player.hp / maxf(player.max_hp, 1.0)
+		_apply_rank(player)
+		player.hp = player.max_hp * frac
+	Game.save_settings()
 
 
 func _spawn_parked() -> void:
@@ -99,6 +122,8 @@ func _spawn_parked() -> void:
 func _exit_tree() -> void:
 	if Game.notify.is_connected(notify):
 		Game.notify.disconnect(notify)
+	if Game.rank_up.is_connected(_on_rank_up):
+		Game.rank_up.disconnect(_on_rank_up)
 	Game.end_slowmo()
 
 
@@ -130,6 +155,7 @@ func spawn_player(id: String, at = null) -> void:
 	actors_root.add_child(player)
 	player.global_position = pos
 	player.died.connect(_on_player_died)
+	_apply_rank(player)
 	Game.player = player
 	Game.selected_id = id
 	Game.save_settings()
@@ -414,6 +440,7 @@ func travel_to(id: String, how := "breach") -> void:
 		return
 	var d := Multiverse.dest(id)
 	exit_vehicle()
+	race.stop()
 	var was_inside := inside
 	var rel := player.global_position - Interiors.origin(was_inside) if was_inside != "" else Vector3.ZERO
 	events.reset()

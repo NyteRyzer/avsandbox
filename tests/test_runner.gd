@@ -27,6 +27,8 @@ func _ready() -> void:
 	await test_places()
 	_current = "test_driving"
 	await test_driving()
+	_current = "test_activities"
+	await test_activities()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -463,6 +465,31 @@ func test_driving() -> void:
 	await _frames(2)
 	check(world.vehicle == null and world.player.visible and not car.player_driven, "G gets out")
 	world.clear_npcs()
+
+
+func test_activities() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	for kind in ["dominators", "jailbreak"]:
+		world.events.start_random(kind)
+		check(world.events.active.get("kind", "") == kind and world.events.active["actors"].size() >= 6, kind + " event spawns enemies")
+		world.events._expire()
+	world.clear_npcs()
+	world.race.start(false)
+	check(world.race.active and world.race.points.size() == Race.RINGS, "a race lays out its checkpoints")
+	var score_before := Game.score
+	for k in Race.RINGS:
+		world.teleport_player(world.race.points[k] - Vector3.UP * 2.0)
+		await get_tree().process_frame
+		await get_tree().process_frame
+	check(not world.race.active and Game.score > score_before, "finishing the race pays out")
+	var xp_before := int(Game.settings["xp"])
+	var rank_before := Game.rank()
+	Game.add_score(Game.xp_for(rank_before + 1) - xp_before + 1)
+	check(Game.rank() == rank_before + 1, "earning points raises your rank")
+	check(world.player.max_hp > float(world.player.def["health"]), "rank boosts health")
+	Game.settings["xp"] = xp_before
 
 
 func test_campaign() -> void:

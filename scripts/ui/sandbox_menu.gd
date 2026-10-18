@@ -219,13 +219,19 @@ func _events_tab() -> Control:
 	var names := {
 		"robbery": "Robbery in progress", "gang_war": "Gang war", "villain_attack": "Super-villain attack",
 		"breach": "Breach: doppelgangers", "police_raid": "Police raid", "hero_patrol": "Hero patrol",
-		"heist": "Armored-truck heist",
+		"heist": "Armored-truck heist", "dominators": "Dominator invasion", "jailbreak": "Iron Heights jailbreak",
 	}
 	for k in names.keys():
 		var kind: String = k
 		g.add_child(UITheme.button(names[k], func() -> void:
 			world.events.start_random(kind)
 			close(), 380))
+	g.add_child(UITheme.button("Street race (checkpoints)", func() -> void:
+		close()
+		world.race.start(false), 380))
+	g.add_child(UITheme.button("Sky race (for flyers)", func() -> void:
+		close()
+		world.race.start(true), 380))
 	v.add_child(g)
 	v.add_child(UITheme.label("Heroes get robberies, gang wars and villain attacks;\nvillains get raids, patrols and heists. Breaches hit everyone.", 15, UITheme.DIM))
 	return v

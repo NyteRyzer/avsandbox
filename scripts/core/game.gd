@@ -39,6 +39,7 @@ var settings := {
 	"volume": 0.8,
 	"view_distance": 1200.0,
 	"crisis_chapter": 0,
+	"xp": 0,
 }
 var cheats := {"god_mode": false, "infinite_energy": false, "one_hit_ko": false, "no_heat": false}
 
@@ -182,9 +183,42 @@ func clear_heat() -> void:
 	heat_changed.emit(heat)
 
 
+signal rank_up(rank: int)
+
+const HERO_RANKS := ["Rookie", "Vigilante", "Hero", "Protector", "Champion", "Paragon", "Legend", "Icon", "Myth", "Living Legend"]
+const VILLAIN_RANKS := ["Thug", "Crook", "Rogue", "Menace", "Supervillain", "Warlord", "Mastermind", "Tyrant", "Conqueror", "God of Evil"]
+
+
 func add_score(amount: int) -> void:
 	score += amount
 	score_changed.emit(score)
+	if amount > 0:
+		var before := rank()
+		settings["xp"] = int(settings["xp"]) + amount
+		if rank() > before:
+			rank_up.emit(rank())
+
+
+## Rank 1..20 from lifetime points. Each rank adds 3% health and power.
+func rank() -> int:
+	var xp := int(settings["xp"])
+	var r := 1
+	while r < 20 and xp >= xp_for(r + 1):
+		r += 1
+	return r
+
+
+func xp_for(r: int) -> int:
+	return int(400.0 * pow(float(r - 1), 1.6))
+
+
+func rank_title(side: int) -> String:
+	var list: Array = HERO_RANKS if side >= 0 else VILLAIN_RANKS
+	return list[mini((rank() - 1) / 2, list.size() - 1)]
+
+
+func rank_bonus() -> float:
+	return 1.0 + (rank() - 1) * 0.03
 
 
 func report_combat(pos: Vector3) -> void:

@@ -107,6 +107,15 @@ Overgirl and Dark Arrow on Earth-X, the Time Wraiths of the Speed Force, the Sha
 dying Earth-90, the Anti-Monitor himself, and home to Earth-Prime. The HUD tracks the objective
 and the minimap points the way. Restart it from the pause menu.
 
+**Ranks.** Every point you earn counts toward a lifetime rank (1 to 20, from Rookie to Living
+Legend, or Thug to God of Evil). Each rank adds 3% health and power to every character.
+
+**Races.** Start a street race or a sky race from the Tab menu's Events tab: hit eight rings
+before the clock runs out. Speedsters get a tighter clock.
+
+**More events.** Dominator invasions drop alien soldiers from the sky, and inmates break out of
+Iron Heights.
+
 **Drive.** Press G next to any parked car, or carjack one out of traffic (heroes take heat for
 it). Shift for nitro, Space for the handbrake.
 

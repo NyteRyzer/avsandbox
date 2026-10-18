@@ -79,6 +79,10 @@ func _draw() -> void:
 		var clamped := center + (s - center).limit_length(size.x * 0.5 - 10.0)
 		draw_circle(clamped, 7.0, Color("#ffd23a"))
 		draw_circle(clamped, 4.0, Color("#1a1a1a"))
+	var rp: Vector3 = world.race.target_pos()
+	if rp != Vector3.INF:
+		var s2: Vector2 = to_screen.call(rp.x, rp.z)
+		draw_circle(center + (s2 - center).limit_length(size.x * 0.5 - 10.0), 7.0, Color("#3affd0"))
 	var mp: Vector3 = world.missions.target_pos()
 	if mp != Vector3.INF:
 		var s: Vector2 = to_screen.call(mp.x, mp.z)
