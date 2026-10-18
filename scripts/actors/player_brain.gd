@@ -33,6 +33,7 @@ func update(a: Actor, delta: float) -> void:
 	a.in_special = Input.is_action_just_pressed("special")
 	a.in_ability = Input.is_action_just_pressed("ability")
 	a.in_dodge = Input.is_action_just_pressed("dodge")
+	a.in_ultimate = Input.is_action_just_pressed("ultimate")
 	a.aim_point = cam_rig.aim_point(a)
 	if a.in_primary or a.in_secondary:
 		_aim_hold = 0.6

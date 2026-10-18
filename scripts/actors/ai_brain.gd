@@ -169,6 +169,9 @@ func _fight(a: Actor, delta: float) -> void:
 			a.in_ability = true
 		elif u in ["dodge_flip", "phase", "foresight", "invulnerable", "emp", "ice_wall"] and dist < 10.0:
 			a.in_ability = true
+	# Bosses and named characters unleash their ultimate when it is charged.
+	if a.ult >= 100.0 and dist < 18.0 and a.def.get("id", "") not in ["thug", "police", "civilian"] and randf() < delta * 0.8:
+		a.in_ultimate = true
 	# Dodge when the player is swinging at us up close.
 	if target.is_player and dist < 4.0 and target.combo_window > 0.6 and randf() < delta * 2.0:
 		a.in_dodge = true

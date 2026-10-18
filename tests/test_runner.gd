@@ -21,6 +21,8 @@ func _ready() -> void:
 	await test_combat()
 	_current = "test_player_input"
 	await test_player_input()
+	_current = "test_ultimates"
+	await test_ultimates()
 	_current = "test_places"
 	await test_places()
 	_current = "test_ui_smoke"
@@ -282,6 +284,51 @@ func test_player_input() -> void:
 	check(Engine.time_scale < 1.0, "Q starts speed-force slow motion")
 	Game.end_slowmo()
 	world.population.enabled = true
+
+
+func test_ultimates() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	var kinds := {}
+	for c in Game.roster:
+		var u := Ultimate.for_character(c)
+		check(u["kind"] in Ultimate.KINDS, "%s has a known ultimate (%s)" % [c["id"], u["kind"]])
+		kinds[u["kind"]] = true
+	check(kinds.size() == Ultimate.KINDS.size(), "every ultimate kind is used (%d)" % kinds.size())
+	# Run every kind once against a few enemies.
+	var by_kind := {}
+	for c in Game.roster:
+		var k: String = Ultimate.for_character(c)["kind"]
+		if not by_kind.has(k):
+			by_kind[k] = c["id"]
+	for k in by_kind.keys():
+		world.clear_npcs()
+		await _frames(1)
+		world.spawn_player(by_kind[k], Vector3(560, 0.5, -440))
+		var foes: Array = []
+		for i in 3:
+			foes.append(world.population.spawn_thug(Vector3(560 + i * 3.0, 0.5, -432)))
+		await _frames(2)
+		world.player.ult = 100.0
+		world.player.aim_point = Vector3(563, 1, -432)
+		world.player.in_ultimate = true
+		world.player._abilities(0.016)
+		check(world.player.ult_active and world.player.ult == 0.0, "%s ultimate starts" % k)
+		await _frames(240)
+		Game.end_slowmo()
+		var hurt := 0
+		for f in foes:
+			if not is_instance_valid(f) or f.hp < f.max_hp:
+				hurt += 1
+		check(hurt > 0 or k == "giant", "%s ultimate hurts enemies" % k)
+	world.clear_npcs()
+	await _frames(400)
+	check(not world.player.ult_active, "ultimates end")
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	var t: Actor = world.population.spawn_thug(Vector3(562, 0.5, -440))
+	t.take_damage(30.0, world.player)
+	check(world.player.ult > 20.0, "dealing damage charges the ultimate")
+	world.clear_npcs()
 
 
 func _frames(n: int) -> void:

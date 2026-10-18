@@ -10,6 +10,7 @@ var name_label: Label
 var alias_label: Label
 var hp_bar: ProgressBar
 var energy_bar: ProgressBar
+var ult_bar: ProgressBar
 var status_label: Label
 var ability_labels: Array[Label] = []
 var minimap: Minimap
@@ -52,6 +53,9 @@ func _ready() -> void:
 	energy_bar = _bar(Color("#48a8e0"))
 	v.add_child(hp_bar)
 	v.add_child(energy_bar)
+	ult_bar = _bar(Color("#ffd23a"))
+	ult_bar.custom_minimum_size = Vector2(300, 8)
+	v.add_child(ult_bar)
 	status_label = UITheme.label("", 15, UITheme.ACCENT)
 	v.add_child(status_label)
 
@@ -64,13 +68,13 @@ func _ready() -> void:
 	root.add_child(ab)
 	var av := VBoxContainer.new()
 	ab.add_child(av)
-	for i in 5:
+	for i in 6:
 		var l := UITheme.label("", 16)
 		av.add_child(l)
 		ability_labels.append(l)
 	ab.anchor_top = 1.0
 	ab.anchor_bottom = 1.0
-	ab.offset_top = -190
+	ab.offset_top = -214
 	ab.offset_bottom = -20
 
 	# Top-right: minimap and clock.
@@ -215,7 +219,16 @@ func notify(text: String, color := Color.WHITE) -> void:
 	t.tween_callback(l.queue_free)
 
 
+## A big centred title, e.g. an ultimate's name or a mission update.
+func show_banner(text: String, color := Color.WHITE) -> void:
+	banner.text = text
+	banner.add_theme_color_override("font_color", color)
+	banner.modulate.a = 1.0
+	_banner_t = 3.0
+
+
 func show_district(d: String) -> void:
+	banner.add_theme_color_override("font_color", Color.WHITE)
 	banner.text = d
 	banner.modulate.a = 1.0
 	_banner_t = 3.0
@@ -304,6 +317,15 @@ func _process(delta: float) -> void:
 	if p.combo_count >= 3:
 		move_text += "   ·   %d HIT COMBO" % p.combo_count
 	ability_labels[4].text = move_text
+	var u := Ultimate.for_character(d)
+	ult_bar.value = p.ult
+	if p.ult_active:
+		ability_labels[5].text = "[R]  " + str(u.get("name", "Ultimate")) + "   ACTIVE"
+	elif p.ult >= 100.0:
+		ability_labels[5].text = "[R]  " + str(u.get("name", "Ultimate")) + "   READY!"
+	else:
+		ability_labels[5].text = "[R]  %s   %d%%" % [u.get("name", "Ultimate"), int(p.ult)]
+	ability_labels[5].add_theme_color_override("font_color", UITheme.ACCENT if p.ult >= 100.0 or p.ult_active else UITheme.DIM)
 	ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT if p.cooldowns["special"] <= 0.0 and p.energy >= Abilities.special_cost(d["special"]) else UITheme.DIM)
 
 	district_label.text = world.place_name(p.global_position)

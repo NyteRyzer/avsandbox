@@ -238,6 +238,9 @@ func _select(id: String) -> void:
 	lines.append("LMB  " + Abilities.describe(c["primary"]))
 	lines.append("RMB  " + Abilities.describe(c["secondary"]))
 	lines.append("Q    " + str(c["special"].get("name", c["special"]["kind"])))
+	if c.has("utility"):
+		lines.append("E    " + str(c["utility"].get("name", c["utility"]["kind"])))
+	lines.append("R    ULTIMATE: " + str(Ultimate.for_character(c).get("name", "")))
 	lines.append("Moves: " + move_names.get(c["movement"], c["movement"]) + ("  ·  Super strength" if c.get("strength", false) else ""))
 	_powers.text = "\n".join(lines)
 	_play.text = ("BECOME " if swap_mode else "PLAY AS ") + str(c["alias"]).to_upper()

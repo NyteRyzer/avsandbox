@@ -49,12 +49,15 @@ var in_primary := false
 var in_secondary := false
 var in_special := false
 var in_ability := false
+var in_ultimate := false
 var aim_point := Vector3.ZERO
 var face_dir := Vector3.FORWARD
 
 # State
 var flying := false
 var cooldowns := {"primary": 0.0, "secondary": 0.0, "special": 0.0}
+var ult := 0.0                 # ultimate meter, 0..100
+var ult_active := false
 var grudges: Dictionary = {}  # instance_id -> seconds remaining
 var last_attacker: Actor = null
 var follow_target: Actor = null
@@ -272,6 +275,7 @@ func _physics_process(delta: float) -> void:
 	in_special = false
 	in_ability = false
 	in_dodge = false
+	in_ultimate = false
 	if brain:
 		brain.update(self, delta)
 	if not can_act():
@@ -569,6 +573,9 @@ func _abilities(delta: float) -> void:
 	if not any_beam:
 		for b in beams:
 			b.visible = false
+	if in_ultimate and (ult >= 100.0 or is_player and Game.cheats["infinite_energy"]) and dampened_t <= 0.0:
+		if Ultimate.start(self):
+			ult = 0.0
 	if in_special and cooldowns["special"] <= 0.0 and dampened_t <= 0.0:
 		var sp: Dictionary = def["special"]
 		var cost := Abilities.special_cost(sp)
@@ -728,6 +735,9 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 		return
 	if source and is_instance_valid(source) and source != self:
 		last_attacker = source
+		if not source.ult_active:
+			source.add_ult(amount * (0.9 if source.is_player else 0.35))
+		add_ult(amount * 0.4)
 		if not is_player:
 			grudges[source.get_instance_id()] = 10.0
 		if source.is_player:
@@ -804,6 +814,16 @@ func _player_hit_side_effects(amount: float) -> void:
 		Game.add_heat(0.25)
 	elif side() == 1 and Game.player_side() == -1:
 		Game.add_heat(0.08)
+
+
+func add_ult(amount: float) -> void:
+	if ult_active or dead:
+		return
+	var was := ult
+	ult = minf(100.0, ult + amount)
+	if is_player and was < 100.0 and ult >= 100.0 and world:
+		world.notify("ULTIMATE READY  [R]  " + str(Ultimate.for_character(def).get("name", "")), Color("#ffd23a"))
+		Sfx.play("event", null, -4.0)
 
 
 func heal(amount: float) -> void:
