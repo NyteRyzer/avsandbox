@@ -28,6 +28,14 @@ var _next_turn := Vector3.ZERO
 var _block_t := 0.0
 var _blocked := false
 
+# Player driving: arcade handling on top of a kinematic body.
+const TOP_SPEED := 34.0
+const NITRO_SPEED := 54.0
+var player_driven := false
+var driver: Actor = null
+var _yaw := 0.0
+var _hit_cd: Dictionary = {}
+
 
 func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 	world = p_world
@@ -175,7 +183,9 @@ func _plan_next_intersection_from(p: Vector3) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if driving and holder == null:
+	if player_driven:
+		_player_drive(delta)
+	elif driving and holder == null:
 		_drive(delta)
 	if thrown_t > 0.0:
 		thrown_t -= delta
@@ -183,8 +193,103 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
+## The player gets behind the wheel.
+func take_wheel(a: Actor) -> void:
+	stop_driving()
+	driver = a
+	player_driven = true
+	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+	freeze = true
+	_speed = 0.0
+	_yaw = rotation.y
+	rotation = Vector3(0, _yaw, 0)
+	global_position.y = maxf(global_position.y, 0.1)
+
+
+func leave_wheel() -> void:
+	player_driven = false
+	driver = null
+	freeze = false
+	sleeping = false
+	linear_velocity = heading * _speed
+
+
+func speed_kmh() -> float:
+	return absf(_speed) * 3.6
+
+
+func _player_drive(delta: float) -> void:
+	var mv := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var throttle := -mv.y
+	var nitro := Input.is_action_pressed("sprint")
+	var top := NITRO_SPEED if nitro else TOP_SPEED
+	if Input.is_action_pressed("jump"):
+		_speed = move_toward(_speed, 0.0, 45.0 * delta)
+	elif throttle > 0.05:
+		_speed = move_toward(_speed, top * throttle, (24.0 if nitro else 15.0) * delta)
+	elif throttle < -0.05:
+		_speed = move_toward(_speed, -10.0, (30.0 if _speed > 0.0 else 10.0) * delta)
+	else:
+		_speed = move_toward(_speed, 0.0, 5.0 * delta)
+	var grip := clampf(absf(_speed) / 8.0, 0.0, 1.0)
+	_yaw -= mv.x * grip * signf(_speed) * (1.9 if Input.is_action_pressed("jump") else 1.4) * delta
+	heading = Vector3(0, 0, -1).rotated(Vector3.UP, _yaw)
+	var space := get_world_3d().direct_space_state
+	var p := global_position
+	# Walls and buildings stop the car (and dent it).
+	var dir := heading * signf(_speed)
+	var from := p + Vector3.UP * 0.8
+	var q := PhysicsRayQueryParameters3D.create(from, from + dir * (2.6 + absf(_speed) * delta), Game.LAYER_WORLD, [get_rid()])
+	var wall := space.intersect_ray(q)
+	if not wall.is_empty() and absf(_speed) > 0.5:
+		if absf(_speed) > 15.0:
+			Sfx.play("slam", p, -4.0)
+			world.shake_at(p, 0.3)
+			hp -= absf(_speed) * 0.4
+		_speed *= -0.25
+	p += heading * _speed * delta
+	# Follow the ground; drive off the edge and you fall.
+	var dq := PhysicsRayQueryParameters3D.create(p + Vector3.UP * 2.5, p + Vector3.DOWN * 6.0, Game.LAYER_WORLD, [get_rid()])
+	var ground := space.intersect_ray(dq)
+	if not ground.is_empty() and ground["position"].y > p.y - 1.5:
+		p.y = lerpf(p.y, ground["position"].y, clampf(delta * 12.0, 0.0, 1.0))
+	else:
+		p.y -= 12.0 * delta
+	global_position = p
+	rotation = Vector3(0, _yaw, -mv.x * grip * 0.05)
+	# Running people over, and ramming other cars.
+	for k in _hit_cd.keys():
+		_hit_cd[k] -= delta
+		if _hit_cd[k] <= 0.0:
+			_hit_cd.erase(k)
+	if absf(_speed) > 7.0:
+		var front := p + heading * signf(_speed) * 2.2
+		for a in get_tree().get_nodes_in_group("actors"):
+			if a == driver or a.dead or _hit_cd.has(a.get_instance_id()):
+				continue
+			if a.global_position.distance_to(front) < 2.4:
+				_hit_cd[a.get_instance_id()] = 1.0
+				a.take_damage(absf(_speed) * 1.6, driver, "", heading * signf(_speed) * absf(_speed) * 0.7 + Vector3.UP * 7.0)
+				Sfx.play("punch", a.global_position, 0.0)
+				_speed *= 0.85
+		for prop in get_tree().get_nodes_in_group("props"):
+			if prop == self or _hit_cd.has(prop.get_instance_id()):
+				continue
+			if prop.global_position.distance_to(front) < 3.0:
+				_hit_cd[prop.get_instance_id()] = 1.0
+				prop.hit(absf(_speed) * 0.8, heading * signf(_speed) * absf(_speed) * 40.0 + Vector3.UP * 200.0, driver)
+				_speed *= 0.6
+	if hp <= 0.0 and not exploded:
+		world.exit_vehicle()
+		_explode(driver)
+	elif global_position.y < -2.5:
+		world.exit_vehicle()
+
+
 func hit(dmg: float, impulse: Vector3, source: Actor) -> void:
-	if holder:
+	if holder or player_driven:
+		if player_driven and not exploded:
+			hp -= dmg * 0.5
 		return
 	stop_driving()
 	sleeping = false

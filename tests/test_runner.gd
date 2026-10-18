@@ -25,6 +25,8 @@ func _ready() -> void:
 	await test_ultimates()
 	_current = "test_places"
 	await test_places()
+	_current = "test_driving"
+	await test_driving()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -432,6 +434,34 @@ func test_places() -> void:
 	world.travel_menu.open("speed")
 	check(world.travel_menu._list.get_child_count() == Multiverse.EARTHS.size() + 1, "speedster travel menu lists the Speed Force and every Earth")
 	world.travel_menu.close()
+
+
+func test_driving() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	var car := Prop.new()
+	car.build(world, "car")
+	world.props_root.add_child(car)
+	car.global_position = Vector3(562, 0.3, -440)
+	car.rotation.y = 0.0
+	await _frames(4)
+	await get_tree().process_frame
+	check(world.door.get("interior", "") == "car", "standing by a car offers to drive it")
+	world.interact()
+	check(world.vehicle == car and car.player_driven, "G gets behind the wheel")
+	var start := car.global_position
+	await _hold("move_forward", 90)
+	check(car.global_position.distance_to(start) > 15.0, "the car drives (%.0f m)" % car.global_position.distance_to(start))
+	check(car.speed_kmh() > 40.0, "and picks up speed (%.0f km/h)" % car.speed_kmh())
+	check(world.player.global_position.distance_to(car.global_position) < 2.0, "the driver rides along")
+	var victim: Actor = world.population.spawn_thug(car.global_position + car.heading * 6.0)
+	await _hold("move_forward", 20)
+	check(victim.hp < victim.max_hp, "running into people hurts them")
+	world.interact()
+	await _frames(2)
+	check(world.vehicle == null and world.player.visible and not car.player_driven, "G gets out")
+	world.clear_npcs()
 
 
 func test_campaign() -> void:

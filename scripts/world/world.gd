@@ -20,6 +20,8 @@ var pause_menu: PauseMenu
 var sandbox_menu: SandboxMenu
 var travel_menu: TravelMenu
 var ship: Waverider
+var vehicle: Prop = null         # the car the player is driving
+var _saved_layer := 0
 var player: Actor
 var player_brain: PlayerBrain
 var gravity_scale := 1.0
@@ -112,6 +114,7 @@ func spawn_player(id: String, at = null) -> void:
 	else:
 		pos = spawn_point_for(c)
 	var old_heat := Game.heat
+	exit_vehicle()
 	if player and is_instance_valid(player):
 		for a in get_tree().get_nodes_in_group("actors"):
 			if a.follow_target == player:
@@ -231,6 +234,17 @@ func _nearest_door() -> Dictionary:
 		var bp := ship.boarding_point()
 		if Vector2(bp.x - p.x, bp.z - p.z).length() < 6.0 and absf(bp.y - p.y) < 4.0:
 			best = {"name": "The Waverider", "pos": bp, "interior": "waverider"}
+	if inside == "" and best.is_empty() and vehicle == null and not player.flying:
+		var best_car: Prop = null
+		var car_d := 3.6
+		for prop in get_tree().get_nodes_in_group("props"):
+			if prop.kind == "car" and not prop.exploded and prop.holder == null:
+				var cd: float = prop.global_position.distance_to(p)
+				if cd < car_d:
+					car_d = cd
+					best_car = prop
+		if best_car:
+			best = {"name": "Drive the car" if not best_car.driving else "Carjack the car", "pos": best_car.global_position, "interior": "car", "prop": best_car}
 	return best
 
 
@@ -238,6 +252,8 @@ func _nearest_door() -> Dictionary:
 func interact_prompt() -> String:
 	if ship.piloted:
 		return ""
+	if vehicle:
+		return "%d km/h   ·   W/S drive  ·  A/D steer  ·  Space handbrake  ·  Shift nitro  ·  G get out" % int(vehicle.speed_kmh())
 	if not door.is_empty():
 		var what: String = door["interior"]
 		if what in Interiors.ORDER:
@@ -263,6 +279,9 @@ func interact() -> void:
 		return
 	if ship.piloted:
 		ship.leave_helm()
+		return
+	if vehicle:
+		exit_vehicle()
 		return
 	if not door.is_empty():
 		use_door(door)
@@ -291,6 +310,8 @@ func use_door(d: Dictionary) -> void:
 			travel_menu.open("time")
 		"helm":
 			ship.take_helm()
+		"car":
+			enter_vehicle(d["prop"])
 		"balcony":
 			leave_interior("catco", 60.0)
 		"exit_speedforce":
@@ -298,6 +319,49 @@ func use_door(d: Dictionary) -> void:
 		_:
 			if what in Interiors.ORDER:
 				enter_interior(what)
+
+
+func enter_vehicle(car: Prop) -> void:
+	if car.driving and Game.player_side() == 1:
+		Game.add_heat(0.6)
+		notify("Carjacking! Heroes borrow cars, they don't steal them.", Color("#ff9070"))
+	elif car.driving:
+		Game.add_heat(0.3)
+		Game.add_score(5)
+	vehicle = car
+	car.take_wheel(player)
+	_saved_layer = player.collision_layer
+	player.collision_layer = 0
+	player.velocity = Vector3.ZERO
+	player.visible = false
+	player.process_mode = Node.PROCESS_MODE_DISABLED
+	cam.zoom = 9.0
+	cam.spring.add_excluded_object(car.get_rid())
+	Sfx.play("click", null, 0.0)
+
+
+func exit_vehicle() -> void:
+	if vehicle == null:
+		return
+	var car := vehicle
+	vehicle = null
+	var side := car.global_basis.x * -2.4
+	if is_instance_valid(car):
+		car.leave_wheel()
+	player.process_mode = Node.PROCESS_MODE_INHERIT
+	player.visible = true
+	player.collision_layer = _saved_layer
+	player.global_position = car.global_position + side + Vector3.UP * 0.6
+	player.velocity = Vector3.ZERO
+	cam.zoom = 5.5
+
+
+func _physics_process(_delta: float) -> void:
+	if vehicle and is_instance_valid(vehicle) and player and is_instance_valid(player):
+		player.global_position = vehicle.global_position + Vector3.UP * 1.0
+		player.invuln_t = 0.5
+	elif vehicle:
+		exit_vehicle()
 
 
 func enter_interior(id: String, remember := true) -> void:
@@ -349,6 +413,7 @@ func travel_to(id: String, how := "breach") -> void:
 	if not Multiverse.DESTS.has(id) or player == null:
 		return
 	var d := Multiverse.dest(id)
+	exit_vehicle()
 	var was_inside := inside
 	var rel := player.global_position - Interiors.origin(was_inside) if was_inside != "" else Vector3.ZERO
 	events.reset()
