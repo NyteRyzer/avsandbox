@@ -23,6 +23,7 @@ var gravity_scale := 1.0
 var kos := 0
 var _respawn_t := -1.0
 var _last_district := ""
+var _tips_shown := false
 
 
 func _ready() -> void:
@@ -114,6 +115,11 @@ func spawn_player(id: String, at = null) -> void:
 	Game.heat = old_heat if at == null else 0.0
 	hud.on_player_changed()
 	notify("You are %s" % c["alias"], Color("#ffffff"))
+	if not _tips_shown:
+		_tips_shown = true
+		notify("Tab: sandbox tools (spawn anyone, time, weather, teleport)", Color("#ffe080"))
+		notify("Yellow marker on the minimap = an event to stop (or start)", Color("#ffe080"))
+		notify("Esc: pause, change character, settings", Color("#ffe080"))
 
 
 func spawn_point_for(c: Dictionary) -> Vector3:

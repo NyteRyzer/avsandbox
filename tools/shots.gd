@@ -12,6 +12,12 @@ func _ready() -> void:
 		out_dir = args[0]
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	get_window().size = Vector2i(1600, 900)
+	var only := args[1] if args.size() > 1 else ""
+	if only == "" or only == "roster":
+		await _roster()
+	if only == "roster":
+		get_tree().quit()
+		return
 	await _title()
 	await _select()
 	await _world()
@@ -22,11 +28,62 @@ func _snap(name: String, frames := 20) -> void:
 	for i in frames:
 		await get_tree().process_frame
 	var img := get_viewport().get_texture().get_image()
-	img.save_png(out_dir.path_join(name + ".png"))
+	img.save_jpg(out_dir.path_join(name + ".jpg"), 0.86)
 	print("saved %s  draw calls %d  objects %d  fps %d" % [name,
 		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
 		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME),
 		Engine.get_frames_per_second()])
+
+
+func _roster() -> void:
+	var root := Node3D.new()
+	add_child(root)
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.07, 0.09, 0.15)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.6, 0.65, 0.8)
+	env.ambient_light_energy = 0.6
+	var we := WorldEnvironment.new()
+	we.environment = env
+	root.add_child(we)
+	var light := DirectionalLight3D.new()
+	light.rotation = Vector3(-0.6, 0.5, 0)
+	root.add_child(light)
+	var per_row := 10
+	for side in ["hero", "villain"]:
+		var list: Array = Game.heroes() if side == "hero" else Game.villains()
+		for i in list.size():
+			var c: Dictionary = list[i]
+			var m := CharacterModel.new()
+			root.add_child(m)
+			m.build(c["look"])
+			var s := float(c["look"].get("scale", 1.0))
+			m.scale = Vector3.ONE * minf(1.0, 1.3 / s) * s / s
+			var row := i / per_row
+			var col := i % per_row
+			var y := -row * 3.0 - (0.0 if side == "hero" else 12.5)
+			m.position = Vector3(col * 1.6, y, 0)
+			m.rotation.y = PI + 0.35
+			var l := Label3D.new()
+			l.text = c["alias"]
+			l.font_size = 40
+			l.pixel_size = 0.006
+			l.outline_size = 8
+			l.modulate = UITheme.side_color(side).lightened(0.4)
+			l.position = m.position + Vector3(0, -0.25, 0.5)
+			root.add_child(l)
+	var cam := Camera3D.new()
+	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+	cam.size = 24.0
+	cam.position = Vector3(7.2, -10.0, 20)
+	cam.current = true
+	root.add_child(cam)
+	get_window().size = Vector2i(1600, 1700)
+	await _snap("roster", 10)
+	get_window().size = Vector2i(1600, 900)
+	root.queue_free()
+	await get_tree().process_frame
 
 
 func _title() -> void:
@@ -89,3 +146,28 @@ func _world() -> void:
 	w.sandbox_menu.open()
 	await _snap("sandbox_menu", 10)
 	w.sandbox_menu.close()
+
+	# Action: a speedster at full tilt, heat vision.
+	w.clear_npcs()
+	w.day_night.hour = 17.8
+	w.spawn_player("reverse_flash", Vector3(-560, 0.5, 0))
+	w.cam.yaw = PI * 0.5 + 0.35
+	w.cam.pitch = -0.12
+	w.player.face_dir = Vector3.RIGHT
+	for i in 50:
+		w.player.velocity = Vector3(55, 0, 0)
+		w.player.global_position += Vector3(55.0 / 60.0, 0, 0)
+		w.player._speed_trail(1.0 / 60.0, 55.0)
+		await get_tree().physics_frame
+	await _snap("speedster", 1)
+	w.spawn_player("superman", Vector3(300, 30, 300))
+	w.player.flying = true
+	w.cam.yaw = 0.3
+	w.cam.pitch = -0.35
+	var target := w.population.spawn_character(Game.get_character("reign"), "villain", Vector3(296, 18, 270))
+	target.flying = true
+	for i in 30:
+		w.player.aim_point = target.chest()
+		Abilities.beam_tick(w.player, w.player.def["secondary"], 1.0 / 60.0, "secondary")
+		await get_tree().process_frame
+	await _snap("heat_vision", 1)

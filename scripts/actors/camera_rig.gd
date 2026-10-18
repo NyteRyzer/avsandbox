@@ -26,6 +26,8 @@ func _ready() -> void:
 	camera.far = 2600.0
 	camera.near = 0.08
 	spring.add_child(camera)
+	add_to_group("settings_listeners")
+	on_settings_changed()
 	var probe := SphereShape3D.new()
 	probe.radius = 0.25
 	spring.shape = probe
@@ -45,6 +47,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			zoom = maxf(2.0, zoom - 0.6)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			zoom = minf(18.0, zoom + 0.6)
+
+
+func on_settings_changed() -> void:
+	camera.far = float(Game.settings["view_distance"]) + 1400.0
 
 
 func shake(amount: float) -> void:

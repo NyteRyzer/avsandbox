@@ -441,7 +441,8 @@ func _speed_trail(delta: float, hspeed: float) -> void:
 		var a := last_trail_pos
 		var b := global_position + Vector3.UP * randf_range(0.4, 1.6) * size
 		if a.distance_to(b) < 25.0:
-			FX.lightning(world, a, b, col, 0.25, 0.35, 3)
+			FX.lightning(world, a, b, col, 0.3, 0.35, 3)
+			FX.lightning(world, a + Vector3.UP * 0.5 * size, b + Vector3.UP * randf_range(-0.4, 0.4) * size, col.lightened(0.3), 0.22, 0.45, 3)
 		last_trail_pos = b
 		if randf() < 0.15:
 			Sfx.play("zap", global_position, -14.0, 0.3)

@@ -1,0 +1,169 @@
+# Crisis City
+
+**An unofficial Arrowverse open-world sandbox.** Pick any of **59 heroes and villains** from
+*Arrow*, *The Flash*, *Supergirl*, *Legends of Tomorrow*, *Batwoman*, *Black Lightning*,
+*Stargirl* and *Superman & Lois*, then go loose in a city that merges Star City, Central City,
+National City and Freeland into one island. Stop crimes as a hero or cause them as a villain,
+spawn anyone as your ally or enemy, change the time and weather, lift cars, run up walls, and
+fly over the skyline.
+
+Built with **Godot 4.3** (GDScript, Compatibility renderer). Runs on **Windows, macOS and Linux**.
+
+![Title screen](docs/screenshots/title.jpg)
+![Choose from 59 characters](docs/screenshots/character_select.jpg)
+![Central City and S.T.A.R. Labs](docs/screenshots/central_city.jpg)
+![Star City at night](docs/screenshots/star_city_night.jpg)
+![Flying over National City](docs/screenshots/national_city_flight.jpg)
+![Reverse-Flash at super speed](docs/screenshots/speedster.jpg)
+![Unity Park brawl](docs/screenshots/unity_park.jpg)
+![Sandbox tools](docs/screenshots/sandbox_menu.jpg)
+
+## Download and play
+
+The *Test and build* GitHub Actions workflow builds Windows, macOS (universal: Apple Silicon and
+Intel) and Linux versions on every push. Open the latest workflow run under **Actions** and
+download the `CrisisCity-builds` artifact. Pushing a tag such as `v0.1.0` also attaches the three
+zips to a GitHub Release.
+
+| Platform | How to start |
+| --- | --- |
+| Windows | Unzip and run `CrisisCity.exe`. The build is unsigned, so SmartScreen may warn you: choose **More info → Run anyway**. |
+| macOS | Unzip and move **Crisis City.app** to Applications. It is ad-hoc signed but not notarized, so the first time, right-click it and choose **Open**. On macOS 15, use **System Settings → Privacy & Security → Open Anyway**. |
+| Linux | Unzip, then run `./CrisisCity.x86_64`. If the executable bit was lost, run `chmod +x CrisisCity.x86_64` first. |
+
+Any GPU with OpenGL 3.3 (or the macOS equivalent) works. The game needs no internet connection.
+
+## Run from source
+
+1. Install [Godot 4.3 or newer](https://godotengine.org/download) (the standard build, not .NET).
+2. Open Godot, click **Import**, and select this folder's `project.godot`.
+3. Press **F5** (Run Project).
+
+Or from a terminal: `godot --path .` to play, `godot --path . -e` to open the editor.
+
+To build a release yourself, install Godot 4.3's export templates (**Editor → Manage Export
+Templates**), then run, for example,
+`godot --headless --path . --export-release "Windows" build/windows/CrisisCity.exe`.
+The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`.
+
+## Controls
+
+| Action | Keyboard and mouse | Gamepad |
+| --- | --- | --- |
+| Move | W A S D | Left stick |
+| Look / zoom | Mouse / mouse wheel | Right stick |
+| Jump (flyers: climb) | Space | A |
+| Sprint / super speed / flight boost | Shift | L3 |
+| Primary attack | Left mouse | RT |
+| Secondary attack (hold for beams) | Right mouse | LT |
+| Special power | Q | Y |
+| Grappling line, or lift and throw | E | RB |
+| Take off / land (flyers) | F | LB |
+| Descend while flying | Ctrl or C | B |
+| Sandbox tools | Tab | Back |
+| Pause, change character, settings | Esc | Start |
+| Hide HUD | F1 | |
+
+## What's in the game
+
+**Characters.** 34 heroes and 25 villains, each with their own costume, stats, two attacks and a
+special power:
+
+- **Heroes:** Green Arrow, The Flash, Supergirl, Superman, The Atom, White Canary, Black Canary,
+  Spartan, Speedy, Kid Flash, Vibe, Killer Frost, Firestorm, Martian Manhunter, Batwoman,
+  Black Lightning, Thunder, Lightning, Mr. Terrific, Vixen, Hawkgirl, Citizen Steel, Stargirl,
+  Jay Garrick, Jesse Quick, XS, Elongated Man, Guardian, Mon-El, Dreamer, Brainiac 5, Arsenal,
+  Wild Dog and Heat Wave (Legend).
+- **Villains:** Malcolm Merlyn, Deathstroke, Prometheus, Damien Darhk, Reverse-Flash, Zoom,
+  Savitar, The Thinker, Captain Cold, Heat Wave, Weather Wizard, Reign, Lex Luthor, Ra's al Ghul,
+  Cicada, Gorilla Grodd, Vandal Savage, Black Siren, Ricardo Diaz, Alice, Captain Boomerang,
+  the Anti-Monitor, Overgirl, Dark Arrow and Tobias Whale.
+
+![The full roster](docs/screenshots/roster.jpg)
+
+**How they move.** Speedsters sprint at 60+ m/s, run up walls and across the bay, leaving
+lightning trails. Kryptonians, Martians, Firestorm, the Atom and others fly. Archers and
+vigilantes swing on grappling lines. Thunder, Vixen, Citizen Steel and Grodd super-jump. Anyone
+with super strength can pick up crates and cars and throw them.
+
+**Powers.** Arrows and explosive arrows, thrown blades and boomerangs, energy bolts, heat vision
+and freeze beams, sonic cries, chain lightning, guns, dashes. Specials include Speed Force
+slow motion, speed vortexes, ground slams, smoke bombs, ice/fire/lightning novas, shrinking,
+invisibility, invulnerability, breach teleports and Darhk's life drain. Fire burns, ice freezes
+and lightning stuns.
+
+**The city.** A procedurally built island about 1.2 km across with four districts and their
+landmarks: Queen Consolidated and Verdant in Star City; S.T.A.R. Labs, CCPD and Jitters in
+Central City; CatCo and the D.E.O. in National City; Garfield High and Iron Heights in Freeland.
+Unity Park sits in the middle, with the Waverider hovering above it. The docks and open bay
+surround the island. There's a day/night cycle with lit windows and streetlights, plus rain,
+storms and fog.
+
+**A living world.** Civilians walk the sidewalks and flee from fights. Traffic drives the
+streets until you hit it. Police patrol, and gangs (the Ghosts, Rogues, Cadmus and the 100) stake
+out corners, with more of them at night.
+
+**Heroes and villains play differently.**
+- As a **hero**, you earn *Reputation* by stopping robberies, gang wars, super-villain attacks
+  and breaches. Hurting civilians or police raises your *heat*: at 2 the police turn on you,
+  and at 4 other heroes come after you.
+- As a **villain**, you earn *Infamy* by breaking up police raids, taking down hero patrols and
+  pulling off armored-truck heists. Your heat rises with every crime, and at 3 heroes start
+  hunting you.
+
+**Sandbox tools (Tab).**
+- Spawn any character as an ally who follows you or as an enemy (an "evil Supergirl" works).
+- Spawn random teams, crowds, gangs, police squads, cars and crates.
+- Set the time of day, freeze time, change the weather and adjust gravity.
+- Start any event.
+- Cheats: god mode, infinite energy, one-hit KOs and no heat.
+- Teleport to any landmark.
+
+## Project layout
+
+```
+data/roster.json        every character: stats, movement, attacks, special, costume
+scripts/core/           Game (roster, input map, settings, factions, heat) and Sfx autoloads
+scripts/actors/         Actor body, procedural CharacterModel, player/AI brains, camera
+scripts/combat/         Abilities, projectiles and visual effects
+scripts/world/          City generator, day/night and weather, population, events, props
+scripts/ui/             title, character select, HUD, minimap, pause and sandbox menus
+shaders/facade.gdshader building windows that light up at night
+tests/                  headless test suite
+tools/shots.gd          renders the screenshots in docs/
+```
+
+All art, models, textures and sound effects are generated in code at runtime, so the repository
+contains no third-party assets.
+
+### Adding a character
+
+Add an entry to `data/roster.json`. Copy an existing character and change its fields:
+
+- `movement`: one of `run`, `speed`, `flight`, `grapple`, `superjump`.
+- `primary` / `secondary`: an attack `kind` (`melee`, `arrow`, `explosive_arrow`, `throw`,
+  `bolt`, `beam`, `sonic`, `lightning`, `gun`, `dash`) with optional `damage`, `cooldown`,
+  `range`, `speed`, `color` and `element` (`fire`, `ice`, `shock`).
+- `special`: a `kind` from `scripts/combat/abilities.gd`.
+- `look`: suit, accent, skin and hair colours, plus costume `extras` (cape, hood, cowl, bow,
+  wings, helmet and more; see `scripts/actors/character_model.gd`).
+
+The test suite checks every entry.
+
+## Tests
+
+```sh
+godot --headless --path . res://tests/test_runner.tscn
+```
+
+The suite validates the roster and city generation. It plays every character with every
+ability, runs a 59-character AI brawl, and starts every event type. It also simulates real
+input: sprinting, walking, jumping, flying, heat vision, super-jumping, grappling, shooting and
+slow-mo. Finally it checks combat, factions, heat, props, traffic and the menus. CI runs it on
+every push before exporting the builds.
+
+## Disclaimer
+
+Crisis City is a non-commercial fan project. It is not affiliated with, endorsed by or
+sponsored by DC, Warner Bros. Discovery or The CW. All characters, names and related marks
+belong to their respective owners.
