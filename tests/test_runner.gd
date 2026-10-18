@@ -25,6 +25,8 @@ func _ready() -> void:
 	await test_ultimates()
 	_current = "test_places"
 	await test_places()
+	_current = "test_campaign"
+	await test_campaign()
 	_current = "test_ui_smoke"
 	await test_ui_smoke()
 	print("\n%d checks passed, %d failed." % [_passed, _failed])
@@ -430,6 +432,49 @@ func test_places() -> void:
 	world.travel_menu.open("speed")
 	check(world.travel_menu._list.get_child_count() == Multiverse.EARTHS.size() + 1, "speedster travel menu lists the Speed Force and every Earth")
 	world.travel_menu.close()
+
+
+func test_campaign() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("vibe", Vector3(560, 0.5, -440))
+	world.missions.restart()
+	check(world.missions.tracker().contains("S.T.A.R. Labs"), "chapter 1 points to S.T.A.R. Labs")
+	check(world.missions.target_pos() != Vector3.INF, "the minimap marks the objective")
+	world.enter_interior("star_labs")
+	await _frames(4)
+	await get_tree().process_frame
+	check(world.missions.chapter == 1, "entering S.T.A.R. Labs completes chapter 1")
+	world.leave_interior("star_labs")
+	var guard := 0
+	while not world.missions.is_complete() and guard < 8:
+		guard += 1
+		var c := world.missions.current()
+		var place: String = c.get("place", "earth1")
+		if world.place_id != place:
+			world.travel_to(place, "breach")
+		await _frames(3)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		if str(c["kind"]) == "defeat":
+			check(world.missions.foes.size() == c["foes"].size(), "chapter %d spawns its foes" % (world.missions.chapter + 1))
+			if c.get("boss", false):
+				check(world.missions.foes[0].boss, "chapter %d has a boss" % (world.missions.chapter + 1))
+			for f in world.missions.foes:
+				if is_instance_valid(f):
+					f.take_damage(999999.0, world.player)
+			await _frames(3)
+			await get_tree().process_frame
+	check(world.missions.is_complete(), "the whole Crisis campaign can be finished")
+	check(world.place_id == "earth1", "and it ends back home")
+	world.missions.restart()
+	world.travel_to("earth2", "breach")
+	world.missions._set_chapter(0)
+	await _frames(3)
+	var zooms := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.def.get("id", "") == "zoom")
+	check(zooms.size() >= 1, "Earth-2's Zoom is waiting even outside the campaign")
+	world.travel_to("earth1", "breach")
+	world.clear_npcs()
 
 
 func test_ui_smoke() -> void:

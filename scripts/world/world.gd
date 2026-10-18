@@ -10,6 +10,7 @@ var city: City
 var day_night: DayNight
 var population: Population
 var events: Events
+var missions: Missions
 var actors_root: Node3D
 var props_root: Node3D
 var fx_root: Node3D
@@ -57,6 +58,9 @@ func _ready() -> void:
 	events = Events.new()
 	events.world = self
 	add_child(events)
+	missions = Missions.new()
+	missions.world = self
+	add_child(missions)
 	cam = CameraRig.new()
 	add_child(cam)
 	day_night.follow = cam
@@ -137,6 +141,9 @@ func spawn_player(id: String, at = null) -> void:
 		notify("Tab: sandbox tools (spawn anyone, time, weather, teleport)", Color("#ffe080"))
 		notify("Yellow marker on the minimap = an event to stop (or start)", Color("#ffe080"))
 		notify("Esc: pause, change character, settings", Color("#ffe080"))
+		notify("G: doors, consoles and travel  ·  R: your ultimate, once it's charged", Color("#ffe080"))
+		if not missions.is_complete():
+			missions._set_chapter(missions.chapter)
 
 
 func spawn_point_for(c: Dictionary) -> Vector3:
@@ -380,6 +387,9 @@ func travel_to(id: String, how := "breach") -> void:
 		_move_player(pos)
 	inside = was_inside
 	_last_district = ""
+	missions._spawned_for = -1
+	missions._clear_marker()
+	missions.on_arrive(id)
 	var color := Color("#ffd23a") if how == "speed" else (Color("#a58aff") if how == "time" else Color("#4fa8ff"))
 	FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
 	FX.flash(self, player.chest(), color, 3.0, 0.5, 0.6)

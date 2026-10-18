@@ -38,6 +38,7 @@ var settings := {
 	"fov": 75.0,
 	"volume": 0.8,
 	"view_distance": 1200.0,
+	"crisis_chapter": 0,
 }
 var cheats := {"god_mode": false, "infinite_energy": false, "one_hit_ko": false, "no_heat": false}
 

@@ -33,6 +33,7 @@ func _ready() -> void:
 	_main.add_child(UITheme.button("Sandbox Tools  [Tab]", _open_sandbox))
 	_main.add_child(UITheme.button("Change Character", _change_character))
 	_main.add_child(UITheme.button("Settings & Controls", _open_settings))
+	_main.add_child(UITheme.button("Restart the Crisis Campaign", _restart_campaign))
 	_main.add_child(UITheme.button("Quit to Title", _quit_to_title))
 	_main.add_child(UITheme.button("Quit Game", func() -> void: get_tree().quit()))
 	_settings = SettingsPanel.new()
@@ -88,3 +89,8 @@ func _quit_to_title() -> void:
 	visible = false
 	get_tree().paused = false
 	world.quit_to_title.emit()
+
+
+func _restart_campaign() -> void:
+	close()
+	world.missions.restart()

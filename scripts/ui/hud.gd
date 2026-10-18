@@ -17,6 +17,7 @@ var minimap: Minimap
 var district_label: Label
 var clock_label: Label
 var event_label: Label
+var mission_label: Label
 var heat_label: Label
 var score_label: Label
 var notes: VBoxContainer
@@ -103,6 +104,13 @@ func _ready() -> void:
 	score_label = UITheme.label("", 16, UITheme.ACCENT)
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(score_label)
+	mission_label = UITheme.label("", 15, Color("#ffb08a"))
+	mission_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	mission_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	mission_label.custom_minimum_size = Vector2(230, 0)
+	mission_label.add_theme_constant_override("outline_size", 6)
+	mission_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+	right.add_child(mission_label)
 
 	# Top-centre: event tracker.
 	event_label = UITheme.label("", 20, Color("#ffe080"))
@@ -335,6 +343,7 @@ func _process(delta: float) -> void:
 	var h: float = world.day_night.hour
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
+	mission_label.text = world.missions.tracker()
 	var ev: Dictionary = world.events.active
 	if ev.is_empty():
 		event_label.text = ""
