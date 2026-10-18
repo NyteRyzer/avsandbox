@@ -158,9 +158,9 @@ func _ready() -> void:
 
 	hint_label = UITheme.label("", 16, Color(1, 1, 1, 0.85))
 	hint_label.set_anchors_preset(Control.PRESET_CENTER)
-	hint_label.offset_left = -200
-	hint_label.offset_right = 200
-	hint_label.offset_top = 40
+	hint_label.offset_left = -360
+	hint_label.offset_right = 360
+	hint_label.offset_top = 48
 	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_label.add_theme_constant_override("outline_size", 6)
 	hint_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
@@ -306,7 +306,10 @@ func _process(delta: float) -> void:
 	ability_labels[4].text = move_text
 	ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT if p.cooldowns["special"] <= 0.0 and p.energy >= Abilities.special_cost(d["special"]) else UITheme.DIM)
 
-	district_label.text = world.city.district_at(p.global_position)
+	district_label.text = world.place_name(p.global_position)
+	hint_label.text = world.interact_prompt()
+	if world.ship.piloted:
+		hint_label.text = "WAVERIDER  ·  [Shift] boost  ·  [LMB] cannons  ·  [Q] time jump  ·  [G] leave the helm"
 	var h: float = world.day_night.hour
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 

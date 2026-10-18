@@ -15,6 +15,7 @@ var cooldown := 20.0
 var rng := RandomNumberGenerator.new()
 var completed := 0
 var _marker: Node3D
+var enabled := true
 
 
 func _ready() -> void:
@@ -22,7 +23,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if world.player == null or not is_instance_valid(world.player):
+	if not enabled or world.player == null or not is_instance_valid(world.player):
 		return
 	if active.is_empty():
 		cooldown -= delta
@@ -175,6 +176,17 @@ func _expire() -> void:
 		if is_instance_valid(a):
 			a.event_tag = ""
 	_finish()
+
+
+## Drops the current event without a message (used when changing worlds).
+func reset() -> void:
+	for a in active.get("actors", []):
+		if is_instance_valid(a):
+			a.event_tag = ""
+	active = {}
+	cooldown = rng.randf_range(25.0, 45.0)
+	_clear_marker()
+	changed.emit()
 
 
 func _finish() -> void:

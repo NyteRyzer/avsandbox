@@ -21,6 +21,8 @@ func _ready() -> void:
 	await test_combat()
 	_current = "test_player_input"
 	await test_player_input()
+	_current = "test_places"
+	await test_places()
 	_current = "test_ui_smoke"
 	await test_ui_smoke()
 	print("\n%d checks passed, %d failed." % [_passed, _failed])
@@ -280,6 +282,99 @@ func test_player_input() -> void:
 	check(Engine.time_scale < 1.0, "Q starts speed-force slow motion")
 	Game.end_slowmo()
 	world.population.enabled = true
+
+
+func _frames(n: int) -> void:
+	for i in n:
+		await get_tree().physics_frame
+
+
+func test_places() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	for id in Interiors.ORDER:
+		check(not world.city.landmark("Inside " + Interiors.NAMES[id]).is_empty(), "interior %s is built" % id)
+	var outside := 0
+	for d in world.city.doors:
+		if d["interior"] in Interiors.ORDER:
+			outside += 1
+	check(outside >= 5, "city doors lead inside (%d)" % outside)
+	# Walk through S.T.A.R. Labs' front door and back out.
+	var labs: Dictionary = {}
+	for d in world.city.doors:
+		if d["interior"] == "star_labs":
+			labs = d
+	world.spawn_player("vibe", labs["pos"])
+	await _frames(3)
+	check(world.door.get("interior", "") == "star_labs", "standing at the S.T.A.R. Labs door")
+	check(world.interact_prompt().contains("Enter"), "HUD offers to enter")
+	world.interact()
+	await _frames(20)
+	check(world.inside == "star_labs", "entered S.T.A.R. Labs")
+	check(world.player.global_position.y < Interiors.DEPTH + 10.0 and world.player.global_position.y > Interiors.DEPTH - 5.0, "standing on the interior floor (y=%.1f)" % world.player.global_position.y)
+	check(world.place_name(world.player.global_position) == "S.T.A.R. Labs", "HUD names the room")
+	check(world.day_night.indoors, "lighting switches to indoors")
+	world.leave_interior("star_labs")
+	await _frames(3)
+	check(world.inside == "" and world.player.global_position.distance_to(labs["pos"]) < 4.0, "exit returns to the front door")
+	# Suit up from a display case in the Bunker.
+	world.enter_interior("bunker")
+	await _frames(3)
+	var suit: Dictionary = {}
+	for d in world.city.doors:
+		if d["interior"] == "suit" and d["data"] == "black_canary":
+			suit = d
+	world.use_door(suit)
+	check(world.player.def["id"] == "black_canary", "suit up from the display case")
+	world.leave_interior("bunker")
+	# Board the Waverider, fly it, and come back to the bridge.
+	world.teleport_player(world.ship.boarding_point())
+	await _frames(3)
+	check(world.door.get("interior", "") == "waverider", "the ship's ramp is a door")
+	world.interact()
+	await _frames(3)
+	check(world.inside == "waverider", "boarded the Waverider")
+	world.ship.take_helm()
+	var start := world.ship.global_position
+	world.cam.yaw = 0.0
+	world.cam.pitch = 0.4
+	await _hold("move_forward", 90)
+	check(world.ship.global_position.distance_to(start) > 40.0, "the Waverider flies (%.0f m)" % world.ship.global_position.distance_to(start))
+	check(world.ship.global_position.y > start.y + 5.0, "and climbs")
+	check(world.player.global_position.distance_to(world.ship.global_position) < 5.0, "the pilot rides along")
+	world.cam.pitch = -0.2
+	world.interact()
+	await _frames(3)
+	check(not world.ship.piloted and world.inside == "waverider", "leaving the helm returns to the bridge")
+	# Time travel from the bridge keeps you aboard.
+	world.travel_to("2046", "time")
+	await _frames(5)
+	check(world.place_id == "2046" and world.city.spec.get("ruined", false), "time jump to 2046")
+	check(world.inside == "waverider", "still aboard after the jump")
+	world.leave_interior("waverider")
+	await _frames(5)
+	check(world.inside == "" and world.player.global_position.y > -2.0, "step off the ship in 2046")
+	for id in ["old_west", "earthx", "speedforce", "earth1"]:
+		world.travel_to(id, "breach")
+		await _frames(5)
+		check(world.place_id == id and world.city.islands.size() > 0, "travelled to " + id)
+		check(world.player.global_position.y > -2.0, "landed on the ground in " + id)
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	world.travel_to("speedforce", "speed")
+	world.population.enabled = true
+	world.population._tick = 0.0
+	await _frames(3)
+	check(get_tree().get_nodes_in_group("wraiths").size() >= 3, "Time Wraiths hunt in the Speed Force")
+	var home: Dictionary = {}
+	for d in world.city.doors:
+		if d["interior"] == "exit_speedforce":
+			home = d
+	world.use_door(home)
+	await _frames(3)
+	check(world.place_id == "earth1" and world.city.kind == "metro", "the way home leads back to Earth-1")
+	world.travel_menu.open("speed")
+	check(world.travel_menu._list.get_child_count() == 7, "speedster travel menu lists the Speed Force and six Earths")
+	world.travel_menu.close()
 
 
 func test_ui_smoke() -> void:

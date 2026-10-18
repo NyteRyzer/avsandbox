@@ -17,6 +17,8 @@ var cam: CameraRig
 var hud: Hud
 var pause_menu: PauseMenu
 var sandbox_menu: SandboxMenu
+var travel_menu: TravelMenu
+var ship: Waverider
 var player: Actor
 var player_brain: PlayerBrain
 var gravity_scale := 1.0
@@ -24,6 +26,10 @@ var kos := 0
 var _respawn_t := -1.0
 var _last_district := ""
 var _tips_shown := false
+var place_id := "earth1"         # which Earth / era (a Multiverse id)
+var inside := ""                 # which interior the player is in ("" outside)
+var door: Dictionary = {}        # the door or console the player is next to
+var _returns: Dictionary = {}    # interior id -> where to come back out
 
 
 func _ready() -> void:
@@ -44,14 +50,7 @@ func _ready() -> void:
 	fx_root = Node3D.new()
 	fx_root.name = "FX"
 	add_child(fx_root)
-	var r := RandomNumberGenerator.new()
-	r.seed = 7
-	for spot in city.parked:
-		var prop := Prop.new()
-		prop.build(self, spot["kind"], r)
-		props_root.add_child(prop)
-		prop.global_transform = spot["xform"]
-		prop.sleeping = true
+	_spawn_parked()
 	population = Population.new()
 	population.world = self
 	add_child(population)
@@ -70,7 +69,25 @@ func _ready() -> void:
 	pause_menu = PauseMenu.new()
 	pause_menu.world = self
 	add_child(pause_menu)
+	travel_menu = TravelMenu.new()
+	travel_menu.world = self
+	add_child(travel_menu)
+	ship = Waverider.new()
+	ship.world = self
+	add_child(ship)
+	ship.park(city.waverider_dock)
 	Game.notify.connect(notify)
+
+
+func _spawn_parked() -> void:
+	var r := RandomNumberGenerator.new()
+	r.seed = 7
+	for spot in city.parked:
+		var prop := Prop.new()
+		prop.build(self, spot["kind"], r)
+		props_root.add_child(prop)
+		prop.global_transform = spot["xform"]
+		prop.sleeping = true
 
 
 func _exit_tree() -> void:
@@ -147,6 +164,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("sandbox_menu"):
 		sandbox_menu.toggle()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("interact"):
+		interact()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("toggle_hud"):
 		hud.visible = not hud.visible
 	elif event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not get_tree().paused:
@@ -162,10 +182,208 @@ func _process(delta: float) -> void:
 			Game.clear_heat()
 			hud.show_ko(false)
 	if player and is_instance_valid(player):
-		var d := city.district_at(player.global_position)
+		inside = Interiors.room_at(player.global_position)
+		day_night.indoors = inside != ""
+		population.enabled = inside == "" and not ship.piloted
+		events.enabled = inside == "" and city.kind != "speedforce"
+		door = _nearest_door()
+		var d := place_name(player.global_position)
 		if d != _last_district:
 			_last_district = d
 			hud.show_district(d)
+
+
+## "Central City", or "Earth-2 · Central City" away from home.
+func place_name(p: Vector3) -> String:
+	var d := city.district_at(p)
+	if place_id == "earth1" or Interiors.room_at(p) != "" or city.kind != "metro":
+		return d
+	return "%s · %s" % [Multiverse.dest(place_id)["name"], d]
+
+
+# --- Doors, interiors and travel ---------------------------------------------
+
+func _nearest_door() -> Dictionary:
+	if ship.piloted or player.dead:
+		return {}
+	var p := player.global_position
+	var best: Dictionary = {}
+	var best_d := 3.2
+	for dr in city.doors:
+		var dp: Vector3 = dr["pos"]
+		var dd := Vector2(dp.x - p.x, dp.z - p.z).length()
+		if dd < best_d and absf(dp.y - p.y) < 3.0:
+			best_d = dd
+			best = dr
+	if inside == "" and best.is_empty():
+		var bp := ship.boarding_point()
+		if Vector2(bp.x - p.x, bp.z - p.z).length() < 6.0 and absf(bp.y - p.y) < 4.0:
+			best = {"name": "The Waverider", "pos": bp, "interior": "waverider"}
+	return best
+
+
+## What [G] would do right now, for the HUD prompt ("" if nothing).
+func interact_prompt() -> String:
+	if ship.piloted:
+		return ""
+	if not door.is_empty():
+		var what: String = door["interior"]
+		if what in Interiors.ORDER:
+			return "[G]  Enter " + str(door["name"])
+		return "[G]  " + str(door["name"])
+	if inside == "" and _can_run_between_worlds():
+		return "[G]  Run into the Speed Force / to another Earth"
+	if inside == "" and _can_breach():
+		return "[G]  Open a breach to another Earth"
+	return ""
+
+
+func _can_run_between_worlds() -> bool:
+	return player.movement == "speed" and player.in_sprint and Vector3(player.velocity.x, 0, player.velocity.z).length() > 30.0
+
+
+func _can_breach() -> bool:
+	return player.def.get("id", "") == "vibe"
+
+
+func interact() -> void:
+	if player == null or not is_instance_valid(player) or player.dead:
+		return
+	if ship.piloted:
+		ship.leave_helm()
+		return
+	if not door.is_empty():
+		use_door(door)
+	elif inside == "" and _can_run_between_worlds():
+		travel_menu.open("speed")
+	elif inside == "" and _can_breach():
+		travel_menu.open("breach")
+
+
+func use_door(d: Dictionary) -> void:
+	var what: String = d["interior"]
+	match what:
+		"exit":
+			leave_interior(str(d.get("outside", inside)))
+		"suit":
+			FX.flash(self, player.chest(), Color("#ffffff"), 1.4)
+			spawn_player(str(d["data"]), player.global_position)
+		"speedforce":
+			if player.movement == "speed":
+				travel_to("speedforce", "speed")
+			else:
+				notify("Only a speedster can run fast enough to reach the Speed Force.", Color("#ffd27a"))
+		"breach_room":
+			travel_menu.open("breach")
+		"time_console":
+			travel_menu.open("time")
+		"helm":
+			ship.take_helm()
+		"balcony":
+			leave_interior("catco", 60.0)
+		"exit_speedforce":
+			travel_to("earth1", "speed")
+		_:
+			if what in Interiors.ORDER:
+				enter_interior(what)
+
+
+func enter_interior(id: String, remember := true) -> void:
+	if remember and inside == "":
+		_returns[id] = player.global_position
+	var spot := city.landmark("Inside " + Interiors.NAMES[id])
+	var pos: Vector3 = spot["pos"] if not spot.is_empty() else Interiors.origin(id) + Vector3.UP
+	_move_player(pos)
+	inside = id
+	FX.flash(self, player.chest(), Color("#ffffff"), 1.2, 0.3, 0.4)
+	notify("Entered " + Interiors.NAMES[id], Color("#bfe8ff"))
+
+
+## Steps back outside. `lift` raises the exit point (the CatCo balcony).
+func leave_interior(id: String, lift := 0.0) -> void:
+	var pos := Vector3.ZERO
+	if id == "waverider":
+		pos = ship.boarding_point()
+	elif _returns.has(id):
+		pos = _returns[id]
+	else:
+		pos = spawn_point_for(player.def)
+		for dr in city.doors:
+			if dr["interior"] == id:
+				pos = dr["pos"]
+				break
+	_returns.erase(id)
+	if lift > 0.0:
+		pos += Vector3.UP * lift
+	_move_player(pos)
+	inside = ""
+	_last_district = ""
+
+
+func _move_player(pos: Vector3) -> void:
+	player.global_position = pos
+	player.velocity = Vector3.ZERO
+	player.flying = false
+	cam.global_position = pos + Vector3.UP * 1.6
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a != player and a.is_ally_of_player():
+			a.global_position = pos + Vector3(randf_range(-3, 3), 0.3, randf_range(-3, 3))
+			a.velocity = Vector3.ZERO
+
+
+## Rebuilds the world as another Earth, era or the Speed Force. `how` is the
+## way you got there (breach, speed, time) and picks the effect.
+func travel_to(id: String, how := "breach") -> void:
+	if not Multiverse.DESTS.has(id) or player == null:
+		return
+	var d := Multiverse.dest(id)
+	var was_inside := inside
+	var rel := player.global_position - Interiors.origin(was_inside) if was_inside != "" else Vector3.ZERO
+	events.reset()
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a != player and not a.is_ally_of_player():
+			a.queue_free()
+	for p in props_root.get_children():
+		p.queue_free()
+	for f in fx_root.get_children():
+		f.queue_free()
+	remove_child(city)
+	city.queue_free()
+	city = City.new()
+	city.name = "City"
+	add_child(city)
+	move_child(city, 0)
+	city.generate(1987, d["spec"])
+	day_night.city = city
+	_spawn_parked()
+	place_id = id
+	_returns.clear()
+	if ship.piloted:
+		ship.global_position.y = maxf(ship.global_position.y, 80.0)
+	else:
+		ship.park(city.waverider_dock)
+	var pos: Vector3
+	if was_inside != "":
+		pos = Interiors.origin(was_inside) + rel
+	elif ship.piloted:
+		pos = ship.global_position
+	elif city.kind == "metro":
+		pos = spawn_point_for(player.def)
+	else:
+		pos = Vector3(0, 0.5, 30)
+	if not ship.piloted:
+		_move_player(pos)
+	inside = was_inside
+	_last_district = ""
+	var color := Color("#ffd23a") if how == "speed" else (Color("#a58aff") if how == "time" else Color("#4fa8ff"))
+	FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
+	FX.flash(self, player.chest(), color, 3.0, 0.5, 0.6)
+	Sfx.play("teleport", null, 0.0)
+	var verb := {"speed": "You ran to", "time": "The Waverider arrives in", "breach": "You breached to"}
+	notify("%s %s" % [verb.get(how, "Welcome to"), d["name"]], color)
+	if city.kind == "speedforce":
+		notify("Time Wraiths hunt speedsters here. Find the way home (or press G at the light).", Color("#ffd27a"))
+		population.spawn_wraiths(3)
 
 
 func notify(text: String, color := Color.WHITE) -> void:
@@ -263,6 +481,7 @@ func clear_npcs() -> void:
 
 
 func teleport_player(pos: Vector3) -> void:
+	inside = Interiors.room_at(pos)
 	player.global_position = pos
 	player.velocity = Vector3.ZERO
 	player.flying = false

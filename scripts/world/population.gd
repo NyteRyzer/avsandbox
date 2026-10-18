@@ -37,6 +37,9 @@ func _process(delta: float) -> void:
 		return
 	_tick = 0.5
 	var p: Vector3 = world.player.global_position
+	if world.city.kind == "speedforce":
+		_speed_force()
+		return
 	var counts := {"civilian": 0, "police": 0, "thug": 0}
 	var total := 0
 	for a in get_tree().get_nodes_in_group("actors"):
@@ -97,6 +100,44 @@ func spawn_traffic(on_road: Vector3) -> Prop:
 	car.rotation.y = atan2(-dir.x, -dir.z)
 	car.start_driving(dir)
 	return car
+
+
+var _wraith_t := 25.0
+
+
+func _speed_force() -> void:
+	_wraith_t -= 0.5
+	if _wraith_t <= 0.0:
+		_wraith_t = 30.0
+		if get_tree().get_nodes_in_group("wraiths").size() < 3:
+			spawn_wraiths(2)
+
+
+## Time Wraiths: the Speed Force's hunters, out for any speedster.
+func spawn_wraiths(count: int) -> void:
+	var p: Vector3 = world.player.global_position
+	for k in count:
+		var ang := rng.randf() * TAU
+		var pos := p + Vector3(cos(ang) * 40.0, 6.0, sin(ang) * 40.0)
+		var team := "villain" if Game.player_side() == 1 else "hero"
+		var a := spawn_character(wraith_def(), team, pos)
+		a.add_to_group("wraiths")
+		a.brain.detect = 300.0
+		a.brain.leash = 0.0
+		a.grudges[world.player.get_instance_id()] = 9999.0
+		FX.portal(world, a.chest(), Color("#a8c8ff"))
+
+
+func wraith_def() -> Dictionary:
+	return {
+		"id": "time_wraith", "name": "Time Wraith", "alias": "Time Wraith", "side": "villain", "home": "any",
+		"health": 140, "speed": 1.3, "power": 1.0, "movement": "flight", "fly_speed": 1.4,
+		"primary": {"kind": "melee", "damage": 14, "element": "ice"},
+		"secondary": {"kind": "psychic", "damage": 10},
+		"special": {"kind": "rage"},
+		"look": {"suit": "#141820", "legs": "#0c0e14", "accent": "#2a3040", "skin": "#3a3e48", "hair": "#0a0a0a",
+			"extras": ["hood", "cape"], "cape": "#10141c", "eye_glow": "#c8e0ff", "build": "male", "scale": 1.15},
+	}
 
 
 func _hunters(step: float, p: Vector3) -> void:

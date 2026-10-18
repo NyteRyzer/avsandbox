@@ -237,6 +237,7 @@ func setup_input() -> void:
 	_bind("ability", [_key(KEY_E), _button(JOY_BUTTON_RIGHT_SHOULDER)])
 	_bind("fly", [_key(KEY_F), _button(JOY_BUTTON_LEFT_SHOULDER)])
 	_bind("dodge", [_key(KEY_V), _button(JOY_BUTTON_X)])
+	_bind("interact", [_key(KEY_G), _button(JOY_BUTTON_DPAD_UP)])
 	_bind("sandbox_menu", [_key(KEY_TAB), _button(JOY_BUTTON_BACK)])
 	_bind("pause", [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
 	_bind("toggle_hud", [_key(KEY_F1)])

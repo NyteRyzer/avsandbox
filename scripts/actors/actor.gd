@@ -533,7 +533,9 @@ func _move(delta: float) -> void:
 	if face_dir.length() > 0.1:
 		var target_yaw := atan2(-face_dir.x, -face_dir.z)
 		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(delta * 14.0 * comp, 0.0, 1.0))
-	if global_position.y < -40.0 or global_position.y > 1500.0:
+	# Interiors are built far below the map, under their own floor.
+	var floor_limit := Interiors.DEPTH - 40.0 if absf(global_position.z - 3000.0) < 80.0 else -40.0
+	if global_position.y < floor_limit or global_position.y > 1500.0:
 		global_position = world.city.nearest_road_point(global_position) if world else Vector3(0, 2, 0)
 		velocity = Vector3.ZERO
 	if held_prop and is_instance_valid(held_prop):

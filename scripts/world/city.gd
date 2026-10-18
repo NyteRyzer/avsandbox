@@ -53,7 +53,7 @@ var doors: Array = []            # {name, pos: Vector3, interior: String}
 var islands: Array = []          # {name, center: Vector2, land: Rect2, grid: Rect2, style}
 var bridges: Array[Rect2] = []
 var extra_land: Array = []       # {rect: Rect2, name}
-var waverider_dock := Vector3(0, 120, 0)
+var waverider_dock := Vector3(0, 4.5, -500)
 var facade_mats: Array = []
 var lit_mats: Array[ShaderMaterial] = []
 var _instances: Dictionary = {}
@@ -89,6 +89,7 @@ func generate(p_seed := 1987, p_spec: Dictionary = {}) -> void:
 				_build_lian_yu()
 				_build_iron_heights()
 			_build_bay_landmarks()
+	Interiors.build_all(self)
 	_flush_instances()
 
 
@@ -108,7 +109,7 @@ func island_at(p: Vector3) -> Dictionary:
 
 
 func is_water(p: Vector3) -> bool:
-	if kind != "metro":
+	if kind != "metro" or Interiors.is_inside(p):
 		return false
 	var q := Vector2(p.x, p.z)
 	for isl in islands:
@@ -124,6 +125,9 @@ func is_water(p: Vector3) -> bool:
 
 
 func district_at(p: Vector3) -> String:
+	var room := Interiors.room_at(p)
+	if room != "":
+		return Interiors.NAMES[room]
 	if kind == "western":
 		return "Old West"
 	if kind == "speedforce":
@@ -855,8 +859,17 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 
 
 func _build_bay_landmarks() -> void:
-	_waverider_parked(waverider_dock)
-	landmarks.append({"name": "The Waverider", "pos": waverider_dock + Vector3(0, 6, 10), "district": "The Bay"})
+	# The Waverider's landing pad, off the Star City - Central City bridge.
+	var pad := Rect2(-45, -549, 90, 110)
+	add_box(Vector3(0, -0.45, pad.get_center().y), Vector3(pad.size.x, 1.0, pad.size.y), _concrete_mat)
+	var stripe := _plain(Color("#ffd23a"), 0.6, 0.8)
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(side * 20.0, 0.06, pad.get_center().y), Vector3(1.0, 0.1, 90.0), stripe, false)
+	for k in 6:
+		add_box(Vector3(-40 + k * 16.0, 0.3, pad.end.y - 1.0), Vector3(0.4, 0.6, 0.4), _plain(Color("#6ad0ff"), 0.2, 3.0), false)
+	extra_land.append({"rect": pad, "name": "Waverider Landing Pad"})
+	_label("TIME BUREAU PAD", Vector3(0, 3.0, pad.end.y - 2.0), 1.6, Color("#bfe8ff"))
+	landmarks.append({"name": "The Waverider", "pos": Vector3(0, 0.5, -462), "district": "Waverider Landing Pad"})
 
 
 func _tower(r: Rect2, h: float, m: Material, crown: Color) -> void:
@@ -953,24 +966,6 @@ func _build_lian_yu() -> void:
 	add_box(wreck + Vector3(4, 1.2, 2), Vector3(18.0, 0.6, 4.0), _plain(Color("#b8b8b0")), true, 0.6)
 	_label("LIAN YU", Vector3(c.x, 40, c.y), 8.0, Color("#d8ffd0"))
 	landmarks.append({"name": "Lian Yu", "pos": Vector3(c.x + 40, 0.5, c.y + 120), "district": "Lian Yu"})
-
-
-func _waverider_parked(pos: Vector3) -> void:
-	var hull := _plain(Color("#9aa3ad"), 0.4)
-	var dark := _plain(Color("#2a3038"), 0.5)
-	var glow := _plain(Color("#6ad0ff"), 0.2, 3.0)
-	add_box(pos, Vector3(14, 6, 60), hull)
-	add_box(pos + Vector3(0, 3.5, -4), Vector3(10, 2, 36), dark)
-	add_box(pos + Vector3(0, -0.5, -36), Vector3(8, 4, 14), hull)
-	add_box(pos + Vector3(0, 1.0, -42), Vector3(5, 2, 4), dark)
-	add_box(pos + Vector3(-15, 0, 12), Vector3(18, 1.2, 16), hull, true, -0.2)
-	add_box(pos + Vector3(15, 0, 12), Vector3(18, 1.2, 16), hull, true, 0.2)
-	for sx in [-5.0, 5.0]:
-		add_box(pos + Vector3(sx, 0, 31), Vector3(4, 4, 2), glow, false)
-	add_box(pos + Vector3(0, 3.1, 10), Vector3(12, 0.2, 24), _plain(Color("#5a6470")))
-	_label("WAVERIDER", pos + Vector3(0, 12, 0), 3.0, Color("#bfe8ff"))
-	buildings.append({"rect": Rect2(pos.x - 7, pos.z - 30, 14, 60), "h": -1.0})
-	doors.append({"name": "The Waverider", "pos": pos + Vector3(0, 4.0, 10), "interior": "waverider"})
 
 
 # --- Other places -------------------------------------------------------------

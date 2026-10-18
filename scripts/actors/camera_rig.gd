@@ -7,6 +7,7 @@ var target: Actor
 var yaw := 0.0
 var pitch := -0.2
 var zoom := 5.5
+var zoom_max := 18.0
 var spring: SpringArm3D
 var camera: Camera3D
 var _shake := 0.0
@@ -46,7 +47,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			zoom = maxf(2.0, zoom - 0.6)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoom = minf(18.0, zoom + 0.6)
+			zoom = minf(zoom_max, zoom + 0.6)
 
 
 func on_settings_changed() -> void:

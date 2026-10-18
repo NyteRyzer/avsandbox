@@ -15,6 +15,7 @@ var frozen := false
 var weather := "clear"
 var city: City
 var follow: Node3D
+var indoors := false
 
 var sun: DirectionalLight3D
 var env: Environment
@@ -142,5 +143,12 @@ func _apply() -> void:
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
 	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view))
+	env.fog_enabled = not indoors
+	if indoors:
+		sun.light_energy = 0.0
+		env.ambient_light_color = Color(0.55, 0.57, 0.62)
+		env.ambient_light_energy = 0.55
+	if follow and is_instance_valid(follow):
+		rain.visible = not indoors
 	if city:
 		city.set_night(1.0 - day)

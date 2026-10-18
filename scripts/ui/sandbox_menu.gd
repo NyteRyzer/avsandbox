@@ -41,6 +41,7 @@ func _ready() -> void:
 	tabs.add_child(_events_tab())
 	tabs.add_child(_cheats_tab())
 	tabs.add_child(_teleport_tab())
+	tabs.add_child(_multiverse_tab())
 
 
 func toggle() -> void:
@@ -54,6 +55,7 @@ func open() -> void:
 	if world.pause_menu.visible:
 		return
 	visible = true
+	_fill_teleports()
 	_time_slider.set_value_no_signal(world.day_night.hour)
 	_time_label.text = _hour_text(world.day_night.hour)
 	_freeze.set_pressed_no_signal(world.day_night.frozen)
@@ -252,14 +254,53 @@ func _cheats_tab() -> Control:
 	return v
 
 
+var _teleport_grid: GridContainer
+
+
 func _teleport_tab() -> Control:
 	var v := _page("Teleport")
 	v.add_child(UITheme.label("Landmarks", 20, UITheme.ACCENT))
-	var g := _grid(3)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_teleport_grid = _grid(3)
+	scroll.add_child(_teleport_grid)
+	v.add_child(scroll)
+	_fill_teleports()
+	return v
+
+
+## Rebuilt on open: each Earth or era has its own landmarks.
+func _fill_teleports() -> void:
+	for c in _teleport_grid.get_children():
+		c.queue_free()
 	for l in world.city.landmarks:
 		var pos: Vector3 = l["pos"]
-		g.add_child(UITheme.button(l["name"], func() -> void:
+		var go := func() -> void:
 			world.teleport_player(pos)
-			close(), 250))
+			close()
+		_teleport_grid.add_child(UITheme.button(l["name"], go, 250))
+
+
+func _multiverse_tab() -> Control:
+	var v := _page("Multiverse")
+	v.add_child(UITheme.label("Other Earths", 20, UITheme.ACCENT))
+	var g := _grid(3)
+	for id in Multiverse.EARTHS:
+		g.add_child(_travel_button(id, "breach"))
+	g.add_child(_travel_button("speedforce", "speed"))
 	v.add_child(g)
+	v.add_child(UITheme.label("Through time (the Waverider)", 20, UITheme.ACCENT))
+	var g2 := _grid(3)
+	for id in Multiverse.ERAS:
+		if id != "earth1":
+			g2.add_child(_travel_button(id, "time"))
+	v.add_child(g2)
+	v.add_child(UITheme.label("In the world: speedsters press G while running flat out, Cisco (Vibe) presses G to breach,\nthe S.T.A.R. Labs Breach Room opens breaches, and Gideon on the Waverider plots time jumps.", 15, UITheme.DIM))
 	return v
+
+
+func _travel_button(id: String, how: String) -> Button:
+	var go := func() -> void:
+		close()
+		world.travel_to(id, how)
+	return UITheme.button(Multiverse.dest(id)["name"], go, 250)
