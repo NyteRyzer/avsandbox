@@ -447,6 +447,7 @@ func test_driving() -> void:
 	car.rotation.y = 0.0
 	await _frames(4)
 	await get_tree().process_frame
+	await get_tree().process_frame
 	check(world.door.get("interior", "") == "car", "standing by a car offers to drive it")
 	world.interact()
 	check(world.vehicle == car and car.player_driven, "G gets behind the wheel")

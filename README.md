@@ -1,9 +1,10 @@
 # Crisis City
 
-**An unofficial Arrowverse open-world sandbox.** Pick any of **59 heroes and villains** from
+**An unofficial Arrowverse open-world sandbox.** Pick any of **72 heroes and villains** from
 *Arrow*, *The Flash*, *Supergirl*, *Legends of Tomorrow*, *Batwoman*, *Black Lightning*,
 *Stargirl* and *Superman & Lois*, then go loose in a bay where Star City, Central City,
-National City and Freeland each sit on their own island, joined by bridges. Walk into
+National City, Freeland, Gotham City and Smallville each sit on their own island, joined by
+bridges. Play the Crisis on Infinite Earths campaign, unleash your character's ultimate, steal a car. Walk into
 S.T.A.R. Labs, the Arrow Bunker, Jitters, CatCo and the D.E.O.; fly the Waverider and jump
 through time; run into the Speed Force or breach to other Earths. Stop crimes as a hero or cause
 them as a villain, spawn anyone as your ally or enemy, lift cars, run up walls, and fly over the
@@ -12,7 +13,7 @@ skyline.
 Built with **Godot 4.3** (GDScript, Compatibility renderer). Runs on **Windows, macOS and Linux**.
 
 ![Title screen](docs/screenshots/title.jpg)
-![Choose from 59 characters](docs/screenshots/character_select.jpg)
+![Choose from 72 characters](docs/screenshots/character_select.jpg)
 ![Central City and S.T.A.R. Labs](docs/screenshots/central_city.jpg)
 ![Star City at night](docs/screenshots/star_city_night.jpg)
 ![Flying over National City](docs/screenshots/national_city_flight.jpg)
@@ -23,6 +24,9 @@ Built with **Godot 4.3** (GDScript, Compatibility renderer). Runs on **Windows, 
 ![Flying the Waverider](docs/screenshots/waverider_flight.jpg)
 ![Earth-X](docs/screenshots/place_earthx.jpg)
 ![The Speed Force](docs/screenshots/place_speedforce.jpg)
+![The bridge to Gotham City](docs/screenshots/gotham_bridge.jpg)
+![Smallville](docs/screenshots/smallville.jpg)
+![The Anti-Matter Universe](docs/screenshots/place_antimatter.jpg)
 
 ## Download and play
 
@@ -66,7 +70,8 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Grappling line, or lift and throw | E | RB |
 | Take off / land (flyers) | F | LB |
 | Descend while flying | Ctrl or C | B |
-| Enter a door, use a console, travel (speedsters at full speed, Vibe) | G | D-pad up |
+| Enter a door, use a console, drive a car, travel (speedsters at full speed, Vibe) | G | D-pad up |
+| Ultimate (when charged) | R | R3 |
 | Dodge | V | X |
 | Sandbox tools | Tab | Back |
 | Pause, change character, settings | Esc | Start |
@@ -74,18 +79,36 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 
 ## What's in the game
 
-**Characters.** 34 heroes and 25 villains, each with their own costume, stats, two attacks and a
-special power:
+**Characters.** 41 heroes and 31 villains, each with their own costume, stats, two attacks, a
+special power, often a utility power (E), and a signature **ultimate** (R):
 
 - **Heroes:** Green Arrow, The Flash, Supergirl, Superman, The Atom, White Canary, Black Canary,
   Spartan, Speedy, Kid Flash, Vibe, Killer Frost, Firestorm, Martian Manhunter, Batwoman,
   Black Lightning, Thunder, Lightning, Mr. Terrific, Vixen, Hawkgirl, Citizen Steel, Stargirl,
   Jay Garrick, Jesse Quick, XS, Elongated Man, Guardian, Mon-El, Dreamer, Brainiac 5, Arsenal,
-  Wild Dog and Heat Wave (Legend).
+  Wild Dog, Heat Wave (Legend), Constantine, Zari, Nyssa al Ghul, Hawkman, the Flash of Earth-90,
+  the Spectre and Jordan Kent.
 - **Villains:** Malcolm Merlyn, Deathstroke, Prometheus, Damien Darhk, Reverse-Flash, Zoom,
   Savitar, The Thinker, Captain Cold, Heat Wave, Weather Wizard, Reign, Lex Luthor, Ra's al Ghul,
   Cicada, Gorilla Grodd, Vandal Savage, Black Siren, Ricardo Diaz, Alice, Captain Boomerang,
-  the Anti-Monitor, Overgirl, Dark Arrow and Tobias Whale.
+  the Anti-Monitor, Overgirl, Dark Arrow, Tobias Whale, King Shark, Mirror Master, Livewire,
+  Metallo, Godspeed and Red Death.
+
+**Ultimates.** Fighting fills a gold meter; at 100% press R. Speedsters blitz every enemy in
+range, Kryptonians go invulnerable and sweep heat vision across the crowd, Green Arrow calls in
+Team Arrow and White Canary the Legends, Black Lightning and Livewire call down lightning storms,
+Killer Frost freezes everything solid and shatters it, Black Canary's cry hits in every direction,
+Vibe drops enemies through breaches, the Atom and the Martian Manhunter grow giant, Grodd lifts
+the whole street with his mind, Deathstroke dashes through everyone, and the Anti-Monitor erases
+the area in a wave of anti-matter. NPCs use theirs too.
+
+**The Crisis on Infinite Earths campaign.** Seven saved chapters: S.T.A.R. Labs, Zoom on Earth-2,
+Overgirl and Dark Arrow on Earth-X, the Time Wraiths of the Speed Force, the Shadow Demons of a
+dying Earth-90, the Anti-Monitor himself, and home to Earth-Prime. The HUD tracks the objective
+and the minimap points the way. Restart it from the pause menu.
+
+**Drive.** Press G next to any parked car, or carjack one out of traffic (heroes take heat for
+it). Shift for nitro, Space for the handbrake.
 
 ![The full roster](docs/screenshots/roster.jpg)
 
@@ -107,6 +130,10 @@ joined by suspension bridges:
 - **Central City:** brick and sandstone, S.T.A.R. Labs, CCPD, Jitters and Picture News.
 - **National City:** white stone and blue glass, CatCo, the D.E.O., L-Corp and a palm-lined beach.
 - **Freeland:** low-rise neighbourhoods, Garfield High and the clinic.
+- **Gotham City:** soot-black gothic towers with spires and gargoyles under a permanent overcast,
+  Wayne Tower (the Batcave is beneath it), GCPD with the Bat-Signal lit, Arkham Asylum and Crows
+  Security.
+- **Smallville:** farmland, Main Street, the water tower, Smallville High and the Kent Farm.
 
 Offshore are Iron Heights prison (with its own bridge) and Lian Yu, a jungle island with a plane
 wreck. There's a day/night cycle with lit windows and streetlights, plus rain, storms and fog.
@@ -117,6 +144,7 @@ wreck. There's a day/night cycle with lit windows and streetlights, plus rain, s
 - **The Arrow Bunker** under Verdant: the salmon ladder, and the team's suits on display. Suit up
   to switch character.
 - **Jitters, CatCo** (step out onto the balcony) and **the D.E.O.**
+- **The Batcave** under Wayne Tower and **the Kent Barn**, with the ship that brought Kal-El.
 - **The Waverider:** board it from its landing pad off the Star City bridge. Ask Gideon to plot a
   course, or take the helm.
 
@@ -126,8 +154,11 @@ neon 3030.
 
 **The multiverse.** Speedsters running flat out can press G to vibrate into the Speed Force,
 where Time Wraiths hunt them, or onto another Earth. Vibe can open a breach anywhere, and so can
-the S.T.A.R. Labs Breach Room. Earth-2, Earth-3, Earth-X, Earth-38 and Earth-19 each have their
-own skyline, colours and sky.
+the S.T.A.R. Labs Breach Room. Earth-2, Earth-3, Earth-X, Earth-38, Earth-19, Earth-90 (being
+erased by anti-matter), Earth-99, Earth-167 and Earth-Prime each have their own skyline, colours,
+sky and locals: Zoom waits on Earth-2, the Reich patrols Earth-X. You can also reach Argo City,
+the Anti-Matter Universe (Shadow Demons and the Anti-Monitor's tower), and, by Waverider,
+Vanishing Point, the Time Bureau's station at the end of time.
 
 **A living world.** Civilians walk the sidewalks and flee from fights. Traffic drives the
 streets until you hit it. Police patrol, and gangs (the Ghosts, Rogues, Cadmus and the 100) stake
@@ -188,7 +219,7 @@ godot --headless --path . res://tests/test_runner.tscn
 ```
 
 The suite validates the roster and city generation. It plays every character with every
-ability, runs a 59-character AI brawl, and starts every event type. It also simulates real
+ability, runs a 72-character AI brawl, and starts every event type. It also simulates real
 input: sprinting, walking, jumping, flying, heat vision, super-jumping, grappling, shooting and
 slow-mo. Finally it checks combat, factions, heat, props, traffic and the menus. CI runs it on
 every push before exporting the builds.

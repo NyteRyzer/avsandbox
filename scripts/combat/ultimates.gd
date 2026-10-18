@@ -69,6 +69,19 @@ const BY_ID := {
 	"cicada": {"kind": "blade_dance", "name": "Dagger of Death"},
 	"vandal_savage": {"kind": "blade_dance", "name": "Immortal Warlord"},
 	"anti_monitor": {"kind": "antimatter_wave", "name": "Anti-Matter Wave"},
+	"constantine": {"kind": "dark_magic", "name": "Exorcism"},
+	"zari": {"kind": "sonic_max", "name": "Hurricane"},
+	"nyssa": {"kind": "barrage", "name": "Heir to the Demon", "style": "arrow"},
+	"hawkman": {"kind": "quake", "name": "Nth Metal Meteor"},
+	"flash_90": {"kind": "speed_storm", "name": "Veteran's Blitz"},
+	"spectre": {"kind": "antimatter_wave", "name": "Spectral Judgment", "color": "#9fffb0"},
+	"jordan_kent": {"kind": "kryptonian_fury", "name": "Son of Superman"},
+	"king_shark": {"kind": "blade_dance", "name": "Feeding Frenzy"},
+	"mirror_master": {"kind": "breach_barrage", "name": "Through the Looking Glass"},
+	"livewire": {"kind": "lightning_god", "name": "Overload", "color": "#cfefff"},
+	"metallo": {"kind": "lightning_god", "name": "Kryptonite Storm", "color": "#6bff6b"},
+	"godspeed": {"kind": "speed_storm", "name": "Clone Army Rush"},
+	"red_death": {"kind": "speed_storm", "name": "Crimson Blitz"},
 }
 
 var actor: Actor
@@ -550,7 +563,7 @@ func _antimatter_wave() -> void:
 	var r := t * 30.0
 	if _beat <= 0.0:
 		_beat = 0.25
-		FX.ring(world, actor.global_position + Vector3.UP * 0.5, Color("#ffffff"), r, 0.35)
+		FX.ring(world, actor.global_position + Vector3.UP * 0.5, _color() if spec.has("color") else Color("#ffffff"), r, 0.35)
 		for o in _foes(r + 2.0, 30):
 			if o.global_position.distance_to(actor.global_position) > r - 8.0:
 				_hit(o, 30.0, "", 20.0)
