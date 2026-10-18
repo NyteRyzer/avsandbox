@@ -76,10 +76,16 @@ func test_city_is_deterministic() -> void:
 	for name in ["S.T.A.R. Labs", "Queen Consolidated", "CatCo Worldwide", "Iron Heights", "The Waverider", "Jitters"]:
 		check(not a.landmark(name).is_empty(), "missing landmark " + name)
 	check(a.is_water(Vector3(City.LAND + 10, 0, 0)), "beyond the land is water")
-	check(not a.is_water(Vector3(0, 0, 0)), "the centre is land")
+	check(a.is_water(Vector3(0, 0, 0)), "the bay between the cities is open water")
+	check(not a.is_water(Vector3(560, 0, -560)), "Central City is land")
+	check(not a.is_water(Vector3(0, 0, -560)), "the bridge between Star City and Central City is walkable")
+	check(a.district_at(Vector3(-1560, 0, -1400)) == "Lian Yu", "Lian Yu is its own island")
+	check(a.district_at(Vector3(-330, 0, -330)) == "The Glades", "the Glades are part of Star City")
+	check(a.islands.size() == 4, "four separate city islands")
+	check(not a.doors.is_empty(), "landmarks have doors into interiors")
 	var road := a.snap_to_road(Vector3(123, 0, 37))
 	check(is_zero_approx(fmod(absf(road.x), City.CELL)) or is_zero_approx(fmod(absf(road.z), City.CELL)), "snap_to_road lands on a street")
-	check(a.district_at(Vector3(-300, 0, -300)) == "Star City", "north-west is Star City")
+	check(a.district_at(Vector3(-700, 0, -700)) == "Star City", "north-west is Star City")
 	check(a.district_at(Vector3(300, 0, -300)) == "Central City", "north-east is Central City")
 	a.queue_free()
 	b.queue_free()
@@ -104,7 +110,7 @@ func test_world_smoke() -> void:
 	check(civs > 0, "civilians spawned")
 	# Every character can be played and use every ability without errors.
 	for c in Game.roster:
-		world.spawn_player(c["id"], Vector3(0, 0.5, 40))
+		world.spawn_player(c["id"], Vector3(560, 0.5, -520))
 		var p := world.player
 		await get_tree().physics_frame
 		p.energy = p.max_energy
@@ -120,7 +126,7 @@ func test_world_smoke() -> void:
 	# And every character works as an AI.
 	var enemies: Array = []
 	for c in Game.roster:
-		enemies.append(world.population.spawn_character(c, "villain" if c["side"] == "hero" else "hero", Vector3(randf_range(-30, 30), 0.5, randf_range(20, 60))))
+		enemies.append(world.population.spawn_character(c, "villain" if c["side"] == "hero" else "hero", Vector3(560 + randf_range(-30, 30), 0.5, -560 + randf_range(20, 60))))
 	for i in 120:
 		await get_tree().physics_frame
 	check(true, "AI brawl ran")
@@ -135,11 +141,11 @@ func test_world_smoke() -> void:
 
 
 func test_combat() -> void:
-	world.spawn_player("green_arrow", Vector3(80, 0.5, 0))
+	world.spawn_player("green_arrow", Vector3(640, 0.5, -560))
 	Game.cheats["god_mode"] = false
 	var p := world.player
 	var enemy: Actor = world.population.spawn_character(Game.get_character("deathstroke"), "villain", Vector3(80, 0.5, -3))
-	var civ: Actor = world.population.spawn_civilian(Vector3(84, 0.5, 0))
+	var civ: Actor = world.population.spawn_civilian(Vector3(644, 0.5, -560))
 	await get_tree().physics_frame
 	check(enemy.is_hostile_to(p), "villain is hostile to a hero player")
 	check(not civ.is_hostile_to(p), "civilians are not hostile")
@@ -167,11 +173,11 @@ func test_combat() -> void:
 	var car := Prop.new()
 	car.build(world, "car")
 	world.props_root.add_child(car)
-	car.global_position = Vector3(90, 1, 0)
+	car.global_position = Vector3(650, 1, -560)
 	car.hit(500.0, Vector3.ZERO, p)
 	check(car.exploded, "cars explode when wrecked")
 	# Traffic drives along the street, then becomes a physics car when hit.
-	var t: Prop = world.population.spawn_traffic(Vector3(0, 0, 120))
+	var t: Prop = world.population.spawn_traffic(Vector3(560, 0, -440))
 	var t_start := t.global_position
 	for i in 60:
 		await get_tree().physics_frame
@@ -180,11 +186,11 @@ func test_combat() -> void:
 		or absf(fmod(absf(t.global_position.x), City.CELL) - (City.CELL - Prop.LANE)) < 1.0 or absf(fmod(absf(t.global_position.z), City.CELL) - (City.CELL - Prop.LANE)) < 1.0, "traffic keeps to a lane")
 	t.hit(5.0, Vector3.ZERO, p)
 	check(not t.driving and not t.freeze, "hit traffic becomes a physics car")
-	world.spawn_player("supergirl", Vector3(90, 0.5, 4))
+	world.spawn_player("supergirl", Vector3(650, 0.5, -556))
 	var crate := Prop.new()
 	crate.build(world, "crate")
 	world.props_root.add_child(crate)
-	crate.global_position = Vector3(90, 0.5, 6)
+	crate.global_position = Vector3(650, 0.5, -554)
 	await get_tree().physics_frame
 	Abilities.pick_up(world.player)
 	check(world.player.held_prop != null, "strong characters lift props")
@@ -211,7 +217,7 @@ func test_player_input() -> void:
 	world.clear_npcs()
 	world.population.enabled = false
 	# Super speed covers a lot of ground. Run down a street (x = 0 is a road).
-	world.spawn_player("flash", Vector3(0, 0.5, 200))
+	world.spawn_player("flash", Vector3(560, 0.5, -360))
 	world.cam.yaw = 0.0
 	await get_tree().physics_frame
 	var start := world.player.global_position
@@ -221,7 +227,7 @@ func test_player_input() -> void:
 	var ran := world.player.global_position.distance_to(start)
 	check(ran > 40.0, "the Flash sprinted %.0f m in 1.5 s" % ran)
 	# Walking is much slower.
-	world.spawn_player("spartan", Vector3(0, 0.5, 200))
+	world.spawn_player("spartan", Vector3(560, 0.5, -360))
 	await get_tree().physics_frame
 	start = world.player.global_position
 	await _hold("move_forward", 60)
@@ -233,7 +239,7 @@ func test_player_input() -> void:
 		await get_tree().physics_frame
 	check(world.player.global_position.y > 0.8, "jump leaves the ground")
 	# Flyers take off and climb.
-	world.spawn_player("supergirl", Vector3(0, 0.5, 200))
+	world.spawn_player("supergirl", Vector3(560, 0.5, -360))
 	await get_tree().physics_frame
 	await _tap("fly")
 	check(world.player.flying, "F toggles flight")
@@ -246,7 +252,7 @@ func test_player_input() -> void:
 	await _tap("fly")
 	check(not world.player.flying, "F again stops flying")
 	# Super jumpers jump high.
-	world.spawn_player("grodd", Vector3(0, 0.5, 200))
+	world.spawn_player("grodd", Vector3(560, 0.5, -360))
 	for i in 40:
 		await get_tree().physics_frame
 	await _tap("jump")
@@ -256,7 +262,7 @@ func test_player_input() -> void:
 		peak = maxf(peak, world.player.global_position.y)
 	check(peak > 6.0, "Grodd super-jumps (peak %.1f m)" % peak)
 	# Grappling line pulls you to a wall.
-	world.spawn_player("green_arrow", Vector3(-8, 0.5, 200))
+	world.spawn_player("green_arrow", Vector3(552, 0.5, -360))
 	await get_tree().physics_frame
 	world.player.aim_point = world.player.global_position + Vector3(-30, 12, 0)
 	Abilities.fire_grapple(world.player)
@@ -267,7 +273,7 @@ func test_player_input() -> void:
 	await _hold("attack", 4)
 	check(Projectile.spawned > before, "LMB fires an arrow")
 	# Slow-mo special
-	world.spawn_player("flash", Vector3(0, 0.5, 200))
+	world.spawn_player("flash", Vector3(560, 0.5, -360))
 	world.player.energy = 100.0
 	await get_tree().physics_frame
 	await _tap("special")

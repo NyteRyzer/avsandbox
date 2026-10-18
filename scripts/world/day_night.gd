@@ -141,6 +141,6 @@ func _apply() -> void:
 	env.ambient_light_energy = lerpf(0.3, 0.75, day) + (2.0 if _flash_t > 0.0 else 0.0)
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
-	env.fog_density = (0.006 if weather == "fog" else (0.0035 if overcast else 0.0011)) * (1200.0 / maxf(300.0, view))
+	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view))
 	if city:
 		city.set_night(1.0 - day)

@@ -154,7 +154,7 @@ func _drive(delta: float) -> void:
 		var center := Vector3(roundf(p.x / City.CELL) * City.CELL, p.y, roundf(p.z / City.CELL) * City.CELL)
 		options = options.filter(func(d: Vector3) -> bool:
 			var ahead: Vector3 = center + d * City.CELL
-			return absf(ahead.x) <= City.HALF and absf(ahead.z) <= City.HALF)
+			return world.city.on_grid(ahead))
 		if options.is_empty():
 			options = [-heading]
 		var choice: Vector3 = options[0] if randf() < 0.5 and options.has(heading) else options[randi() % options.size()]

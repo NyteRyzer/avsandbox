@@ -33,9 +33,17 @@ func _draw() -> void:
 		return center + Vector2(rel.dot(right), -rel.dot(fwd)) * k
 
 	# Coastline
-	var land: float = City.LAND
-	var corners := PackedVector2Array([to_screen.call(-land, -land), to_screen.call(land, -land), to_screen.call(land, land), to_screen.call(-land, land)])
-	draw_colored_polygon(corners, Color(0.12, 0.13, 0.15, 0.9))
+	var land_rects: Array = []
+	for isl in world.city.islands:
+		land_rects.append(isl["land"])
+	for e in world.city.extra_land:
+		land_rects.append(e["rect"])
+	land_rects.append_array(world.city.bridges)
+	for r in land_rects:
+		var rr2: Rect2 = r
+		var corners := PackedVector2Array([to_screen.call(rr2.position.x, rr2.position.y), to_screen.call(rr2.end.x, rr2.position.y),
+			to_screen.call(rr2.end.x, rr2.end.y), to_screen.call(rr2.position.x, rr2.end.y)])
+		draw_colored_polygon(corners, Color(0.12, 0.13, 0.15, 0.9))
 	for b in world.city.buildings_near(p, meters * 1.5):
 		var r: Rect2 = b["rect"]
 		var h: float = b["h"]

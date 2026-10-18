@@ -170,25 +170,25 @@ func _world() -> void:
 	w.events.cooldown = 9999.0
 	w.day_night.frozen = true
 	w.day_night.hour = 16.5
-	w.spawn_player("flash", Vector3(280, 0.5, -240))
+	w.spawn_player("flash", Vector3(720, 0.5, -840))
 	w.cam.yaw = 0.6
 	w.cam.pitch = -0.15
 	for i in 120:
 		await get_tree().physics_frame
 	await _snap("central_city", 10)
 
-	w.spawn_player("supergirl", Vector3(-250, 90, 200))
+	w.spawn_player("supergirl", Vector3(-420, 90, 760))
 	w.player.flying = true
 	w.cam.yaw = 2.4
 	w.cam.pitch = -0.25
 	await _snap("national_city_flight", 30)
 
-	w.spawn_player("green_arrow", Vector3(-280, 0.5, -320))
+	w.spawn_player("green_arrow", Vector3(-560, 0.5, -640))
 	w.day_night.hour = 21.5
 	w.cam.yaw = -0.4
 	w.cam.pitch = 0.1
 	for k in 4:
-		w.population.spawn_thug(Vector3(-280 + k * 2.0, 0.5, -330))
+		w.population.spawn_thug(Vector3(-560 + k * 2.0, 0.5, -650))
 	await _snap("star_city_night", 40)
 	w.player.aim_point = w.player.global_position + Vector3(0, 1, -12)
 	w.player.in_primary = true
@@ -197,7 +197,7 @@ func _world() -> void:
 	await _snap("combat", 6)
 
 	w.day_night.hour = 12.0
-	w.spawn_player("grodd", Vector3(20, 0.5, 30))
+	w.spawn_player("grodd", Vector3(520, 0.5, -500))
 	w.cam.yaw = 0.0
 	w.cam.pitch = -0.1
 	for c in ["reverse_flash", "zoom", "deathstroke", "killer_frost"]:
@@ -212,7 +212,7 @@ func _world() -> void:
 	# Action: a speedster at full tilt, heat vision.
 	w.clear_npcs()
 	w.day_night.hour = 17.8
-	w.spawn_player("reverse_flash", Vector3(-560, 0.5, 0))
+	w.spawn_player("reverse_flash", Vector3(-160, 0.5, -560))
 	w.cam.yaw = PI * 0.5 + 0.35
 	w.cam.pitch = -0.12
 	w.player.face_dir = Vector3.RIGHT
@@ -222,11 +222,11 @@ func _world() -> void:
 		w.player._speed_trail(1.0 / 60.0, 55.0)
 		await get_tree().physics_frame
 	await _snap("speedster", 1)
-	w.spawn_player("superman", Vector3(300, 30, 300))
+	w.spawn_player("superman", Vector3(560, 30, 560))
 	w.player.flying = true
 	w.cam.yaw = 0.3
 	w.cam.pitch = -0.35
-	var target := w.population.spawn_character(Game.get_character("reign"), "villain", Vector3(296, 18, 270))
+	var target := w.population.spawn_character(Game.get_character("reign"), "villain", Vector3(556, 18, 530))
 	target.flying = true
 	for i in 30:
 		w.player.aim_point = target.chest()
