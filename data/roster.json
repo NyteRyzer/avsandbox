@@ -1,0 +1,2350 @@
+{
+ "version": 1,
+ "characters": [
+  {
+   "id": "green_arrow",
+   "name": "Oliver Queen",
+   "alias": "Green Arrow",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Five years on a hell of an island made him a weapon. Now he protects Star City from the rooftops.",
+   "health": 110,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow"
+   },
+   "secondary": {
+    "kind": "explosive_arrow",
+    "name": "Explosive Arrow"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Bomb"
+   },
+   "look": {
+    "suit": "#24552c",
+    "accent": "#12301a",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hood",
+     "bow",
+     "quiver",
+     "mask_dark"
+    ]
+   }
+  },
+  {
+   "id": "flash",
+   "name": "Barry Allen",
+   "alias": "The Flash",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Struck by lightning from a particle accelerator, Barry became the Fastest Man Alive.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.14,
+    "damage": 8
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#ffd23a",
+    "element": "shock",
+    "name": "Lightning Throw",
+    "speed": 90
+   },
+   "special": {
+    "kind": "time_slow",
+    "name": "Speed Force Slow-Mo"
+   },
+   "look": {
+    "suit": "#a3111a",
+    "accent": "#f2c21b",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "cowl",
+     "bolt_wings",
+     "emblem_bolt"
+    ],
+    "trail": "#ffcc22"
+   }
+  },
+  {
+   "id": "supergirl",
+   "name": "Kara Zor-El",
+   "alias": "Supergirl",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "Kal-El's cousin from Krypton, National City's protector, and a reporter at CatCo.",
+   "health": 170,
+   "speed": 1.0,
+   "power": 1.2,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Kryptonian Punch",
+    "damage": 18
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ff3322",
+    "element": "fire",
+    "name": "Heat Vision"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "ice",
+    "name": "Freeze Breath"
+   },
+   "look": {
+    "suit": "#1d3fa8",
+    "accent": "#c81d25",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "cape",
+     "hair_long",
+     "emblem_s",
+     "boots_red"
+    ]
+   }
+  },
+  {
+   "id": "superman",
+   "name": "Clark Kent",
+   "alias": "Superman",
+   "side": "hero",
+   "show": "Superman & Lois",
+   "home": "national",
+   "bio": "The Man of Steel. Farm boy, father, and the strongest hero on any Earth.",
+   "health": 210,
+   "speed": 1.0,
+   "power": 1.35,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Super Punch",
+    "damage": 22
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ff3322",
+    "element": "fire",
+    "name": "Heat Vision"
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Thunderclap Slam"
+   },
+   "look": {
+    "suit": "#1f3c9e",
+    "accent": "#c81d25",
+    "skin": "#e3b896",
+    "hair": "#16110e",
+    "extras": [
+     "cape",
+     "emblem_s",
+     "boots_red"
+    ]
+   }
+  },
+  {
+   "id": "atom",
+   "name": "Ray Palmer",
+   "alias": "The Atom",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "star",
+   "bio": "A billionaire genius in an exo-suit that can fly, fire blasts, and shrink to the size of an atom.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#4fc3ff",
+    "element": "",
+    "name": "Gauntlet Blast"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Suit Punch"
+   },
+   "special": {
+    "kind": "shrink",
+    "name": "Shrink"
+   },
+   "look": {
+    "suit": "#8a8f99",
+    "accent": "#2d6bd6",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "helmet",
+     "armor",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "white_canary",
+   "name": "Sara Lance",
+   "alias": "White Canary",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "star",
+   "bio": "Trained by the League of Assassins, captain of the Waverider. Brings a bo staff to every fight.",
+   "health": 100,
+   "speed": 1.15,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Bo Staff",
+    "damage": 15,
+    "range": 3.0
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Throwing Knife",
+    "color": "#e8e8e8"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Canary Smoke"
+   },
+   "look": {
+    "suit": "#eeeeee",
+    "accent": "#c9c9c9",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hair_long",
+     "mask_dark",
+     "staff"
+    ]
+   }
+  },
+  {
+   "id": "black_canary",
+   "name": "Laurel Lance",
+   "alias": "Black Canary",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Lawyer by day, vigilante by night, with a sonic device that knocks enemies off their feet.",
+   "health": 100,
+   "speed": 1.1,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Kickboxing",
+    "damage": 13
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#dfe8ff",
+    "name": "Canary Cry"
+   },
+   "special": {
+    "kind": "sonic_scream",
+    "name": "Sonic Scream"
+   },
+   "look": {
+    "suit": "#151515",
+    "accent": "#333333",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hair_long",
+     "mask_dark",
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "spartan",
+   "name": "John Diggle",
+   "alias": "Spartan",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Ex-soldier, Oliver's brother-in-arms, and the steadiest man in Team Arrow.",
+   "health": 130,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Tactical Strikes",
+    "damage": 15
+   },
+   "secondary": {
+    "kind": "gun",
+    "name": "Sidearm"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Battle Focus"
+   },
+   "look": {
+    "suit": "#2b2f35",
+    "accent": "#5a6170",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "helmet",
+     "armor"
+    ]
+   }
+  },
+  {
+   "id": "speedy",
+   "name": "Thea Queen",
+   "alias": "Speedy",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Oliver's sister, trained by Malcolm Merlyn. Quick, fierce and unpredictable.",
+   "health": 100,
+   "speed": 1.1,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow",
+    "color": "#c9b38a"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Martial Arts"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Bomb"
+   },
+   "look": {
+    "suit": "#8b1a1a",
+    "accent": "#4a0c0c",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "hood",
+     "bow",
+     "quiver",
+     "mask_dark"
+    ]
+   }
+  },
+  {
+   "id": "kid_flash",
+   "name": "Wally West",
+   "alias": "Kid Flash",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Joe West's son and Barry's protege. Possibly the fastest of them all.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.14,
+    "damage": 8
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#ffd23a",
+    "element": "shock",
+    "name": "Lightning Throw",
+    "speed": 90
+   },
+   "special": {
+    "kind": "tornado",
+    "name": "Speed Vortex"
+   },
+   "look": {
+    "suit": "#d8a514",
+    "accent": "#a3111a",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "cowl",
+     "bolt_wings",
+     "emblem_bolt"
+    ],
+    "trail": "#ffd23a"
+   }
+  },
+  {
+   "id": "vibe",
+   "name": "Cisco Ramon",
+   "alias": "Vibe",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "S.T.A.R. Labs engineer who can see across the multiverse and open breaches between worlds.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#4fa8ff",
+    "element": "",
+    "name": "Vibe Blast",
+    "speed": 70
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#4fa8ff",
+    "name": "Vibrational Wave"
+   },
+   "special": {
+    "kind": "teleport",
+    "name": "Breach"
+   },
+   "look": {
+    "suit": "#1b1f2b",
+    "accent": "#3b6fd1",
+    "skin": "#c99a78",
+    "hair": "#16110e",
+    "extras": [
+     "goggles",
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "killer_frost",
+   "name": "Caitlin Snow",
+   "alias": "Killer Frost",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Doctor, metahuman, and the coolest head in the room. Literally.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#a8e8ff",
+    "element": "ice",
+    "name": "Ice Shard"
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#bff0ff",
+    "element": "ice",
+    "name": "Frost Beam"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "ice",
+    "name": "Blizzard"
+   },
+   "look": {
+    "suit": "#1c2a44",
+    "accent": "#8fd6ff",
+    "skin": "#e3b896",
+    "hair": "#eef4ff",
+    "extras": [
+     "hair_long",
+     "glow_eyes"
+    ]
+   }
+  },
+  {
+   "id": "firestorm",
+   "name": "Jefferson Jackson",
+   "alias": "Firestorm",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "A nuclear man formed by merging two people. Flies, burns, and transmutes matter.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#ff8a1e",
+    "element": "fire",
+    "name": "Fireball",
+    "speed": 60
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ffb347",
+    "element": "fire",
+    "name": "Nuclear Beam"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "fire",
+    "name": "Nuclear Burst"
+   },
+   "look": {
+    "suit": "#b33c12",
+    "accent": "#ffcf3a",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "flame_head",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "martian_manhunter",
+   "name": "J'onn J'onzz",
+   "alias": "Martian Manhunter",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "Last son of Mars and director of the DEO. A shapeshifter with the strength of a Kryptonian.",
+   "health": 180,
+   "speed": 1.0,
+   "power": 1.2,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Martian Strength",
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ff5522",
+    "element": "fire",
+    "name": "Martian Vision"
+   },
+   "special": {
+    "kind": "invisibility",
+    "name": "Phase & Vanish"
+   },
+   "look": {
+    "suit": "#1b2f73",
+    "accent": "#b01c22",
+    "skin": "#2f7a3a",
+    "hair": "#2f7a3a",
+    "extras": [
+     "cape",
+     "bald",
+     "emblem_x",
+     "armor"
+    ],
+    "scale": 1.08
+   }
+  },
+  {
+   "id": "batwoman",
+   "name": "Kate Kane",
+   "alias": "Batwoman",
+   "side": "hero",
+   "show": "Batwoman",
+   "home": "any",
+   "bio": "Bruce Wayne's cousin picks up the cowl to protect Gotham, and anywhere else that needs it.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Combat Strikes",
+    "damage": 14
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Batarang",
+    "color": "#222222"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Pellet"
+   },
+   "look": {
+    "suit": "#141414",
+    "accent": "#b0101a",
+    "skin": "#e3b896",
+    "hair": "#b3261e",
+    "extras": [
+     "cowl",
+     "bat_ears",
+     "cape",
+     "hair_long",
+     "emblem_bat"
+    ]
+   }
+  },
+  {
+   "id": "black_lightning",
+   "name": "Jefferson Pierce",
+   "alias": "Black Lightning",
+   "side": "hero",
+   "show": "Black Lightning",
+   "home": "freeland",
+   "bio": "A high-school principal who returns to the streets of Freeland with the power of electricity.",
+   "health": 130,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "lightning",
+    "color": "#8fd0ff",
+    "name": "Lightning Strike"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Charged Punch",
+    "element": "shock"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "Lightning Storm"
+   },
+   "look": {
+    "suit": "#121212",
+    "accent": "#3aa0ff",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "goggles",
+     "emblem_bolt"
+    ]
+   }
+  },
+  {
+   "id": "thunder",
+   "name": "Anissa Pierce",
+   "alias": "Thunder",
+   "side": "hero",
+   "show": "Black Lightning",
+   "home": "freeland",
+   "bio": "Jefferson's daughter. Controls her density to become nearly unbreakable and hit like a freight train.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "superjump",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Density Punch",
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#d8c068",
+    "name": "Thunderclap"
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Seismic Stomp"
+   },
+   "look": {
+    "suit": "#3a3a3a",
+    "accent": "#c9b34a",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "mask_dark",
+     "hair_long"
+    ]
+   }
+  },
+  {
+   "id": "lightning",
+   "name": "Jennifer Pierce",
+   "alias": "Lightning",
+   "side": "hero",
+   "show": "Black Lightning",
+   "home": "freeland",
+   "bio": "Generates pure energy. Flies on it, throws it, and occasionally overloads with it.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#ffcc66",
+    "element": "shock",
+    "name": "Energy Bolt",
+    "speed": 70
+   },
+   "secondary": {
+    "kind": "lightning",
+    "color": "#ffd88a",
+    "name": "Arc Blast"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "Overload"
+   },
+   "look": {
+    "suit": "#262626",
+    "accent": "#ffb02e",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "hair_long",
+     "glow_eyes"
+    ]
+   }
+  },
+  {
+   "id": "mr_terrific",
+   "name": "Curtis Holt",
+   "alias": "Mr. Terrific",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Olympic decathlete and tech genius, armed with floating T-Spheres.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#ff4040",
+    "element": "shock",
+    "name": "T-Sphere",
+    "speed": 50
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Decathlete Strikes"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "EMP Pulse"
+   },
+   "look": {
+    "suit": "#1b1b1b",
+    "accent": "#d02020",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "bald",
+     "mask_t",
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "vixen",
+   "name": "Mari McCabe",
+   "alias": "Vixen",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "Channels the abilities of any animal through the Tantu Totem.",
+   "health": 100,
+   "speed": 1.2,
+   "power": 1.0,
+   "movement": "superjump",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Animal Strikes",
+    "damage": 16
+   },
+   "secondary": {
+    "kind": "dash",
+    "name": "Cheetah Pounce"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Spirit of the Gorilla"
+   },
+   "look": {
+    "suit": "#5b4630",
+    "accent": "#c9a24a",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "hair_long"
+    ]
+   }
+  },
+  {
+   "id": "hawkgirl",
+   "name": "Kendra Saunders",
+   "alias": "Hawkgirl",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "An Egyptian priestess reborn across millennia, with Nth-metal wings and a mace.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Nth Metal Mace",
+    "damage": 19,
+    "range": 2.8
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Mace Toss",
+    "color": "#c9a24a"
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Dive Bomb"
+   },
+   "look": {
+    "suit": "#5a3a1e",
+    "accent": "#c9a24a",
+    "skin": "#c99a78",
+    "hair": "#4a3020",
+    "extras": [
+     "wings",
+     "hair_long",
+     "helmet_hawk"
+    ]
+   }
+  },
+  {
+   "id": "citizen_steel",
+   "name": "Nate Heywood",
+   "alias": "Citizen Steel",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "A historian who can turn his whole body into living steel.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "superjump",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Steel Fist",
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "dash",
+    "name": "Steel Charge"
+   },
+   "special": {
+    "kind": "invulnerable",
+    "name": "Steel Skin"
+   },
+   "look": {
+    "suit": "#7c8590",
+    "accent": "#b8c1cc",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": []
+   }
+  },
+  {
+   "id": "stargirl",
+   "name": "Courtney Whitmore",
+   "alias": "Stargirl",
+   "side": "hero",
+   "show": "Stargirl",
+   "home": "any",
+   "bio": "A teenager who inherited the Cosmic Staff, and the legacy of the JSA with it.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#ffe066",
+    "element": "",
+    "name": "Cosmic Blast",
+    "speed": 70
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#fff3a0",
+    "element": "",
+    "name": "Cosmic Ray"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "Star Burst"
+   },
+   "look": {
+    "suit": "#1d3fa8",
+    "accent": "#e8e8e8",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hair_long",
+     "mask_dark",
+     "staff",
+     "emblem_star"
+    ]
+   }
+  },
+  {
+   "id": "jay_garrick",
+   "name": "Jay Garrick",
+   "alias": "The Flash (Earth-3)",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "The original Flash of Earth-3, complete with winged helmet and decades of experience.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.16,
+    "damage": 8
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Helmet Throw",
+    "color": "#b8b8b8"
+   },
+   "special": {
+    "kind": "tornado",
+    "name": "Speed Vortex"
+   },
+   "look": {
+    "suit": "#a3111a",
+    "accent": "#c9a227",
+    "skin": "#e3b896",
+    "hair": "#cfcfcf",
+    "extras": [
+     "winged_helmet",
+     "emblem_bolt"
+    ],
+    "trail": "#ffcc22"
+   }
+  },
+  {
+   "id": "jesse_quick",
+   "name": "Jesse Wells",
+   "alias": "Jesse Quick",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Harrison Wells' daughter from Earth-2, who got her speed from the same accelerator.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.14,
+    "damage": 8
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#ffd23a",
+    "element": "shock",
+    "name": "Lightning Throw",
+    "speed": 90
+   },
+   "special": {
+    "kind": "time_slow",
+    "name": "Speed Force Slow-Mo"
+   },
+   "look": {
+    "suit": "#c9971a",
+    "accent": "#a3111a",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "mask_dark",
+     "hair_long",
+     "emblem_bolt"
+    ],
+    "trail": "#ffe14d"
+   }
+  },
+  {
+   "id": "xs",
+   "name": "Nora West-Allen",
+   "alias": "XS",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Barry and Iris' daughter from the future, with a purple tint to her lightning.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.14,
+    "damage": 8
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#b46cff",
+    "element": "shock",
+    "name": "Purple Lightning",
+    "speed": 90
+   },
+   "special": {
+    "kind": "time_slow",
+    "name": "Speed Force Slow-Mo"
+   },
+   "look": {
+    "suit": "#5b2a86",
+    "accent": "#efe9ff",
+    "skin": "#c99a78",
+    "hair": "#4a3020",
+    "extras": [
+     "mask_dark",
+     "hair_long",
+     "emblem_bolt"
+    ],
+    "trail": "#c48bff"
+   }
+  },
+  {
+   "id": "elongated_man",
+   "name": "Ralph Dibny",
+   "alias": "Elongated Man",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A private eye with a body like rubber. Long reach, big mouth, bigger heart.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Stretch Punch",
+    "damage": 14,
+    "range": 6.5
+   },
+   "secondary": {
+    "kind": "dash",
+    "name": "Slingshot"
+   },
+   "special": {
+    "kind": "invulnerable",
+    "name": "Rubber Body"
+   },
+   "look": {
+    "suit": "#8a1c2a",
+    "accent": "#1d1d1d",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "mask_dark",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "guardian",
+   "name": "James Olsen",
+   "alias": "Guardian",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "Photographer turned armored vigilante, with a shield that doubles as a battering ram.",
+   "health": 140,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Shield Strike",
+    "damage": 15
+   },
+   "secondary": {
+    "kind": "dash",
+    "name": "Shield Charge"
+   },
+   "special": {
+    "kind": "invulnerable",
+    "name": "Shield Wall"
+   },
+   "look": {
+    "suit": "#a6adb5",
+    "accent": "#4a5058",
+    "skin": "#5e3a26",
+    "hair": "#16110e",
+    "extras": [
+     "helmet",
+     "armor",
+     "shield"
+    ]
+   }
+  },
+  {
+   "id": "mon_el",
+   "name": "Mon-El",
+   "alias": "Mon-El",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "A Daxamite prince who found his heroism on Earth, and later in the 31st century.",
+   "health": 170,
+   "speed": 1.0,
+   "power": 1.15,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Daxamite Punch",
+    "damage": 19
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#e6f2ff",
+    "name": "Super Breath"
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Meteor Drop"
+   },
+   "look": {
+    "suit": "#1b2440",
+    "accent": "#c8102e",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "cape",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "dreamer",
+   "name": "Nia Nal",
+   "alias": "Dreamer",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "The first trans superhero on TV. She sees the future in her dreams and fires dream energy.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#8fd8ff",
+    "element": "",
+    "name": "Dream Blast",
+    "speed": 65
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#b8e6ff",
+    "name": "Dream Wave"
+   },
+   "special": {
+    "kind": "teleport",
+    "name": "Dream Walk"
+   },
+   "look": {
+    "suit": "#1f3a6e",
+    "accent": "#e0c068",
+    "skin": "#c99a78",
+    "hair": "#16110e",
+    "extras": [
+     "hair_long",
+     "mask_star"
+    ]
+   }
+  },
+  {
+   "id": "brainiac_5",
+   "name": "Querl Dox",
+   "alias": "Brainiac 5",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "A 12th-level intellect from the 31st century, Legion of Super-Heroes member.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#4dff8a",
+    "element": "shock",
+    "name": "Coluan Blast"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Force Field Punch"
+   },
+   "special": {
+    "kind": "teleport",
+    "name": "Legion Flight Ring"
+   },
+   "look": {
+    "suit": "#3a1f5c",
+    "accent": "#5ce07a",
+    "skin": "#7ad16a",
+    "hair": "#e8d27a",
+    "extras": [
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "arsenal",
+   "name": "Roy Harper",
+   "alias": "Arsenal",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Raised in the Glades, trained by Oliver, and the closest thing Team Arrow has to a little brother.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Street Fighting"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Mirakuru Rage"
+   },
+   "look": {
+    "suit": "#8b1a1a",
+    "accent": "#3a0a0a",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "hood",
+     "bow",
+     "quiver",
+     "mask_dark"
+    ]
+   }
+  },
+  {
+   "id": "wild_dog",
+   "name": "Rene Ramirez",
+   "alias": "Wild Dog",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A former marine from the Glades with a hockey mask and no patience.",
+   "health": 115,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Twin Pistols"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Brawling"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Junkyard Dog"
+   },
+   "look": {
+    "suit": "#2c2f33",
+    "accent": "#e8e8e8",
+    "skin": "#c99a78",
+    "hair": "#16110e",
+    "extras": [
+     "mask_hockey",
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "heat_wave_hero",
+   "name": "Mick Rory",
+   "alias": "Heat Wave (Legend)",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "A pyromaniac thief who became a Legend. He still loves to watch things burn.",
+   "health": 140,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "beam",
+    "color": "#ff7a1a",
+    "element": "fire",
+    "name": "Heat Gun"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Haymaker",
+    "damage": 16
+   },
+   "special": {
+    "kind": "nova",
+    "element": "fire",
+    "name": "Inferno"
+   },
+   "look": {
+    "suit": "#5a3a22",
+    "accent": "#2a1a10",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "goggles",
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "malcolm_merlyn",
+   "name": "Malcolm Merlyn",
+   "alias": "The Dark Archer",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "The man behind the Undertaking, and later Ra's al Ghul himself.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow"
+   },
+   "secondary": {
+    "kind": "explosive_arrow",
+    "name": "Explosive Arrow"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Bomb"
+   },
+   "look": {
+    "suit": "#141414",
+    "accent": "#3a3a3a",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "hood",
+     "bow",
+     "quiver",
+     "mask_dark"
+    ]
+   }
+  },
+  {
+   "id": "deathstroke",
+   "name": "Slade Wilson",
+   "alias": "Deathstroke",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A soldier supercharged by the Mirakuru, out for revenge on the man he trained.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.15,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Katana",
+    "damage": 17,
+    "range": 2.9
+   },
+   "secondary": {
+    "kind": "gun",
+    "name": "Sidearm"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Mirakuru"
+   },
+   "look": {
+    "suit": "#1a1a1a",
+    "accent": "#e07a1a",
+    "skin": "#e3b896",
+    "hair": "#cfcfcf",
+    "extras": [
+     "mask_deathstroke",
+     "armor",
+     "sword"
+    ]
+   }
+  },
+  {
+   "id": "prometheus",
+   "name": "Adrian Chase",
+   "alias": "Prometheus",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Star City's District Attorney and its most patient serial killer.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "throw",
+    "name": "Shuriken",
+    "color": "#c0c0c0"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Sword",
+    "damage": 16,
+    "range": 2.8
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Vanish"
+   },
+   "look": {
+    "suit": "#1f1f1f",
+    "accent": "#8a6a2a",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "hood",
+     "mask_dark",
+     "sword",
+     "quiver"
+    ]
+   }
+  },
+  {
+   "id": "damien_darhk",
+   "name": "Damien Darhk",
+   "alias": "Damien Darhk",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Leader of H.I.V.E. who wields a mystical idol's dark magic.",
+   "health": 130,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "sonic",
+    "color": "#9b4dff",
+    "name": "Telekinetic Push",
+    "damage": 14
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#7a2bd6",
+    "element": "",
+    "name": "Dark Magic"
+   },
+   "special": {
+    "kind": "drain",
+    "name": "Life Drain"
+   },
+   "look": {
+    "suit": "#1c1c22",
+    "accent": "#6a2bb0",
+    "skin": "#e3b896",
+    "hair": "#d8d8d8",
+    "extras": [
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "reverse_flash",
+   "name": "Eobard Thawne",
+   "alias": "Reverse-Flash",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "The Flash's greatest enemy, a speedster from the 25th century who hates Barry Allen.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Speed Punches",
+    "cooldown": 0.13,
+    "damage": 9
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#ff2a2a",
+    "element": "shock",
+    "name": "Red Lightning",
+    "speed": 95
+   },
+   "special": {
+    "kind": "time_slow",
+    "name": "Negative Speed Force"
+   },
+   "look": {
+    "suit": "#d8a514",
+    "accent": "#a3111a",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "cowl",
+     "bolt_wings",
+     "emblem_bolt",
+     "glow_eyes_red"
+    ],
+    "trail": "#ff2a2a"
+   }
+  },
+  {
+   "id": "zoom",
+   "name": "Hunter Zolomon",
+   "alias": "Zoom",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "The speed demon of Earth-2. Wants every ounce of speed in the multiverse.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "speed",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Clawed Strikes",
+    "cooldown": 0.14,
+    "damage": 10
+   },
+   "secondary": {
+    "kind": "lightning",
+    "color": "#3aa0ff",
+    "name": "Blue Lightning"
+   },
+   "special": {
+    "kind": "tornado",
+    "name": "Speed Vortex"
+   },
+   "look": {
+    "suit": "#0e0e12",
+    "accent": "#1d1d26",
+    "skin": "#e3b896",
+    "hair": "#16110e",
+    "extras": [
+     "cowl",
+     "glow_eyes"
+    ],
+    "trail": "#3aa0ff"
+   }
+  },
+  {
+   "id": "savitar",
+   "name": "Savitar",
+   "alias": "Savitar",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "The self-proclaimed god of speed, encased in a towering suit of armor.",
+   "health": 200,
+   "speed": 1.0,
+   "power": 1.25,
+   "movement": "speed",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Blade Claws",
+    "cooldown": 0.2,
+    "damage": 16
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#bfe8ff",
+    "element": "shock",
+    "name": "Lightning Bolt",
+    "speed": 90
+   },
+   "special": {
+    "kind": "rage",
+    "name": "God of Speed"
+   },
+   "look": {
+    "suit": "#c9d2db",
+    "accent": "#5a6470",
+    "skin": "#e3b896",
+    "hair": "#16110e",
+    "extras": [
+     "armor",
+     "helmet_savitar",
+     "glow_eyes"
+    ],
+    "scale": 1.35,
+    "trail": "#bfe8ff"
+   }
+  },
+  {
+   "id": "thinker",
+   "name": "Clifford DeVoe",
+   "alias": "The Thinker",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "The smartest man alive, who wants to reset humanity from his hover chair.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "color": "#c0a0ff",
+    "element": "shock",
+    "name": "Mind Bolt"
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#c0a0ff",
+    "name": "Telekinesis"
+   },
+   "special": {
+    "kind": "teleport",
+    "name": "Hover Warp"
+   },
+   "look": {
+    "suit": "#2a2a33",
+    "accent": "#7a5cff",
+    "skin": "#e3b896",
+    "hair": "#7a5cff",
+    "extras": [
+     "bald",
+     "glow_head"
+    ]
+   }
+  },
+  {
+   "id": "captain_cold",
+   "name": "Leonard Snart",
+   "alias": "Captain Cold",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A master thief with a cold gun and a plan for everything.",
+   "health": 110,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "beam",
+    "color": "#a8e8ff",
+    "element": "ice",
+    "name": "Cold Gun"
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#bff0ff",
+    "element": "ice",
+    "name": "Ice Blast"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "ice",
+    "name": "Absolute Zero"
+   },
+   "look": {
+    "suit": "#4a5a6a",
+    "accent": "#2a3540",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "goggles",
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "heat_wave",
+   "name": "Mick Rory",
+   "alias": "Heat Wave",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Snart's partner in crime and in fire.",
+   "health": 140,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "beam",
+    "color": "#ff7a1a",
+    "element": "fire",
+    "name": "Heat Gun"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Haymaker",
+    "damage": 16
+   },
+   "special": {
+    "kind": "nova",
+    "element": "fire",
+    "name": "Inferno"
+   },
+   "look": {
+    "suit": "#5a3a22",
+    "accent": "#2a1a10",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "goggles",
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "weather_wizard",
+   "name": "Mark Mardon",
+   "alias": "Weather Wizard",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A meta who controls the weather and holds a grudge against the CCPD.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "lightning",
+    "color": "#d6e6ff",
+    "name": "Lightning Call"
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#9fb3c8",
+    "name": "Gale Force"
+   },
+   "special": {
+    "kind": "tornado",
+    "name": "Twister"
+   },
+   "look": {
+    "suit": "#2f3540",
+    "accent": "#5a6b80",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "coat"
+    ]
+   }
+  },
+  {
+   "id": "reign",
+   "name": "Samantha Arias",
+   "alias": "Reign",
+   "side": "villain",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "A Worldkiller from Krypton's darkest legend. Judge, jury and executioner.",
+   "health": 200,
+   "speed": 1.0,
+   "power": 1.3,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Worldkiller Strike",
+    "damage": 22
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ff2222",
+    "element": "fire",
+    "name": "Heat Vision"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Purge"
+   },
+   "look": {
+    "suit": "#141414",
+    "accent": "#a00000",
+    "skin": "#e3b896",
+    "hair": "#16110e",
+    "extras": [
+     "cape",
+     "mask_reign",
+     "hair_long",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "lex_luthor",
+   "name": "Lex Luthor",
+   "alias": "Lex Luthor",
+   "side": "villain",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "Genius, billionaire, and the most dangerous man alive, in his warsuit.",
+   "health": 170,
+   "speed": 1.0,
+   "power": 1.2,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "bolt",
+    "color": "#6bff6b",
+    "element": "",
+    "name": "Warsuit Blast",
+    "speed": 70
+   },
+   "secondary": {
+    "kind": "gun",
+    "name": "Wrist Cannon",
+    "damage": 9
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Kryptonite Shockwave"
+   },
+   "look": {
+    "suit": "#2e7d32",
+    "accent": "#6a1b9a",
+    "skin": "#e3b896",
+    "hair": "#e3b896",
+    "extras": [
+     "armor",
+     "bald",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "ras_al_ghul",
+   "name": "Ra's al Ghul",
+   "alias": "Ra's al Ghul",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "The immortal head of the League of Assassins.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Scimitar",
+    "damage": 18,
+    "range": 2.9
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Throwing Dagger",
+    "color": "#c0c0c0"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "League Smoke"
+   },
+   "look": {
+    "suit": "#3a2a1a",
+    "accent": "#7a5a2a",
+    "skin": "#c99a78",
+    "hair": "#6a6a6a",
+    "extras": [
+     "coat",
+     "sword"
+    ]
+   }
+  },
+  {
+   "id": "cicada",
+   "name": "Orlin Dwyer",
+   "alias": "Cicada",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A metahuman hunter with a power-dampening lightning dagger.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "throw",
+    "name": "Dagger Throw",
+    "color": "#ff3a3a",
+    "element": "shock"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Dagger Slash",
+    "damage": 17
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "Dampening Pulse"
+   },
+   "look": {
+    "suit": "#1a1a1a",
+    "accent": "#a00000",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "mask_dark",
+     "coat",
+     "glow_eyes_red"
+    ]
+   }
+  },
+  {
+   "id": "grodd",
+   "name": "Gorilla Grodd",
+   "alias": "Gorilla Grodd",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A telepathic super-gorilla who wants Gorilla City to rule the world.",
+   "health": 260,
+   "speed": 1.05,
+   "power": 1.3,
+   "movement": "superjump",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Gorilla Smash",
+    "damage": 24,
+    "range": 3.2
+   },
+   "secondary": {
+    "kind": "sonic",
+    "color": "#c47aff",
+    "name": "Psychic Blast"
+   },
+   "special": {
+    "kind": "ground_slam",
+    "name": "Ground Pound"
+   },
+   "look": {
+    "suit": "#3a3530",
+    "accent": "#2a2622",
+    "skin": "#5a4f45",
+    "hair": "#3a3530",
+    "extras": [
+     "gorilla",
+     "glow_eyes"
+    ],
+    "scale": 1.7
+   }
+  },
+  {
+   "id": "vandal_savage",
+   "name": "Vandal Savage",
+   "alias": "Vandal Savage",
+   "side": "villain",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "An immortal tyrant who has killed Hawkgirl and Hawkman across four thousand years.",
+   "health": 190,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Ancient Blade",
+    "damage": 18,
+    "range": 2.9
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Knife Throw",
+    "color": "#c0c0c0"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Immortal Fury"
+   },
+   "look": {
+    "suit": "#2a2a2a",
+    "accent": "#5a1a1a",
+    "skin": "#e3b896",
+    "hair": "#16110e",
+    "extras": [
+     "coat",
+     "sword"
+    ]
+   }
+  },
+  {
+   "id": "black_siren",
+   "name": "Laurel Lance (Earth-2)",
+   "alias": "Black Siren",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Earth-2's Laurel, a metahuman whose cry can shatter concrete.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "sonic",
+    "color": "#dfe8ff",
+    "name": "Siren Cry",
+    "damage": 14
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Street Fighting"
+   },
+   "special": {
+    "kind": "sonic_scream",
+    "name": "Siren Scream"
+   },
+   "look": {
+    "suit": "#151515",
+    "accent": "#333333",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hair_long",
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "diaz",
+   "name": "Ricardo Diaz",
+   "alias": "The Dragon",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A Glades kid who became Star City's kingpin.",
+   "health": 130,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Pistol"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Knife Fighting",
+    "damage": 14
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Dragon's Wrath"
+   },
+   "look": {
+    "suit": "#1a1a1a",
+    "accent": "#2e2e2e",
+    "skin": "#c99a78",
+    "hair": "#16110e",
+    "extras": [
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "alice",
+   "name": "Alice",
+   "alias": "Alice",
+   "side": "villain",
+   "show": "Batwoman",
+   "home": "any",
+   "bio": "Kate Kane's twin sister and the mad queen of Gotham's underworld.",
+   "health": 100,
+   "speed": 1.1,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "throw",
+    "name": "Knife Throw",
+    "color": "#c0c0c0"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Knife Slash",
+    "damage": 14
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Down the Rabbit Hole"
+   },
+   "look": {
+    "suit": "#e8e0d0",
+    "accent": "#7a1a2a",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hair_long",
+     "coat_short"
+    ]
+   }
+  },
+  {
+   "id": "captain_boomerang",
+   "name": "Digger Harkness",
+   "alias": "Captain Boomerang",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A former A.S.I.S. agent with a grudge and a bag of explosive boomerangs.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "throw",
+    "name": "Boomerang",
+    "color": "#d8d8d8"
+   },
+   "secondary": {
+    "kind": "explosive_arrow",
+    "name": "Explosive Boomerang",
+    "color": "#ffaa33"
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Bloodlust"
+   },
+   "look": {
+    "suit": "#2a3a5a",
+    "accent": "#d8d8d8",
+    "skin": "#e3b896",
+    "hair": "#4a3020",
+    "extras": [
+     "coat_short",
+     "goggles"
+    ]
+   }
+  },
+  {
+   "id": "anti_monitor",
+   "name": "Mobius",
+   "alias": "Anti-Monitor",
+   "side": "villain",
+   "show": "Crisis on Infinite Earths",
+   "home": "any",
+   "bio": "The being of antimatter who erased the multiverse in the Crisis.",
+   "health": 380,
+   "speed": 0.9,
+   "power": 1.4,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "beam",
+    "color": "#ff4fd8",
+    "element": "",
+    "name": "Antimatter Beam"
+   },
+   "secondary": {
+    "kind": "bolt",
+    "color": "#ff6ae0",
+    "element": "shock",
+    "name": "Antimatter Orb",
+    "speed": 50
+   },
+   "special": {
+    "kind": "nova",
+    "element": "shock",
+    "name": "Wave of Destruction"
+   },
+   "look": {
+    "suit": "#3a2a4a",
+    "accent": "#ff4fd8",
+    "skin": "#3a2a4a",
+    "hair": "#3a2a4a",
+    "extras": [
+     "armor",
+     "helmet_savitar",
+     "glow_eyes",
+     "bald"
+    ],
+    "scale": 2.2
+   }
+  },
+  {
+   "id": "overgirl",
+   "name": "Overgirl",
+   "alias": "Overgirl",
+   "side": "villain",
+   "show": "Crisis on Earth-X",
+   "home": "national",
+   "bio": "Earth-X's Kara, the Kryptonian enforcer of a tyrannical regime.",
+   "health": 180,
+   "speed": 1.0,
+   "power": 1.25,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Kryptonian Punch",
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "beam",
+    "color": "#ff2222",
+    "element": "fire",
+    "name": "Heat Vision"
+   },
+   "special": {
+    "kind": "nova",
+    "element": "fire",
+    "name": "Solar Overload"
+   },
+   "look": {
+    "suit": "#141414",
+    "accent": "#b00000",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "cape",
+     "hair_long",
+     "emblem"
+    ]
+   }
+  },
+  {
+   "id": "dark_arrow",
+   "name": "Oliver Queen (Earth-X)",
+   "alias": "Dark Arrow",
+   "side": "villain",
+   "show": "Crisis on Earth-X",
+   "home": "star",
+   "bio": "Earth-X's Oliver, dictator of a world where tyranny won.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow"
+   },
+   "secondary": {
+    "kind": "explosive_arrow",
+    "name": "Explosive Arrow"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Bomb"
+   },
+   "look": {
+    "suit": "#141c14",
+    "accent": "#3a0a0a",
+    "skin": "#e3b896",
+    "hair": "#e2c172",
+    "extras": [
+     "hood",
+     "bow",
+     "quiver",
+     "mask_dark"
+    ]
+   }
+  },
+  {
+   "id": "tobias_whale",
+   "name": "Tobias Whale",
+   "alias": "Tobias Whale",
+   "side": "villain",
+   "show": "Black Lightning",
+   "home": "freeland",
+   "bio": "Freeland's ruthless crime boss, leader of the 100 gang.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Revolver",
+    "damage": 9
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Brutal Strikes",
+    "damage": 17
+   },
+   "special": {
+    "kind": "rage",
+    "name": "Kingpin Fury"
+   },
+   "look": {
+    "suit": "#e8e4dc",
+    "accent": "#2a2a2a",
+    "skin": "#f2ebe4",
+    "hair": "#f2ebe4",
+    "extras": [
+     "coat",
+     "bald"
+    ]
+   }
+  }
+ ]
+}
