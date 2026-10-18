@@ -6,6 +6,7 @@ extends Node3D
 ## in, and grenades bounce until their fuse runs out.
 
 static var _mesh_cache: Dictionary = {}
+static var spawned := 0
 
 var shooter: Actor
 var world
@@ -31,6 +32,7 @@ var _trail_t := 0.0
 
 
 func setup(p_world, p_shooter: Actor, from: Vector3, vel: Vector3, p_damage: float, p_style: String, p_color: Color, p_element := "", p_radius := 0.0) -> void:
+	spawned += 1
 	world = p_world
 	shooter = p_shooter
 	velocity = vel

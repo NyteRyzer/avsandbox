@@ -262,9 +262,10 @@ func test_player_input() -> void:
 	Abilities.fire_grapple(world.player)
 	check(world.player.grapple_point != null, "grapple attaches to a building")
 	# Primary attacks spawn projectiles.
-	var before := world.fx_root.get_child_count()
+	world.player._release_grapple()
+	var before := Projectile.spawned
 	await _hold("attack", 4)
-	check(world.fx_root.get_child_count() > before, "LMB fires an arrow")
+	check(Projectile.spawned > before, "LMB fires an arrow")
 	# Slow-mo special
 	world.spawn_player("flash", Vector3(0, 0.5, 200))
 	world.player.energy = 100.0
