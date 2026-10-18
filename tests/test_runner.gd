@@ -341,7 +341,7 @@ func test_places() -> void:
 	await _hold("move_forward", 90)
 	check(world.ship.global_position.distance_to(start) > 40.0, "the Waverider flies (%.0f m)" % world.ship.global_position.distance_to(start))
 	check(world.ship.global_position.y > start.y + 5.0, "and climbs")
-	check(world.player.global_position.distance_to(world.ship.global_position) < 5.0, "the pilot rides along")
+	check(world.player.global_position.distance_to(world.ship.global_position) < 9.0, "the pilot rides along")
 	world.cam.pitch = -0.2
 	world.interact()
 	await _frames(3)

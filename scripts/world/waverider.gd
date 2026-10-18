@@ -27,7 +27,7 @@ var _bob := 0.0
 func _ready() -> void:
 	_visual = Node3D.new()
 	add_child(_visual)
-	var hull := _mat("#a3acb6", 0.6, 0.35)
+	var hull := _mat("#8e969e", 0.25, 0.45)
 	var dark := _mat("#2a3038", 0.4, 0.5)
 	var trim := _mat("#c8a050", 0.7, 0.3)
 	var glass := _mat("#1a3a5a", 0.2, 0.1)
@@ -174,7 +174,7 @@ func take_helm() -> void:
 	p.visible = false
 	p.process_mode = Node.PROCESS_MODE_DISABLED
 	_saved_zoom = world.cam.zoom
-	world.cam.zoom = 30.0
+	world.cam.zoom = 42.0
 	world.cam.zoom_max = 60.0
 	world.cam.spring.add_excluded_object(body.get_rid())
 	_carry_player()
@@ -198,7 +198,7 @@ func leave_helm() -> void:
 func _carry_player() -> void:
 	var p: Actor = world.player
 	if p and is_instance_valid(p):
-		p.global_position = global_position + Vector3.UP * 3.0
+		p.global_position = global_position + Vector3.UP * 7.0
 		p.invuln_t = 1.0
 
 

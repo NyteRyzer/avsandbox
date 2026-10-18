@@ -1014,7 +1014,7 @@ func _build_western() -> void:
 ## The Speed Force: a glowing plain under a storm of lightning, with
 ## fragments of memories (pieces of the city) floating in the haze.
 func _build_speed_force() -> void:
-	var floor_mat := _plain(Color("#cfe6ff"), 0.2, 0.6)
+	var floor_mat := _plain(Color("#22305a"), 0.3, 0.5)
 	add_box(Vector3(0, -1.0, 0), Vector3(1600, 2.0, 1600), floor_mat)
 	var grid := Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
 	islands.append({"name": "The Speed Force", "center": Vector2.ZERO, "land": Rect2(-800, -800, 1600, 1600), "grid": grid, "style": STYLES[1], "index": 1})
@@ -1025,7 +1025,14 @@ func _build_speed_force() -> void:
 		add_box(p, s, shard_mats[rng.randi() % shard_mats.size()], k % 3 == 0, rng.randf() * TAU)
 	for k in 30:
 		var p := Vector3(rng.randf_range(-500, 500), 0, rng.randf_range(-500, 500))
-		add_box(p + Vector3.UP * 2.0, Vector3(1.0, 4.0, 1.0), _plain(Color("#ffffff"), 0.2, 3.0), false)
+		add_box(p + Vector3.UP * 2.0, Vector3(1.0, 4.0, 1.0), _plain(Color("#ffe48a"), 0.2, 3.0), false)
+	# Streaks of lightning frozen in the floor
+	for k in 40:
+		var p := Vector3(rng.randf_range(-600, 600), 0.02, rng.randf_range(-600, 600))
+		add_box(p, Vector3(rng.randf_range(20, 80), 0.05, 0.6), _plain(Color("#ffd23a"), 0.2, 2.5), false, rng.randf() * TAU)
+	# The way home: a column of light
+	add_box(Vector3(0, 40, 60), Vector3(3, 80, 3), _plain(Color("#ffffff"), 0.2, 4.0), false)
+	_label("THE WAY HOME", Vector3(0, 6, 60), 2.0, Color("#ffffff"))
 	_label("THE SPEED FORCE", Vector3(0, 40, -120), 10.0, Color("#fff2a0"))
 	landmarks.append({"name": "Speed Force Heart", "pos": Vector3(0, 0.5, 0), "district": "The Speed Force"})
 	doors.append({"name": "Way home", "pos": Vector3(0, 0.5, 60), "interior": "exit_speedforce"})

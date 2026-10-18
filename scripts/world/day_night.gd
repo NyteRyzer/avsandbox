@@ -131,6 +131,14 @@ func _apply() -> void:
 		top = top.lerp(Color(0.25, 0.27, 0.3) * (0.3 + day * 0.7), 0.8)
 		horizon = horizon.lerp(Color(0.35, 0.37, 0.4) * (0.3 + day * 0.7), 0.8)
 		sun.light_energy *= 0.45
+	var spec: Dictionary = city.spec if city else {}
+	if spec.has("sky"):
+		var look: Array = spec["sky"]
+		var amt := float(look[2])
+		top = top.lerp(Color(str(look[0])) * (0.35 + day * 0.65), amt)
+		horizon = horizon.lerp(Color(str(look[1])) * (0.35 + day * 0.65), amt)
+	if spec.has("sun"):
+		sun.light_color = sun.light_color.lerp(Color(str(spec["sun"])), 0.6)
 	if _flash_t > 0.0:
 		top = top.lerp(Color.WHITE, 0.6)
 		horizon = horizon.lerp(Color.WHITE, 0.6)
@@ -142,7 +150,7 @@ func _apply() -> void:
 	env.ambient_light_energy = lerpf(0.3, 0.75, day) + (2.0 if _flash_t > 0.0 else 0.0)
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
-	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view))
+	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", 1.0))
 	env.fog_enabled = not indoors
 	if indoors:
 		sun.light_energy = 0.0

@@ -17,6 +17,10 @@ func _ready() -> void:
 		await _closeups(args[2].split(","), args[3] if args.size() > 3 else "")
 		get_tree().quit()
 		return
+	if only == "places":
+		await _places()
+		get_tree().quit()
+		return
 	if only == "" or only == "roster":
 		await _roster()
 	if only == "roster":
@@ -233,3 +237,48 @@ func _world() -> void:
 		Abilities.held_tick(w.player, w.player.def["secondary"], 1.0 / 60.0, "secondary")
 		await get_tree().process_frame
 	await _snap("heat_vision", 1)
+
+
+func _places() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = false
+	w.events.cooldown = 9999.0
+	w.day_night.frozen = true
+	w.day_night.hour = 15.0
+	w.spawn_player("flash", Vector3(560, 0.5, -440))
+	for id in Interiors.ORDER:
+		w.enter_interior(id)
+		w.cam.yaw = 0.0
+		w.cam.pitch = -0.12
+		w.cam.zoom = 7.0
+		for i in 20:
+			await get_tree().physics_frame
+		await _snap("inside_" + id, 5)
+	w.leave_interior("waverider")
+	w.cam.yaw = 0.5
+	w.cam.pitch = -0.2
+	w.cam.zoom = 14.0
+	for i in 20:
+		await get_tree().physics_frame
+	await _snap("waverider_pad", 5)
+	w.ship.take_helm()
+	w.ship.global_position = Vector3(500, 120, -300)
+	w.ship.yaw = -0.6
+	w.cam.yaw = -0.4
+	w.cam.pitch = -0.25
+	for i in 30:
+		await get_tree().physics_frame
+	await _snap("waverider_flight", 5)
+	w.ship.leave_helm()
+	w.leave_interior("waverider")
+	for id in ["earthx", "2046", "3030", "earth2", "old_west", "speedforce"]:
+		w.travel_to(id, "breach")
+		w.cam.yaw = 0.6
+		w.cam.pitch = -0.1
+		w.cam.zoom = 6.0
+		if w.city.kind == "metro":
+			w.teleport_player(w.city.district_center(1) + Vector3(0, 0.5, 0))
+		for i in 60:
+			await get_tree().physics_frame
+		await _snap("place_" + id, 10)

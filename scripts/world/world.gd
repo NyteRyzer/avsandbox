@@ -187,6 +187,10 @@ func _process(delta: float) -> void:
 		population.enabled = inside == "" and not ship.piloted
 		events.enabled = inside == "" and city.kind != "speedforce"
 		door = _nearest_door()
+		if city.kind == "speedforce" and randf() < delta * 1.5:
+			var c := player.global_position
+			var a := c + Vector3(randf_range(-80, 80), randf_range(40, 90), randf_range(-80, 80))
+			FX.lightning(self, a, a + Vector3(randf_range(-40, 40), randf_range(-30, 10), randf_range(-40, 40)), Color("#ffe48a"), 0.25, 3.0, 8, 2)
 		var d := place_name(player.global_position)
 		if d != _last_district:
 			_last_district = d

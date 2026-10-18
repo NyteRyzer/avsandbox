@@ -75,7 +75,7 @@ func label(text: String, p: Vector3, size := 1.2, color := Color.WHITE, rot := 0
 	l.rotation.y = rot
 	l.text = text
 	l.font_size = 128
-	l.pixel_size = size / 128.0 * 2.0
+	l.pixel_size = size / 128.0 * 1.2
 	l.modulate = color
 	l.outline_size = 12
 	l.position = base + p

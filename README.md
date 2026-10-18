@@ -2,10 +2,12 @@
 
 **An unofficial Arrowverse open-world sandbox.** Pick any of **59 heroes and villains** from
 *Arrow*, *The Flash*, *Supergirl*, *Legends of Tomorrow*, *Batwoman*, *Black Lightning*,
-*Stargirl* and *Superman & Lois*, then go loose in a city that merges Star City, Central City,
-National City and Freeland into one island. Stop crimes as a hero or cause them as a villain,
-spawn anyone as your ally or enemy, change the time and weather, lift cars, run up walls, and
-fly over the skyline.
+*Stargirl* and *Superman & Lois*, then go loose in a bay where Star City, Central City,
+National City and Freeland each sit on their own island, joined by bridges. Walk into
+S.T.A.R. Labs, the Arrow Bunker, Jitters, CatCo and the D.E.O.; fly the Waverider and jump
+through time; run into the Speed Force or breach to other Earths. Stop crimes as a hero or cause
+them as a villain, spawn anyone as your ally or enemy, lift cars, run up walls, and fly over the
+skyline.
 
 Built with **Godot 4.3** (GDScript, Compatibility renderer). Runs on **Windows, macOS and Linux**.
 
@@ -17,6 +19,10 @@ Built with **Godot 4.3** (GDScript, Compatibility renderer). Runs on **Windows, 
 ![Reverse-Flash at super speed](docs/screenshots/speedster.jpg)
 ![Unity Park brawl](docs/screenshots/unity_park.jpg)
 ![Sandbox tools](docs/screenshots/sandbox_menu.jpg)
+![Inside S.T.A.R. Labs](docs/screenshots/inside_star_labs.jpg)
+![Flying the Waverider](docs/screenshots/waverider_flight.jpg)
+![Earth-X](docs/screenshots/place_earthx.jpg)
+![The Speed Force](docs/screenshots/place_speedforce.jpg)
 
 ## Download and play
 
@@ -60,6 +66,8 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Grappling line, or lift and throw | E | RB |
 | Take off / land (flyers) | F | LB |
 | Descend while flying | Ctrl or C | B |
+| Enter a door, use a console, travel (speedsters at full speed, Vibe) | G | D-pad up |
+| Dodge | V | X |
 | Sandbox tools | Tab | Back |
 | Pause, change character, settings | Esc | Start |
 | Hide HUD | F1 | |
@@ -92,12 +100,34 @@ slow motion, speed vortexes, ground slams, smoke bombs, ice/fire/lightning novas
 invisibility, invulnerability, breach teleports and Darhk's life drain. Fire burns, ice freezes
 and lightning stuns.
 
-**The city.** A procedurally built island about 1.2 km across with four districts and their
-landmarks: Queen Consolidated and Verdant in Star City; S.T.A.R. Labs, CCPD and Jitters in
-Central City; CatCo and the D.E.O. in National City; Garfield High and Iron Heights in Freeland.
-Unity Park sits in the middle, with the Waverider hovering above it. The docks and open bay
-surround the island. There's a day/night cycle with lit windows and streetlights, plus rain,
-storms and fog.
+**The map.** Four city islands, each about 740 m across with its own architecture, sit in a bay
+joined by suspension bridges:
+- **Star City:** steel-and-glass towers, Queen Consolidated, Verdant and SCPD, plus the rundown
+  Glades and the docks.
+- **Central City:** brick and sandstone, S.T.A.R. Labs, CCPD, Jitters and Picture News.
+- **National City:** white stone and blue glass, CatCo, the D.E.O., L-Corp and a palm-lined beach.
+- **Freeland:** low-rise neighbourhoods, Garfield High and the clinic.
+
+Offshore are Iron Heights prison (with its own bridge) and Lian Yu, a jungle island with a plane
+wreck. There's a day/night cycle with lit windows and streetlights, plus rain, storms and fog.
+
+**Go inside (G at the door).**
+- **S.T.A.R. Labs:** the Cortex, the Pipeline, a Speed Lab treadmill that takes speedsters into the
+  Speed Force, and Cisco's Breach Room.
+- **The Arrow Bunker** under Verdant: the salmon ladder, and the team's suits on display. Suit up
+  to switch character.
+- **Jitters, CatCo** (step out onto the balcony) and **the D.E.O.**
+- **The Waverider:** board it from its landing pad off the Star City bridge. Ask Gideon to plot a
+  course, or take the helm.
+
+**Fly the Waverider.** Take the helm to fly anywhere: it steers where you look, and you can boost,
+climb and fire its cannons. Press Q to jump through time to 1942, the Old West, a ruined 2046 or
+neon 3030.
+
+**The multiverse.** Speedsters running flat out can press G to vibrate into the Speed Force,
+where Time Wraiths hunt them, or onto another Earth. Vibe can open a breach anywhere, and so can
+the S.T.A.R. Labs Breach Room. Earth-2, Earth-3, Earth-X, Earth-38 and Earth-19 each have their
+own skyline, colours and sky.
 
 **A living world.** Civilians walk the sidewalks and flee from fights. Traffic drives the
 streets until you hit it. Police patrol, and gangs (the Ghosts, Rogues, Cadmus and the 100) stake
@@ -117,7 +147,8 @@ out corners, with more of them at night.
 - Set the time of day, freeze time, change the weather and adjust gravity.
 - Start any event.
 - Cheats: god mode, infinite energy, one-hit KOs and no heat.
-- Teleport to any landmark.
+- Teleport to any landmark, or inside any building.
+- Multiverse: jump straight to any Earth, era or the Speed Force.
 
 ## Project layout
 
