@@ -278,6 +278,28 @@ func civilian_def() -> Dictionary:
 			if look["sleeve"] == 2.0:
 				look["extras"].append("coat")
 				look["coat_color"] = ["#5a4a3a", "#2a2a30", "#6a5a48", "#3a4a5a"][rng.randi() % 4]
+	# Accessories: hoodies, ties, backpacks, hats, glasses, sneakers.
+	var office: bool = look.get("collar", "") == "#e8e8e8"
+	if office:
+		look["extras"].append("tie")
+		look["tie_color"] = ["#7a1a2a", "#1a2a5a", "#2a4a2a", "#5a4a1a", "#3a3a3a"][rng.randi() % 5]
+	elif rng.randf() < 0.18:
+		look["extras"].append("hoodie")
+		look["sleeve"] = 2.0
+		look["coat_color"] = look["suit"]
+	if not office and rng.randf() < 0.22:
+		look["extras"].append("backpack")
+		look["pack_color"] = ["#2a3a4a", "#5a1a1a", "#1a1a1a", "#3a5a2a", "#6a5a2a"][rng.randi() % 5]
+	var hat := rng.randf()
+	if hat < 0.1:
+		look["extras"].append("beanie")
+		look["hat_color"] = Color.from_hsv(rng.randf(), 0.4, rng.randf_range(0.2, 0.6)).to_html(false)
+	elif hat < 0.18 and not office:
+		look["extras"].append("cap")
+	if rng.randf() < 0.15:
+		look["extras"].append("glasses")
+	if not office and rng.randf() < 0.6:
+		look["sole"] = "#f2f2ee" if rng.randf() < 0.7 else "#1a1a1a"
 	look["anim"] = _civ_anim()
 	var name: String = FIRST_NAMES[rng.randi() % FIRST_NAMES.size()]
 	return {
@@ -325,6 +347,8 @@ func thug_def(gang: int) -> Dictionary:
 	if rng.randf() < 0.45:
 		extras.append("hood")
 	extras.append("jacket" if rng.randf() < 0.6 else "leather")
+	if not extras.has("hood") and rng.randf() < 0.35:
+		extras.append("beanie" if rng.randf() < 0.6 else "cap")
 	return {
 		"id": "thug", "name": g["name"], "alias": g["name"], "side": "villain", "home": "any",
 		"health": 55, "speed": 0.95, "power": 0.7, "movement": "run",
@@ -335,7 +359,7 @@ func thug_def(gang: int) -> Dictionary:
 			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
 			"coat_color": g["suit"], "glove_length": 0.0, "boots": SHOES[rng.randi() % SHOES.size()], "boot_height": 0.12,
 			"hair_style": ["short", "buzz", "bald", "curly"][rng.randi() % 4], "facial": ["", "stubble", "beard", "goatee"][rng.randi() % 4],
-			"no_belt": true, "sleeve": 2.0 if rng.randf() < 0.7 else 0.45,
+			"no_belt": true, "sleeve": 2.0 if rng.randf() < 0.7 else 0.45, "sole": "#e8e8e8", "hat_color": g["accent"],
 			"extras": extras, "anim": {"run": ["swagger", "heavy", "stalk", "athlete"][rng.randi() % 4],
 				"idle": ["menace", "pockets", "fists", "hunched"][rng.randi() % 4], "cadence": rng.randf_range(0.85, 1.15), "sway": rng.randf_range(0.0, 0.2)}},
 	}

@@ -143,6 +143,23 @@ while falling to sail forward, and hold descend to dive.
 - Ultimates open with the character powering up in a pillar of light.
 - Combo finishers burst with impact lines.
 
+**Better looking.**
+- **Vehicles:** real body shapes for sedans, hatchbacks, SUVs, vans, sports cars and pickups, plus
+  taxis with roof signs and checker stripes and police cruisers with flashing light bars. Each
+  has a glass greenhouse with pillars, wheels with rims, wheel arches, bumpers, a grille,
+  mirrors, door seams, plates and working lights. Motorcycles have a frame, tank, forks, spoked
+  wheels and an exhaust.
+- **Buildings:** windows have frames, two panes of reflective glass, sills and floor bands, and
+  which windows are lit varies from block to block. Street-level shopfronts have awnings and lit
+  signs. There are stone ledges between floors, roof parapets, AC units, stair huts, antennas
+  and wooden water tanks.
+- **People:**
+  - Bigger, readable eyes with pupils and highlights, lash lines, heavier brows, and ears.
+  - Hair with a fringe, crown tufts, long strands and curls instead of a helmet.
+  - Slimmer shoulders.
+  - Civilians now wear hoodies, ties with office clothes, backpacks, beanies, caps, glasses and
+    sneakers with white soles. Thugs get beanies and caps.
+
 **Loadouts.**
 - Pick each character's primary, secondary, special and utility from character select ("LOADOUT")
   or from the armory in any HQ (S.T.A.R. Labs, the Bunker, the Batcave, the D.E.O., the JSA

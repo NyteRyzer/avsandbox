@@ -23,6 +23,10 @@ var thrown_t := 0.0
 var _body_mat: StandardMaterial3D
 var _fire: CPUParticles3D
 var _merged: MeshInstance3D
+## Car body style (sedan, hatch, suv, van, sports, pickup, taxi, police).
+var style := ""
+var _siren_mats: Array = []
+var _siren_t := 0.0
 
 # Traffic: a driving car is a kinematic body following the street grid until
 # something hits it, then it becomes an ordinary physics car.
@@ -70,61 +74,33 @@ func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 		box.size = Vector3(0.7, 1.1, 2.1)
 		shape.position = Vector3(0, 0.6, 0)
 		_body_mat = StandardMaterial3D.new()
-		_body_mat.albedo_color = Color(["#1a1a1a", "#1e4a22", "#8a1010", "#2a2a3a"][rng.randi() % 4])
-		_body_mat.metallic = 0.6
-		_body_mat.roughness = 0.3
-		_mesh(Vector3(0.3, 0.35, 1.3), Vector3(0, 0.75, 0), _body_mat)
-		_mesh(Vector3(0.34, 0.12, 0.6), Vector3(0, 0.98, 0.25), CharacterModel.mat(Color("#141414")))
-		_mesh(Vector3(0.7, 0.05, 0.05), Vector3(0, 1.1, -0.55), CharacterModel.mat(Color("#8a8a8a")))
-		_mesh(Vector3(0.08, 0.5, 0.08), Vector3(0, 0.85, -0.6), CharacterModel.mat(Color("#8a8a8a")))
-		_mesh(Vector3(0.2, 0.12, 0.05), Vector3(0, 0.95, -0.82), CharacterModel.mat(Color("#fff2c0"), 2.0))
-		var tire := CharacterModel.mat(Color("#141414"))
-		for wz in [-0.75, 0.75]:
-			var w := MeshInstance3D.new()
-			var cyl := CylinderMesh.new()
-			cyl.top_radius = 0.34
-			cyl.bottom_radius = 0.34
-			cyl.height = 0.14
-			cyl.radial_segments = 14
-			cyl.material = tire
-			w.mesh = cyl
-			w.position = Vector3(0, 0.34, wz)
-			w.rotation.z = PI * 0.5
-			add_child(w)
+		_body_mat.albedo_color = Color(["#1a1a1a", "#1e4a22", "#8a1010", "#2a2a3a", "#d8a514", "#1f4fa8"][rng.randi() % 6])
+		_merged = VehicleModel.build_bike(self, _body_mat.albedo_color)
 	elif kind == "car":
 		mass = 900.0
 		max_hp = 70.0
-		box.size = Vector3(2.0, 1.3, 4.4)
-		shape.position = Vector3(0, 0.75, 0)
+		if style == "":
+			var roll := rng.randf()
+			style = "sedan"
+			for pair in [["hatch", 0.15], ["suv", 0.3], ["van", 0.38], ["sports", 0.45], ["pickup", 0.53], ["taxi", 0.62], ["police", 0.66]]:
+				if roll < pair[1]:
+					style = pair[0]
+					break
+		var paint := Color(VehicleModel.PAINTS[rng.randi() % VehicleModel.PAINTS.size()])
+		if style == "taxi":
+			paint = Color("#f0c818")
+		elif style == "police":
+			paint = Color("#141418")
+		_body_mat = StandardMaterial3D.new()
+		_body_mat.albedo_color = paint
+		var built := VehicleModel.build_car(self, style, paint)
+		_merged = built["body"]
+		_siren_mats = built["lights"]
+		var sz: Vector3 = built["size"]
+		box.size = Vector3(sz.x, sz.y - 0.15, sz.z)
+		shape.position = Vector3(0, (sz.y - 0.15) * 0.5 + 0.1, 0)
 		center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 		center_of_mass = Vector3(0, 0.4, 0)
-		_body_mat = StandardMaterial3D.new()
-		_body_mat.albedo_color = Color(CAR_COLORS[rng.randi() % CAR_COLORS.size()])
-		_body_mat.metallic = 0.5
-		_body_mat.roughness = 0.35
-		_mesh(Vector3(2.0, 0.75, 4.4), Vector3(0, 0.62, 0), _body_mat)
-		_mesh(Vector3(1.8, 0.6, 2.3), Vector3(0, 1.28, 0.2), _body_mat)
-		var glass := CharacterModel.mat(Color("#1c2a38"))
-		_mesh(Vector3(1.84, 0.45, 2.0), Vector3(0, 1.3, 0.2), glass)
-		var lamp := CharacterModel.mat(Color("#fff2c0"), 2.0)
-		var tail := CharacterModel.mat(Color("#ff2020"), 1.5)
-		for sx in [-0.7, 0.7]:
-			_mesh(Vector3(0.35, 0.15, 0.05), Vector3(sx, 0.75, -2.21), lamp)
-			_mesh(Vector3(0.35, 0.15, 0.05), Vector3(sx, 0.75, 2.21), tail)
-		var tire := CharacterModel.mat(Color("#141414"))
-		for wx in [-0.95, 0.95]:
-			for wz in [-1.4, 1.4]:
-				var w := MeshInstance3D.new()
-				var cyl := CylinderMesh.new()
-				cyl.top_radius = 0.36
-				cyl.bottom_radius = 0.36
-				cyl.height = 0.28
-				cyl.radial_segments = 12
-				cyl.material = tire
-				w.mesh = cyl
-				w.position = Vector3(wx, 0.36, wz)
-				w.rotation.z = PI * 0.5
-				add_child(w)
 	elif kind in FURNITURE:
 		# Street furniture: benches, fire hydrants, mailboxes, dumpsters,
 		# newspaper boxes. All of it can be thrown.
@@ -174,7 +150,8 @@ func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 		var trim := CharacterModel.mat(c.darkened(0.35))
 		_mesh(Vector3(s * 1.02, s * 0.12, s * 1.02), Vector3(0, s * 0.5, 0), trim)
 	hp = max_hp
-	_merged = CharacterModel.merge_children(self, 0.5 if is_vehicle() else 0.0)
+	if not is_vehicle():
+		_merged = CharacterModel.merge_children(self, 0.0)
 	for c in get_children():
 		if c is GeometryInstance3D:
 			c.visibility_range_end = 220.0
@@ -264,6 +241,12 @@ func _physics_process(delta: float) -> void:
 		thrown_t -= delta
 	if global_position.y < -30.0:
 		queue_free()
+	if not _siren_mats.is_empty() and (driving or player_driven or getaway):
+		# Police lights: red and blue, alternating.
+		_siren_t += delta
+		var on := int(_siren_t * 4.0) % 2 == 0
+		_siren_mats[0].emission_energy_multiplier = 4.0 if on else 0.3
+		_siren_mats[1].emission_energy_multiplier = 0.3 if on else 4.0
 
 
 ## The player gets behind the wheel.

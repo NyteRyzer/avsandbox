@@ -271,31 +271,65 @@ func set_night(f: float) -> void:
 
 # --- Materials --------------------------------------------------------------
 
+static var _tex_cache: Dictionary = {}
+
+
 func _make_textures() -> void:
 	# One texture covers 32 m x 32 m of facade: 8 x 8 windows, 4 m apart.
+	# Each window has a frame, two panes of glass with a sky reflection, and
+	# a sill; floors are banded and the wall has a little grain to it.
+	var neon: bool = spec.get("neon", false)
+	if _tex_cache.has(neon):
+		_window_albedo = _tex_cache[neon][0]
+		_window_emission = _tex_cache[neon][1]
+		return
 	var size := 512
 	var cell := size / 8
 	var albedo := Image.create(size, size, false, Image.FORMAT_RGB8)
 	var emission := Image.create(size, size, false, Image.FORMAT_RGB8)
-	albedo.fill(Color(0.92, 0.92, 0.92))
 	emission.fill(Color.BLACK)
 	var r := RandomNumberGenerator.new()
 	r.seed = 42
-	var neon: bool = spec.get("neon", false)
+	# Wall grain and faint courses of brick or stone.
+	for y in size:
+		var course := 0.97 if y % 8 == 0 else 1.0
+		for x in size:
+			var g := 0.9 + r.randf() * 0.06
+			albedo.set_pixel(x, y, Color(g, g, g) * course)
 	for wy in 8:
+		# Floor band
+		albedo.fill_rect(Rect2i(0, wy * cell, size, 3), Color(0.78, 0.78, 0.78))
 		for wx in 8:
-			var rect := Rect2i(wx * cell + 10, wy * cell + 14, cell - 20, cell - 30)
-			albedo.fill_rect(rect, Color(0.16, 0.19, 0.23))
-			albedo.fill_rect(Rect2i(rect.position.x, rect.position.y + rect.size.y, rect.size.x, 3), Color(0.7, 0.7, 0.7))
-			if r.randf() < 0.38:
+			var fr := Rect2i(wx * cell + 9, wy * cell + 12, cell - 18, cell - 26)
+			albedo.fill_rect(fr, Color(0.72, 0.72, 0.74))
+			var glass := Rect2i(fr.position.x + 3, fr.position.y + 3, fr.size.x - 6, fr.size.y - 6)
+			for gy in glass.size.y:
+				var t := float(gy) / glass.size.y
+				var base := Color(0.3, 0.36, 0.44).lerp(Color(0.1, 0.12, 0.15), t)
+				for gx in glass.size.x:
+					var streak := 1.0 if absi((gx - gy) - 6) < 3 else 0.0
+					albedo.set_pixel(glass.position.x + gx, glass.position.y + gy, base.lerp(Color(0.55, 0.62, 0.7), streak * 0.35))
+			# Mullion and transom
+			albedo.fill_rect(Rect2i(glass.position.x + glass.size.x / 2 - 1, glass.position.y, 2, glass.size.y), Color(0.7, 0.7, 0.72))
+			albedo.fill_rect(Rect2i(glass.position.x, glass.position.y + glass.size.y / 3, glass.size.x, 2), Color(0.7, 0.7, 0.72))
+			# Sill
+			albedo.fill_rect(Rect2i(fr.position.x - 3, fr.position.y + fr.size.y, fr.size.x + 6, 4), Color(0.84, 0.84, 0.82))
+			if r.randf() < 0.42:
 				var warm := Color(1.0, 0.82, 0.5).lerp(Color(0.75, 0.88, 1.0), r.randf() * 0.5)
 				if neon:
 					warm = [Color("#3affff"), Color("#ff4fd8"), Color("#9a6aff")][r.randi() % 3]
-				emission.fill_rect(rect, warm * r.randf_range(0.6, 1.0))
+				var e := warm * r.randf_range(0.55, 1.0)
+				emission.fill_rect(glass, e)
+				if r.randf() < 0.4:
+					# Blinds half down
+					for k in range(0, glass.size.y / 2, 3):
+						emission.fill_rect(Rect2i(glass.position.x, glass.position.y + k, glass.size.x, 1), e * 0.35)
+				emission.fill_rect(Rect2i(glass.position.x + glass.size.x / 2 - 1, glass.position.y, 2, glass.size.y), Color.BLACK)
 	albedo.generate_mipmaps()
 	emission.generate_mipmaps()
 	_window_albedo = ImageTexture.create_from_image(albedo)
 	_window_emission = ImageTexture.create_from_image(emission)
+	_tex_cache[neon] = [_window_albedo, _window_emission]
 
 
 func _facade(color: Color, roughness := 0.8, metallic := 0.0, lights := 1.0) -> ShaderMaterial:
@@ -324,6 +358,10 @@ func _plain(color: Color, roughness := 0.9, emission := 0.0) -> StandardMaterial
 
 
 var _roof_mat: StandardMaterial3D
+var _shop_glass: StandardMaterial3D
+var _ledge_mat: StandardMaterial3D
+var _awning_mats: Array = []
+var _sign_mats: Array = []
 var _sidewalk_mat: StandardMaterial3D
 var _grass_mat: StandardMaterial3D
 var _sand_mat: StandardMaterial3D
@@ -432,12 +470,90 @@ func _add_building(rect: Rect2, height: float, m: Material) -> void:
 	add_box(Vector3(c.x, height * 0.5, c.y), Vector3(rect.size.x, height, rect.size.y), m)
 	add_box(Vector3(c.x, height + 0.3, c.y), Vector3(rect.size.x + 0.6, 0.6, rect.size.y + 0.6), _roof_mat, true)
 	buildings.append({"rect": rect, "h": height})
-	var units := rng.randi_range(0, 3) if height < 120.0 else rng.randi_range(0, 1)
+	_building_details(rect, height, m)
+
+
+## Street-level shopfronts with awnings and signs, stone ledges between
+## floors, a parapet round the roof, and rooftop clutter: AC units, a water
+## tank on legs, a stair hut, antennas.
+func _building_details(rect: Rect2, height: float, m: Material) -> void:
+	var c := rect.get_center()
+	if _shop_glass == null:
+		_shop_glass = _plain(Color("#1a2a34"), 0.1, 0.25)
+		_shop_glass.metallic = 0.5
+		_ledge_mat = _plain(Color("#b8b2a6"), 0.8)
+		for col in ["#a8241e", "#1e5a2e", "#1d3f8a", "#d8a514", "#5a2a6a", "#2a2a2a", "#c86a1e"]:
+			_awning_mats.append(_plain(Color(col), 0.8))
+		for col in ["#ff5a4a", "#4affd0", "#ffd23a", "#ff6ad0", "#6ab0ff"]:
+			_sign_mats.append(_plain(Color(col), 0.4, 1.6))
+	var rural: bool = kind == "metro" and bool(spec.get("ruined", false))
+	# Shopfronts: a glass band on each face of buildings that front a street.
+	if height >= 8.0 and height <= 160.0 and not rural and rect.size.x > 10.0 and rect.size.y > 10.0:
+		var shop_h := 3.6
+		for face in 4:
+			if rng.randf() < 0.25:
+				continue
+			var along_x := face < 2
+			var sgn := -1.0 if face % 2 == 0 else 1.0
+			var length: float = (rect.size.x if along_x else rect.size.y) - 2.0
+			var pos := Vector3(c.x, shop_h * 0.5, c.y + sgn * (rect.size.y * 0.5 + 0.06)) if along_x else Vector3(c.x + sgn * (rect.size.x * 0.5 + 0.06), shop_h * 0.5, c.y)
+			var size := Vector3(length, shop_h, 0.12) if along_x else Vector3(0.12, shop_h, length)
+			add_box(pos, size, _shop_glass, false)
+			# Mullions every few metres
+			var n := int(length / 4.0)
+			for k in n + 1:
+				var t := -length * 0.5 + k * length / maxf(1.0, n)
+				var mp := pos + (Vector3(t, 0, sgn * 0.04) if along_x else Vector3(sgn * 0.04, 0, t))
+				add_box(mp, Vector3(0.18, shop_h, 0.18), _dark_mat, false)
+			# Awning and a lit sign above it
+			var out := Vector3(0, 0, sgn * 0.9) if along_x else Vector3(sgn * 0.9, 0, 0)
+			var aw: Material = _awning_mats[rng.randi() % _awning_mats.size()]
+			add_box(pos + out + Vector3.UP * (shop_h * 0.5 + 0.15), Vector3(length * 0.6, 0.15, 1.8) if along_x else Vector3(1.8, 0.15, length * 0.6), aw, false)
+			add_box(pos + out * 0.2 + Vector3.UP * (shop_h * 0.5 + 0.75), Vector3(length * 0.35, 0.7, 0.12) if along_x else Vector3(0.12, 0.7, length * 0.35),
+				_sign_mats[rng.randi() % _sign_mats.size()], false)
+		# A ledge where the shops meet the floors above
+		add_box(Vector3(c.x, shop_h + 0.2, c.y), Vector3(rect.size.x + 0.5, 0.4, rect.size.y + 0.5), _ledge_mat, false)
+	# Stone ledges between floors on brick and stone buildings
+	if height > 24.0 and height < 140.0 and rng.randf() < 0.6:
+		var step := rng.randf_range(12.0, 20.0)
+		var y := step + 4.0
+		while y < height - 4.0:
+			add_box(Vector3(c.x, y, c.y), Vector3(rect.size.x + 0.3, 0.3, rect.size.y + 0.3), _ledge_mat, false)
+			y += step
+	# Parapet
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(c.x, height + 1.0, c.y + side * (rect.size.y * 0.5 + 0.15)), Vector3(rect.size.x + 0.6, 0.8, 0.3), _roof_mat, false)
+		add_box(Vector3(c.x + side * (rect.size.x * 0.5 + 0.15), height + 1.0, c.y), Vector3(0.3, 0.8, rect.size.y + 0.6), _roof_mat, false)
+	# Rooftop clutter
+	var units := rng.randi_range(1, 4) if height < 120.0 else rng.randi_range(0, 2)
 	for u in units:
-		var s := Vector3(rng.randf_range(2, 5), rng.randf_range(1.5, 3), rng.randf_range(2, 5))
+		var s := Vector3(rng.randf_range(2, 4.5), rng.randf_range(1.2, 2.4), rng.randf_range(2, 4.5))
 		var px := rng.randf_range(rect.position.x + s.x, rect.end.x - s.x)
 		var pz := rng.randf_range(rect.position.y + s.z, rect.end.y - s.z)
 		add_box(Vector3(px, height + 0.6 + s.y * 0.5, pz), s, _concrete_mat)
+		add_box(Vector3(px, height + 0.62 + s.y, pz), Vector3(s.x * 0.5, 0.12, s.z * 0.5), _dark_mat, false)
+	if height > 20.0 and height < 90.0 and rng.randf() < 0.35 and rect.size.x > 14.0:
+		# A wooden water tank on legs, New York style
+		var tp := Vector3(rect.position.x + 5.0, height + 0.6, rect.position.y + 5.0)
+		for k in 4:
+			var off := Vector3(-1.2 if k % 2 == 0 else 1.2, 0, -1.2 if k < 2 else 1.2)
+			add_box(tp + off + Vector3.UP * 1.5, Vector3(0.25, 3.0, 0.25), _dark_mat, false)
+		var tank := CylinderMesh.new()
+		tank.top_radius = 1.5
+		tank.bottom_radius = 1.8
+		tank.height = 3.2
+		tank.radial_segments = 10
+		_mesh_instance(tank, Transform3D(Basis(), tp + Vector3.UP * 4.6), _trunk_mat)
+		var cone := CylinderMesh.new()
+		cone.top_radius = 0.05
+		cone.bottom_radius = 1.6
+		cone.height = 1.0
+		cone.radial_segments = 10
+		_mesh_instance(cone, Transform3D(Basis(), tp + Vector3.UP * 6.7), _roof_mat)
+	if rect.size.x > 12.0 and rng.randf() < 0.5:
+		add_box(Vector3(rect.end.x - 3.0, height + 2.0, rect.end.y - 3.0), Vector3(3.0, 2.8, 3.4), _roof_mat)
+	if height > 60.0 and rng.randf() < 0.5:
+		add_box(Vector3(c.x + rng.randf_range(-3, 3), height + 6.0, c.y + rng.randf_range(-3, 3)), Vector3(0.25, 12.0, 0.25), _steel_mat, false)
 
 
 func _mesh_instance(mesh: Mesh, xform: Transform3D, m: Material) -> MeshInstance3D:

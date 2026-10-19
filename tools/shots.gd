@@ -25,6 +25,10 @@ func _ready() -> void:
 		await _new_places()
 		get_tree().quit()
 		return
+	if only == "street":
+		await _street_shots()
+		get_tree().quit()
+		return
 	if only == "entrances":
 		await _entrance_shots()
 		get_tree().quit()
@@ -506,3 +510,49 @@ func _entrance_shots() -> void:
 	w.loadout_panel.open("flash")
 	await _snap("loadout_screen", 6)
 	w.loadout_panel.close()
+
+
+func _street_shots() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = true
+	w.events.cooldown = 9999.0
+	w.char_missions.enabled = false
+	w.street_crime.enabled = false
+	w.day_night.frozen = true
+	w.day_night.hour = 16.0
+	w.spawn_player("flash", Vector3(560, 0.5, -440))
+	for i in 120:
+		await get_tree().physics_frame
+	for shot in [["street_central", Vector3(560, 0.5, -440), 0.0, 0.02, 9.0], ["street_star", Vector3(-1440, 0.5, -440), 0.8, 0.0, 9.0],
+			["street_national", Vector3(-1440, 0.5, 1560), 2.0, 0.05, 9.0], ["street_aerial", Vector3(560, 60.0, -300), 0.4, -0.45, 20.0]]:
+		w.player.global_position = shot[1]
+		w.player.flying = shot[1].y > 5.0
+		w.cam.yaw = shot[2]
+		w.cam.pitch = shot[3]
+		w.cam.zoom = shot[4]
+		for i in 90:
+			await get_tree().physics_frame
+		await _snap(str(shot[0]), 6)
+	# A line-up of every car style
+	var x := 560.0 - 14.0
+	for st in ["sedan", "hatch", "suv", "van", "sports", "pickup", "taxi", "police"]:
+		var car := Prop.new()
+		car.style = st
+		car.build(w, "car")
+		w.props_root.add_child(car)
+		car.global_position = Vector3(x, 0.6, -470)
+		car.rotation.y = PI * 0.5
+		x += 4.0
+	var bike := Prop.new()
+	bike.build(w, "bike")
+	w.props_root.add_child(bike)
+	bike.global_position = Vector3(x, 0.4, -470)
+	w.player.global_position = Vector3(560, 0.5, -462)
+	w.player.flying = false
+	w.cam.yaw = 0.0
+	w.cam.pitch = -0.12
+	w.cam.zoom = 16.0
+	for i in 60:
+		await get_tree().physics_frame
+	await _snap("cars_lineup", 6)

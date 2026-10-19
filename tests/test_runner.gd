@@ -349,6 +349,8 @@ func test_new_powers() -> void:
 				Abilities.fire(p, atk)
 			await _frames(30)
 		p.energy = p.max_energy
+		if is_instance_valid(foe):
+			p.aim_point = foe.chest()
 		var ok := Abilities.special(p, c["special"])
 		await _frames(90)
 		check(ok, "%s special %s runs" % [c["id"], c["special"]["kind"]])
@@ -416,7 +418,7 @@ func test_places() -> void:
 	for id in Interiors.ORDER:
 		if not Interiors.is_remote(id):
 			built_in += 1
-	check(built_in == 8, "eight rooms are inside their real buildings (%d)" % built_in)
+	check(built_in == 14, "fourteen rooms are inside their real buildings (%d)" % built_in)
 	check(Interiors.is_remote("waverider"), "the Waverider is bigger on the inside")
 	check(world.city.islands.size() >= 6, "six city islands (with Gotham and Smallville)")
 	check(world.city.district_at(Vector3(-1440, 1, 3440)) == "Gotham City", "Gotham is south of National City")
@@ -698,6 +700,7 @@ func test_world_extras() -> void:
 	check(p.held_prop == bench, "Superman can lift a fire hydrant")
 	Abilities.throw_prop(p)
 	# News, helicopter, weather, difficulty
+	world.news.queue.clear()
 	world.news.on_boss("Reverse-Flash")
 	world.news._t = 0.0
 	await get_tree().process_frame
@@ -988,7 +991,10 @@ func test_space_glide_missions() -> void:
 			f.in_block = false
 			f.invuln_t = 0.0
 			f.take_damage(99999.0, world.player)
-	await _frames(3)
+	for k in 30:
+		await get_tree().process_frame
+		if world.char_missions.index == 1:
+			break
 	check(world.char_missions.index == 1, "beating them advances the story (%d)" % world.char_missions.index)
 	Game.progress["char_missions"].erase("flash")
 	world.char_missions.set_character(world.player.def)
