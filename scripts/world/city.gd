@@ -1305,7 +1305,18 @@ func _build_argo() -> void:
 	var rock := _plain(Color("#4a4038"), 0.95)
 	var rock2 := _plain(Color("#3a322c"), 0.95)
 	# The city's disc and the jagged chunk of Krypton it sits on.
-	add_box(Vector3(0, -4.0, 0), Vector3(700, 8.0, 700), _plain(Color("#5a5048"), 0.9))
+	var disc := CylinderMesh.new()
+	disc.top_radius = 355.0
+	disc.bottom_radius = 330.0
+	disc.height = 8.0
+	disc.radial_segments = 48
+	_mesh_instance(disc, Transform3D(Basis(), Vector3(0, -4.0, 0)), _plain(Color("#8a94a4"), 0.5))
+	var rim := TorusMesh.new()
+	rim.inner_radius = 352.0
+	rim.outer_radius = 358.0
+	rim.rings = 64
+	_mesh_instance(rim, Transform3D(Basis(), Vector3(0, 0.2, 0)), _plain(Color("#8fd8ff"), 0.2, 2.0))
+	add_cylinder_collision(Vector3(0, -4.0, 0), 355.0, 8.0)
 	for k in 18:
 		var ang := k * TAU / 18.0 + rng.randf() * 0.2
 		var d := rng.randf_range(80.0, 290.0)
@@ -1478,7 +1489,7 @@ func _build_speed_force() -> void:
 	core.radius = 38.0
 	core.height = 76.0
 	_mesh_instance(core, Transform3D(Basis(), Vector3(0, 70, vortex_z - 260.0)), FX.glow_mat(Color("#ffffff"), 0.85))
-	_label("THE TIME VORTEX", Vector3(0, 140, vortex_z), 10.0, Color("#bfe0ff"))
+	_label("THE TIME VORTEX", Vector3(0, 150, vortex_z), 5.0, Color("#bfe0ff"))
 	# Memories: pieces of Barry's life floating in the void.
 	var memories := [
 		["THE ALLEN HOUSE, 2000", "#8a6a4a", "house"], ["S.T.A.R. LABS", "#c8ccd4", "labs"],
@@ -1500,7 +1511,7 @@ func _build_speed_force() -> void:
 		_memory(node, str(mem[0]), Color(str(mem[1])), str(mem[2]))
 	# The heart of the Speed Force, where it waits in a shape Barry knows.
 	landmarks.append({"name": "Speed Force Heart", "pos": Vector3(0, 0.5, 0), "district": "The Speed Force"})
-	add_box(Vector3(0, 0.1, 0), Vector3(18, 0.2, 18), _plain(Color("#ffe48a"), 0.2, 1.5), false, PI * 0.25)
+	add_box(Vector3(0, 0.1, 0), Vector3(18, 0.2, 18), _plain(Color("#c8a040"), 0.3, 0.35), false, PI * 0.25)
 	var avatar := CharacterModel.new()
 	avatar.position = Vector3(0, 0.2, -10)
 	add_child(avatar)
@@ -1509,15 +1520,14 @@ func _build_speed_force() -> void:
 		"boots": "#fff4d8", "gloves": "#fff0d0", "glove_length": 0.0, "anim": {"idle": "float"}})
 	var glow := OmniLight3D.new()
 	glow.light_color = Color("#ffe8a0")
-	glow.light_energy = 3.0
-	glow.omni_range = 18.0
+	glow.light_energy = 1.2
+	glow.omni_range = 12.0
 	glow.position = Vector3(0, 2.0, -10)
 	add_child(glow)
 	_label("THE SPEED FORCE (as Nora Allen)", Vector3(0, 3.0, -10), 0.6, Color("#ffe8a0"))
 	# The way home: a column of light.
 	add_box(Vector3(0, 40, 60), Vector3(3, 80, 3), _plain(Color("#ffffff"), 0.2, 4.0), false)
 	_label("THE WAY HOME", Vector3(0, 6, 60), 2.0, Color("#ffffff"))
-	_label("THE SPEED FORCE", Vector3(0, 40, -120), 10.0, Color("#fff2a0"))
 	doors.append({"name": "Way home", "pos": Vector3(0, 0.5, 60), "interior": "exit_speedforce"})
 	doors.append({"name": "Talk to the Speed Force", "pos": Vector3(0, 0.5, -6), "interior": "speedforce_talk"})
 

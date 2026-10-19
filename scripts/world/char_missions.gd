@@ -137,6 +137,7 @@ const STORIES := {
 
 
 var world
+var enabled := true
 var steps: Array = []
 var index := 0
 var char_id := ""
@@ -268,7 +269,7 @@ func target_pos() -> Vector3:
 
 
 func _process(_delta: float) -> void:
-	if world == null or world.player == null or not is_instance_valid(world.player) or is_complete() or char_id == "":
+	if not enabled or world == null or world.player == null or not is_instance_valid(world.player) or is_complete() or char_id == "":
 		return
 	if str(world.player.def.get("id", "")) != char_id:
 		return

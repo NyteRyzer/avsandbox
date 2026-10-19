@@ -25,6 +25,10 @@ func _ready() -> void:
 		await _new_places()
 		get_tree().quit()
 		return
+	if only == "space":
+		await _space_shots()
+		get_tree().quit()
+		return
 	if only == "places":
 		await _places()
 		get_tree().quit()
@@ -405,3 +409,61 @@ func _doors() -> void:
 		for i in 28:
 			await get_tree().physics_frame
 		await _snap("suit_" + who[k], 1)
+
+
+func _space_shots() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = false
+	w.events.cooldown = 9999.0
+	w.char_missions.enabled = false
+	w.day_night.frozen = true
+	w.day_night.hour = 14.0
+	w.spawn_player("supergirl", Vector3(560, 0.5, -440))
+	# Argo City from above the dome, and from the plaza.
+	w.travel_to("argo", "space")
+	for shot in [["argo_approach", Vector3(0, 140, 520), 0.0, -0.25, 30.0], ["argo_plaza", Vector3(0, 0.5, 60), 0.0, 0.05, 9.0],
+			["argo_earth", Vector3(0, 40, 330), PI, -0.5, 14.0]]:
+		w.player.global_position = shot[1]
+		w.player.flying = shot[1].y > 5.0
+		w.cam.yaw = shot[2]
+		w.cam.pitch = shot[3]
+		w.cam.zoom = shot[4]
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap(str(shot[0]), 6)
+	# The Speed Force
+	w.spawn_player("flash", Vector3(0, 0.5, 30))
+	w.travel_to("speedforce", "speed")
+	for shot in [["speedforce_road", Vector3(0, 0.5, -20), 0.0, -0.05, 9.0], ["speedforce_heart", Vector3(0, 0.5, 6), 0.0, -0.05, 7.0],
+			["speedforce_memories", Vector3(0, 30, 40), 2.2, -0.15, 12.0]]:
+		w.player.global_position = shot[1]
+		w.player.flying = false
+		w.cam.yaw = shot[2]
+		w.cam.pitch = shot[3]
+		w.cam.zoom = shot[4]
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap(str(shot[0]), 6)
+	# Batwoman gliding over Gotham
+	w.travel_to("earth1", "breach")
+	w.spawn_player("batwoman", Vector3(-1440, 90, 3300))
+	w.player.brain = null
+	for i in 40:
+		w.player.in_up = true
+		w.player.in_move = Vector3(0, 0, -1)
+		await get_tree().physics_frame
+	w.cam.yaw = 2.5
+	w.cam.pitch = -0.1
+	w.cam.zoom = 6.0
+	await _snap("batwoman_glide", 3)
+	# A cast pose
+	w.spawn_player("superman", Vector3(560, 0.5, -440))
+	w.cam.yaw = 0.6
+	w.cam.zoom = 7.0
+	for i in 20:
+		await get_tree().physics_frame
+	Abilities.special(w.player, {"kind": "ground_slam"})
+	for i in 14:
+		await get_tree().physics_frame
+	await _snap("ground_pound", 2)

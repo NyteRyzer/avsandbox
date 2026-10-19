@@ -564,3 +564,88 @@ static func health_bar() -> Node3D:
 	fill.name = "Fill"
 	holder.add_child(fill)
 	return holder
+
+
+# --- Power flourishes ---------------------------------------------------------
+
+## A ground-level shockwave: a fast ring, a slower dust ring and a flash.
+static func shockwave(world, pos: Vector3, color: Color, radius: float) -> void:
+	ring(world, pos + Vector3.UP * 0.15, color, radius, 0.35)
+	ring(world, pos + Vector3.UP * 0.1, color.lerp(Color("#d8d0c0"), 0.6), radius * 0.7, 0.7)
+	flash(world, pos + Vector3.UP * 0.5, color, radius * 0.35, 0.25, 0.5)
+	for k in 6:
+		var ang := k * TAU / 6.0
+		var p := pos + Vector3(cos(ang), 0.2, sin(ang)) * radius * 0.4
+		smoke(world, p, 0.7, 0.6)
+
+
+## Comic-book impact lines bursting out from a point.
+static func burst_lines(world, pos: Vector3, color: Color, length := 4.0, count := 12) -> void:
+	for k in count:
+		var dir := Vector3(randf_range(-1, 1), randf_range(-0.6, 1), randf_range(-1, 1)).normalized()
+		var a: Vector3 = pos + dir * randf_range(0.4, 1.0)
+		line(world, a, a + dir * length * randf_range(0.6, 1.0), color, randf_range(0.04, 0.09), randf_range(0.12, 0.22))
+
+
+## Glowing cracks radiating across the ground, fading over a few seconds.
+static func ground_crack(world, pos: Vector3, color: Color, radius: float) -> void:
+	var m := glow_mat(color, 0.85)
+	var segs: Array = []
+	for k in 9:
+		var ang := k * TAU / 9.0 + randf_range(-0.2, 0.2)
+		var cur := pos + Vector3(0, 0.06, 0)
+		for seg in 3:
+			var nxt := cur + Vector3(cos(ang), 0, sin(ang)) * radius * randf_range(0.15, 0.3)
+			ang += randf_range(-0.4, 0.4)
+			var mi := MeshInstance3D.new()
+			mi.mesh = _box_mesh()
+			mi.material_override = m
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			_root(world).add_child(mi)
+			place_line(mi, cur, nxt, 0.18 - seg * 0.04)
+			segs.append(mi)
+			cur = nxt
+	var root: Node = _root(world)
+	var tw := root.create_tween()
+	tw.tween_interval(1.5)
+	tw.tween_property(m, "albedo_color:a", 0.0, 1.5)
+	var cleanup := func() -> void:
+		for c in segs:
+			if is_instance_valid(c):
+				c.queue_free()
+	root.get_tree().create_timer(3.1, false).timeout.connect(cleanup)
+
+
+## A column of light pouring down (or up) at a point.
+static func pillar(world, pos: Vector3, color: Color, height := 40.0, radius := 2.0, life := 0.8) -> void:
+	var mi := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = radius * 0.6
+	cyl.bottom_radius = radius
+	cyl.height = height
+	mi.mesh = cyl
+	var m := glow_mat(color, 0.55)
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_root(world).add_child(mi)
+	mi.global_position = pos + Vector3.UP * height * 0.5
+	var tw := mi.create_tween().set_parallel(true)
+	tw.tween_property(mi, "scale", Vector3(0.1, 1.0, 0.1), life).set_ease(Tween.EASE_IN)
+	tw.tween_property(m, "albedo_color:a", 0.0, life)
+	tw.chain().tween_callback(mi.queue_free)
+
+
+## Motes of energy streaming into a character's hands: a power charging up.
+static func charge_up(target: Node3D, color: Color, life := 0.45) -> void:
+	if not target is Actor:
+		return
+	var a: Actor = target
+	var w = a.world
+	if w == null:
+		return
+	var hands := [a.model.hand_point(1.0), a.model.hand_point(-1.0)]
+	for h in hands:
+		for k in 8:
+			var from: Vector3 = h + Vector3(randf_range(-1, 1), randf_range(-0.5, 1.2), randf_range(-1, 1)).normalized() * randf_range(1.2, 2.2)
+			line(w, from, h, color.lightened(0.3), 0.035, life * randf_range(0.5, 1.0))
+		flash(w, h, color, 0.5, life, 0.8)

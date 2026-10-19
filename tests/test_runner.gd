@@ -41,6 +41,8 @@ func _ready() -> void:
 	await test_activities_extra()
 	_current = "test_teams_and_new_heroes"
 	await test_teams_and_new_heroes()
+	_current = "test_space_glide_missions"
+	await test_space_glide_missions()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -119,6 +121,7 @@ var world: World
 func test_world_smoke() -> void:
 	world = World.new()
 	add_child(world)
+	world.char_missions.enabled = false   # only the personal-mission test turns them on
 	world.spawn_player("flash")
 	check(world.player != null and world.player.is_player, "player spawned")
 	check(world.city.parked.size() > 50, "props were placed")
@@ -902,6 +905,93 @@ func test_teams_and_new_heroes() -> void:
 		if a.follow_target == world.player and Teams.TEAMS["Justice Society"]["members"].has(a.def.get("id", "")):
 			jsa += 1
 	check(jsa == 3, "the round table calls three JSA members")
+	world.clear_npcs()
+	world.events.enabled = true
+
+
+func test_space_glide_missions() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.events.enabled = false
+	# Bigger cities, further apart.
+	check(City.N == 12 and world.city.islands.size() == 6, "islands are 12 blocks across")
+	var c0: Vector2 = City.ISLAND_CENTERS[0]
+	var c1: Vector2 = City.ISLAND_CENTERS[1]
+	check(c0.distance_to(c1) >= 2000.0, "the cities are 2 km apart")
+	check(world.city.bridges.size() >= 7, "long bridges join them")
+	# Batwoman glides.
+	world.spawn_player("batwoman", Vector3(560, 60.0, -440))
+	var p: Actor = world.player
+	check(p.def.get("glide", false), "Batwoman can glide")
+	p.velocity = Vector3(0, -5.0, 0)
+	world.player_brain = null
+	p.brain = null
+	var y0 := p.global_position.y
+	for k in 40:
+		p.in_up = true
+		p.in_move = p.forward()
+		await get_tree().physics_frame
+	check(p.gliding or p.model.gliding, "holding jump while falling glides")
+	var fallen := y0 - p.global_position.y
+	check(fallen < 12.0, "gliding falls slowly (%.1f m)" % fallen)
+	check(Vector3(p.velocity.x, 0, p.velocity.z).length() > 8.0, "and sails forward")
+	p.in_up = false
+	# Fly to space: Argo City.
+	world.spawn_player("supergirl", Vector3(560, 0.5, -440))
+	p = world.player
+	p.flying = true
+	p.global_position = Vector3(560, 720.0, -440)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.place_id == "argo", "flying high enough leaves Earth for Argo City")
+	check(not world.city.landmark("Hall of Elders").is_empty(), "Argo City has the Hall of Elders")
+	var kryptonians := 0
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a.display_name == "Kryptonian":
+			kryptonians += 1
+	check(kryptonians >= 8, "Kryptonians live in Argo City")
+	p = world.player
+	p.global_position = Vector3(0, -150.0, 0)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.place_id == "earth1" and world.player.global_position.y > 100.0, "diving off Argo City falls back to Earth")
+	# The Speed Force.
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	world.travel_to("speedforce", "speed")
+	await get_tree().process_frame
+	check(world.city.get_node_or_null("SpeedForceFX") != null, "the Speed Force crackles with lightning and drifting memories")
+	world.player.energy = 0.0
+	world.use_door({"interior": "speedforce_talk"})
+	check(world.player.energy >= world.player.max_energy - 0.1, "the Speed Force charges a speedster")
+	world.travel_to("earth1", "speed")
+	await get_tree().process_frame
+	world.clear_npcs()
+	# Personal missions
+	world.char_missions.enabled = true
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	Game.progress["char_missions"].erase("flash")
+	world.char_missions.set_character(world.player.def)
+	check(world.char_missions.current().get("title", "") == "Lightning Strikes Twice", "the Flash has his own story")
+	check(world.char_missions.tracker().begins_with("PERSONAL"), "personal missions show on the HUD")
+	var gen := CharMissions.story_for(Game.get_character("wildcat"))
+	check(gen.size() == 3 and str(gen[2]["title"]).contains("Tigress"), "everyone else gets missions from their team and nemesis")
+	var tgt: Vector3 = world.city.landmark("Central City Downtown")["pos"]
+	world.teleport_player(tgt)
+	await _frames(3)
+	check(world.char_missions.foes.size() == 3, "reaching the mission spawns the fight")
+	for f in world.char_missions.foes.duplicate():
+		if is_instance_valid(f):
+			f.take_damage(99999.0, world.player)
+	await _frames(3)
+	check(world.char_missions.index == 1, "beating them advances the story")
+	Game.progress["char_missions"].erase("flash")
+	world.char_missions.set_character(world.player.def)
+	world.char_missions.enabled = false
+	# Powers look like moves.
+	var sp: Dictionary = {"kind": "ground_slam"}
+	world.player.energy = world.player.max_energy
+	Abilities.special(world.player, sp)
+	check(world.player.model._action == "ground_pound", "a ground slam plays its own animation")
 	world.clear_npcs()
 	world.events.enabled = true
 

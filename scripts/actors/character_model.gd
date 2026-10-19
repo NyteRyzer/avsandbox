@@ -1013,7 +1013,8 @@ func animate(delta: float, hspeed: float, grounded: bool, flying: bool, vspeed: 
 		var t := clampf(_action_t / _action_len, 0.0, 1.0)
 		var ap := _action_pose(_action, t, _action_step)
 		var w := clampf(minf(t * 6.0, (1.0 - t) * 5.0 + 0.2), 0.0, 1.0)
-		if _action in ["bow", "point", "two_hands", "gun", "dual_guns", "eyes", "breath", "temples", "shield", "scream", "cast_up"]:
+		if _action in ["bow", "point", "two_hands", "gun", "dual_guns", "eyes", "breath", "temples", "shield", "scream", "cast_up",
+				"summon", "power_up", "levitate_cast", "ring_raise", "charge"]:
 			w = clampf(minf(t * 8.0, (1.0 - t) * 4.0 + 0.5), 0.0, 1.0)
 		for k in ap:
 			p[k] = lerpf(p.get(k, 0.0), ap[k], w)
@@ -1232,6 +1233,128 @@ func _action_pose(action: String, t: float, step: int) -> Dictionary:
 			p["th_l"] = 0.3
 			p["kn_l"] = -0.35
 			p["th_r"] = -0.2
+		"ground_pound":
+			# Leap up, then both fists smash down in a deep crouch.
+			var down := clampf((t - 0.35) / 0.25, 0.0, 1.0)
+			p["sh_l_x"] = lerpf(2.8, 1.0, down)
+			p["sh_r_x"] = lerpf(2.8, 1.0, down)
+			p["el_l"] = lerpf(0.6, 0.2, down)
+			p["el_r"] = lerpf(0.6, 0.2, down)
+			p["spine_x"] = lerpf(-0.2, 0.75, down)
+			p["head_x"] = lerpf(-0.3, -0.2, down)
+			p["th_l"] = lerpf(0.4, 1.4, down)
+			p["th_r"] = lerpf(0.4, 1.4, down)
+			p["kn_l"] = lerpf(-0.6, -1.9, down)
+			p["kn_r"] = lerpf(-0.6, -1.9, down)
+			p["drop"] = lerpf(0.15, -0.55, down)
+		"spin":
+			# A full turn with the arms flung wide.
+			p["yaw"] = TAU * clampf(t * 1.3, 0.0, 1.0)
+			p["sh_l_z"] = -1.5
+			p["sh_r_z"] = 1.5
+			p["el_l"] = 0.1
+			p["el_r"] = 0.1
+			p["head_x"] = -0.15
+			p["th_l_z"] = -0.2
+			p["th_r_z"] = 0.2
+		"palm_push":
+			# Both palms thrust forward from the hip.
+			p["sh_l_x"] = lerpf(0.3, 1.55, strike)
+			p["sh_r_x"] = lerpf(0.3, 1.55, strike)
+			p["sh_l_z"] = 0.15
+			p["sh_r_z"] = -0.15
+			p["el_l"] = lerpf(2.0, 0.1, strike)
+			p["el_r"] = lerpf(2.0, 0.1, strike)
+			p["spine_x"] = 0.25 * strike
+			p["th_l"] = 0.45
+			p["kn_l"] = -0.5
+			p["th_r"] = -0.35
+			p["drop"] = -0.08
+		"summon":
+			# Arms swept up and out, head back, calling something down.
+			p["sh_l_x"] = lerpf(0.2, 2.2, strike)
+			p["sh_r_x"] = lerpf(0.2, 2.2, strike)
+			p["sh_l_z"] = -0.7
+			p["sh_r_z"] = 0.7
+			p["el_l"] = 0.15
+			p["el_r"] = 0.15
+			p["head_x"] = -0.55
+			p["spine_x"] = -0.25
+			p["drop"] = 0.05
+		"charge":
+			# Crouched and coiled, fists pulled in, then the burst.
+			var release := clampf((t - 0.7) / 0.15, 0.0, 1.0)
+			p["sh_l_x"] = lerpf(0.6, 0.2, release)
+			p["sh_r_x"] = lerpf(0.6, 0.2, release)
+			p["sh_l_z"] = lerpf(0.1, -1.3, release)
+			p["sh_r_z"] = lerpf(-0.1, 1.3, release)
+			p["el_l"] = lerpf(2.2, 0.3, release)
+			p["el_r"] = lerpf(2.2, 0.3, release)
+			p["spine_x"] = lerpf(0.5, -0.3, release)
+			p["head_x"] = lerpf(0.3, -0.4, release)
+			p["th_l"] = lerpf(0.8, 0.1, release)
+			p["th_r"] = lerpf(0.8, 0.1, release)
+			p["kn_l"] = lerpf(-1.3, -0.1, release)
+			p["kn_r"] = lerpf(-1.3, -0.1, release)
+			p["drop"] = lerpf(-0.3, 0.05, release)
+		"ring_raise":
+			# One fist raised to the sky (the Lantern's oath, a Kryptonian take-off).
+			p["sh_r_x"] = lerpf(0.4, 3.0, strike)
+			p["sh_r_z"] = 0.1
+			p["el_r"] = lerpf(1.6, 0.0, strike)
+			p["sh_l_x"] = 0.2
+			p["sh_l_z"] = -0.25
+			p["el_l"] = 0.6
+			p["head_x"] = -0.35
+			p["spine_x"] = -0.1
+		"stomp":
+			var down := clampf((t - 0.4) / 0.15, 0.0, 1.0)
+			p["th_r"] = lerpf(1.3, 0.1, down)
+			p["kn_r"] = lerpf(-1.4, -0.1, down)
+			p["th_l"] = 0.2
+			p["kn_l"] = lerpf(-0.2, -0.6, down)
+			p["sh_l_z"] = -0.6
+			p["sh_r_z"] = 0.6
+			p["el_l"] = 1.2
+			p["el_r"] = 1.2
+			p["spine_x"] = lerpf(-0.1, 0.35, down)
+			p["drop"] = lerpf(0.0, -0.2, down)
+		"whip":
+			# A backhanded lash across the body.
+			p["sh_r_x"] = 1.3
+			p["sh_r_z"] = lerpf(-0.9, 1.3, strike)
+			p["el_r"] = lerpf(1.6, 0.1, strike)
+			p["spine_y"] = lerpf(0.6, -0.6, strike)
+			p["sh_l_x"] = 0.5
+			p["el_l"] = 1.5
+			p["th_l"] = 0.3
+			p["kn_l"] = -0.35
+		"power_up":
+			# Fists clenched at the sides, chest out, head thrown back: powering up.
+			p["sh_l_z"] = -0.55
+			p["sh_r_z"] = 0.55
+			p["sh_l_x"] = -0.2
+			p["sh_r_x"] = -0.2
+			p["el_l"] = 0.7
+			p["el_r"] = 0.7
+			p["spine_x"] = -0.35
+			p["head_x"] = -0.6
+			p["th_l_z"] = -0.18
+			p["th_r_z"] = 0.18
+			p["drop"] = 0.08 + sin(t * 40.0) * 0.015
+		"levitate_cast":
+			# Arms held out to the sides, palms up, rising a little.
+			p["sh_l_z"] = -1.25
+			p["sh_r_z"] = 1.25
+			p["sh_l_x"] = 0.35
+			p["sh_r_x"] = 0.35
+			p["el_l"] = 0.35
+			p["el_r"] = 0.35
+			p["head_x"] = -0.2
+			p["drop"] = 0.18 * strike
+			p["th_l"] = 0.15
+			p["kn_l"] = -0.35
+			p["kn_r"] = -0.2
 		"uppercut":
 			p["sh_r_x"] = lerpf(-0.2, 2.6, strike)
 			p["el_r"] = lerpf(2.0, 0.5, strike)

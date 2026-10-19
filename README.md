@@ -74,6 +74,7 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Ultimate (when charged) | R | R3 |
 | Change in or out of costume | T | D-pad down |
 | Dodge | V | X |
+| Glide (caped characters, while falling) | Hold Space | Hold A |
 | Block (tap just before a hit to parry) | B | D-pad right |
 | Lock on to the nearest enemy | Z or middle mouse | D-pad left |
 | Switch to a recruited ally | Y | |
@@ -109,6 +110,38 @@ special power, often a utility power (E), and a signature **ultimate** (R):
   Count Vertigo, Deadshot, Talia al Ghul, Golden Glider, Pied Piper, the Trickster, the Black
   Flash, Atom Smasher, Bizarro, Doomsday, Tal-Rho, General Astra, Cyborg Superman, Poison Ivy,
   Hush, Black Mask, Mallus, Neron and Painkiller.
+
+**Your own story.** Every character has a three-part personal mission line (shown in blue on the
+HUD and minimap):
+- **Hand-written stories for the main characters.** Barry fights Weather Wizard, runs into the
+  Speed Force, then takes on the Man in Yellow. Kara flies to Argo City and fights Reign. Oliver
+  goes back to Lian Yu. Kate glides over Gotham to face Alice. Stargirl rebuilds the JSA.
+- **Everyone else** gets missions built from their home city, their team and their nemesis.
+
+**Space and Argo City.**
+- Fly straight up: past 450 m the sky turns black, and at 700 m you leave the atmosphere.
+- Argo City, the last Kryptonian city, is domed and drifting in orbit. Earth turns below it, the
+  Moon hangs off to one side, and its streets are full of Kryptonians.
+- Dive off the edge to fall back to Earth. The Waverider can make the trip too.
+
+**The Speed Force, as the show draws it.** A dark blue void crackling with blue and gold
+lightning. A lightning road leads into the turning time vortex, and pieces of Barry's life drift
+past: the Allen house, S.T.A.R. Labs, Jitters and the particle accelerator. The Speed Force waits
+at its heart as Nora Allen; talk to it to charge up a speedster.
+
+**Bigger cities.** Each city is now 12 x 12 blocks, and they sit 2 km apart, joined by long
+bridges.
+
+**Gliding.** Batwoman, Ryan Wilder, Dr. Mid-Nite and Red Death glide on their capes. Hold jump
+while falling to sail forward, and hold descend to dive.
+
+**Powers look like moves.**
+- Every special has its own cast animation: a ground pound, a spin, a palm thrust, a summoning, a
+  coiled charge-up, a raised fist for Green Lantern's ring, a stomp or a power-up.
+- Each comes with its own effect: shockwaves, glowing ground cracks, columns of light, impact
+  lines or energy streaming into the hands.
+- Ultimates open with the character powering up in a pillar of light.
+- Combo finishers burst with impact lines.
 
 **Teams.**
 - Every character belongs to a team: Team Flash, Team Arrow, the Legends, the Justice Society,

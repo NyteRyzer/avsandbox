@@ -151,6 +151,13 @@ func _begin() -> void:
 	FX.flash(world, actor.chest(), c, 4.0, 0.5, 0.6)
 	FX.ring(world, actor.global_position + Vector3.UP * 0.2, c, 8.0, 0.6)
 	actor.invuln_t = maxf(actor.invuln_t, 1.5)
+	# Every ultimate opens with the character powering up: a column of light,
+	# impact lines and the ground cracking under them.
+	actor.model.play("power_up", 0.8)
+	FX.pillar(world, actor.global_position, c, 60.0, 3.0 * actor.size, 1.0)
+	FX.burst_lines(world, actor.chest(), c.lightened(0.4), 6.0, 20)
+	if actor.is_on_floor():
+		FX.ground_crack(world, actor.global_position, c, 12.0)
 	if actor.is_player:
 		world.hud.show_banner("ULTIMATE: " + str(spec.get("name", "")).to_upper(), c)
 		world.shake_at(actor.global_position, 0.4)

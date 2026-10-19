@@ -441,6 +441,8 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 	if finisher and hits > 0:
 		Game.hit_stop(0.07)
 		a.world.shake_at(a.global_position, 0.35)
+		var fcol: Color = arc_col if element != "" else Color(str(a.def["look"].get("trail", "#ffffff")))
+		FX.burst_lines(a.world, a.chest() + fwd * reach * 0.8, fcol.lightened(0.3), 2.5 * a.size, 10)
 		if style in ["heavy", "heavy_punch"]:
 			FX.ring(a.world, a.global_position + Vector3.UP * 0.2, Color("#e8d8b0"), 5.0 * a.size, 0.35)
 	if hits > 0:
@@ -759,7 +761,61 @@ static func explode(world, pos: Vector3, radius: float, dmg: float, source: Acto
 
 # --- Specials ---------------------------------------------------------------
 
+## How each special is performed: [pose, seconds, flourish]. The pose and
+## flourish play on top of the power itself, so even powers that share a kind
+## look like a move.
+const SPECIAL_ANIM := {
+	"time_slow": ["power_up", 0.6, "pillar"], "tornado": ["spin", 0.9, "shock"], "ground_slam": ["ground_pound", 0.7, "crack"],
+	"nova": ["charge", 0.8, "burst"], "rage": ["power_up", 0.9, "burst"], "invisibility": ["levitate_cast", 0.5, ""],
+	"invulnerable": ["power_up", 0.6, "shock"], "drain": ["levitate_cast", 0.8, "charge"], "t_spheres": ["summon", 0.6, "charge"],
+	"animal_spirit": ["power_up", 0.8, "burst"], "force_field": ["palm_push", 0.5, "charge"], "storm": ["summon", 1.0, "pillar"],
+	"dampen": ["stomp", 0.6, "shock"], "sonic_boom": ["charge", 0.4, "burst"], "speed_clones": ["power_up", 0.5, "burst"],
+	"whirlwind": ["spin", 1.0, "shock"], "mirror_trap": ["palm_push", 0.5, "charge"], "hazard_field": ["stomp", 0.6, "crack"],
+	"gravity_well": ["summon", 0.8, "charge"], "bat_swarm": ["palm_push", 0.5, ""], "lazarus": ["power_up", 1.0, "pillar"],
+	"summon_goons": ["summon", 0.8, ""], "sleep": ["levitate_cast", 0.9, "shock"], "overload": ["charge", 0.8, "burst"],
+	"construct": ["ring_raise", 0.8, "charge"], "miraclo": ["power_up", 1.0, "burst"], "shadows": ["levitate_cast", 0.9, ""],
+	"ankh": ["levitate_cast", 1.0, "pillar"], "thunderbolt": ["summon", 1.0, "pillar"], "grow": ["power_up", 1.0, "crack"],
+	"emp": ["stomp", 0.5, "shock"], "shrink": ["power_up", 0.3, ""], "phase": ["levitate_cast", 0.4, ""],
+	"foresight": ["levitate_cast", 0.6, "charge"],
+}
+
+
 static func special(a: Actor, sp: Dictionary) -> bool:
+	var ok := _special_impl(a, sp)
+	if ok and a.world:
+		flourish(a, str(sp["kind"]))
+	return ok
+
+
+## The pose and the extra flash of a power going off.
+static func flourish(a: Actor, kind: String) -> void:
+	if not SPECIAL_ANIM.has(kind):
+		return
+	var spec: Array = SPECIAL_ANIM[kind]
+	var w = a.world
+	var color := Color(str(a.def["look"].get("trail", a.def["look"].get("glow", a.def["look"]["accent"]))))
+	if color.get_luminance() < 0.15:
+		color = color.lightened(0.5)
+	if spec[0] != "":
+		a.model.play(str(spec[0]), float(spec[1]))
+	match str(spec[2]):
+		"pillar":
+			FX.pillar(w, a.global_position, color, 30.0 * a.size, 1.6 * a.size)
+		"shock":
+			FX.shockwave(w, a.global_position, color, 7.0 * a.size)
+		"crack":
+			FX.shockwave(w, a.global_position, color, 9.0 * a.size)
+			FX.ground_crack(w, a.global_position, color, 9.0 * a.size)
+		"burst":
+			FX.burst_lines(w, a.chest(), color.lightened(0.3), 3.5 * a.size, 14)
+			FX.flash(w, a.chest(), color, 2.0 * a.size, 0.25, 0.5)
+		"charge":
+			FX.charge_up(a, color)
+	if a.is_player and str(spec[2]) in ["crack", "pillar", "burst"]:
+		w.shake_at(a.global_position, 0.25)
+
+
+static func _special_impl(a: Actor, sp: Dictionary) -> bool:
 	var w = a.world
 	var color := Color(str(a.def["look"].get("trail", a.def["look"]["accent"])))
 	match sp["kind"]:
