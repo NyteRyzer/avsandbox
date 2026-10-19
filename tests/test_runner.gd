@@ -410,7 +410,7 @@ func test_places() -> void:
 	for id in Interiors.ORDER:
 		if not Interiors.is_remote(id):
 			built_in += 1
-	check(built_in == 7, "seven rooms are inside their real buildings (%d)" % built_in)
+	check(built_in == 8, "eight rooms are inside their real buildings (%d)" % built_in)
 	check(Interiors.is_remote("waverider"), "the Waverider is bigger on the inside")
 	check(world.city.islands.size() >= 6, "six city islands (with Gotham and Smallville)")
 	check(world.city.district_at(Vector3(-560, 1, 1720)) == "Gotham City", "Gotham is south of National City")
