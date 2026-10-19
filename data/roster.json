@@ -64,6 +64,39 @@
    "utility": {
     "kind": "grapple",
     "name": "Grappling Arrow"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "short",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a3a2a",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#1e1e22",
+     "anim": {
+      "idle": "bow_ready",
+      "run": "sprinter",
+      "lean": 0.08,
+      "arms": 0.7
+     }
+    },
+    "name": "Oliver Queen"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#3aff6a",
+    "text": "pulls up the hood. \"You have failed this city.\""
    }
   },
   {
@@ -130,6 +163,36 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#6a7a8a",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#3a2a1e",
+     "coat_color": "#5a3a26",
+     "anim": {
+      "idle": "bounce",
+      "run": "athlete",
+      "sprint": "classic"
+     }
+    },
+    "name": "Barry Allen"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ffd23a",
+    "text": "is a blur: the suit shoots out of his ring."
    }
   },
   {
@@ -192,7 +255,42 @@
      "fly": "supergirl"
     }
    },
-   "fly_speed": 1.5
+   "fly_speed": 1.5,
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#4a7ac8",
+     "pants": "#2a2a3a",
+     "extras": [
+      "skirt",
+      "coat_short",
+      "glasses"
+     ],
+     "skirt_color": "#2a3a5a",
+     "boots": "#5a3a2a",
+     "coat_color": "#c8a050",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "strut",
+      "fly": "supergirl"
+     }
+    },
+    "name": "Kara Zor-El"
+   },
+   "transform": {
+    "style": "shirt_rip",
+    "color": "#4a8aff",
+    "text": "tosses the glasses and spins into the suit."
+   }
   },
   {
    "id": "superman",
@@ -261,7 +359,43 @@
     "name": "Super Breath",
     "element": "push"
    },
-   "fly_speed": 1.6
+   "fly_speed": 1.6,
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#16110e",
+     "hair_style": "slick",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#2a2e3a",
+     "extras": [
+      "coat_short",
+      "glasses"
+     ],
+     "collar": "#3a5a9a",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2e3a",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "marching",
+      "fly": "superman",
+      "stride": 1.05,
+      "tempo": 0.8
+     }
+    },
+    "name": "Clark Kent"
+   },
+   "transform": {
+    "style": "shirt_rip",
+    "color": "#c8102e",
+    "text": "rips open his shirt to reveal the S."
+   }
   },
   {
    "id": "atom",
@@ -320,6 +454,39 @@
      "fly": "jet",
      "cadence": 1.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c8c8d0",
+     "pants": "#3a3a40",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#a02a2a",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a3a5a",
+     "anim": {
+      "idle": "fists",
+      "run": "stomp",
+      "fly": "jet",
+      "cadence": 1.1
+     }
+    },
+    "name": "Ray Palmer"
+   },
+   "transform": {
+    "style": "nanites",
+    "color": "#4fc3ff",
+    "text": "is wrapped in the A.T.O.M. exosuit, plate by plate."
    }
   },
   {
@@ -382,6 +549,39 @@
    "utility": {
     "kind": "dodge_flip",
     "name": "Acrobatics"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e2d8",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a2a22",
+     "anim": {
+      "idle": "staff_ready",
+      "run": "ninja",
+      "lean": -0.1,
+      "stride": 1.05
+     }
+    },
+    "name": "Sara Lance"
+   },
+   "transform": {
+    "style": "smoke",
+    "color": "#e8eef4",
+    "text": "steps through a cloud of smoke and comes out in white leather."
    }
   },
   {
@@ -433,6 +633,39 @@
      "arms": 0.9,
      "cadence": 1.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a2a3a",
+     "pants": "#1e1e24",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#1a1a1a",
+     "anim": {
+      "idle": "fists",
+      "run": "sprinter",
+      "arms": 0.9,
+      "cadence": 1.1
+     }
+    },
+    "name": "Laurel Lance"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#ffd27a",
+    "text": "pulls on the mask. The canary is out."
    }
   },
   {
@@ -487,6 +720,39 @@
      "stride": 0.95,
      "arms": 0.6
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "hair_style": "buzz",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a3a2a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a2016",
+     "coat_color": "#3a4a3a",
+     "anim": {
+      "idle": "relaxed",
+      "run": "marching",
+      "stride": 0.95,
+      "arms": 0.6
+     }
+    },
+    "name": "John Diggle"
+   },
+   "transform": {
+    "style": "armor_up",
+    "color": "#8a8a8a",
+    "text": "racks the rifle and snaps the helmet on."
    }
   },
   {
@@ -549,6 +815,36 @@
    "utility": {
     "kind": "grapple",
     "name": "Grappling Arrow"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#7a2a2a",
+     "pants": "#2a3a5a",
+     "extras": [],
+     "boots": "#e8e8e8",
+     "anim": {
+      "idle": "bow_ready",
+      "run": "bounce",
+      "cadence": 1.05,
+      "bounce": 0.8
+     }
+    },
+    "name": "Thea Queen"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#ff3a3a",
+    "text": "flips up the red hood."
    }
   },
   {
@@ -616,6 +912,37 @@
    "utility": {
     "kind": "phase",
     "name": "Phase Through"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c8a03a",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#e8e8e8",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "bounce",
+      "run": "bounce",
+      "sprint": "tucked",
+      "tempo": 1.3
+     }
+    },
+    "name": "Wally West"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ffd23a",
+    "text": "phases through his clothes into the yellow suit."
    }
   },
   {
@@ -683,6 +1010,39 @@
    "utility": {
     "kind": "teleport",
     "name": "Breach"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#3a2a4a",
+     "pants": "#22262e",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "pockets",
+      "run": "athlete",
+      "cadence": 1.05,
+      "arms": 1.2,
+      "lean": -0.05
+     }
+    },
+    "name": "Cisco Ramon"
+   },
+   "transform": {
+    "style": "breach",
+    "color": "#4fa8ff",
+    "text": "slips the goggles on. \"Vibe-ing in three, two...\""
    }
   },
   {
@@ -744,6 +1104,40 @@
    "utility": {
     "kind": "ice_wall",
     "name": "Ice Wall"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#efd2bb",
+     "hair": "#8a5a3a",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#efd2bb",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8f0",
+     "pants": "#2a2a3a",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a4a6a",
+     "anim": {
+      "idle": "menace",
+      "run": "glide",
+      "stride": 1.4,
+      "cadence": 0.9,
+      "arms": 1.5
+     }
+    },
+    "name": "Caitlin Snow"
+   },
+   "transform": {
+    "style": "frost",
+    "color": "#bfeaff",
+    "text": "lets the cold in: frost spreads and her hair turns white."
    }
   },
   {
@@ -804,6 +1198,37 @@
      "fly": "firestorm",
      "arms": 1.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#8a2a1a",
+     "pants": "#2a2a2e",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#e8e8e8",
+     "coat_color": "#3a3a3a",
+     "anim": {
+      "idle": "casting",
+      "run": "athlete",
+      "fly": "firestorm",
+      "arms": 1.1
+     }
+    },
+    "name": "Jefferson Jackson"
+   },
+   "transform": {
+    "style": "fusion",
+    "color": "#ff8a2a",
+    "text": "merges in a nuclear flash: \"Firestorm!\""
    }
   },
   {
@@ -863,6 +1288,42 @@
    "utility": {
     "kind": "phase",
     "name": "Density Shift"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#2f7a3a",
+     "hair_style": "bald",
+     "build": "bulky",
+     "scale": 1.06,
+     "eye_color": "#c01818",
+     "accent": "#2a2a2a",
+     "gloves": "#2f7a3a",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#1e2228",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#1e2228",
+     "boots": "#1a1a1a",
+     "coat_color": "#1e2228",
+     "anim": {
+      "idle": "arms_crossed",
+      "run": "stomp",
+      "fly": "martian",
+      "tempo": 0.6
+     }
+    },
+    "name": "J'onn J'onzz"
+   },
+   "transform": {
+    "style": "martian",
+    "color": "#5aff8a",
+    "text": "drops the human disguise, green skin shimmering through."
    }
   },
   {
@@ -933,6 +1394,40 @@
    "utility": {
     "kind": "grapple",
     "name": "Grapnel Gun"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#7a2a1a",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1a1a1e",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#1a1a1a",
+     "anim": {
+      "idle": "fists",
+      "run": "sprinter",
+      "lean": 0.12,
+      "arms": 1.1
+     }
+    },
+    "name": "Kate Kane"
+   },
+   "transform": {
+    "style": "smoke",
+    "color": "#c8102e",
+    "text": "vanishes into the shadows and returns with the cowl."
    }
   },
   {
@@ -993,7 +1488,41 @@
      "tempo": 0.9
     }
    },
-   "fly_speed": 0.8
+   "fly_speed": 0.8,
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "hair_style": "buzz",
+     "facial": "goatee",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#5a2a2a",
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a48",
+     "anim": {
+      "idle": "casting",
+      "run": "strut",
+      "fly": "lightning_rider",
+      "tempo": 0.9
+     }
+    },
+    "name": "Jefferson Pierce"
+   },
+   "transform": {
+    "style": "lightning_strike",
+    "color": "#9fd0ff",
+    "text": "calls down the lightning and the suit forms around him."
+   }
   },
   {
    "id": "thunder",
@@ -1055,6 +1584,39 @@
    "utility": {
     "kind": "invulnerable",
     "name": "Max Density"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#8d5a3b",
+     "hair": "#16110e",
+     "hair_style": "curly",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#8d5a3b",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c8a03a",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a2a22",
+     "anim": {
+      "idle": "heavy",
+      "run": "stomp",
+      "stride": 1.1,
+      "cadence": 0.9
+     }
+    },
+    "name": "Anissa Pierce"
+   },
+   "transform": {
+    "style": "density",
+    "color": "#c8c8d0",
+    "text": "goes dense, the suit hardening over her skin."
    }
   },
   {
@@ -1108,6 +1670,36 @@
      "fly": "palm_forward",
      "tempo": 1.2
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#8d5a3b",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#8d5a3b",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#e05a8a",
+     "pants": "#2a3a5a",
+     "extras": [],
+     "boots": "#e8e8e8",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "bounce",
+      "fly": "palm_forward",
+      "tempo": 1.2
+     }
+    },
+    "name": "Jennifer Pierce"
+   },
+   "transform": {
+    "style": "lightning_strike",
+    "color": "#c8f0ff",
+    "text": "crackles with electricity as her suit lights up."
    }
   },
   {
@@ -1170,6 +1762,40 @@
    "utility": {
     "kind": "emp",
     "name": "T-Sphere EMP"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#8d5a3b",
+     "hair": "#16110e",
+     "hair_style": "bald",
+     "accent": "#2a2a2a",
+     "gloves": "#8d5a3b",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a30",
+     "pants": "#1a1a1e",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "arms_crossed",
+      "run": "athlete",
+      "lean": 0.05,
+      "arms": 0.8,
+      "tempo": 1.1
+     }
+    },
+    "name": "Curtis Holt"
+   },
+   "transform": {
+    "style": "nanites",
+    "color": "#ff3030",
+    "text": "lets the T-spheres build the suit and the T-mask."
    }
   },
   {
@@ -1226,6 +1852,38 @@
      "run": "prowl",
      "tempo": 1.2
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "hair_style": "curly",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c8a050",
+     "pants": "#3a2a1e",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#3a2a1a",
+     "coat_color": "#5a3a22",
+     "anim": {
+      "idle": "hunched",
+      "run": "prowl",
+      "tempo": 1.2
+     }
+    },
+    "name": "Mari McCabe"
+   },
+   "transform": {
+    "style": "totem",
+    "color": "#c9a24a",
+    "text": "touches the Tantu Totem: the spirits of the animals answer."
    }
   },
   {
@@ -1281,7 +1939,37 @@
      "arms": 0.6
     }
    },
-   "fly_speed": 1.15
+   "fly_speed": 1.15,
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#7a3a22",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#7a5a3a",
+     "pants": "#2a2a30",
+     "extras": [],
+     "boots": "#3a2a1a",
+     "anim": {
+      "idle": "staff_ready",
+      "run": "sprinter",
+      "fly": "wings",
+      "arms": 0.6
+     }
+    },
+    "name": "Kendra Saunders"
+   },
+   "transform": {
+    "style": "wings",
+    "color": "#c9a24a",
+    "text": "unfurls her Nth-metal wings in a flash of gold."
+   }
   },
   {
    "id": "citizen_steel",
@@ -1330,6 +2018,39 @@
      "bounce": 1.3,
      "tempo": 0.7
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "short",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a5a8a",
+     "pants": "#2a3040",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#3a2a1a",
+     "coat_color": "#5a4a3a",
+     "anim": {
+      "idle": "heavy",
+      "run": "stomp",
+      "bounce": 1.3,
+      "tempo": 0.7
+     }
+    },
+    "name": "Nate Heywood"
+   },
+   "transform": {
+    "style": "steel",
+    "color": "#c8ccd4",
+    "text": "turns to living steel from the skin out."
    }
   },
   {
@@ -1395,6 +2116,41 @@
      "bounce": 1.2,
      "tempo": 1.3
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "ponytail",
+     "build": "female",
+     "scale": 0.95,
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#3a4a6a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#e8e8e8",
+     "coat_color": "#c82a3a",
+     "anim": {
+      "idle": "staff_ready",
+      "run": "bounce",
+      "fly": "staff_ride",
+      "bounce": 1.2,
+      "tempo": 1.3
+     }
+    },
+    "name": "Courtney Whitmore"
+   },
+   "transform": {
+    "style": "cosmic",
+    "color": "#ffe8a0",
+    "text": "calls the Cosmic Staff and it flies into her hand."
    }
   },
   {
@@ -1459,6 +2215,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#8a8a8a",
+     "hair_style": "short",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e2d8",
+     "pants": "#5a4a3a",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#7a2a2a",
+     "boots": "#3a2a1a",
+     "coat_color": "#6a5a48",
+     "anim": {
+      "idle": "regal",
+      "run": "marching",
+      "sprint": "upright",
+      "tempo": 0.8
+     }
+    },
+    "name": "Jay Garrick"
+   },
+   "transform": {
+    "style": "helmet_spin",
+    "color": "#ffd23a",
+    "text": "spins the winged helmet on. A gentleman's speedster."
    }
   },
   {
@@ -1522,6 +2311,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "ponytail",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#d8c8a0",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#e8e8e8",
+     "coat_color": "#2a2a30",
+     "anim": {
+      "idle": "bounce",
+      "run": "sprinter",
+      "sprint": "wide",
+      "tempo": 1.15
+     }
+    },
+    "name": "Jesse Wells"
+   },
+   "transform": {
+    "style": "speed_formula",
+    "color": "#ffd23a",
+    "text": "recites the speed formula: \"3X2(9YZ)4A!\""
    }
   },
   {
@@ -1585,6 +2407,40 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#4a3020",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c84a8a",
+     "pants": "#2a2a3a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#e8e8e8",
+     "coat_color": "#3a2a4a",
+     "anim": {
+      "idle": "bounce",
+      "run": "bounce",
+      "sprint": "bouncy",
+      "tempo": 1.4,
+      "bounce": 1.3
+     }
+    },
+    "name": "Nora West-Allen"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ff6ad0",
+    "text": "flashes into the suit with a burst of pink lightning."
    }
   },
   {
@@ -1642,6 +2498,40 @@
      "arms": 1.8,
      "bounce": 1.4
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#8a3a3a",
+     "pants": "#3a3a40",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#3a2a1a",
+     "coat_color": "#5a4a3a",
+     "anim": {
+      "idle": "relaxed",
+      "run": "skip",
+      "stride": 1.5,
+      "cadence": 0.8,
+      "arms": 1.8,
+      "bounce": 1.4
+     }
+    },
+    "name": "Ralph Dibny"
+   },
+   "transform": {
+    "style": "stretch",
+    "color": "#c83030",
+    "text": "stretches out of his clothes and snaps back in costume."
    }
   },
   {
@@ -1694,6 +2584,38 @@
      "stride": 1.0,
      "arms": 0.4
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#5e3a26",
+     "hair": "#16110e",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#5e3a26",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a5a5e",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "fists",
+      "run": "marching",
+      "stride": 1.0,
+      "arms": 0.4
+     }
+    },
+    "name": "James Olsen"
+   },
+   "transform": {
+    "style": "armor_up",
+    "color": "#c8ccd4",
+    "text": "clamps on the helmet and lifts the shield."
    }
   },
   {
@@ -1757,6 +2679,41 @@
    "utility": {
     "kind": "dodge_flip",
     "name": "Aerial Roll"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "short",
+     "facial": "stubble",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a40",
+     "pants": "#2a2a30",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#5a3a22",
+     "anim": {
+      "idle": "arms_crossed",
+      "run": "swagger",
+      "fly": "fists_forward",
+      "sway": 0.05
+     }
+    },
+    "name": "Mon-El"
+   },
+   "transform": {
+    "style": "shirt_rip",
+    "color": "#3a6aff",
+    "text": "throws off the jacket, cape snapping out behind him."
    }
   },
   {
@@ -1819,6 +2776,40 @@
    "utility": {
     "kind": "foresight",
     "name": "Precognition"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#6a8ac8",
+     "pants": "#2a2a3a",
+     "extras": [
+      "skirt"
+     ],
+     "skirt_color": "#3a3a5a",
+     "boots": "#1a1a1a",
+     "anim": {
+      "idle": "float",
+      "run": "glide",
+      "fly": "dreamer",
+      "stride": 1.2,
+      "cadence": 0.95
+     }
+    },
+    "name": "Nia Nal"
+   },
+   "transform": {
+    "style": "dream",
+    "color": "#8fd8ff",
+    "text": "closes her eyes and dreams the suit into being."
    }
   },
   {
@@ -1879,6 +2870,40 @@
    "utility": {
     "kind": "teleport",
     "name": "Legion Flight Ring"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "slick",
+     "eye_color": "#2a6a2a",
+     "accent": "#2a2a2a",
+     "gloves": "#7ad16a",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#8a7aa8",
+     "pants": "#2a2a3a",
+     "extras": [
+      "coat_short"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#4a3a5a",
+     "anim": {
+      "idle": "regal",
+      "run": "glide",
+      "fly": "ring",
+      "stride": 1.1,
+      "cadence": 1.05
+     }
+    },
+    "name": "Querl Dox"
+   },
+   "transform": {
+    "style": "glitch",
+    "color": "#6bff6b",
+    "text": "switches off the image inducer: blue skin, Legion ring."
    }
   },
   {
@@ -1938,6 +2963,37 @@
    "utility": {
     "kind": "grapple",
     "name": "Grappling Arrow"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a40",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#5a2a22",
+     "anim": {
+      "idle": "bow_ready",
+      "run": "sprinter",
+      "lean": 0.15,
+      "stride": 1.1
+     }
+    },
+    "name": "Roy Harper"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#ff3a3a",
+    "text": "pulls the red hood low."
    }
   },
   {
@@ -1994,6 +3050,35 @@
      "cadence": 1.0,
      "sway": -0.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#b07b56",
+     "hair": "#16110e",
+     "accent": "#2a2a2a",
+     "gloves": "#b07b56",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#3a3a3a",
+     "pants": "#2a3a5a",
+     "extras": [],
+     "boots": "#2a2a2a",
+     "anim": {
+      "idle": "fists",
+      "run": "heavy",
+      "stride": 0.9,
+      "cadence": 1.0,
+      "sway": -0.1
+     }
+    },
+    "name": "Rene Ramirez"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#e8e8e8",
+    "text": "straps on the hockey mask."
    }
   },
   {
@@ -2050,6 +3135,41 @@
      "cadence": 0.85,
      "sway": 0.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "buzz",
+     "facial": "stubble",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a2a2e",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#5a3a22",
+     "anim": {
+      "idle": "pockets",
+      "run": "heavy",
+      "cadence": 0.85,
+      "sway": 0.1
+     }
+    },
+    "name": "Mick Rory"
+   },
+   "transform": {
+    "style": "ignite",
+    "color": "#ff7a1a",
+    "text": "drops the goggles and lights the heat gun."
    }
   },
   {
@@ -2111,6 +3231,40 @@
    "utility": {
     "kind": "teleport",
     "name": "Teleportation Spell"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "short",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e4dc",
+     "pants": "#2a2a2e",
+     "extras": [
+      "coat"
+     ],
+     "collar": "#7a1a1a",
+     "boots": "#2a1e14",
+     "coat_color": "#b8a070",
+     "anim": {
+      "idle": "pockets",
+      "run": "swagger",
+      "sway": -0.1,
+      "tempo": 0.7
+     }
+    },
+    "name": "John Constantine"
+   },
+   "transform": {
+    "style": "magic_circle",
+    "color": "#ffd27a",
+    "text": "flicks a lighter and mutters a spell."
    }
   },
   {
@@ -2175,7 +3329,40 @@
     "kind": "dodge_flip",
     "name": "Wind Step"
    },
-   "fly_speed": 1.2
+   "fly_speed": 1.2,
+   "civilian": {
+    "look": {
+     "skin": "#b07b56",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#b07b56",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a3a6a",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "bounce",
+      "fly": "spread_eagle",
+      "cadence": 1.05
+     }
+    },
+    "name": "Zari Tomaz"
+   },
+   "transform": {
+    "style": "totem",
+    "color": "#c8e8ff",
+    "text": "lets the Air Totem lift her off the ground."
+   }
   },
   {
    "id": "nyssa",
@@ -2234,6 +3421,38 @@
    "utility": {
     "kind": "dodge_flip",
     "name": "Assassin's Flip"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a2a22",
+     "anim": {
+      "idle": "bow_ready",
+      "run": "ninja",
+      "lean": 0.05
+     }
+    },
+    "name": "Nyssa al Ghul"
+   },
+   "transform": {
+    "style": "smoke",
+    "color": "#7a5a2a",
+    "text": "is gone in the smoke, and back in League leathers."
    }
   },
   {
@@ -2293,7 +3512,41 @@
      "tempo": 0.85
     }
    },
-   "fly_speed": 1.15
+   "fly_speed": 1.15,
+   "civilian": {
+    "look": {
+     "skin": "#c99a74",
+     "hair": "#4a3020",
+     "hair_style": "short",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#c99a74",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a5a4a",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#3a2a1e",
+     "anim": {
+      "idle": "heavy",
+      "run": "marching",
+      "fly": "meteor",
+      "stride": 1.1,
+      "tempo": 0.85
+     }
+    },
+    "name": "Carter Hall"
+   },
+   "transform": {
+    "style": "wings",
+    "color": "#c9a24a",
+    "text": "spreads golden wings and lowers the helmet."
+   }
   },
   {
    "id": "flash_90",
@@ -2361,6 +3614,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#3a4a6a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#3a2a1e",
+     "coat_color": "#5a5a6a",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "athlete",
+      "sprint": "veteran",
+      "stride": 1.1,
+      "tempo": 0.9
+     }
+    },
+    "name": "Barry Allen (Earth-90)"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ffd23a",
+    "text": "is in the padded red suit before you can blink."
    }
   },
   {
@@ -2423,7 +3709,40 @@
     "kind": "teleport",
     "name": "Spectral Step"
    },
-   "fly_speed": 1.4
+   "fly_speed": 1.4,
+   "civilian": {
+    "look": {
+     "skin": "#efd2bb",
+     "hair": "#d9b468",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#efd2bb",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a3a2a",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#1e1e22",
+     "anim": {
+      "idle": "float",
+      "run": "glide",
+      "fly": "spectral",
+      "stride": 0.7,
+      "tempo": 0.5
+     }
+    },
+    "name": "Oliver Queen"
+   },
+   "transform": {
+    "style": "spectral",
+    "color": "#9fffb0",
+    "text": "becomes the Spirit of Vengeance in a wash of green light."
+   }
   },
   {
    "id": "jordan_kent",
@@ -2480,7 +3799,38 @@
      "tempo": 1.2
     }
    },
-   "fly_speed": 1.2
+   "fly_speed": 1.2,
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "short",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 0.45,
+     "suit": "#5a6a7a",
+     "pants": "#2a3a5a",
+     "extras": [],
+     "boots": "#e8e8e8",
+     "anim": {
+      "idle": "pockets",
+      "run": "athlete",
+      "fly": "flail",
+      "cadence": 1.08,
+      "arms": 1.2,
+      "tempo": 1.2
+     }
+    },
+    "name": "Jordan Kent"
+   },
+   "transform": {
+    "style": "shirt_rip",
+    "color": "#ff6a1a",
+    "text": "rips off the hoodie, eyes already glowing."
+   }
   },
   {
    "id": "malcolm_merlyn",
@@ -2535,6 +3885,39 @@
    "utility": {
     "kind": "grapple",
     "name": "Grappling Arrow"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "facial": "beard",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#1a1a1a",
+     "coat_color": "#1e1e22",
+     "anim": {
+      "idle": "regal",
+      "run": "stalk",
+      "lean": -0.08,
+      "stride": 1.1
+     }
+    },
+    "name": "Malcolm Merlyn"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#3a3a3a",
+    "text": "raises the black hood. The Dark Archer."
    }
   },
   {
@@ -2587,6 +3970,39 @@
      "stride": 1.05,
      "tempo": 0.8
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#8a8a8a",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a2a2e",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "blade_low",
+      "run": "stalk",
+      "lean": 0.05,
+      "stride": 1.05,
+      "tempo": 0.8
+     }
+    },
+    "name": "Slade Wilson"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#ff8a2a",
+    "text": "puts on the half-orange mask."
    }
   },
   {
@@ -2645,6 +4061,38 @@
    "utility": {
     "kind": "grapple",
     "name": "Grapnel"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a40",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2e3a",
+     "anim": {
+      "idle": "blade_low",
+      "run": "ninja",
+      "lean": 0.1,
+      "cadence": 1.05
+     }
+    },
+    "name": "Adrian Chase"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#c8c8c8",
+    "text": "seals the helmet. The voice changer hums."
    }
   },
   {
@@ -2696,6 +4144,39 @@
      "stride": 0.9,
      "tempo": 0.7
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d8d8d8",
+     "hair_style": "slick",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a30",
+     "pants": "#22232a",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#111111",
+     "coat_color": "#2a2b33",
+     "anim": {
+      "idle": "regal",
+      "run": "glide",
+      "stride": 0.9,
+      "tempo": 0.7
+     }
+    },
+    "name": "Damien Darhk"
+   },
+   "transform": {
+    "style": "magic_circle",
+    "color": "#9b4dff",
+    "text": "calls on the idol's dark magic."
    }
   },
   {
@@ -2763,6 +4244,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#5a4a3a",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a2a2e",
+     "extras": [
+      "coat_short",
+      "glasses"
+     ],
+     "collar": "#e8e8e8",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "menace",
+      "run": "stalk",
+      "sprint": "phantom",
+      "tempo": 0.9
+     }
+    },
+    "name": "Eobard Thawne"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ff2a2a",
+    "text": "drops Harrison Wells' face for the yellow suit and red eyes."
    }
   },
   {
@@ -2819,6 +4333,38 @@
    "utility": {
     "kind": "phase",
     "name": "Phase Through"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#efd2bb",
+     "hair": "#16110e",
+     "accent": "#2a2a2a",
+     "gloves": "#efd2bb",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#c8b890",
+     "pants": "#3a3a40",
+     "extras": [
+      "coat_short"
+     ],
+     "boots": "#3a2a1a",
+     "coat_color": "#5a4a3a",
+     "anim": {
+      "idle": "hunched",
+      "run": "stalk",
+      "sprint": "arms_back",
+      "lean": 0.15,
+      "tempo": 1.4
+     }
+    },
+    "name": "Hunter Zolomon"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#3aa0ff",
+    "text": "\"Jay Garrick\" is gone: the black mask is all that's left."
    }
   },
   {
@@ -2985,6 +4531,39 @@
      "sway": -0.15,
      "tempo": 0.75
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "buzz",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#2a2a2e",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "menace",
+      "run": "swagger",
+      "sway": -0.15,
+      "tempo": 0.75
+     }
+    },
+    "name": "Leonard Snart"
+   },
+   "transform": {
+    "style": "cold_snap",
+    "color": "#a8e8ff",
+    "text": "pulls down the goggles. \"Let's be cool.\""
    }
   },
   {
@@ -3042,6 +4621,41 @@
      "cadence": 0.8,
      "sway": 0.15
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "buzz",
+     "facial": "stubble",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a2a2e",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#5a3a22",
+     "anim": {
+      "idle": "heavy",
+      "run": "swagger",
+      "cadence": 0.8,
+      "sway": 0.15
+     }
+    },
+    "name": "Mick Rory"
+   },
+   "transform": {
+    "style": "ignite",
+    "color": "#ff7a1a",
+    "text": "drops the goggles and lights up."
    }
   },
   {
@@ -3093,6 +4707,39 @@
      "fly": "conductor",
      "tempo": 1.0
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "short",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a5a6a",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "casting",
+      "run": "swagger",
+      "fly": "conductor",
+      "tempo": 1.0
+     }
+    },
+    "name": "Mark Mardon"
+   },
+   "transform": {
+    "style": "storm",
+    "color": "#d6e6ff",
+    "text": "raises the wand: the sky darkens."
    }
   },
   {
@@ -3158,6 +4805,40 @@
    "utility": {
     "kind": "invulnerable",
     "name": "Worldkiller Skin"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#16110e",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#8a6a5a",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat_short"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "menace",
+      "run": "marching",
+      "fly": "left_fist",
+      "stride": 1.05,
+      "tempo": 0.6
+     }
+    },
+    "name": "Samantha Arias"
+   },
+   "transform": {
+    "style": "dark_mist",
+    "color": "#a00000",
+    "text": "lets Sam slip away: Reign rises in a red mist."
    }
   },
   {
@@ -3218,6 +4899,40 @@
      "fly": "warsuit",
      "cadence": 0.85
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#e0b896",
+     "hair_style": "bald",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#3a3a40",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#5a1b8a",
+     "boots": "#1a1a1a",
+     "coat_color": "#3a3a40",
+     "anim": {
+      "idle": "regal",
+      "run": "stomp",
+      "fly": "warsuit",
+      "cadence": 0.85
+     }
+    },
+    "name": "Lex Luthor"
+   },
+   "transform": {
+    "style": "nanites",
+    "color": "#6bff6b",
+    "text": "summons the warsuit, piece by piece."
    }
   },
   {
@@ -3271,6 +4986,40 @@
      "cadence": 0.85,
      "tempo": 0.6
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#b07b56",
+     "hair": "#8a8a8a",
+     "hair_style": "short",
+     "facial": "beard",
+     "accent": "#2a2a2a",
+     "gloves": "#b07b56",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a2a1a",
+     "pants": "#2a2016",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#4a3a2a",
+     "anim": {
+      "idle": "regal",
+      "run": "stalk",
+      "lean": -0.05,
+      "cadence": 0.85,
+      "tempo": 0.6
+     }
+    },
+    "name": "Ra's al Ghul"
+   },
+   "transform": {
+    "style": "smoke",
+    "color": "#7a5a2a",
+    "text": "is swallowed by the League's smoke."
    }
   },
   {
@@ -3325,6 +5074,38 @@
      "lean": 0.2,
      "cadence": 0.9
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a2a30",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "hunched",
+      "run": "stalk",
+      "lean": 0.2,
+      "cadence": 0.9
+     }
+    },
+    "name": "Orlin Dwyer"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#ff3a3a",
+    "text": "lowers the mask and draws the dagger."
    }
   },
   {
@@ -3430,6 +5211,42 @@
    "utility": {
     "kind": "invulnerable",
     "name": "Undying"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#16110e",
+     "hair_style": "slick",
+     "facial": "beard",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#5a1a1a",
+     "boots": "#1a1a1a",
+     "coat_color": "#1e1e22",
+     "anim": {
+      "idle": "blade_low",
+      "run": "heavy",
+      "stride": 1.05,
+      "sway": 0.0,
+      "tempo": 0.65
+     }
+    },
+    "name": "Vandal Savage"
+   },
+   "transform": {
+    "style": "dark_mist",
+    "color": "#5a1a1a",
+    "text": "four thousand years of menace in one breath."
    }
   },
   {
@@ -3479,6 +5296,39 @@
      "run": "strut",
      "sway": 0.1
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "long",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#1a1a1a",
+     "anim": {
+      "idle": "menace",
+      "run": "strut",
+      "sway": 0.1
+     }
+    },
+    "name": "Laurel Lance (Earth-2)"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#dfe8ff",
+    "text": "screams the disguise away."
    }
   },
   {
@@ -3532,6 +5382,40 @@
      "sway": 0.05,
      "cadence": 0.95
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#b07b56",
+     "hair": "#16110e",
+     "hair_style": "buzz",
+     "facial": "beard",
+     "accent": "#2a2a2a",
+     "gloves": "#b07b56",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#2a2a2e",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#1a1a1a",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "menace",
+      "run": "swagger",
+      "sway": 0.05,
+      "cadence": 0.95
+     }
+    },
+    "name": "Ricardo Diaz"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#ffd27a",
+    "text": "cracks his knuckles. The Dragon is here."
    }
   },
   {
@@ -3587,6 +5471,38 @@
      "run": "skip",
      "tempo": 1.3
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#efd2bb",
+     "hair": "#eadcb0",
+     "hair_style": "wild",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#efd2bb",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#5a3a4a",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a2a2a",
+     "anim": {
+      "idle": "relaxed",
+      "run": "skip",
+      "tempo": 1.3
+     }
+    },
+    "name": "Alice"
+   },
+   "transform": {
+    "style": "smoke",
+    "color": "#c8a0e8",
+    "text": "tumbles down the rabbit hole and comes up in white lace."
    }
   },
   {
@@ -3642,6 +5558,38 @@
      "cadence": 1.05,
      "sway": 0.2
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#4a4a3a",
+     "pants": "#2a3a5a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a1e14",
+     "coat_color": "#3a3a2a",
+     "anim": {
+      "idle": "pockets",
+      "run": "swagger",
+      "cadence": 1.05,
+      "sway": 0.2
+     }
+    },
+    "name": "Digger Harkness"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#d8d8d8",
+    "text": "pulls on the goggles. G'day."
    }
   },
   {
@@ -3756,7 +5704,41 @@
      "tempo": 0.7
     }
    },
-   "fly_speed": 1.5
+   "fly_speed": 1.5,
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "hair_style": "bob",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "coat_short"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2a2e",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "marching",
+      "fly": "dive",
+      "stride": 1.1,
+      "tempo": 0.7
+     }
+    },
+    "name": "Overgirl"
+   },
+   "transform": {
+    "style": "shirt_rip",
+    "color": "#b00000",
+    "text": "sheds the disguise: Earth-X's Kryptonian."
+   }
   },
   {
    "id": "dark_arrow",
@@ -3814,6 +5796,38 @@
    "utility": {
     "kind": "grapple",
     "name": "Grappling Arrow"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#d9b468",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "coat_short"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#1e1e22",
+     "anim": {
+      "idle": "bow_ready",
+      "run": "stalk",
+      "lean": 0.0,
+      "cadence": 1.05
+     }
+    },
+    "name": "Oliver Queen (Earth-X)"
+   },
+   "transform": {
+    "style": "hood",
+    "color": "#3a0a0a",
+    "text": "pulls up the dark hood."
    }
   },
   {
@@ -3869,6 +5883,41 @@
      "sway": 0.1,
      "tempo": 0.6
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#f4ece6",
+     "hair": "#f4ece6",
+     "hair_style": "bald",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#f4ece6",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#ece8e0",
+     "pants": "#ece8e0",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#2a2a2a",
+     "boots": "#e8e8e8",
+     "coat_color": "#ece8e0",
+     "anim": {
+      "idle": "regal",
+      "run": "heavy",
+      "cadence": 0.75,
+      "sway": 0.1,
+      "tempo": 0.6
+     }
+    },
+    "name": "Tobias Whale"
+   },
+   "transform": {
+    "style": "mask_on",
+    "color": "#ece8e0",
+    "text": "straightens his white suit. Business."
    }
   },
   {
@@ -3979,6 +6028,39 @@
    "utility": {
     "kind": "phase",
     "name": "Into the Mirror"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#4a3020",
+     "hair_style": "slick",
+     "facial": "stubble",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a40",
+     "pants": "#2a2a2e",
+     "extras": [
+      "coat"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#5a5a60",
+     "anim": {
+      "idle": "pockets",
+      "run": "strut",
+      "sway": 0.15,
+      "tempo": 0.9
+     }
+    },
+    "name": "Sam Scudder"
+   },
+   "transform": {
+    "style": "mirror",
+    "color": "#cfe8ff",
+    "text": "steps into a mirror and out again in costume."
    }
   },
   {
@@ -4033,7 +6115,41 @@
      "tempo": 1.4
     }
    },
-   "fly_speed": 1.2
+   "fly_speed": 1.2,
+   "civilian": {
+    "look": {
+     "skin": "#dfe6ee",
+     "hair": "#c8a050",
+     "hair_style": "wild",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#dfe6ee",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#5a2a3a",
+     "anim": {
+      "idle": "hands_hips",
+      "run": "strut",
+      "fly": "corkscrew",
+      "tempo": 1.4
+     }
+    },
+    "name": "Leslie Willis"
+   },
+   "transform": {
+    "style": "electric",
+    "color": "#9fd0ff",
+    "text": "crackles into living electricity."
+   }
   },
   {
    "id": "metallo",
@@ -4092,6 +6208,40 @@
      "cadence": 0.9,
      "tempo": 0.5
     }
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#16110e",
+     "hair_style": "buzz",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#3a3a3a",
+     "pants": "#2a3a2a",
+     "extras": [
+      "jacket"
+     ],
+     "boots": "#2a2016",
+     "coat_color": "#3a4a3a",
+     "anim": {
+      "idle": "heavy",
+      "run": "stomp",
+      "stride": 1.0,
+      "cadence": 0.9,
+      "tempo": 0.5
+     }
+    },
+    "name": "John Corben"
+   },
+   "transform": {
+    "style": "steel",
+    "color": "#6bff6b",
+    "text": "peels off the skin: steel and kryptonite."
    }
   },
   {
@@ -4157,6 +6307,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#e0b896",
+     "hair": "#16110e",
+     "build": "bulky",
+     "accent": "#2a2a2a",
+     "gloves": "#e0b896",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#e8e8e8",
+     "pants": "#2a2a30",
+     "extras": [
+      "coat_short"
+     ],
+     "collar": "#2a3a8a",
+     "boots": "#1a1a1a",
+     "coat_color": "#2a2e3a",
+     "anim": {
+      "idle": "arms_crossed",
+      "run": "marching",
+      "sprint": "army",
+      "tempo": 0.8
+     }
+    },
+    "name": "August Heart"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#e8e8ff",
+    "text": "is wrapped in silver lightning and armor."
    }
   },
   {
@@ -4222,6 +6405,39 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "civilian": {
+    "look": {
+     "skin": "#8d5a3b",
+     "hair": "#16110e",
+     "build": "female",
+     "accent": "#2a2a2a",
+     "gloves": "#8d5a3b",
+     "glove_length": 0.0,
+     "boot_height": 0.12,
+     "no_belt": true,
+     "sleeve": 2.0,
+     "suit": "#2a2a2e",
+     "pants": "#1e1e22",
+     "extras": [
+      "leather",
+      "jacket"
+     ],
+     "boots": "#1a1a1a",
+     "coat_color": "#3a2a2a",
+     "anim": {
+      "idle": "menace",
+      "run": "ninja",
+      "sprint": "cape",
+      "tempo": 1.1
+     }
+    },
+    "name": "Ryan Wilder (Earth-?)"
+   },
+   "transform": {
+    "style": "speed_ring",
+    "color": "#ff2a2a",
+    "text": "drops into a crouch: red lightning, black cape."
    }
   }
  ]

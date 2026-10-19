@@ -843,6 +843,174 @@ for c in heroes + villains:
     if a:
         c["look"]["anim"] = dict(a)
 
+# --- Secret identities ------------------------------------------------------
+# Civilian clothes (merged over a plain base that keeps skin, hair and build)
+# and how each character changes in and out of costume. Characters with no
+# civilian life (Grodd, King Shark, the Anti-Monitor...) aren't listed.
+def CIV(shirt, pants, coat=None, extras=(), **kw):
+    d = dict(suit=shirt, pants=pants, extras=list(extras), **kw)
+    if coat:
+        d["coat_color"] = coat
+    return d
+
+CIVVIES = {
+ "green_arrow": CIV("#2a3a2a", "#2a2a30", "#1e1e22", ["jacket"], boots="#2a1e14"),
+ "flash": CIV("#6a7a8a", "#2a3a5a", "#5a3a26", ["jacket"], boots="#3a2a1e"),
+ "supergirl": CIV("#4a7ac8", "#2a2a3a", "#c8a050", ["skirt", "coat_short", "glasses"], skirt_color="#2a3a5a", boots="#5a3a2a"),
+ "superman": CIV("#e8e8e8", "#2a2e3a", "#2a2e3a", ["coat_short", "glasses"], collar="#3a5a9a", boots="#1a1a1a"),
+ "atom": CIV("#c8c8d0", "#3a3a40", "#2a3a5a", ["coat_short"], collar="#a02a2a", boots="#1a1a1a"),
+ "white_canary": CIV("#e8e2d8", "#2a2a30", "#3a2a22", ["jacket"], boots="#1a1a1a"),
+ "black_canary": CIV("#5a2a3a", "#1e1e24", "#1a1a1a", ["jacket"], boots="#1a1a1a"),
+ "spartan": CIV("#3a3a3a", "#2a3a2a", "#3a4a3a", ["jacket"], boots="#2a2016"),
+ "speedy": CIV("#7a2a2a", "#2a3a5a", None, [], sleeve=0.45, boots="#e8e8e8"),
+ "kid_flash": CIV("#c8a03a", "#2a3a5a", "#3a3a40", ["jacket"], boots="#e8e8e8"),
+ "vibe": CIV("#3a2a4a", "#22262e", "#2a2a2e", ["jacket"], sleeve=0.45, boots="#1a1a1a"),
+ "killer_frost": CIV("#e8e8f0", "#2a2a3a", "#3a4a6a", ["coat"], hair="#8a5a3a", boots="#1a1a1a"),
+ "firestorm": CIV("#8a2a1a", "#2a2a2e", "#3a3a3a", ["jacket"], boots="#e8e8e8"),
+ "martian_manhunter": CIV("#e8e8e8", "#1e2228", "#1e2228", ["coat_short"], skin="#5e3a26", collar="#1e2228", boots="#1a1a1a"),
+ "batwoman": CIV("#2a2a2e", "#1a1a1e", "#1a1a1a", ["leather", "jacket"], hair="#7a2a1a", boots="#1a1a1a"),
+ "black_lightning": CIV("#e8e8e8", "#2a2a30", "#3a3a48", ["coat_short"], collar="#5a2a2a", boots="#1a1a1a"),
+ "thunder": CIV("#c8a03a", "#2a3a5a", "#3a2a22", ["jacket"], boots="#1a1a1a"),
+ "lightning": CIV("#e05a8a", "#2a3a5a", None, [], sleeve=0.45, boots="#e8e8e8"),
+ "mr_terrific": CIV("#2a2a30", "#1a1a1e", "#3a3a40", ["coat_short"], collar="#e8e8e8", boots="#1a1a1a"),
+ "vixen": CIV("#c8a050", "#3a2a1e", "#5a3a22", ["jacket"], boots="#3a2a1a"),
+ "hawkgirl": CIV("#7a5a3a", "#2a2a30", None, [], sleeve=0.45, boots="#3a2a1a"),
+ "citizen_steel": CIV("#3a5a8a", "#2a3040", "#5a4a3a", ["jacket"], boots="#3a2a1a"),
+ "stargirl": CIV("#e8e8e8", "#3a4a6a", "#c82a3a", ["jacket"], boots="#e8e8e8"),
+ "jay_garrick": CIV("#e8e2d8", "#5a4a3a", "#6a5a48", ["coat_short"], collar="#7a2a2a", boots="#3a2a1a"),
+ "jesse_quick": CIV("#d8c8a0", "#2a3a5a", "#2a2a30", ["jacket"], boots="#e8e8e8"),
+ "xs": CIV("#c84a8a", "#2a2a3a", "#3a2a4a", ["jacket"], boots="#e8e8e8"),
+ "elongated_man": CIV("#8a3a3a", "#3a3a40", "#5a4a3a", ["coat_short"], collar="#e8e8e8", boots="#3a2a1a"),
+ "guardian": CIV("#5a5a5e", "#2a2a30", "#2a2a2e", ["jacket"], boots="#1a1a1a"),
+ "mon_el": CIV("#3a3a40", "#2a2a30", "#5a3a22", ["leather", "jacket"], boots="#2a1e14"),
+ "dreamer": CIV("#6a8ac8", "#2a2a3a", None, ["skirt"], skirt_color="#3a3a5a", sleeve=0.45, boots="#1a1a1a"),
+ "brainiac_5": CIV("#8a7aa8", "#2a2a3a", "#4a3a5a", ["coat_short"], skin="#e0b896", boots="#1a1a1a"),
+ "arsenal": CIV("#3a3a40", "#2a3a5a", "#5a2a22", ["jacket"], boots="#2a1e14"),
+ "wild_dog": CIV("#3a3a3a", "#2a3a5a", None, [], sleeve=0.45, boots="#2a2a2a"),
+ "heat_wave_hero": CIV("#3a3a3a", "#2a2a2e", "#5a3a22", ["leather", "jacket"], boots="#2a1e14"),
+ "constantine": CIV("#e8e4dc", "#2a2a2e", "#b8a070", ["coat"], collar="#7a1a1a", boots="#2a1e14"),
+ "zari": CIV("#5a3a6a", "#2a2a30", "#3a3a40", ["jacket"], boots="#1a1a1a"),
+ "nyssa": CIV("#2a2a2e", "#1e1e22", "#3a2a22", ["coat"], boots="#1a1a1a"),
+ "hawkman": CIV("#5a5a4a", "#2a2a30", "#3a2a1e", ["jacket"], boots="#2a1e14"),
+ "flash_90": CIV("#e8e8e8", "#3a4a6a", "#5a5a6a", ["jacket"], boots="#3a2a1e"),
+ "spectre": CIV("#2a3a2a", "#2a2a30", "#1e1e22", ["jacket"], boots="#2a1e14"),
+ "jordan_kent": CIV("#5a6a7a", "#2a3a5a", None, [], sleeve=0.45, boots="#e8e8e8"),
+ "malcolm_merlyn": CIV("#2a2a2e", "#1e1e22", "#1e1e22", ["coat_short"], collar="#e8e8e8", boots="#1a1a1a"),
+ "deathstroke": CIV("#3a3a3a", "#2a2a2e", "#2a2a2e", ["jacket"], boots="#1a1a1a"),
+ "prometheus": CIV("#3a3a40", "#2a2a30", "#2a2e3a", ["coat_short"], collar="#e8e8e8", boots="#1a1a1a"),
+ "damien_darhk": CIV("#2a2a30", "#22232a", "#2a2b33", ["coat_short"], collar="#e8e8e8", boots="#111111"),
+ "reverse_flash": CIV("#3a3a3a", "#2a2a2e", "#2a2a2e", ["coat_short"], collar="#e8e8e8", boots="#1a1a1a", hair="#5a4a3a", glasses=True),
+ "zoom": CIV("#c8b890", "#3a3a40", "#5a4a3a", ["coat_short"], boots="#3a2a1a"),
+ "captain_cold": CIV("#2a2a2e", "#2a2a2e", "#3a3a40", ["leather", "jacket"], boots="#1a1a1a"),
+ "heat_wave": CIV("#3a3a3a", "#2a2a2e", "#5a3a22", ["leather", "jacket"], boots="#2a1e14"),
+ "weather_wizard": CIV("#5a5a6a", "#2a2a30", "#2a2a2e", ["coat"], boots="#1a1a1a"),
+ "reign": CIV("#8a6a5a", "#2a2a30", "#3a3a40", ["coat_short"], boots="#1a1a1a"),
+ "lex_luthor": CIV("#e8e8e8", "#3a3a40", "#3a3a40", ["coat_short"], collar="#5a1b8a", boots="#1a1a1a"),
+ "ras_al_ghul": CIV("#3a2a1a", "#2a2016", "#4a3a2a", ["coat"], boots="#2a1e14"),
+ "cicada": CIV("#3a3a3a", "#2a2a30", "#2a2a2e", ["jacket"], boots="#1a1a1a"),
+ "vandal_savage": CIV("#2a2a2e", "#1e1e22", "#1e1e22", ["coat_short"], collar="#5a1a1a", boots="#1a1a1a"),
+ "black_siren": CIV("#2a2a2e", "#1e1e22", "#1a1a1a", ["leather", "jacket"], boots="#1a1a1a"),
+ "diaz": CIV("#e8e8e8", "#2a2a2e", "#2a2a2e", ["coat_short"], collar="#1a1a1a", boots="#1a1a1a"),
+ "alice": CIV("#5a3a4a", "#2a2a30", "#3a2a2a", ["coat"], boots="#1a1a1a"),
+ "captain_boomerang": CIV("#4a4a3a", "#2a3a5a", "#3a3a2a", ["jacket"], boots="#2a1e14"),
+ "overgirl": CIV("#2a2a2e", "#1e1e22", "#2a2a2e", ["coat_short"], boots="#1a1a1a"),
+ "dark_arrow": CIV("#2a2a2e", "#1e1e22", "#1e1e22", ["coat_short"], boots="#1a1a1a"),
+ "tobias_whale": CIV("#ece8e0", "#ece8e0", "#ece8e0", ["coat_short"], collar="#2a2a2a", boots="#e8e8e8"),
+ "mirror_master": CIV("#3a3a40", "#2a2a2e", "#5a5a60", ["coat"], boots="#1a1a1a"),
+ "livewire": CIV("#2a2a2e", "#1e1e22", "#5a2a3a", ["leather", "jacket"], hair="#c8a050", boots="#1a1a1a"),
+ "metallo": CIV("#3a3a3a", "#2a3a2a", "#3a4a3a", ["jacket"], boots="#2a2016"),
+ "godspeed": CIV("#e8e8e8", "#2a2a30", "#2a2e3a", ["coat_short"], collar="#2a3a8a", boots="#1a1a1a"),
+ "red_death": CIV("#2a2a2e", "#1e1e22", "#3a2a2a", ["leather", "jacket"], boots="#1a1a1a"),
+}
+
+# How each one changes: (style, colour, flavour line).
+TRANSFORM = {
+ "green_arrow": ("hood", "#3aff6a", "pulls up the hood. \"You have failed this city.\""),
+ "flash": ("speed_ring", "#ffd23a", "is a blur: the suit shoots out of his ring."),
+ "supergirl": ("shirt_rip", "#4a8aff", "tosses the glasses and spins into the suit."),
+ "superman": ("shirt_rip", "#c8102e", "rips open his shirt to reveal the S."),
+ "atom": ("nanites", "#4fc3ff", "is wrapped in the A.T.O.M. exosuit, plate by plate."),
+ "white_canary": ("smoke", "#e8eef4", "steps through a cloud of smoke and comes out in white leather."),
+ "black_canary": ("hood", "#ffd27a", "pulls on the mask. The canary is out."),
+ "spartan": ("armor_up", "#8a8a8a", "racks the rifle and snaps the helmet on."),
+ "speedy": ("hood", "#ff3a3a", "flips up the red hood."),
+ "kid_flash": ("speed_ring", "#ffd23a", "phases through his clothes into the yellow suit."),
+ "vibe": ("breach", "#4fa8ff", "slips the goggles on. \"Vibe-ing in three, two...\""),
+ "killer_frost": ("frost", "#bfeaff", "lets the cold in: frost spreads and her hair turns white."),
+ "firestorm": ("fusion", "#ff8a2a", "merges in a nuclear flash: \"Firestorm!\""),
+ "martian_manhunter": ("martian", "#5aff8a", "drops the human disguise, green skin shimmering through."),
+ "batwoman": ("smoke", "#c8102e", "vanishes into the shadows and returns with the cowl."),
+ "black_lightning": ("lightning_strike", "#9fd0ff", "calls down the lightning and the suit forms around him."),
+ "thunder": ("density", "#c8c8d0", "goes dense, the suit hardening over her skin."),
+ "lightning": ("lightning_strike", "#c8f0ff", "crackles with electricity as her suit lights up."),
+ "mr_terrific": ("nanites", "#ff3030", "lets the T-spheres build the suit and the T-mask."),
+ "vixen": ("totem", "#c9a24a", "touches the Tantu Totem: the spirits of the animals answer."),
+ "hawkgirl": ("wings", "#c9a24a", "unfurls her Nth-metal wings in a flash of gold."),
+ "citizen_steel": ("steel", "#c8ccd4", "turns to living steel from the skin out."),
+ "stargirl": ("cosmic", "#ffe8a0", "calls the Cosmic Staff and it flies into her hand."),
+ "jay_garrick": ("helmet_spin", "#ffd23a", "spins the winged helmet on. A gentleman's speedster."),
+ "jesse_quick": ("speed_formula", "#ffd23a", "recites the speed formula: \"3X2(9YZ)4A!\""),
+ "xs": ("speed_ring", "#ff6ad0", "flashes into the suit with a burst of pink lightning."),
+ "elongated_man": ("stretch", "#c83030", "stretches out of his clothes and snaps back in costume."),
+ "guardian": ("armor_up", "#c8ccd4", "clamps on the helmet and lifts the shield."),
+ "mon_el": ("shirt_rip", "#3a6aff", "throws off the jacket, cape snapping out behind him."),
+ "dreamer": ("dream", "#8fd8ff", "closes her eyes and dreams the suit into being."),
+ "brainiac_5": ("glitch", "#6bff6b", "switches off the image inducer: blue skin, Legion ring."),
+ "arsenal": ("hood", "#ff3a3a", "pulls the red hood low."),
+ "wild_dog": ("mask_on", "#e8e8e8", "straps on the hockey mask."),
+ "heat_wave_hero": ("ignite", "#ff7a1a", "drops the goggles and lights the heat gun."),
+ "constantine": ("magic_circle", "#ffd27a", "flicks a lighter and mutters a spell."),
+ "zari": ("totem", "#c8e8ff", "lets the Air Totem lift her off the ground."),
+ "nyssa": ("smoke", "#7a5a2a", "is gone in the smoke, and back in League leathers."),
+ "hawkman": ("wings", "#c9a24a", "spreads golden wings and lowers the helmet."),
+ "flash_90": ("speed_ring", "#ffd23a", "is in the padded red suit before you can blink."),
+ "spectre": ("spectral", "#9fffb0", "becomes the Spirit of Vengeance in a wash of green light."),
+ "jordan_kent": ("shirt_rip", "#ff6a1a", "rips off the hoodie, eyes already glowing."),
+ "malcolm_merlyn": ("hood", "#3a3a3a", "raises the black hood. The Dark Archer."),
+ "deathstroke": ("mask_on", "#ff8a2a", "puts on the half-orange mask."),
+ "prometheus": ("mask_on", "#c8c8c8", "seals the helmet. The voice changer hums."),
+ "damien_darhk": ("magic_circle", "#9b4dff", "calls on the idol's dark magic."),
+ "reverse_flash": ("speed_ring", "#ff2a2a", "drops Harrison Wells' face for the yellow suit and red eyes."),
+ "zoom": ("speed_ring", "#3aa0ff", "\"Jay Garrick\" is gone: the black mask is all that's left."),
+ "captain_cold": ("cold_snap", "#a8e8ff", "pulls down the goggles. \"Let's be cool.\""),
+ "heat_wave": ("ignite", "#ff7a1a", "drops the goggles and lights up."),
+ "weather_wizard": ("storm", "#d6e6ff", "raises the wand: the sky darkens."),
+ "reign": ("dark_mist", "#a00000", "lets Sam slip away: Reign rises in a red mist."),
+ "lex_luthor": ("nanites", "#6bff6b", "summons the warsuit, piece by piece."),
+ "ras_al_ghul": ("smoke", "#7a5a2a", "is swallowed by the League's smoke."),
+ "cicada": ("mask_on", "#ff3a3a", "lowers the mask and draws the dagger."),
+ "vandal_savage": ("dark_mist", "#5a1a1a", "four thousand years of menace in one breath."),
+ "black_siren": ("mask_on", "#dfe8ff", "screams the disguise away."),
+ "diaz": ("mask_on", "#ffd27a", "cracks his knuckles. The Dragon is here."),
+ "alice": ("smoke", "#c8a0e8", "tumbles down the rabbit hole and comes up in white lace."),
+ "captain_boomerang": ("mask_on", "#d8d8d8", "pulls on the goggles. G'day."),
+ "overgirl": ("shirt_rip", "#b00000", "sheds the disguise: Earth-X's Kryptonian."),
+ "dark_arrow": ("hood", "#3a0a0a", "pulls up the dark hood."),
+ "tobias_whale": ("mask_on", "#ece8e0", "straightens his white suit. Business."),
+ "mirror_master": ("mirror", "#cfe8ff", "steps into a mirror and out again in costume."),
+ "livewire": ("electric", "#9fd0ff", "crackles into living electricity."),
+ "metallo": ("steel", "#6bff6b", "peels off the skin: steel and kryptonite."),
+ "godspeed": ("speed_ring", "#e8e8ff", "is wrapped in silver lightning and armor."),
+ "red_death": ("speed_ring", "#ff2a2a", "drops into a crouch: red lightning, black cape."),
+}
+
+for c in heroes + villains:
+    civ = CIVVIES.get(c["id"])
+    tr = TRANSFORM.get(c["id"])
+    if civ and tr:
+        look = c["look"]
+        base = {k: look[k] for k in ("skin", "hair", "hair_style", "facial", "build", "scale", "eye_color") if k in look}
+        base.update(dict(accent="#2a2a2a", gloves=look.get("skin", "#c99a78"), glove_length=0.0, boot_height=0.12,
+                         no_belt=True, sleeve=2.0))
+        base.update(civ)
+        if base.pop("glasses", False):
+            base["extras"] = base["extras"] + ["glasses"]
+        if c["look"].get("build") == "armored":
+            base["build"] = "bulky"
+        base["anim"] = dict(look.get("anim", {}))
+        c["civilian"] = dict(look=base, name=c["name"])
+        c["transform"] = dict(style=tr[0], color=tr[1], text=tr[2])
+
 roster = heroes + villains
 ids = [c["id"] for c in roster]
 assert len(ids) == len(set(ids)), "duplicate ids"

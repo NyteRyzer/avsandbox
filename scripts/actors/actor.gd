@@ -120,6 +120,9 @@ var _orig_team := ""
 var _orig_follow: Actor = null
 var boss := false
 var root_t := 0.0             # netted: can't move
+var civilian := false         # out of costume: no powers
+var changing := false         # mid-transformation
+var suit_def: Dictionary = {} # the costumed character while in civilian clothes
 var poison_t := 0.0
 var whirl_t := 0.0
 var _whirl_tick := 0.0
@@ -232,6 +235,9 @@ func is_hostile_to(o: Actor) -> bool:
 	if team == "civilian" or o.team == "civilian":
 		return false
 	if o.invis_t > 0.0:
+		return false
+	if o.civilian or civilian:
+		# Nobody recognises a hero (or villain) in street clothes.
 		return false
 	var a := side()
 	var b := o.side()
@@ -577,6 +583,11 @@ func _move(delta: float) -> void:
 
 
 func _abilities(delta: float) -> void:
+	if changing:
+		return
+	if civilian:
+		_civilian_abilities()
+		return
 	if held_prop and (in_primary or in_ability):
 		Abilities.throw_prop(self)
 		cooldowns["primary"] = 0.4
@@ -612,6 +623,75 @@ func _abilities(delta: float) -> void:
 			if Abilities.special(self, sp):
 				energy -= cost
 				cooldowns["special"] = Abilities.special_cooldown(sp)
+
+
+## In street clothes: ordinary punches and kicks, nothing else.
+func _civilian_abilities() -> void:
+	for slot in ["primary", "secondary"]:
+		var held := in_primary if slot == "primary" else in_secondary
+		if held and cooldowns[slot] <= 0.0 and can_act():
+			var atk: Dictionary = def[slot]
+			cooldowns[slot] = Abilities.cooldown(atk)
+			Abilities.fire(self, atk)
+	if (in_special or in_ability or in_ultimate or in_fly_toggle) and is_player and world and cooldowns["special"] <= 0.0:
+		cooldowns["special"] = 1.5
+		world.notify("No powers in civilian clothes. Suit up with [T].", Color("#ffd27a"))
+
+
+## Swaps between the costumed character and their everyday self.
+func set_civilian(on: bool) -> void:
+	if on == civilian:
+		return
+	if on:
+		suit_def = def
+		var civ: Dictionary = def["civilian"]
+		def = def.duplicate(true)
+		def["look"] = civ["look"]
+		def["primary"] = {"kind": "melee", "name": "Punch", "damage": 6.0, "style": "punch"}
+		def["secondary"] = {"kind": "melee", "name": "Kick", "damage": 7.0, "style": "kick", "cooldown": 0.5}
+		def.erase("utility")
+		display_name = str(civ.get("name", display_name))
+		def["alias"] = display_name
+		movement = "run"
+		strength = false
+		flying = false
+		power = 0.6
+		speed_mult = 1.0
+		civilian = true
+		_release_grapple()
+		if held_prop:
+			Abilities.drop_prop(self)
+		for b in beams:
+			b.visible = false
+	else:
+		def = suit_def
+		suit_def = {}
+		display_name = str(def.get("alias", def.get("name", display_name)))
+		movement = def.get("movement", "run")
+		strength = bool(def.get("strength", false))
+		power = float(def.get("power", 1.0))
+		speed_mult = float(def.get("speed", 1.0))
+		civilian = false
+		if is_player:
+			power *= Game.rank_bonus()
+	_rebuild_model(def["look"])
+	model.scale = Vector3.ONE * _cur_scale()
+	if movement == "hover":
+		flying = true
+	if on and is_player and world:
+		# Changing out of sight shakes off the police and anyone hunting you.
+		var watched := false
+		for o in get_tree().get_nodes_in_group("actors"):
+			if o != self and not o.dead and o.grudges.has(get_instance_id()) and o.global_position.distance_to(global_position) < 30.0:
+				watched = true
+		if not watched:
+			for o in get_tree().get_nodes_in_group("actors"):
+				o.grudges.erase(get_instance_id())
+			if Game.heat > 0.0:
+				Game.clear_heat()
+				world.notify("Secret identity: nobody's looking for %s." % display_name, Color("#a0d0ff"))
+	if world and is_player and world.hud:
+		world.hud.on_player_changed()
 
 
 ## E: lift something heavy if there is something to lift, otherwise use the
@@ -760,7 +840,7 @@ func _update_grapple_line() -> void:
 # --- Damage -----------------------------------------------------------------
 
 func take_damage(amount: float, source: Actor, element := "", knock := Vector3.ZERO) -> void:
-	if dead:
+	if dead or changing:
 		return
 	if source and is_instance_valid(source) and source != self:
 		last_attacker = source

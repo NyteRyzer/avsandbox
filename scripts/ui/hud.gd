@@ -274,6 +274,10 @@ func _process(delta: float) -> void:
 	energy_bar.max_value = p.max_energy
 	energy_bar.value = p.energy
 	var status := PackedStringArray()
+	if p.civilian:
+		status.append("CIVILIAN")
+	if p.changing:
+		status.append("CHANGING")
 	if p.flying:
 		status.append("FLYING")
 	if Game.slowmo_left > 0.0:
@@ -334,6 +338,14 @@ func _process(delta: float) -> void:
 	else:
 		ability_labels[5].text = "[R]  %s   %d%%" % [u.get("name", "Ultimate"), int(p.ult)]
 	ability_labels[5].add_theme_color_override("font_color", UITheme.ACCENT if p.ult >= 100.0 or p.ult_active else UITheme.DIM)
+	if p.civilian:
+		ability_labels[2].text = "[T]  Suit up as " + str(p.suit_def.get("alias", ""))
+		ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT)
+		ability_labels[3].text = "In civilian clothes: no powers"
+		ability_labels[4].text = "[Shift]  Sprint   ·   [V] Dodge"
+		ability_labels[5].text = "[R]  " + str(u.get("name", "Ultimate")) + "   (suit up first)"
+	elif Suitup.can_change(p):
+		ability_labels[4].text += "   ·   [T] Civilian clothes"
 	ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT if p.cooldowns["special"] <= 0.0 and p.energy >= Abilities.special_cost(d["special"]) else UITheme.DIM)
 
 	district_label.text = world.place_name(p.global_position)

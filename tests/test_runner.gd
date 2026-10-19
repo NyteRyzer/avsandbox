@@ -31,6 +31,8 @@ func _ready() -> void:
 	await test_driving()
 	_current = "test_activities"
 	await test_activities()
+	_current = "test_identities"
+	await test_identities()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -396,35 +398,44 @@ func test_places() -> void:
 	world.population.enabled = false
 	for id in Interiors.ORDER:
 		check(not world.city.landmark("Inside " + Interiors.NAMES[id]).is_empty(), "interior %s is built" % id)
-	var outside := 0
-	for d in world.city.doors:
-		if d["interior"] in Interiors.ORDER:
-			outside += 1
-	check(outside >= 7, "city doors lead inside (%d)" % outside)
+	var built_in := 0
+	for id in Interiors.ORDER:
+		if not Interiors.is_remote(id):
+			built_in += 1
+	check(built_in == 7, "seven rooms are inside their real buildings (%d)" % built_in)
+	check(Interiors.is_remote("waverider"), "the Waverider is bigger on the inside")
 	check(world.city.islands.size() >= 6, "six city islands (with Gotham and Smallville)")
 	check(world.city.district_at(Vector3(-560, 1, 1720)) == "Gotham City", "Gotham is south of National City")
 	check(world.city.district_at(Vector3(1840, 1, 560)) == "Smallville", "Smallville is east of Freeland")
 	check(not world.city.is_water(Vector3(-560, 0, 1150)), "a bridge reaches Gotham")
 	check(not world.city.is_water(Vector3(1200, 0, 560)), "a bridge reaches Smallville")
 	check(not world.city.landmark("Wayne Tower").is_empty() and not world.city.landmark("Kent Farm").is_empty(), "Wayne Tower and Kent Farm")
-	# Walk through S.T.A.R. Labs' front door and back out.
-	var labs: Dictionary = {}
-	for d in world.city.doors:
-		if d["interior"] == "star_labs":
-			labs = d
-	world.spawn_player("vibe", labs["pos"])
-	await _frames(3)
-	check(world.door.get("interior", "") == "star_labs", "standing at the S.T.A.R. Labs door")
-	check(world.interact_prompt().contains("Enter"), "HUD offers to enter")
-	world.interact()
-	await _frames(20)
-	check(world.inside == "star_labs", "entered S.T.A.R. Labs")
-	check(world.player.global_position.y < Interiors.DEPTH + 10.0 and world.player.global_position.y > Interiors.DEPTH - 5.0, "standing on the interior floor (y=%.1f)" % world.player.global_position.y)
-	check(world.place_name(world.player.global_position) == "S.T.A.R. Labs", "HUD names the room")
+	# Walk in through the front doors of S.T.A.R. Labs, Jitters and Verdant.
+	for room in ["star_labs", "jitters", "bunker"]:
+		var start: Vector3 = Interiors.origin(room) + Vector3(0, 0.5, -(Interiors.SIZES[room].z * 0.5 + (14.0 if room == "star_labs" else 4.0)))
+		world.spawn_player("vibe", start)
+		world.cam.yaw = PI
+		world.cam.pitch = -0.1
+		await _frames(3)
+		check(world.inside == "", "%s: starting on the street" % room)
+		Input.action_press("move_forward")
+		Input.action_press("sprint")
+		var got_in := false
+		for i in 260:
+			await get_tree().physics_frame
+			if world.inside == room:
+				got_in = true
+				break
+		Input.action_release("move_forward")
+		Input.action_release("sprint")
+		check(got_in, "walked in through the %s entrance (ended at %s)" % [room, world.player.global_position])
+	await get_tree().process_frame
+	check(world.place_name(world.player.global_position) == "The Arrow Bunker", "HUD names the room")
 	check(world.day_night.indoors, "lighting switches to indoors")
-	world.leave_interior("star_labs")
+	world.leave_interior("bunker")
 	await _frames(3)
-	check(world.inside == "" and world.player.global_position.distance_to(labs["pos"]) < 4.0, "exit returns to the front door")
+	check(world.inside == "" and world.player.global_position.distance_to(Interiors.outside_point("bunker")) < 2.0, "leaving puts you on the street outside")
+	check(world.player.global_position.y > -1.0 and world.player.global_position.y < 3.0, "at street level")
 	# Suit up from a display case in the Bunker.
 	world.enter_interior("bunker")
 	await _frames(3)
@@ -440,7 +451,7 @@ func test_places() -> void:
 	await _frames(3)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	check(world.door.get("interior", "") == "waverider", "the ship's ramp is a door")
+	check(world.door.get("interior", "") == "waverider", "the ship's ramp is a door (%s)" % str(world.door))
 	world.interact()
 	await _frames(3)
 	check(world.inside == "waverider", "boarded the Waverider")
@@ -539,6 +550,49 @@ func test_activities() -> void:
 	check(Game.rank() == rank_before + 1, "earning points raises your rank")
 	check(world.player.max_hp > float(world.player.def["health"]), "rank boosts health")
 	Game.settings["xp"] = xp_before
+
+
+func test_identities() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	var with_id := 0
+	for c in Game.roster:
+		if c.has("civilian"):
+			with_id += 1
+			check(c.has("transform") and str(c["transform"]["style"]) != "", c["id"] + " has a transformation")
+	check(with_id >= 60, "most characters have a secret identity (%d)" % with_id)
+	var styles := {}
+	for c in Game.roster:
+		if c.has("transform"):
+			styles[c["transform"]["style"]] = true
+	check(styles.size() >= 20, "%d different transformation styles" % styles.size())
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	var p := world.player
+	check(Suitup.toggle(p), "the Flash can change into civilian clothes")
+	await _frames(80)
+	await get_tree().process_frame
+	check(p.civilian and not p.changing, "now Barry Allen in street clothes")
+	check(p.display_name == "Barry Allen" and p.movement == "run", "no super speed as Barry (%s, %s)" % [p.display_name, p.movement])
+	p.energy = p.max_energy
+	var before := p.energy
+	p.in_special = true
+	p._abilities(0.016)
+	p.in_special = false
+	check(Game.slowmo_left <= 0.0 and p.energy == before, "no powers in civilian clothes")
+	var thug: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0, -6))
+	await _frames(2)
+	check(not thug.is_hostile_to(p), "villains don't recognise a hero in street clothes")
+	check(Suitup.toggle(p), "suit back up")
+	await _frames(80)
+	check(not p.civilian and p.movement == "speed" and p.display_name == "The Flash", "the Flash again")
+	world.spawn_player("superman", Vector3(560, 0.5, -440))
+	Suitup.toggle(world.player)
+	await _frames(80)
+	check(world.player.civilian and world.player.def["look"]["extras"].has("glasses"), "Clark Kent wears glasses")
+	check(not world.player.flying and world.player.movement == "run", "Clark can't fly")
+	world.spawn_player("grodd", Vector3(560, 0.5, -440))
+	check(not Suitup.toggle(world.player), "Grodd has no secret identity")
+	world.clear_npcs()
 
 
 func test_campaign() -> void:

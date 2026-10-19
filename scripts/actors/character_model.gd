@@ -560,6 +560,17 @@ func _build_headgear(k: float) -> void:
 	var accent := _accent()
 	var hb := _mb(head)
 	var gloss := _mb(head, "gloss")
+	if _has("glasses"):
+		# Clark's and Kara's disguise: thin dark frames.
+		var frame := Color("#1a1a1a")
+		for side in [-1.0, 1.0]:
+			var c := Vector3(side * 0.031 * k, 0.03 * k, -0.105 * k)
+			gloss.box(c + Vector3(0, 0.011 * k, 0), Vector3(0.03, 0.004, 0.004) * k, Transform3D(), frame)
+			gloss.box(c - Vector3(0, 0.011 * k, 0), Vector3(0.03, 0.004, 0.004) * k, Transform3D(), frame)
+			gloss.box(c + Vector3(side * 0.015 * k, 0, 0), Vector3(0.004, 0.024, 0.004) * k, Transform3D(), frame)
+			gloss.box(c - Vector3(side * 0.015 * k, 0, 0), Vector3(0.004, 0.024, 0.004) * k, Transform3D(), frame)
+			gloss.box(Vector3(side * 0.08 * k, 0.03 * k, -0.05 * k), Vector3(0.004, 0.004, 0.11) * k, Transform3D(), frame)
+		gloss.box(Vector3(0, 0.03 * k, -0.106 * k), Vector3(0.012, 0.004, 0.004) * k, Transform3D(), frame)
 	if _has("bolt_wings"):
 		for side in [-1.0, 1.0]:
 			var wing := PackedVector2Array([Vector2(0, 0), Vector2(0.05, 0.012), Vector2(0.1, 0.05), Vector2(0.045, 0.028), Vector2(0.075, 0.06), Vector2(0.01, 0.03)])

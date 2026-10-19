@@ -17,6 +17,10 @@ func _ready() -> void:
 		await _closeups(args[2].split(","), args[3] if args.size() > 3 else "")
 		get_tree().quit()
 		return
+	if only == "doors":
+		await _doors()
+		get_tree().quit()
+		return
 	if only == "new":
 		await _new_places()
 		get_tree().quit()
@@ -359,3 +363,45 @@ func _new_places() -> void:
 	for i in 50:
 		await get_tree().physics_frame
 	await _snap("new_ultimate", 1)
+
+
+func _doors() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = false
+	w.events.cooldown = 9999.0
+	w.day_night.frozen = true
+	w.day_night.hour = 17.0
+	for room in ["star_labs", "jitters", "bunker", "catco", "batcave", "kent_barn"]:
+		var o := Interiors.origin(room)
+		var out := o + Vector3(0, 0.5, -(Interiors.SIZES[room].z * 0.5 + (16.0 if room == "star_labs" else 9.0)))
+		w.spawn_player("flash", out)
+		w.cam.yaw = PI
+		w.cam.pitch = -0.05
+		w.cam.zoom = 7.0
+		for i in 40:
+			await get_tree().physics_frame
+		await _snap("door_" + room, 5)
+	# Inside, looking back out through the doorway
+	w.spawn_player("flash", Interiors.origin("jitters") + Vector3(0, 0.5, 2))
+	w.cam.yaw = 0.0
+	w.cam.zoom = 5.0
+	for i in 30:
+		await get_tree().physics_frame
+	await _snap("door_inside_jitters", 5)
+	# Transformations, mid-change
+	var who := ["flash", "superman", "killer_frost", "vibe", "black_lightning", "stargirl"]
+	for k in who.size():
+		w.spawn_player(who[k], Vector3(560, 0.5, -440))
+		w.cam.yaw = 0.4
+		w.cam.pitch = -0.1
+		w.cam.zoom = 5.0
+		for i in 20:
+			await get_tree().physics_frame
+		Suitup.toggle(w.player)
+		for i in 75:
+			await get_tree().physics_frame
+		Suitup.toggle(w.player)
+		for i in 28:
+			await get_tree().physics_frame
+		await _snap("suit_" + who[k], 1)

@@ -59,6 +59,7 @@ var buildings: Array = []        # {rect: Rect2 (x/z footprint), h: float}
 var landmarks: Array = []        # {name, pos: Vector3, district}
 var parked: Array = []           # {kind, xform: Transform3D}
 var doors: Array = []            # {name, pos: Vector3, interior: String}
+var interior_slots: Dictionary = {}  # room id -> {origin, yaw}: rooms built inside their buildings
 var islands: Array = []          # {name, center: Vector2, land: Rect2, grid: Rect2, style}
 var bridges: Array[Rect2] = []
 var extra_land: Array = []       # {rect: Rect2, name}
@@ -396,6 +397,20 @@ func add_box(center: Vector3, size: Vector3, m: Material, collide := true, rot_y
 		_body.add_child(cs)
 
 
+## A box with any orientation (ramps), drawn and (optionally) solid.
+func add_box_xf(xf: Transform3D, size: Vector3, m: Material, collide := true) -> void:
+	if not _instances.has(m):
+		_instances[m] = []
+	_instances[m].append(xf * Transform3D(Basis.from_scale(size), Vector3.ZERO))
+	if collide:
+		var cs := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = size
+		cs.shape = box
+		cs.transform = xf
+		_body.add_child(cs)
+
+
 func add_cylinder_collision(center: Vector3, radius: float, height: float) -> void:
 	var cs := CollisionShape3D.new()
 	var cyl := CylinderShape3D.new()
@@ -461,7 +476,7 @@ func _flush_instances() -> void:
 
 func _add_landmark(name: String, pos: Vector3, district: String, door := "") -> void:
 	landmarks.append({"name": name, "pos": pos, "district": district})
-	if door != "":
+	if door != "" and not interior_slots.has(door):
 		doors.append({"name": name, "pos": pos, "interior": door})
 
 
@@ -672,11 +687,11 @@ func _farmhouse(r: Rect2, m: Material) -> void:
 
 func _red_barn(r: Rect2) -> void:
 	var red := _plain(Color("#9a2a1e"))
-	_add_building(r, 10.0, red)
+	_hollow(r, "kent_barn", 10.0, red)
 	var c := r.get_center()
 	add_box(Vector3(c.x, 11.5, c.y), Vector3(r.size.x * 0.75, 3.0, r.size.y + 0.6), _plain(Color("#3a2a24")), true)
-	add_box(Vector3(c.x, 3.0, r.position.y - 0.1), Vector3(6.0, 6.0, 0.2), _plain(Color("#f0e8d8")), false)
-	add_box(Vector3(c.x, 3.0, r.position.y - 0.15), Vector3(0.3, 6.0, 0.2), red, false)
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(c.x + side * 3.6, 3.0, r.position.y - 0.1), Vector3(3.0, 6.0, 0.2), _plain(Color("#f0e8d8")), false)
 
 
 func _ruin(r: Rect2, h: float, m: Material) -> void:
@@ -883,7 +898,7 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_label("QUEEN CONSOLIDATED", base + Vector3(0, 32, 0), 4.0, Color("#d8ffe0"))
 				_add_landmark("Queen Consolidated", front, district)
 			"verdant":
-				_add_building(rect.grow(-12.0), 10.0, _dark_mat)
+				_hollow(rect.grow(-12.0), "bunker", 10.0, _dark_mat)
 				_label("VERDANT", base + Vector3(0, 13, 0), 3.0, Color("#3aff6a"))
 				add_box(Vector3(bc.x, 4.5, rect.position.y + 11.5), Vector3(12.0, 1.0, 0.4), _plain(Color("#3aff6a"), 0.4, 3.0), false)
 				_add_landmark("Verdant", front, "The Glades", "bunker")
@@ -901,8 +916,8 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 			"jitters":
 				var r := rect.grow(-6.0)
 				_add_building(Rect2(r.position + Vector2(0, r.size.y * 0.45), Vector2(r.size.x, r.size.y * 0.55)), 30.0, facade_mats[1][0])
-				_add_building(Rect2(r.position, Vector2(r.size.x, r.size.y * 0.4)), 7.0, _plain(Color("#6a3a22")))
-				add_box(Vector3(bc.x, 3.5, r.position.y - 0.3), Vector3(16.0, 1.2, 0.3), _plain(Color("#ffd27a"), 0.4, 2.0), false)
+				_hollow(Rect2(r.position, Vector2(r.size.x, r.size.y * 0.4)), "jitters", 7.0, _plain(Color("#6a3a22")))
+				add_box(Vector3(bc.x, 5.6, r.position.y - 0.3), Vector3(16.0, 1.0, 0.3), _plain(Color("#ffd27a"), 0.4, 2.0), false)
 				_label("JITTERS", Vector3(bc.x, 9.5, r.position.y), 2.5, Color("#ffd27a"))
 				_add_landmark("Jitters", Vector3(bc.x, 0.5, r.position.y - 3.0), district, "jitters")
 			"picture_news":
@@ -910,12 +925,14 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_label("PICTURE NEWS", base + Vector3(0, 49, 0), 3.0, Color("#ffffff"))
 				_add_landmark("Picture News", front, district)
 			"catco":
-				_tower(rect.grow(-12.0), 180.0 * float(spec.get("height", 1.0)), facade_mats[2][0], Color("#ffffff"))
+				_hollow(rect.grow(-12.0), "catco", 180.0 * float(spec.get("height", 1.0)), facade_mats[2][0])
+				add_box(Vector3(bc.x, 176.0 * float(spec.get("height", 1.0)), bc.y), Vector3(40.4, 1.2, 40.4), _plain(Color("#ffffff"), 0.5, 2.0), false)
 				add_box(base + Vector3(0, 120, -(rect.size.y * 0.5 - 12.0) - 2.5), Vector3(14, 0.6, 5), _concrete_mat)
 				_label("CATCO", base + Vector3(0, 188, 0), 8.0, Color("#ffffff"))
 				_add_landmark("CatCo Worldwide", front, district, "catco")
 			"deo":
-				_tower(rect.grow(-14.0), 120.0, _dark_mat, Color("#4fa8ff"))
+				_hollow(rect.grow(-14.0), "deo", 120.0, _dark_mat)
+				add_box(Vector3(bc.x, 116.0, bc.y), Vector3(36.4, 1.2, 36.4), _plain(Color("#4fa8ff"), 0.5, 2.0), false)
 				add_box(base + Vector3(0, 121.0, 0), Vector3(16, 0.4, 16), _plain(Color("#3a3a3a")))
 				_label("D.E.O.", base + Vector3(0, 130, 0), 4.0, Color("#bcd4ff"))
 				_add_landmark("The D.E.O.", front, district, "deo")
@@ -929,7 +946,7 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_add_landmark("Garfield High", front, district)
 			"wayne_tower":
 				var wr := rect.grow(-16.0)
-				_tower(wr, 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1], Color("#c8a050"))
+				_hollow(wr, "batcave", 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1])
 				_gothic_crown(wr, 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1])
 				_label("W", base + Vector3(0, 240, -(wr.size.y * 0.5) - 0.5), 14.0, Color("#ffd27a"))
 				_label("WAYNE TOWER", base + Vector3(0, 26, -(wr.size.y * 0.5) - 1.0), 3.0, Color("#e8d8b0"))
@@ -1020,6 +1037,35 @@ func _build_bay_landmarks() -> void:
 	landmarks.append({"name": "The Waverider", "pos": Vector3(0, 0.5, -462), "district": "Waverider Landing Pad"})
 
 
+## A building whose ground floor is hollow, with an open doorway in the
+## middle of its front (-Z) face, and a room for an interior inside. Floors
+## above the room are solid as usual.
+func _hollow(r: Rect2, room: String, total_h: float, m: Material) -> void:
+	var size: Vector3 = Interiors.SIZES[room]
+	var base_h := size.y + 0.9
+	var c := r.get_center()
+	var t := 0.8
+	var dw := Interiors.DOOR_W + 0.4
+	var dh := Interiors.DOOR_H + 0.3
+	add_box(Vector3(c.x, base_h * 0.5, r.end.y - t * 0.5), Vector3(r.size.x, base_h, t), m)
+	add_box(Vector3(r.position.x + t * 0.5, base_h * 0.5, c.y), Vector3(t, base_h, r.size.y), m)
+	add_box(Vector3(r.end.x - t * 0.5, base_h * 0.5, c.y), Vector3(t, base_h, r.size.y), m)
+	var side_w := (r.size.x - dw) * 0.5
+	add_box(Vector3(r.position.x + side_w * 0.5, base_h * 0.5, r.position.y + t * 0.5), Vector3(side_w, base_h, t), m)
+	add_box(Vector3(r.end.x - side_w * 0.5, base_h * 0.5, r.position.y + t * 0.5), Vector3(side_w, base_h, t), m)
+	add_box(Vector3(c.x, (dh + base_h) * 0.5, r.position.y + t * 0.5), Vector3(dw, base_h - dh, t), m)
+	if total_h > base_h:
+		add_box(Vector3(c.x, (base_h + total_h) * 0.5, c.y), Vector3(r.size.x, total_h - base_h, r.size.y), m)
+	add_box(Vector3(c.x, total_h + 0.3, c.y), Vector3(r.size.x + 0.6, 0.6, r.size.y + 0.6), _roof_mat, true)
+	buildings.append({"rect": r, "h": total_h})
+	# A lit entrance so it's easy to spot from the street.
+	add_box(Vector3(c.x, dh + 0.25, r.position.y - 0.25), Vector3(dw + 1.2, 0.35, 1.0), _plain(Color("#ffe2a0"), 0.4, 2.5), false)
+	_label("ENTRANCE", Vector3(c.x, dh + 0.9, r.position.y - 0.4), 0.4, Color("#ffe8b0"))
+	# The room sits just behind the doorway, turned to face the street.
+	var origin := Vector3(c.x, 0.18, r.position.y + t + 0.05 + size.z * 0.5)
+	interior_slots[room] = {"origin": origin, "yaw": PI}
+
+
 func _tower(r: Rect2, h: float, m: Material, crown: Color) -> void:
 	_add_building(r, h, m)
 	var c := r.get_center()
@@ -1033,8 +1079,20 @@ func _star_labs(base: Vector3) -> void:
 	drum.bottom_radius = 26.0
 	drum.height = 18.0
 	drum.radial_segments = 48
-	_mesh_instance(drum, Transform3D(Basis(), base + Vector3(0, 9, 0)), facade_mats[2][0])
-	add_cylinder_collision(base + Vector3(0, 9, 0), 25.0, 18.0)
+	# The drum's ground floor is a ring of wall segments with a gap for the
+	# front doors; the upper floors are solid.
+	drum.height = 11.0
+	_mesh_instance(drum, Transform3D(Basis(), base + Vector3(0, 12.5, 0)), facade_mats[2][0])
+	add_cylinder_collision(base + Vector3(0, 12.5, 0), 25.0, 11.0)
+	var segs := 40
+	for k in segs:
+		var ang := (k + 0.5) * TAU / segs
+		var dir := Vector3(sin(ang), 0, -cos(ang))
+		if absf(wrapf(ang, -PI, PI)) < TAU / segs * 0.7:
+			continue
+		add_box(base + dir * 25.0 + Vector3.UP * 3.5, Vector3(TAU * 25.0 / segs + 0.4, 7.0, 1.0), facade_mats[2][0], true, -ang)
+	add_box(base + Vector3(0, 6.9, 0), Vector3(48, 0.4, 48), _plain(Color("#cfd6dd")), false)
+	interior_slots["star_labs"] = {"origin": base + Vector3(0, 0.18, 0), "yaw": PI}
 	var ring := TorusMesh.new()
 	ring.inner_radius = 22.0
 	ring.outer_radius = 26.5
@@ -1056,7 +1114,7 @@ func _star_labs(base: Vector3) -> void:
 	_body.add_child(top)
 	# Entrance canopy facing the road
 	add_box(base + Vector3(0, 4.5, -27.0), Vector3(12.0, 0.5, 6.0), _plain(Color("#cfd6dd")), false)
-	add_box(base + Vector3(0, 2.0, -25.2), Vector3(7.0, 4.0, 0.3), _plain(Color("#6ab0e0"), 0.1, 0.6), false)
+	_label("ENTRANCE", base + Vector3(0, 5.4, -27.5), 0.45, Color("#e0f0ff"))
 	buildings.append({"rect": Rect2(base.x - 25, base.z - 25, 50, 50), "h": 18.0})
 	_label("S.T.A.R. LABS", base + Vector3(0, 30, 0), 4.0, Color("#e0f0ff"))
 

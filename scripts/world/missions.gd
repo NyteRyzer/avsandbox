@@ -235,6 +235,8 @@ func target_pos() -> Vector3:
 		return Vector3.INF
 	var c := current()
 	if str(c["kind"]) == "interior" and world.inside == "":
+		if not Interiors.is_remote(str(c["target"])):
+			return Interiors.outside_point(str(c["target"]))
 		for d in world.city.doors:
 			if d["interior"] == c["target"]:
 				return d["pos"]

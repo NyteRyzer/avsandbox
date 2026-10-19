@@ -203,6 +203,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interact"):
 		interact()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("suit"):
+		if player and is_instance_valid(player) and vehicle == null and not ship.piloted:
+			Suitup.toggle(player)
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("toggle_hud"):
 		hud.visible = not hud.visible
 	elif event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not get_tree().paused:
@@ -406,6 +410,8 @@ func leave_interior(id: String, lift := 0.0) -> void:
 	var pos := Vector3.ZERO
 	if id == "waverider":
 		pos = ship.boarding_point()
+	elif not Interiors.is_remote(id):
+		pos = Interiors.outside_point(id)
 	elif _returns.has(id):
 		pos = _returns[id]
 	else:
@@ -442,7 +448,10 @@ func travel_to(id: String, how := "breach") -> void:
 	exit_vehicle()
 	race.stop()
 	var was_inside := inside
-	var rel := player.global_position - Interiors.origin(was_inside) if was_inside != "" else Vector3.ZERO
+	# Where we stand in the room, in the room's own frame (rooms can be turned).
+	var rel := Vector3.ZERO
+	if was_inside != "":
+		rel = (player.global_position - Interiors.origin(was_inside)).rotated(Vector3.UP, -float(Interiors.placed[was_inside]["yaw"]))
 	events.reset()
 	for a in get_tree().get_nodes_in_group("actors"):
 		if a != player and not a.is_ally_of_player():
@@ -468,7 +477,7 @@ func travel_to(id: String, how := "breach") -> void:
 		ship.park(city.waverider_dock)
 	var pos: Vector3
 	if was_inside != "":
-		pos = Interiors.origin(was_inside) + rel
+		pos = Interiors.origin(was_inside) + rel.rotated(Vector3.UP, float(Interiors.placed[was_inside]["yaw"]))
 	elif ship.piloted:
 		pos = ship.global_position
 	elif city.kind == "metro":

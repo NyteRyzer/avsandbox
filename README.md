@@ -72,6 +72,7 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Descend while flying | Ctrl or C | B |
 | Enter a door, use a console, drive a car, travel (speedsters at full speed, Vibe) | G | D-pad up |
 | Ultimate (when charged) | R | R3 |
+| Change in or out of costume | T | D-pad down |
 | Dodge | V | X |
 | Sandbox tools | Tab | Back |
 | Pause, change character, settings | Esc | Start |
@@ -125,6 +126,15 @@ Overgirl and Dark Arrow on Earth-X, the Time Wraiths of the Speed Force, the Sha
 dying Earth-90, the Anti-Monitor himself, and home to Earth-Prime. The HUD tracks the objective
 and the minimap points the way. Restart it from the pause menu.
 
+**Secret identities.** Press T to change in or out of costume. Everyone with a secret identity has
+their own transformation: the Flash's suit shoots out of his ring in a spiral of lightning,
+Superman rips open his shirt (and Clark keeps his glasses), Killer Frost lets the frost spread
+until her hair turns white, Vibe slips on his goggles, Black Lightning calls down a bolt, Stargirl
+summons the Cosmic Staff, Green Arrow pulls up his hood, the Atom's exosuit assembles plate by
+plate, and Reverse-Flash drops Harrison Wells' face. In civilian clothes you're Barry, Kara,
+Oliver or Cisco: just punches and kicks, no powers, flight or super speed, and enemies don't
+recognise you. Change somewhere nobody's watching and the police lose your trail.
+
 **Ranks.** Every point you earn counts toward a lifetime rank (1 to 20, from Rookie to Living
 Legend, or Thug to God of Evil). Each rank adds 3% health and power to every character.
 
@@ -165,7 +175,10 @@ joined by suspension bridges:
 Offshore are Iron Heights prison (with its own bridge) and Lian Yu, a jungle island with a plane
 wreck. There's a day/night cycle with lit windows and streetlights, plus rain, storms and fog.
 
-**Go inside (G at the door).**
+**Go inside: just walk in.** S.T.A.R. Labs, the Arrow Bunker under Verdant, Jitters, CatCo,
+the D.E.O., the Batcave under Wayne Tower and the Kent Barn are built inside their real buildings,
+behind a lit ENTRANCE on the street. Only the Waverider (bigger on the inside) is boarded with G
+at its ramp.
 - **S.T.A.R. Labs:** the Cortex, the Pipeline, a Speed Lab treadmill that takes speedsters into the
   Speed Force, and Cisco's Breach Room.
 - **The Arrow Bunker** under Verdant: the salmon ladder, and the team's suits on display. Suit up

@@ -79,9 +79,8 @@ func _highlight() -> void:
 			continue
 		n.visible = k >= index
 		n.scale = Vector3.ONE * (1.3 if k == index else 0.8)
-		if k + 1 < points.size():
-			n.look_at(points[k + 1], Vector3.UP)
-			n.rotation.x = 0.0
+		if k + 1 < points.size() and Vector2(points[k + 1].x - points[k].x, points[k + 1].z - points[k].z).length() > 0.5:
+			n.look_at(Vector3(points[k + 1].x, points[k].y, points[k + 1].z), Vector3.UP)
 
 
 func target_pos() -> Vector3:
