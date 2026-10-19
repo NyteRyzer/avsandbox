@@ -33,6 +33,12 @@ func _ready() -> void:
 	await test_activities()
 	_current = "test_identities"
 	await test_identities()
+	_current = "test_combat_extras"
+	await test_combat_extras()
+	_current = "test_world_extras"
+	await test_world_extras()
+	_current = "test_activities_extra"
+	await test_activities_extra()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -545,8 +551,9 @@ func test_activities() -> void:
 		await get_tree().process_frame
 	check(not world.race.active and Game.score > score_before, "finishing the race pays out")
 	var xp_before := int(Game.settings["xp"])
+	Game.settings["xp"] = 0
 	var rank_before := Game.rank()
-	Game.add_score(Game.xp_for(rank_before + 1) - xp_before + 1)
+	Game.add_score(Game.xp_for(rank_before + 1) + 1)
 	check(Game.rank() == rank_before + 1, "earning points raises your rank")
 	check(world.player.max_hp > float(world.player.def["health"]), "rank boosts health")
 	Game.settings["xp"] = xp_before
@@ -592,6 +599,221 @@ func test_identities() -> void:
 	check(not world.player.flying and world.player.movement == "run", "Clark can't fly")
 	world.spawn_player("grodd", Vector3(560, 0.5, -440))
 	check(not Suitup.toggle(world.player), "Grodd has no secret identity")
+	world.clear_npcs()
+
+
+func test_combat_extras() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	var p := world.player
+	world.cam.yaw = 0.0
+	world.cam.pitch = 0.0
+	var foe: Actor = world.population.spawn_thug(Vector3(560, 0.5, -446))
+	await _frames(3)
+	# Lock-on
+	p.lock_target = world.player_brain._pick_lock(p)
+	check(p.lock_target == foe, "lock-on picks the enemy in front")
+	# Block: a blocked hit does much less damage
+	p.face_dir = Vector3(0, 0, -1)
+	p.rotation.y = 0.0
+	p.blocking = true
+	p._block_start = -100.0
+	var hp0 := p.hp
+	p.take_damage(40.0, foe)
+	var blocked := hp0 - p.hp
+	p.blocking = false
+	p.hp = p.max_hp
+	p.take_damage(40.0, foe)
+	var full := p.max_hp - p.hp
+	check(blocked < full * 0.5, "blocking soaks most of a hit (%.0f vs %.0f)" % [blocked, full])
+	# Parry
+	p.hp = p.max_hp
+	p.blocking = true
+	p._block_start = Time.get_ticks_msec() / 1000.0
+	p.take_damage(40.0, foe)
+	p.blocking = false
+	check(p.hp == p.max_hp and foe.stun_t > 1.0, "a perfect parry takes no damage and staggers the attacker")
+	# Style
+	var before := world.style.points
+	p.style_kind = "melee"
+	p.combo_hit(3)
+	p.style_kind = "arrow"
+	p.combo_hit(3)
+	check(world.style.points > before + 10.0 and world.style.rank() >= 1, "fighting raises the style rank (%s)" % world.style.label())
+	# Takedown
+	foe.hp = foe.max_hp * 0.15
+	p.global_position = foe.global_position + Vector3(0, 0, 2.0)
+	await _frames(2)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.door.get("interior", "") == "takedown", "a beaten enemy offers a takedown")
+	world.interact()
+	await _frames(5)
+	Game.end_slowmo()
+	check(not is_instance_valid(foe) or foe.dead, "the takedown finishes them")
+	# Dive slam
+	world.spawn_player("batwoman", Vector3(560, 18.0, -440))
+	p = world.player
+	var t2: Actor = world.population.spawn_thug(Vector3(560, 0.5, -440))
+	t2.make_boss(5.0)
+	p.global_position = Vector3(560, 18.0, -440)
+	p.velocity = Vector3(0, -3.0, 0)
+	await _frames(2)
+	p.in_primary = true
+	p._abilities(0.016)
+	p.in_primary = false
+	check(p.slam_pending, "attacking while falling starts a dive slam")
+	await _frames(60)
+	check(t2.hp < t2.max_hp, "the dive slam hits the enemy below")
+	await get_tree().process_frame
+	check(world.hud.boss_panel.visible or t2.grudges.is_empty(), "boss health bar shows for a boss fight")
+	world.clear_npcs()
+
+
+func test_world_extras() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("superman", Vector3(560, 0.5, -440))
+	var p := world.player
+	# Street furniture can be thrown
+	var kinds := {}
+	for spot in world.city.parked:
+		kinds[spot["kind"]] = true
+	check(kinds.has("bench") and kinds.has("hydrant") and kinds.has("bike"), "the streets have benches, hydrants and motorcycles (%s)" % str(kinds.keys()))
+	var bench := Prop.new()
+	bench.build(world, "hydrant")
+	world.props_root.add_child(bench)
+	bench.global_position = p.global_position + Vector3(0, 0.2, -2)
+	await _frames(2)
+	Abilities.pick_up(p)
+	check(p.held_prop == bench, "Superman can lift a fire hydrant")
+	Abilities.throw_prop(p)
+	# News, helicopter, weather, difficulty
+	world.news.on_boss("Reverse-Flash")
+	world.news._t = 0.0
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.news.current.contains("Reverse-Flash"), "the news reports what happened")
+	Game.heat = 3.0
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.helicopter.active, "a news helicopter arrives when the heat is up")
+	Game.clear_heat()
+	world.day_night.set_weather("snow")
+	check(world.day_night.snow.emitting, "it can snow")
+	world.day_night.set_weather("clear")
+	Game.settings["difficulty"] = 2.0
+	var hard := Game.damage_to_player()
+	Game.settings["difficulty"] = 1.0
+	check(hard > Game.damage_to_player(), "hard difficulty hurts more")
+	# Collectibles, map, discovery, scan, photo mode
+	check(world.collectibles.spots.size() == Collectibles.TOTAL, "40 Crisis Fragments are hidden on Earth-1")
+	var left := world.collectibles.remaining()
+	if not left.is_empty():
+		var before: int = world.collectibles.found_count()
+		world.teleport_player(left[0]["pos"] - Vector3.UP * 1.0)
+		await _frames(2)
+		await get_tree().process_frame
+		check(world.collectibles.found_count() == before + 1, "walking into a fragment collects it")
+	var star: Dictionary = world.city.landmark("CCPD")
+	world.teleport_player(star["pos"])
+	world._discover_t = 0.0
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(Game.progress["discovered"].has("CCPD"), "visiting a landmark discovers it")
+	world.world_map.open()
+	world.world_map._pick(star)
+	check(world.waypoint != Vector3.INF, "the map sets a waypoint")
+	world.world_map.close()
+	world.photo.open()
+	check(world.photo.active and get_tree().paused, "photo mode freezes the world")
+	world.photo.close()
+	check(not get_tree().paused, "and lets it go again")
+	world.waypoint = Vector3.INF
+	# Alternate suits
+	Game.progress["suits"].append("flash:Season 1 Suit")
+	Game.suit_choice["flash"] = "Season 1 Suit"
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	check(world.player.def["look"]["suit"] == "#5a0a0e", "the Flash wears his Season 1 suit")
+	Game.suit_choice.erase("flash")
+	# Achievements and challenges
+	Game.record("kos")
+	check(Game.progress["achievements"].has("first_blood"), "achievements unlock from stats")
+	check(world.challenges.active.size() == 3, "three challenges are on offer")
+	world.clear_npcs()
+
+
+func test_activities_extra() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("killer_frost", Vector3(560, 0.5, -440))
+	world.events.start_random("fire")
+	var act = world.events.active.get("custom", null)
+	check(act != null and act.trapped.size() == 4, "a building fire traps four people")
+	if act:
+		for c in act.trapped.duplicate():
+			world.teleport_player(c.global_position + Vector3(0, 0, -1.5))
+			await _frames(2)
+			await get_tree().process_frame
+			await get_tree().process_frame
+			if world.door.get("interior", "") == "rescue":
+				world.interact()
+			check(world.carrying == c, "pick up a trapped civilian")
+			world.teleport_player(act.ambulance + Vector3(2, 0.5, 0))
+			await _frames(3)
+		await _frames(3)
+		await get_tree().process_frame
+		check(world.events.active.is_empty(), "rescuing everyone completes the fire event")
+	world.events.start_random("chase")
+	act = world.events.active.get("custom", null)
+	check(act != null and is_instance_valid(act.car) and act.car.getaway, "a getaway car speeds off")
+	if act:
+		var start: Vector3 = act.car.global_position
+		await _frames(60)
+		check(act.car.global_position.distance_to(start) > 10.0, "and it drives")
+		act.car.hit(500.0, Vector3.ZERO, world.player)
+		await _frames(5)
+		check(act.robbers.size() == 2, "wreck it and the robbers bail out")
+		for r in act.robbers:
+			r.take_damage(9999.0, world.player)
+		await _frames(5)
+		await get_tree().process_frame
+		check(world.events.active.is_empty(), "beat the robbers to finish the chase")
+	# Survival
+	world.survival.start()
+	await _frames(200)
+	check(world.survival.wave >= 1 and world.survival.foes.size() >= 3, "survival waves spawn")
+	for f in world.survival.foes:
+		if is_instance_valid(f):
+			f.take_damage(99999.0, world.player)
+	await _frames(400)
+	check(world.survival.wave >= 2, "clearing a wave brings the next (%d)" % world.survival.wave)
+	world.survival.stop()
+	world.clear_npcs()
+	# Recruit and swap
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	var ally: Actor = world.population.spawn_character(Game.get_character("vibe"), "hero", Vector3(561.5, 0.5, -440))
+	await _frames(2)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.door.get("interior", "") == "recruit", "a nearby hero can be recruited")
+	world.interact()
+	check(ally.follow_target == world.player, "Vibe joins the team")
+	var old := world.player
+	world.swap_to_next_ally()
+	check(world.player == ally and ally.is_player and old.follow_target == ally, "Y switches control to the ally")
+	# Bike and emotes
+	var bike := Prop.new()
+	bike.build(world, "bike")
+	world.props_root.add_child(bike)
+	bike.global_position = world.player.global_position + Vector3(2, 0.3, 0)
+	await _frames(3)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.door.get("name", "").contains("motorcycle"), "motorcycles can be ridden")
+	Emotes.play(world.player, 3)
+	check(Game.stat("emotes") >= 1.0, "emotes play")
 	world.clear_npcs()
 
 

@@ -45,7 +45,7 @@ const STYLES := [
 		"lights": 0.9, "trees": true, "fog": 0.0},
 	# Gotham: soot-black gothic towers under a permanent overcast.
 	{"facades": ["#3a3634", "#2e2c2e", "#4a4038"], "glass": "#22303a", "min_h": 18.0, "max_h": 230.0, "towers": 0.5,
-		"lights": 0.55, "trees": false, "fog": 0.0, "gothic": true, "sky": ["#14161c", "#3a3c46", 0.8], "haze": 3.0},
+		"lights": 0.55, "trees": false, "fog": 0.0, "gothic": true, "sky": ["#14161c", "#3a3c46", 0.8], "haze": 3.0, "weather": "rain"},
 	# Smallville: farmland around a small Main Street.
 	{"facades": ["#c8b89a", "#a8402a", "#e8e0d0"], "glass": "#5a6a78", "min_h": 5.0, "max_h": 12.0, "towers": 0.0,
 		"lights": 0.9, "trees": true, "fog": 0.0, "rural": true, "sky": ["#4a9aff", "#ffe8c0", 0.3]},
@@ -638,6 +638,13 @@ func _build_block(index: int, i: int, j: int) -> void:
 	for side in 4:
 		if not spec.get("ruined", false) and rng.randf() < 0.45:
 			_park_car(rect, side)
+	if not spec.get("ruined", false) and rng.randf() < 0.55:
+		# Street furniture along the curb.
+		var kinds := ["bench", "hydrant", "mailbox", "dumpster", "newsbox", "hydrant", "bench"]
+		var k: String = kinds[rng.randi() % kinds.size()]
+		var along := rng.randf_range(rect.position.x + 6.0, rect.end.x - 6.0)
+		var fp := Vector3(along, 0.2, rect.position.y + 1.6)
+		parked.append({"kind": k, "xform": Transform3D(Basis(Vector3.UP, PI if k == "bench" else 0.0), fp)})
 
 
 ## Gotham: stepped crowns, spires and gargoyles on the rooftops.
@@ -722,7 +729,7 @@ func _park_car(rect: Rect2, side: int) -> void:
 		3:
 			pos = Vector3(rect.end.x + (ROAD * 0.5 - kerb), 0.1, rect.position.y + rect.size.y * t)
 			rot = PI
-	parked.append({"kind": "car", "xform": Transform3D(Basis(Vector3.UP, rot), pos)})
+	parked.append({"kind": "bike" if rng.randf() < 0.15 else "car", "xform": Transform3D(Basis(Vector3.UP, rot), pos)})
 
 
 func _scatter_crates(rect: Rect2, count: int) -> void:
@@ -902,6 +909,8 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_label("VERDANT", base + Vector3(0, 13, 0), 3.0, Color("#3aff6a"))
 				add_box(Vector3(bc.x, 4.5, rect.position.y + 11.5), Vector3(12.0, 1.0, 0.4), _plain(Color("#3aff6a"), 0.4, 3.0), false)
 				_add_landmark("Verdant", front, "The Glades", "bunker")
+				# The Arrowbike, parked outside.
+				parked.append({"kind": "bike", "xform": Transform3D(Basis(Vector3.UP, PI * 0.5), front + Vector3(9.0, -0.4, 1.0))})
 			"scpd":
 				_add_building(rect.grow(-8.0), 26.0, facade_mats[0][2])
 				_label("SCPD", base + Vector3(0, 30, 0), 3.5, Color("#bcd4ff"))

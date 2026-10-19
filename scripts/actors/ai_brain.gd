@@ -21,6 +21,8 @@ var _strafe_t := 0.0
 var _beam_t := 0.0
 var _use_secondary := false
 var _stuck_t := 0.0
+var _block_t := 0.0
+var _fan_t := 0.0
 
 
 func update(a: Actor, delta: float) -> void:
@@ -178,6 +180,12 @@ func _fight(a: Actor, delta: float) -> void:
 	# Bosses and named characters unleash their ultimate when it is charged.
 	if a.ult >= 100.0 and dist < 18.0 and a.def.get("id", "") not in ["thug", "police", "civilian"] and randf() < delta * 0.8:
 		a.in_ultimate = true
+	# Block the player's combos now and then (and sometimes parry them).
+	if _block_t > 0.0:
+		_block_t -= delta
+		a.in_block = true
+	elif target.is_player and dist < 3.5 and target.combo_window > 0.4 and a.def.get("id", "") not in ["civilian", "thug"] and randf() < delta * 1.2:
+		_block_t = randf_range(0.4, 1.0)
 	# Dodge when the player is swinging at us up close.
 	if target.is_player and dist < 4.0 and target.combo_window > 0.6 and randf() < delta * 2.0:
 		a.in_dodge = true
@@ -257,4 +265,36 @@ func _civilian(a: Actor, delta: float) -> void:
 		a.in_sprint = true
 		a.face_dir = dir
 		return
+	if _react_to_player(a, delta):
+		return
 	_wander(a, delta, 0.35)
+
+
+## Crowds react to costumed characters: they cheer heroes and take photos,
+## and run from villains.
+func _react_to_player(a: Actor, delta: float) -> bool:
+	var pl = Game.player
+	if pl == null or not is_instance_valid(pl) or pl.dead or pl.civilian or pl.invis_t > 0.0:
+		return false
+	var to: Vector3 = pl.global_position - a.global_position
+	to.y = 0
+	var d := to.length()
+	if d > 14.0 or Time.get_ticks_msec() / 1000.0 - Game.last_combat_time < 4.0:
+		return false
+	if Game.player_side() == -1 or Game.heat >= 2.0:
+		if d < 10.0:
+			_flee_t = 3.0
+			_flee_from = pl.global_position
+		return false
+	a.in_move = Vector3.ZERO if d < 6.0 else to.normalized() * 0.3
+	a.face_dir = to.normalized()
+	_fan_t -= delta
+	if _fan_t <= 0.0:
+		_fan_t = randf_range(1.5, 4.0)
+		if randf() < 0.5:
+			a.model.play("cast_up", 0.8)    # cheering
+		else:
+			a.model.play("point", 0.9)      # a photo
+			if a.world:
+				FX.flash(a.world, a.model.hand_point(1.0), Color.WHITE, 0.25, 0.12, 0.9)
+	return true

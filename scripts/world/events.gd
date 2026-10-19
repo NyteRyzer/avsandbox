@@ -6,7 +6,7 @@ extends Node
 
 signal changed
 
-const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak"]
+const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak", "fire", "chase"]
 const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators"]
 
 var world
@@ -31,6 +31,20 @@ func _process(delta: float) -> void:
 			start_random()
 		return
 	active["time"] += delta
+	if active.has("custom"):
+		var act: Activity = active["custom"]
+		if not is_instance_valid(act):
+			_finish()
+			return
+		active["remaining"] = act.remaining()
+		active["pos"] = act.marker_pos()
+		if _marker:
+			_marker.global_position = act.marker_pos()
+		if act.done:
+			_complete()
+		elif act.failed or world.player.global_position.distance_to(act.center) > 900.0:
+			_expire()
+		return
 	var alive := 0
 	for a in active["actors"]:
 		if is_instance_valid(a) and not a.dead:
@@ -52,8 +66,11 @@ func start_random(kind := "") -> void:
 	if kind == "":
 		var pool: Array = HERO_EVENTS if hero else VILLAIN_EVENTS
 		kind = pool[rng.randi() % pool.size()]
-	if kind == "jailbreak" and world.city.kind != "metro":
+	if kind in ["jailbreak", "fire", "chase"] and world.city.kind != "metro":
 		kind = "robbery"
+	if kind in ["fire", "chase"]:
+		_start_activity(kind)
+		return
 	var p: Vector3 = world.player.global_position
 	var pos: Vector3 = world.city.random_road_point(Vector3(p.x, 0, p.z), 90.0, 220.0, rng)
 	if kind == "jailbreak":
@@ -199,10 +216,14 @@ func _clear_marker() -> void:
 
 
 func _complete() -> void:
+	if world.player and is_instance_valid(world.player):
+		world.final_blow(world.player)
 	var reward := 100 + int(active["total"]) * 20
 	completed += 1
 	Game.add_score(reward)
 	world.notify("EVENT COMPLETE: %s  +%d" % [active["title"], reward], Color("#60ff90"))
+	world.news.on_event(str(active["title"]), Game.player_side() == 1)
+	Game.record("events")
 	Sfx.play("event", null, 0.0)
 	if world.player:
 		world.player.heal(world.player.max_hp * 0.3)
@@ -219,6 +240,8 @@ func _expire() -> void:
 
 ## Drops the current event without a message (used when changing worlds).
 func reset() -> void:
+	if active.has("custom") and is_instance_valid(active["custom"]):
+		active["custom"].cleanup()
 	for a in active.get("actors", []):
 		if is_instance_valid(a):
 			a.event_tag = ""
@@ -228,7 +251,28 @@ func reset() -> void:
 	changed.emit()
 
 
+## Fire rescues and getaway chases run as their own Activity node.
+func _start_activity(kind: String) -> void:
+	var act := Activity.new()
+	world.fx_root.add_child(act)
+	var ok := act.start_fire(world, world.player.global_position) if kind == "fire" else act.start_chase(world, world.player.global_position)
+	if not ok:
+		act.queue_free()
+		start_random("robbery")
+		return
+	var title := "Building fire! Rescue the people trapped inside" if kind == "fire" else "Getaway car! Stop the robbers"
+	var color := Color("#ff8a2a") if kind == "fire" else Color("#ffd23a")
+	active = {"kind": kind, "title": title, "pos": act.marker_pos(), "actors": [], "time": 0.0, "custom": act,
+		"remaining": act.remaining(), "total": act.remaining(), "district": world.city.district_at(act.center)}
+	_spawn_marker(act.marker_pos(), color, title)
+	world.notify("NEW EVENT: " + title, color)
+	Sfx.play("event", null, -2.0)
+	changed.emit()
+
+
 func _finish() -> void:
+	if active.has("custom") and is_instance_valid(active["custom"]):
+		active["custom"].cleanup()
 	active = {}
 	cooldown = rng.randf_range(25.0, 45.0)
 	_clear_marker()

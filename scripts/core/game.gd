@@ -42,6 +42,8 @@ var settings := {
 	"view_distance": 1200.0,
 	"crisis_chapter": 0,
 	"xp": 0,
+	"difficulty": 1.0,
+	"music": 0.7,
 }
 var cheats := {"god_mode": false, "infinite_energy": false, "one_hit_ko": false, "no_heat": false}
 
@@ -186,6 +188,27 @@ func clear_heat() -> void:
 
 
 signal rank_up(rank: int)
+signal stat_changed(key: String, value: float)
+
+## Lifetime progress, saved with the settings: stats (KOs, distance...),
+## unlocked achievements, collectibles found and alternate suits unlocked.
+var suit_choice: Dictionary = {}   # character id -> alternate suit name
+var progress := {"stats": {}, "achievements": [], "collected": [], "suits": [], "discovered": []}
+
+
+func record(key: String, amount := 1.0) -> void:
+	var stats: Dictionary = progress["stats"]
+	stats[key] = float(stats.get(key, 0.0)) + amount
+	stat_changed.emit(key, stats[key])
+
+
+## How hard enemies hit the player: easy, normal, hard.
+func damage_to_player() -> float:
+	return [0.5, 1.0, 1.7][clampi(int(settings["difficulty"]), 0, 2)]
+
+
+func stat(key: String) -> float:
+	return float(progress["stats"].get(key, 0.0))
 
 const HERO_RANKS := ["Rookie", "Vigilante", "Hero", "Protector", "Champion", "Paragon", "Legend", "Icon", "Myth", "Living Legend"]
 const VILLAIN_RANKS := ["Thug", "Crook", "Rogue", "Menace", "Supervillain", "Warlord", "Mastermind", "Tyrant", "Conqueror", "God of Evil"]
@@ -277,6 +300,14 @@ func setup_input() -> void:
 	_bind("interact", [_key(KEY_G), _button(JOY_BUTTON_DPAD_UP)])
 	_bind("ultimate", [_key(KEY_R), _button(JOY_BUTTON_RIGHT_STICK)])
 	_bind("suit", [_key(KEY_T), _button(JOY_BUTTON_DPAD_DOWN)])
+	_bind("block", [_key(KEY_B), _button(JOY_BUTTON_DPAD_RIGHT)])
+	_bind("map", [_key(KEY_M)])
+	_bind("swap", [_key(KEY_Y)])
+	for k in 4:
+		_bind("emote_%d" % (k + 1), [_key([KEY_1, KEY_2, KEY_3, KEY_4][k])])
+	_bind("scan", [_key(KEY_X)])
+	_bind("photo", [_key(KEY_P)])
+	_bind("lock_on", [_key(KEY_Z), _mouse(MOUSE_BUTTON_MIDDLE), _button(JOY_BUTTON_DPAD_LEFT)])
 	_bind("sandbox_menu", [_key(KEY_TAB), _button(JOY_BUTTON_BACK)])
 	_bind("pause", [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
 	_bind("toggle_hud", [_key(KEY_F1)])
@@ -325,6 +356,10 @@ func load_settings() -> void:
 		var value = cfg.get_value("settings", key, settings[key])
 		if typeof(value) == typeof(settings[key]) or (typeof(settings[key]) == TYPE_FLOAT and typeof(value) == TYPE_INT):
 			settings[key] = value
+	for key in ["stats", "achievements", "collected", "suits", "discovered"]:
+		var v = cfg.get_value("progress", key, progress[key])
+		if typeof(v) == typeof(progress[key]):
+			progress[key] = v
 	var last = cfg.get_value("game", "selected_id", selected_id)
 	if typeof(last) == TYPE_STRING and by_id.has(last):
 		selected_id = last
@@ -335,6 +370,8 @@ func save_settings() -> void:
 	for key in settings.keys():
 		cfg.set_value("settings", key, settings[key])
 	cfg.set_value("game", "selected_id", selected_id)
+	for key in progress.keys():
+		cfg.set_value("progress", key, progress[key])
 	cfg.save(SETTINGS_PATH)
 
 

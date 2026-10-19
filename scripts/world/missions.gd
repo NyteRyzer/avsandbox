@@ -121,6 +121,7 @@ func _advance() -> void:
 	var c := current()
 	var reward := 250 + chapter * 150
 	Game.add_score(reward)
+	Game.record("chapters")
 	world.notify("CHAPTER COMPLETE: %s  +%d" % [c["title"], reward], Color("#60ff90"))
 	Sfx.play("event", null, 2.0)
 	if world.player:

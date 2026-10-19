@@ -12,6 +12,20 @@ var population: Population
 var events: Events
 var missions: Missions
 var race: Race
+var style := StyleMeter.new()
+var news: News
+var collectibles: Collectibles
+var world_map: WorldMap
+var photo: PhotoMode
+var challenges: Challenges
+var survival: Survival
+var music: Music
+var carrying: Actor = null       # someone you're carrying out of a fire
+var waypoint := Vector3.INF
+var _last_pos := Vector3.INF
+var scanning := false
+var _discover_t := 0.0
+var helicopter: Helicopter
 var actors_root: Node3D
 var props_root: Node3D
 var fx_root: Node3D
@@ -88,6 +102,32 @@ func _ready() -> void:
 	race = Race.new()
 	race.world = self
 	add_child(race)
+	news = News.new()
+	news.world = self
+	add_child(news)
+	helicopter = Helicopter.new()
+	helicopter.world = self
+	add_child(helicopter)
+	collectibles = Collectibles.new()
+	collectibles.world = self
+	add_child(collectibles)
+	collectibles.build()
+	world_map = WorldMap.new()
+	world_map.world = self
+	add_child(world_map)
+	photo = PhotoMode.new()
+	photo.world = self
+	add_child(photo)
+	challenges = Challenges.new()
+	challenges.world = self
+	add_child(challenges)
+	survival = Survival.new()
+	survival.world = self
+	add_child(survival)
+	music = Music.new()
+	music.world = self
+	add_child(music)
+	Game.heat_changed.connect(_on_heat_for_news)
 
 
 func _apply_rank(a: Actor) -> void:
@@ -95,6 +135,16 @@ func _apply_rank(a: Actor) -> void:
 	a.max_hp = float(a.def.get("health", 100)) * b
 	a.hp = a.max_hp
 	a.power = float(a.def.get("power", 1.0)) * b
+
+
+var _news_heat := 0
+
+
+func _on_heat_for_news(v: float) -> void:
+	var level := int(v)
+	if level >= 3 and level > _news_heat:
+		news.on_heat(level)
+	_news_heat = level
 
 
 func _on_rank_up(r: int) -> void:
@@ -124,12 +174,14 @@ func _exit_tree() -> void:
 		Game.notify.disconnect(notify)
 	if Game.rank_up.is_connected(_on_rank_up):
 		Game.rank_up.disconnect(_on_rank_up)
+	if Game.heat_changed.is_connected(_on_heat_for_news):
+		Game.heat_changed.disconnect(_on_heat_for_news)
 	Game.end_slowmo()
 
 
 ## Spawns (or replaces) the player as the given roster character.
 func spawn_player(id: String, at = null) -> void:
-	var c := Game.get_character(id)
+	var c := Costumes.apply(Game.get_character(id), str(Game.suit_choice.get(id, "")))
 	var pos: Vector3
 	var yaw := cam.yaw
 	if at != null:
@@ -203,6 +255,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interact"):
 		interact()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("map"):
+		world_map.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("photo"):
+		photo.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("emote_1") or event.is_action_pressed("emote_2") or event.is_action_pressed("emote_3") or event.is_action_pressed("emote_4"):
+		for k in 4:
+			if event.is_action_pressed("emote_%d" % (k + 1)) and player and is_instance_valid(player):
+				Emotes.play(player, k + 1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("swap"):
+		swap_to_next_ally()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("suit"):
 		if player and is_instance_valid(player) and vehicle == null and not ship.piloted:
 			Suitup.toggle(player)
@@ -214,6 +280,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	style.tick(delta / maxf(Engine.time_scale, 0.01))
+	if player and is_instance_valid(player):
+		scanning = Input.is_action_pressed("scan") and not player.civilian and not player.dead
+		_discover_t -= delta
+		if _discover_t <= 0.0:
+			_discover_t = 1.0
+			_discover()
+			var pp := player.global_position
+			if _last_pos != Vector3.INF and vehicle == null and not ship.piloted:
+				var moved := Vector2(pp.x - _last_pos.x, pp.z - _last_pos.z).length()
+				if moved > 0.5 and moved < 120.0:
+					Game.record("distance", moved)
+			_last_pos = pp
+		if waypoint != Vector3.INF and Vector2(waypoint.x - player.global_position.x, waypoint.z - player.global_position.z).length() < 15.0:
+			waypoint = Vector3.INF
+			notify("Waypoint reached.", Color("#3affd0"))
 	if _respawn_t >= 0.0:
 		_respawn_t -= delta / maxf(Engine.time_scale, 0.01)
 		if _respawn_t < 0.0 and player and is_instance_valid(player):
@@ -236,6 +318,23 @@ func _process(delta: float) -> void:
 		if d != _last_district:
 			_last_district = d
 			hud.show_district(d)
+
+
+## Walking near a landmark marks it on the map (and allows fast travel).
+func _discover() -> void:
+	if place_id != "earth1" or inside != "":
+		return
+	var found: Array = Game.progress["discovered"]
+	var p := player.global_position
+	for l in city.landmarks:
+		if l.get("interior", false) or found.has(l["name"]):
+			continue
+		var lp: Vector3 = l["pos"]
+		if Vector2(lp.x - p.x, lp.z - p.z).length() < 45.0:
+			found.append(l["name"])
+			notify("Discovered: %s  (fast travel from the map, M)" % l["name"], Color("#bfe8ff"))
+			Game.add_score(10)
+			Game.record("discovered")
 
 
 ## "Central City", or "Earth-2 · Central City" away from home.
@@ -264,17 +363,39 @@ func _nearest_door() -> Dictionary:
 		var bp := ship.boarding_point()
 		if Vector2(bp.x - p.x, bp.z - p.z).length() < 6.0 and absf(bp.y - p.y) < 4.0:
 			best = {"name": "The Waverider", "pos": bp, "interior": "waverider"}
+	# People trapped in a fire, and heroes who might join you.
+	if best.is_empty() and carrying == null:
+		for o in get_tree().get_nodes_in_group("actors"):
+			if o == player or o.dead or o.global_position.distance_to(p) > 2.8:
+				continue
+			if o.has_meta("trapped"):
+				best = {"name": "Carry %s to safety" % o.display_name, "pos": o.global_position, "interior": "rescue", "actor": o}
+				break
+			if not player.civilian and o.follow_target == null and not o.is_hostile_to(player) and not player.is_hostile_to(o) \
+					and o.side() == player.side() and o.def.get("id", "") not in ["civilian", "police", "thug"] and not o.has_meta("summon"):
+				best = {"name": "Recruit %s" % o.display_name, "pos": o.global_position, "interior": "recruit", "actor": o}
+				break
+	# Takedowns: finish off a beaten enemy up close.
+	if best.is_empty() and not player.civilian:
+		for o in get_tree().get_nodes_in_group("actors"):
+			if o == player or o.dead or o.team == "civilian" or not (o.is_hostile_to(player) or o.grudges.has(player.get_instance_id())):
+				continue
+			var low: bool = o.hp < o.max_hp * (0.1 if o.boss else 0.22) or (o.stun_t > 0.0 and o.hp < o.max_hp * 0.35 and not o.boss)
+			if low and o.global_position.distance_to(p) < 3.5:
+				best = {"name": "Takedown " + o.display_name, "pos": o.global_position, "interior": "takedown", "actor": o}
+				break
 	if inside == "" and best.is_empty() and vehicle == null and not player.flying:
 		var best_car: Prop = null
 		var car_d := 3.6
 		for prop in get_tree().get_nodes_in_group("props"):
-			if prop.kind == "car" and not prop.exploded and prop.holder == null:
+			if prop.is_vehicle() and not prop.exploded and prop.holder == null:
 				var cd: float = prop.global_position.distance_to(p)
 				if cd < car_d:
 					car_d = cd
 					best_car = prop
 		if best_car:
-			best = {"name": "Drive the car" if not best_car.driving else "Carjack the car", "pos": best_car.global_position, "interior": "car", "prop": best_car}
+			var what := "motorcycle" if best_car.kind == "bike" else "car"
+			best = {"name": ("Ride the " if best_car.kind == "bike" else "Drive the ") + what if not best_car.driving else "Carjack the " + what, "pos": best_car.global_position, "interior": "car", "prop": best_car}
 	return best
 
 
@@ -313,6 +434,9 @@ func interact() -> void:
 	if vehicle:
 		exit_vehicle()
 		return
+	if carrying:
+		_drop_carried()
+		return
 	if not door.is_empty():
 		use_door(door)
 	elif inside == "" and _can_run_between_worlds():
@@ -342,6 +466,16 @@ func use_door(d: Dictionary) -> void:
 			ship.take_helm()
 		"car":
 			enter_vehicle(d["prop"])
+		"takedown":
+			takedown(d["actor"])
+		"rescue":
+			carrying = d["actor"]
+			carrying.collision_layer = 0
+			notify("Carry them to the ambulance. [G] puts them down.", Color("#60ff90"))
+		"recruit":
+			recruit(d["actor"])
+		"training":
+			survival.start()
 		"balcony":
 			leave_interior("catco", 60.0)
 		"exit_speedforce":
@@ -349,6 +483,41 @@ func use_door(d: Dictionary) -> void:
 		_:
 			if what in Interiors.ORDER:
 				enter_interior(what)
+
+
+## The last enemy (or a boss) goes down in slow motion.
+func final_blow(a: Actor) -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	Game.start_slowmo(0.9)
+	shake_at(a.global_position, 0.4)
+	FX.flash(self, a.chest(), Color.WHITE, 1.4, 0.3, 0.5)
+
+
+## A cinematic finisher on a beaten enemy.
+func takedown(o: Actor) -> void:
+	if not is_instance_valid(o) or o.dead:
+		return
+	var to := o.global_position - player.global_position
+	to.y = 0
+	player.face_dir = to.normalized()
+	player.global_position = o.global_position - to.normalized() * 1.4
+	player.velocity = Vector3.ZERO
+	o.stun_t = 2.0
+	var moves := ["uppercut", "spin_kick", "heavy", "kick"]
+	player.model.play(moves[randi() % moves.size()], 0.5)
+	Game.start_slowmo(0.7)
+	shake_at(o.global_position, 0.5)
+	var color := Color(str(player.def["look"].get("trail", player.def["look"].get("accent", "#ffffff"))))
+	FX.flash(self, o.chest(), color, 1.5, 0.3, 0.7)
+	FX.ring(self, o.chest(), color, 3.0, 0.4, to.normalized())
+	o.take_damage(o.hp + 50.0, player, "", to.normalized() * 14.0 + Vector3.UP * 10.0)
+	o.model.tumble(16.0)
+	style.add(10, "takedown")
+	Game.add_score(25)
+	Game.record("takedowns")
+	hud.show_banner("TAKEDOWN", color)
+	Sfx.play("slam", o.global_position, 4.0)
 
 
 func enter_vehicle(car: Prop) -> void:
@@ -360,6 +529,7 @@ func enter_vehicle(car: Prop) -> void:
 		Game.add_score(5)
 	vehicle = car
 	car.take_wheel(player)
+	Game.record("drives")
 	_saved_layer = player.collision_layer
 	player.collision_layer = 0
 	player.velocity = Vector3.ZERO
@@ -386,7 +556,80 @@ func exit_vehicle() -> void:
 	cam.zoom = 5.5
 
 
+func _drop_carried() -> void:
+	var c := carrying
+	carrying = null
+	if not is_instance_valid(c):
+		return
+	c.collision_layer = Game.LAYER_ACTORS
+	c.global_position = player.global_position + player.forward() * 1.2
+	var act = events.active.get("custom", null)
+	if act and is_instance_valid(act) and act.kind == "fire":
+		act.carried_drop(c)
+
+
+func recruit(o: Actor) -> void:
+	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.follow_target == player)
+	if allies.size() >= 3:
+		notify("You already have three allies.", Color("#ffd27a"))
+		return
+	o.follow_target = player
+	o.set_meta("pinned", true)
+	o.team = player.team
+	FX.flash(self, o.chest(), Color("#5fa8ff"), 1.2, 0.3)
+	notify("%s joins your team. [Y] switches to them." % o.display_name, Color("#a0d0ff"))
+	Game.record("recruits")
+
+
+## Tag team: take control of one of your allies; you become their backup.
+func swap_to_next_ally() -> void:
+	if player == null or not is_instance_valid(player) or vehicle or ship.piloted or player.changing or carrying:
+		return
+	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.follow_target == player and not a.dead)
+	if allies.is_empty():
+		notify("No allies to switch to. Recruit heroes with [G], or spawn some from the Tab menu.", Color("#ffd27a"))
+		return
+	var a: Actor = allies[0]
+	var old := player
+	old.is_player = false
+	old.lock_target = null
+	var brain := AIBrain.new()
+	brain.role = "fighter"
+	brain.home = old.global_position
+	brain.leash = 0.0
+	brain.detect = 55.0
+	old.brain = brain
+	old.follow_target = a
+	if old.died.is_connected(_on_player_died):
+		old.died.disconnect(_on_player_died)
+	a.follow_target = null
+	a.is_player = true
+	a.brain = player_brain
+	a.grudges.clear()
+	a.died.connect(_on_player_died)
+	for other in allies:
+		if other != a:
+			other.follow_target = a
+	player = a
+	Game.player = a
+	cam.target = a
+	for m in a.model.meshes:
+		m.visibility_range_end = 0.0
+	hud.on_player_changed()
+	FX.flash(self, a.chest(), Color("#5fa8ff"), 1.0, 0.25)
+	notify("You are now %s." % a.display_name, Color("#a0d0ff"))
+
+
 func _physics_process(_delta: float) -> void:
+	if carrying and is_instance_valid(carrying) and player and is_instance_valid(player):
+		carrying.global_position = player.global_position + Vector3.UP * 1.1 * player.size - player.forward() * 0.3
+		carrying.velocity = Vector3.ZERO
+		carrying.rotation.y = player.rotation.y
+		var act = events.active.get("custom", null)
+		if act and is_instance_valid(act) and act.kind == "fire" and carrying.global_position.distance_to(act.ambulance) < 7.0:
+			_drop_carried()
+	elif carrying:
+		carrying = null
 	if vehicle and is_instance_valid(vehicle) and player and is_instance_valid(player):
 		player.global_position = vehicle.global_position + Vector3.UP * 1.0
 		player.invuln_t = 0.5
@@ -489,8 +732,12 @@ func travel_to(id: String, how := "breach") -> void:
 	inside = was_inside
 	_last_district = ""
 	missions._spawned_for = -1
+	Game.record("travels")
 	missions._clear_marker()
 	missions.on_arrive(id)
+	collectibles.build()
+	waypoint = Vector3.INF
+	day_night.set_weather(str(d["spec"].get("weather", "clear")))
 	var color := Color("#ffd23a") if how == "speed" else (Color("#a58aff") if how == "time" else Color("#4fa8ff"))
 	FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
 	FX.flash(self, player.chest(), color, 3.0, 0.5, 0.6)
@@ -524,6 +771,13 @@ func on_actor_ko(a: Actor, source: Actor) -> void:
 	if source == null or not is_instance_valid(source) or not source.is_player:
 		return
 	kos += 1
+	Game.record("kos")
+	if a.boss:
+		Game.record("bosses")
+		news.on_boss(a.display_name)
+		final_blow(a)
+	if a.def.get("id", "") not in ["civilian", "police", "thug"]:
+		Game.record("supers_defeated")
 	var ps := Game.player_side()
 	match a.team:
 		"civilian":
@@ -542,7 +796,7 @@ func on_actor_ko(a: Actor, source: Actor) -> void:
 				Game.add_score(15)
 		_:
 			if a.side() != ps:
-				var pts := 10 if a.def.get("id", "") in ["thug", "police"] else 50
+				var pts := int((10 if a.def.get("id", "") in ["thug", "police"] else 50) * style.multiplier())
 				Game.add_score(pts)
 				if pts >= 50:
 					notify("You defeated %s!  +%d" % [a.display_name, pts], Color("#ffd23a"))

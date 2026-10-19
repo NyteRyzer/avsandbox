@@ -180,7 +180,7 @@ func _world_tab() -> Control:
 	v.add_child(presets)
 	v.add_child(UITheme.label("Weather", 20, UITheme.ACCENT))
 	var wrow := HBoxContainer.new()
-	for w in ["clear", "rain", "storm", "fog"]:
+	for w in ["clear", "rain", "storm", "fog", "snow"]:
 		var ww: String = w
 		wrow.add_child(UITheme.button(w.capitalize(), func() -> void: world.day_night.set_weather(ww), 120))
 	v.add_child(wrow)
@@ -220,6 +220,7 @@ func _events_tab() -> Control:
 		"robbery": "Robbery in progress", "gang_war": "Gang war", "villain_attack": "Super-villain attack",
 		"breach": "Breach: doppelgangers", "police_raid": "Police raid", "hero_patrol": "Hero patrol",
 		"heist": "Armored-truck heist", "dominators": "Dominator invasion", "jailbreak": "Iron Heights jailbreak",
+		"fire": "Building fire rescue", "chase": "Getaway car chase",
 	}
 	for k in names.keys():
 		var kind: String = k
@@ -232,6 +233,9 @@ func _events_tab() -> Control:
 	g.add_child(UITheme.button("Sky race (for flyers)", func() -> void:
 		close()
 		world.race.start(true), 380))
+	g.add_child(UITheme.button("Survival Simulator (waves)", func() -> void:
+		close()
+		world.survival.start(), 380))
 	v.add_child(g)
 	v.add_child(UITheme.label("Heroes get robberies, gang wars and villain attacks;\nvillains get raids, patrols and heists. Breaches hit everyone.", 15, UITheme.DIM))
 	return v

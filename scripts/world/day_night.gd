@@ -22,6 +22,8 @@ var env: Environment
 var sky_mat: ProceduralSkyMaterial
 var world_env: WorldEnvironment
 var rain: CPUParticles3D
+var snow: CPUParticles3D
+var local_weather := ""     # e.g. Gotham's rain, set per island
 var _flash_t := 0.0
 var _thunder_t := 8.0
 
@@ -71,6 +73,24 @@ func _ready() -> void:
 	rain.emitting = false
 	rain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(rain)
+	snow = CPUParticles3D.new()
+	var flake := SphereMesh.new()
+	flake.radius = 0.05
+	flake.height = 0.1
+	snow.mesh = flake
+	snow.material_override = CharacterModel.mat(Color(1, 1, 1), 0.0, true, 0.9)
+	snow.amount = 1500
+	snow.lifetime = 6.0
+	snow.local_coords = false
+	snow.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	snow.emission_box_extents = Vector3(45, 1, 45)
+	snow.direction = Vector3(0.2, -1, 0.1)
+	snow.spread = 20.0
+	snow.gravity = Vector3.ZERO
+	snow.initial_velocity_min = 2.5
+	snow.initial_velocity_max = 4.0
+	snow.emitting = false
+	add_child(snow)
 	add_to_group("settings_listeners")
 	_apply()
 
@@ -81,8 +101,18 @@ func on_settings_changed() -> void:
 
 func set_weather(w: String) -> void:
 	weather = w
-	rain.emitting = w == "rain" or w == "storm"
+	_update_precip()
 	_apply()
+
+
+func _effective() -> String:
+	return local_weather if weather == "clear" and local_weather != "" else weather
+
+
+func _update_precip() -> void:
+	var w := _effective()
+	rain.emitting = (w == "rain" or w == "storm") and not indoors
+	snow.emitting = w == "snow" and not indoors
 
 
 func _process(delta: float) -> void:
@@ -90,7 +120,17 @@ func _process(delta: float) -> void:
 		hour = fmod(hour + delta * 24.0 / (day_minutes * 60.0), 24.0)
 	if follow and is_instance_valid(follow):
 		rain.global_position = follow.global_position + Vector3.UP * 25.0
-	if weather == "storm":
+		snow.global_position = follow.global_position + Vector3.UP * 18.0
+		# Gotham always seems to be raining.
+		var lw := ""
+		if city:
+			var isl := city.island_at(follow.global_position)
+			if not isl.is_empty():
+				lw = str(isl["style"].get("weather", ""))
+		if lw != local_weather:
+			local_weather = lw
+			_update_precip()
+	if _effective() == "storm":
 		_thunder_t -= delta
 		if _thunder_t <= 0.0:
 			_thunder_t = randf_range(6.0, 16.0)
@@ -126,7 +166,7 @@ func _apply() -> void:
 		sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	var top := NIGHT_TOP.lerp(DAY_TOP, day)
 	var horizon := NIGHT_HORIZON.lerp(DAY_HORIZON, day).lerp(DUSK_HORIZON, dusk * 0.7)
-	var overcast := weather != "clear"
+	var overcast := _effective() != "clear"
 	if overcast:
 		top = top.lerp(Color(0.25, 0.27, 0.3) * (0.3 + day * 0.7), 0.8)
 		horizon = horizon.lerp(Color(0.35, 0.37, 0.4) * (0.3 + day * 0.7), 0.8)
@@ -155,7 +195,7 @@ func _apply() -> void:
 	env.ambient_light_energy = lerpf(0.3, 0.75, day) + (2.0 if _flash_t > 0.0 else 0.0)
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
-	env.fog_density = (0.006 if weather == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0)))
+	env.fog_density = (0.006 if _effective() == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0)))
 	env.fog_enabled = not indoors
 	if indoors:
 		sun.light_energy = 0.0
@@ -163,5 +203,6 @@ func _apply() -> void:
 		env.ambient_light_energy = 0.55
 	if follow and is_instance_valid(follow):
 		rain.visible = not indoors
+		snow.visible = not indoors
 	if city:
 		city.set_night(1.0 - day)

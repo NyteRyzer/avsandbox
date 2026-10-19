@@ -32,6 +32,8 @@ static func toggle(a: Actor) -> bool:
 	var s := Suitup.new()
 	s.actor = a
 	s.to_civilian = not a.civilian
+	if s.to_civilian and a.is_player:
+		Game.record("changes")
 	a.changing = true
 	a.world.fx_root.add_child(s)
 	s._begin()

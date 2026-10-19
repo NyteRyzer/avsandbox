@@ -28,6 +28,12 @@ var ko_label: Label
 var banner: Label
 var hint_label: Label
 var _banner_t := 0.0
+var style_label: Label
+var boss_panel: VBoxContainer
+var boss_name: Label
+var boss_bar: ProgressBar
+var overlay: Control      # lock-on marker and other world-space markers
+var ticker: Label
 
 
 func _ready() -> void:
@@ -145,6 +151,50 @@ func _ready() -> void:
 	root.add_child(notes)
 
 	# Centre: crosshair and target info.
+	style_label = UITheme.label("", 30, UITheme.ACCENT)
+	style_label.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	style_label.anchor_left = 1.0
+	style_label.offset_left = -330
+	style_label.offset_right = -270
+	style_label.offset_top = -120
+	style_label.add_theme_constant_override("outline_size", 8)
+	style_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	root.add_child(style_label)
+	boss_panel = VBoxContainer.new()
+	boss_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	boss_panel.anchor_left = 0.5
+	boss_panel.anchor_right = 0.5
+	boss_panel.offset_left = -260
+	boss_panel.offset_right = 260
+	boss_panel.offset_top = 70
+	boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	boss_panel.visible = false
+	root.add_child(boss_panel)
+	boss_name = UITheme.label("", 18, Color("#ffb0a0"))
+	boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_name.add_theme_constant_override("outline_size", 6)
+	boss_name.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	boss_panel.add_child(boss_name)
+	boss_bar = _bar(Color("#d03030"))
+	boss_bar.custom_minimum_size = Vector2(520, 14)
+	boss_panel.add_child(boss_bar)
+	ticker = UITheme.label("", 15, Color("#f0e8d0"))
+	ticker.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	ticker.anchor_left = 0.5
+	ticker.anchor_right = 0.5
+	ticker.offset_left = -420
+	ticker.offset_right = 420
+	ticker.offset_top = -46
+	ticker.offset_bottom = -20
+	ticker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ticker.add_theme_stylebox_override("normal", UITheme.box(Color(0.6, 0.05, 0.05, 0.75), 4))
+	ticker.visible = false
+	root.add_child(ticker)
+	overlay = Control.new()
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.draw.connect(_draw_overlay)
+	root.add_child(overlay)
 	crosshair = Control.new()
 	crosshair.set_anchors_preset(Control.PRESET_CENTER)
 	crosshair.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -325,7 +375,7 @@ func _process(delta: float) -> void:
 			move_text = "[Shift]  Ice slide"
 		_:
 			move_text = "[Shift]  Sprint"
-	move_text += "   ·   [V] Dodge"
+	move_text += "   ·   [V] Dodge  ·  [B] Block  ·  [Z] Lock-on"
 	if p.combo_count >= 3:
 		move_text += "   ·   %d HIT COMBO" % p.combo_count
 	ability_labels[4].text = move_text
@@ -356,8 +406,14 @@ func _process(delta: float) -> void:
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
 	mission_label.text = world.missions.tracker()
+	if world.waypoint != Vector3.INF:
+		var wd := Vector2(world.waypoint.x - p.global_position.x, world.waypoint.z - p.global_position.z).length()
+		mission_label.text += "\nWaypoint: %d m" % int(wd)
 	if world.race.active:
 		mission_label.text = world.race.tracker() + "\n\n" + mission_label.text
+	if world.survival.active:
+		mission_label.text = world.survival.tracker() + "\n\n" + mission_label.text
+	mission_label.text += "\n\nCHALLENGES\n" + world.challenges.tracker()
 	var ev: Dictionary = world.events.active
 	if ev.is_empty():
 		event_label.text = ""
@@ -370,6 +426,18 @@ func _process(delta: float) -> void:
 		banner.modulate.a = clampf(_banner_t, 0.0, 1.0)
 	_update_target(p)
 	crosshair.queue_redraw()
+	overlay.queue_redraw()
+	ticker.visible = world.news.current != ""
+	if ticker.visible:
+		ticker.text = "  %s  ·  %s  " % [world.news.outlet, world.news.current]
+	var st: String = world.style.label()
+	style_label.text = st
+	style_label.modulate.a = clampf(world.style.points / 20.0, 0.0, 1.0) if st != "" else 0.0
+	_update_boss(p)
+	if p.blocking:
+		status_label.text += "  BLOCKING"
+	if p.lock_target:
+		status_label.text += "  LOCKED ON"
 
 
 func _cd(p: Actor, slot: String) -> String:
@@ -402,10 +470,79 @@ func _update_target(p: Actor) -> void:
 	if p.strength and p.held_prop == null:
 		for prop in world.get_tree().get_nodes_in_group("props"):
 			if prop.global_position.distance_to(p.global_position) < 5.0 * p.size:
-				hint_label.text = "[E] Lift " + ("car" if prop.kind == "car" else "crate")
+				hint_label.text = "[E] Lift " + str(prop.kind).replace("newsbox", "newspaper box")
 				break
 	elif p.held_prop:
 		hint_label.text = "[LMB / E] Throw"
+
+
+const SCAN_NAMES := {"supergirl": "X-RAY VISION", "superman": "X-RAY VISION", "mon_el": "X-RAY VISION", "jordan_kent": "X-RAY VISION",
+	"reign": "WORLDKILLER SIGHT", "overgirl": "X-RAY VISION", "batwoman": "DETECTIVE COWL", "red_death": "DETECTIVE COWL",
+	"vibe": "VIBE SENSE", "martian_manhunter": "TELEPATHIC SCAN", "grodd": "TELEPATHIC SCAN", "dreamer": "PRECOGNITION",
+	"green_arrow": "OVERWATCH (FELICITY)", "speedy": "OVERWATCH (FELICITY)", "spartan": "OVERWATCH (FELICITY)",
+	"black_canary": "OVERWATCH (FELICITY)", "mr_terrific": "T-SPHERE SCAN", "brainiac_5": "COLUAN SCAN"}
+
+
+## Hold X to scan: enemies, allies and Crisis Fragments show through walls.
+func _draw_scan(cam: Camera3D) -> void:
+	var p: Actor = world.player
+	overlay.draw_rect(Rect2(Vector2.ZERO, overlay.size), Color(0.2, 0.5, 1.0, 0.08))
+	var title: String = SCAN_NAMES.get(p.def.get("id", ""), "SPEED FORCE SENSE" if p.movement == "speed" else "SCAN")
+	overlay.draw_string(ThemeDB.fallback_font, Vector2(overlay.size.x * 0.5 - 120, 140), title, HORIZONTAL_ALIGNMENT_CENTER, 240, 22, Color("#9fd0ff"))
+	for a in world.get_tree().get_nodes_in_group("actors"):
+		if a == p or a.dead:
+			continue
+		var d: float = a.global_position.distance_to(p.global_position)
+		if d > 120.0 or cam.is_position_behind(a.chest()):
+			continue
+		var col := Color("#ff4848") if a.is_hostile_to(p) or p.is_hostile_to(a) else (Color("#5fa8ff") if a.is_ally_of_player() else Color(0.8, 0.8, 0.8, 0.5))
+		if a.team == "civilian":
+			continue
+		var s := cam.unproject_position(a.chest())
+		overlay.draw_rect(Rect2(s - Vector2(5, 5), Vector2(10, 10)), col, false, 2.0)
+		if a.boss or a.def.get("id", "") not in ["thug", "police"]:
+			overlay.draw_string(ThemeDB.fallback_font, s + Vector2(8, -6), "%s  %dm" % [a.display_name, int(d)], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, col)
+	for f in world.collectibles.remaining():
+		var fp: Vector3 = f["pos"]
+		if fp.distance_to(p.global_position) < 150.0 and not cam.is_position_behind(fp):
+			var s := cam.unproject_position(fp)
+			overlay.draw_circle(s, 6.0, Color("#ff4fd8"))
+			overlay.draw_string(ThemeDB.fallback_font, s + Vector2(8, 4), "Crisis Fragment %dm" % int(fp.distance_to(p.global_position)), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#ff9ae8"))
+
+
+## The nearest boss you're fighting gets a big health bar.
+func _update_boss(p: Actor) -> void:
+	var boss: Actor = null
+	var best := 90.0
+	for a in world.get_tree().get_nodes_in_group("actors"):
+		if a.boss and not a.dead and (a.is_hostile_to(p) or a.grudges.has(p.get_instance_id())):
+			var d: float = a.global_position.distance_to(p.global_position)
+			if d < best:
+				best = d
+				boss = a
+	boss_panel.visible = boss != null
+	if boss:
+		boss_name.text = boss.display_name.to_upper()
+		boss_bar.max_value = boss.max_hp
+		boss_bar.value = boss.hp
+
+
+func _draw_overlay() -> void:
+	if world == null or world.player == null or not is_instance_valid(world.player):
+		return
+	var cam: Camera3D = world.cam.camera
+	if world.scanning:
+		_draw_scan(cam)
+	var lt: Actor = world.player.lock_target
+	if lt and is_instance_valid(lt) and not cam.is_position_behind(lt.chest()):
+		var s := cam.unproject_position(lt.chest() + Vector3.UP * 0.2)
+		var c := Color("#ff5050")
+		var r := 16.0
+		for k in 4:
+			var ang: float = k * PI * 0.5 + Time.get_ticks_msec() * 0.002
+			var d := Vector2(cos(ang), sin(ang))
+			overlay.draw_line(s + d * r, s + d * (r + 9.0), c, 3.0)
+		overlay.draw_arc(s, r, 0, TAU, 24, Color(1, 0.3, 0.3, 0.6), 2.0)
 
 
 func _draw_crosshair() -> void:

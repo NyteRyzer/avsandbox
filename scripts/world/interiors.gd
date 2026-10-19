@@ -244,6 +244,7 @@ func _star_labs() -> void:
 	box(Vector3(8, 2.2, 12.2), Vector3(3.2, 4.0, 0.2), "#5ab8ff", false, 1.6)
 	label("BREACH ROOM", Vector3(8, 4.6, 12), 0.6, Color("#9fd0ff"))
 	interactable("Open a breach to another Earth", Vector3(8, 0.5, 9), "breach_room")
+	interactable("Start the Survival Simulator", Vector3(0, 0.5, -3.5), "training")
 	spawn(Vector3(0, 0.5, 9))
 	exit_door(Vector3(0, 0, 13.7), "S.T.A.R. Labs")
 

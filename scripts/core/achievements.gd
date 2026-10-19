@@ -1,0 +1,51 @@
+class_name Achievements
+extends RefCounted
+## Lifetime achievements, unlocked from the stats Game.record() keeps.
+
+const LIST := [
+	["first_blood", "First Blood", "Knock out your first enemy.", "kos", 1],
+	["street_sweeper", "Street Sweeper", "Knock out 100 enemies.", "kos", 100],
+	["army_of_one", "Army of One", "Knock out 500 enemies.", "kos", 500],
+	["boss_slayer", "Boss Slayer", "Defeat a boss.", "bosses", 1],
+	["big_game", "Big Game Hunter", "Defeat 10 bosses.", "bosses", 10],
+	["finisher", "Finisher", "Perform 10 takedowns.", "takedowns", 10],
+	["untouchable", "Untouchable", "Pull off 10 perfect parries.", "parries", 10],
+	["crime_fighter", "On Patrol", "Complete 5 events.", "events", 5],
+	["city_saver", "Guardian of the City", "Complete 25 events.", "events", 25],
+	["collector", "Collector", "Find 10 Crisis Fragments.", "fragments", 10],
+	["all_fragments", "Paragon of Truth", "Find all 40 Crisis Fragments.", "fragments", 40],
+	["explorer", "Explorer", "Discover 20 landmarks.", "discovered", 20],
+	["cartographer", "Cartographer", "Discover 50 landmarks.", "discovered", 50],
+	["shutterbug", "Shutterbug", "Take a photo in photo mode.", "photos", 1],
+	["secret_identity", "Secret Identity", "Change out of costume.", "changes", 1],
+	["road_trip", "Road Trip", "Drive 5 different cars.", "drives", 5],
+	["tourist", "Multiverse Tourist", "Travel between worlds 5 times.", "travels", 5],
+	["ultimate_power", "Ultimate Power", "Unleash 10 ultimates.", "ultimates", 10],
+	["fastest_alive", "The Fastest Man Alive", "Cover 50 km on foot.", "distance", 50000],
+	["racer", "Racer", "Finish 3 races.", "races", 3],
+	["crisis_averted", "Crisis Averted", "Finish the Crisis on Infinite Earths.", "chapters", 7],
+	["firefighter", "Firefighter", "Rescue 10 people from burning buildings.", "rescues", 10],
+	["chase_master", "Pursuit", "Stop 3 getaway cars.", "chases", 3],
+	["survivor", "Survivor", "Reach wave 10 in the Survival Simulator.", "waves_best", 10],
+]
+
+
+## Unlocks anything newly earned. Returns the names unlocked.
+static func check(key: String, value: float) -> Array:
+	var out := []
+	var have: Array = Game.progress["achievements"]
+	for a in LIST:
+		if a[3] == key and value >= float(a[4]) and not have.has(a[0]):
+			have.append(a[0])
+			out.append(a)
+	return out
+
+
+static func describe() -> String:
+	var have: Array = Game.progress["achievements"]
+	var lines := PackedStringArray()
+	for a in LIST:
+		var done := have.has(a[0])
+		var prog := minf(Game.stat(a[3]), float(a[4]))
+		lines.append("%s  %s  -  %s  (%d/%d)" % ["[X]" if done else "[ ]", a[1], a[2], int(prog), int(a[4])])
+	return "\n".join(lines)

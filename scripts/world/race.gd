@@ -118,6 +118,7 @@ func _finish() -> void:
 	var left := limit - time
 	var reward := 100 + int(left * 8.0)
 	Game.add_score(reward)
+	Game.record("races")
 	var id: String = world.player.def.get("id", "")
 	var best := float(_best.get(id, INF))
 	var record := time < best

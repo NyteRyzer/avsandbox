@@ -6,6 +6,7 @@ signal picked(id: String)
 signal back
 
 var swap_mode := false
+var _suit_pick: OptionButton
 var _filter := "all"
 var _search := ""
 var _grid: GridContainer
@@ -110,6 +111,9 @@ func _ready() -> void:
 	_powers.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_powers.custom_minimum_size = Vector2(460, 0)
 	rv.add_child(_powers)
+	_suit_pick = OptionButton.new()
+	_suit_pick.item_selected.connect(_on_suit)
+	rv.add_child(_suit_pick)
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	rv.add_child(spacer)
@@ -210,11 +214,32 @@ func _card(c: Dictionary) -> Button:
 	return b
 
 
+## Alternate suits unlocked with Crisis Fragments.
+func _fill_suits(id: String) -> void:
+	_suit_pick.clear()
+	_suit_pick.add_item("Suit: Classic")
+	var variants := Costumes.unlocked(id)
+	for v in variants:
+		_suit_pick.add_item("Suit: " + str(v[1]))
+	var chosen := str(Game.suit_choice.get(id, ""))
+	for i in variants.size():
+		if variants[i][1] == chosen:
+			_suit_pick.select(i + 1)
+	_suit_pick.visible = not variants.is_empty()
+
+
+func _on_suit(index: int) -> void:
+	var variants := Costumes.unlocked(_selected)
+	Game.suit_choice[_selected] = "" if index == 0 else str(variants[index - 1][1])
+	_select(_selected)
+
+
 func _select(id: String) -> void:
 	if not Game.by_id.has(id):
 		return
 	_selected = id
-	var c: Dictionary = Game.by_id[id]
+	var c: Dictionary = Costumes.apply(Game.by_id[id], str(Game.suit_choice.get(id, "")))
+	_fill_suits(id)
 	if _model:
 		_model.queue_free()
 	_model = CharacterModel.new()

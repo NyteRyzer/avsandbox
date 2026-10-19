@@ -3,6 +3,13 @@ extends RigidBody3D
 ## Physics props: crates and cars. Anything can knock them around, characters
 ## with super strength can lift and throw them, and cars explode when wrecked.
 
+const FURNITURE := {
+	"bench": {"size": Vector3(2.0, 0.95, 0.6), "mass": 60.0, "hp": 30.0, "color": "#2a2a2e"},
+	"hydrant": {"size": Vector3(0.45, 0.8, 0.45), "mass": 90.0, "hp": 25.0, "color": "#c82a1e"},
+	"mailbox": {"size": Vector3(0.65, 1.35, 0.55), "mass": 70.0, "hp": 30.0, "color": "#1e3a8a"},
+	"dumpster": {"size": Vector3(2.2, 1.4, 1.4), "mass": 400.0, "hp": 60.0, "color": "#2a5a2a"},
+	"newsbox": {"size": Vector3(0.5, 1.0, 0.45), "mass": 40.0, "hp": 20.0, "color": "#c8a020"},
+}
 const CAR_COLORS := ["#b0201a", "#1f4fa8", "#e8e8e8", "#1a1a1a", "#8a8f99", "#2e7d32", "#d8a514", "#5a2a86", "#c0602a"]
 
 var kind := "crate"
@@ -32,6 +39,8 @@ var _blocked := false
 const TOP_SPEED := 34.0
 const NITRO_SPEED := 54.0
 var player_driven := false
+var drive_speed := DRIVE_SPEED   # traffic cruising speed (getaway cars go faster)
+var getaway := false
 var driver: Actor = null
 var _yaw := 0.0
 var _hit_cd: Dictionary = {}
@@ -54,7 +63,35 @@ func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 	var box := BoxShape3D.new()
 	shape.shape = box
 	add_child(shape)
-	if kind == "car":
+	if kind == "bike":
+		# A motorcycle (the Arrowbike, or any parked bike): quick and nimble.
+		mass = 220.0
+		max_hp = 45.0
+		box.size = Vector3(0.7, 1.1, 2.1)
+		shape.position = Vector3(0, 0.6, 0)
+		_body_mat = StandardMaterial3D.new()
+		_body_mat.albedo_color = Color(["#1a1a1a", "#1e4a22", "#8a1010", "#2a2a3a"][rng.randi() % 4])
+		_body_mat.metallic = 0.6
+		_body_mat.roughness = 0.3
+		_mesh(Vector3(0.3, 0.35, 1.3), Vector3(0, 0.75, 0), _body_mat)
+		_mesh(Vector3(0.34, 0.12, 0.6), Vector3(0, 0.98, 0.25), CharacterModel.mat(Color("#141414")))
+		_mesh(Vector3(0.7, 0.05, 0.05), Vector3(0, 1.1, -0.55), CharacterModel.mat(Color("#8a8a8a")))
+		_mesh(Vector3(0.08, 0.5, 0.08), Vector3(0, 0.85, -0.6), CharacterModel.mat(Color("#8a8a8a")))
+		_mesh(Vector3(0.2, 0.12, 0.05), Vector3(0, 0.95, -0.82), CharacterModel.mat(Color("#fff2c0"), 2.0))
+		var tire := CharacterModel.mat(Color("#141414"))
+		for wz in [-0.75, 0.75]:
+			var w := MeshInstance3D.new()
+			var cyl := CylinderMesh.new()
+			cyl.top_radius = 0.34
+			cyl.bottom_radius = 0.34
+			cyl.height = 0.14
+			cyl.radial_segments = 14
+			cyl.material = tire
+			w.mesh = cyl
+			w.position = Vector3(0, 0.34, wz)
+			w.rotation.z = PI * 0.5
+			add_child(w)
+	elif kind == "car":
 		mass = 900.0
 		max_hp = 70.0
 		box.size = Vector3(2.0, 1.3, 4.4)
@@ -88,6 +125,42 @@ func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 				w.position = Vector3(wx, 0.36, wz)
 				w.rotation.z = PI * 0.5
 				add_child(w)
+	elif kind in FURNITURE:
+		# Street furniture: benches, fire hydrants, mailboxes, dumpsters,
+		# newspaper boxes. All of it can be thrown.
+		var f: Dictionary = FURNITURE[kind]
+		mass = float(f["mass"])
+		max_hp = float(f["hp"])
+		var sz: Vector3 = f["size"]
+		box.size = sz
+		shape.position = Vector3(0, sz.y * 0.5, 0)
+		_body_mat = StandardMaterial3D.new()
+		_body_mat.albedo_color = Color(str(f["color"]))
+		_body_mat.metallic = 0.3
+		_body_mat.roughness = 0.6
+		match kind:
+			"bench":
+				var wood := CharacterModel.mat(Color("#7a5434"))
+				_mesh(Vector3(sz.x, 0.08, 0.45), Vector3(0, 0.45, 0), wood)
+				_mesh(Vector3(sz.x, 0.4, 0.06), Vector3(0, 0.75, 0.22), wood)
+				for sx in [-0.8, 0.8]:
+					_mesh(Vector3(0.08, 0.45, 0.45), Vector3(sx, 0.22, 0), _body_mat)
+			"hydrant":
+				_mesh(Vector3(0.32, 0.6, 0.32), Vector3(0, 0.3, 0), _body_mat)
+				_mesh(Vector3(0.42, 0.12, 0.42), Vector3(0, 0.62, 0), _body_mat)
+				_mesh(Vector3(0.5, 0.12, 0.14), Vector3(0, 0.42, 0), _body_mat)
+				_mesh(Vector3(0.2, 0.14, 0.2), Vector3(0, 0.74, 0), _body_mat)
+			"mailbox":
+				_mesh(Vector3(0.6, 0.9, 0.5), Vector3(0, 0.75, 0), _body_mat)
+				_mesh(Vector3(0.62, 0.2, 0.52), Vector3(0, 1.25, 0), _body_mat)
+				for sx in [-0.25, 0.25]:
+					_mesh(Vector3(0.08, 0.3, 0.08), Vector3(sx, 0.15, 0), CharacterModel.mat(Color("#2a2a2a")))
+			"dumpster":
+				_mesh(Vector3(sz.x, sz.y * 0.9, sz.z), Vector3(0, sz.y * 0.45, 0), _body_mat)
+				_mesh(Vector3(sz.x + 0.06, 0.08, sz.z + 0.06), Vector3(0, sz.y * 0.92, 0), CharacterModel.mat(Color("#1a3a1a")))
+			"newsbox":
+				_mesh(Vector3(0.5, 1.0, 0.45), Vector3(0, 0.5, 0), _body_mat)
+				_mesh(Vector3(0.4, 0.3, 0.02), Vector3(0, 0.75, -0.235), CharacterModel.mat(Color("#e8e8d8"), 0.4))
 	else:
 		mass = 40.0
 		max_hp = 30.0
@@ -101,7 +174,7 @@ func build(p_world, p_kind: String, rng: RandomNumberGenerator = null) -> void:
 		var trim := CharacterModel.mat(c.darkened(0.35))
 		_mesh(Vector3(s * 1.02, s * 0.12, s * 1.02), Vector3(0, s * 0.5, 0), trim)
 	hp = max_hp
-	_merged = CharacterModel.merge_children(self, 0.5 if kind == "car" else 0.0)
+	_merged = CharacterModel.merge_children(self, 0.5 if is_vehicle() else 0.0)
 	for c in get_children():
 		if c is GeometryInstance3D:
 			c.visibility_range_end = 220.0
@@ -123,7 +196,7 @@ func start_driving(dir: Vector3) -> void:
 	heading = dir
 	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	freeze = true
-	_speed = DRIVE_SPEED
+	_speed = drive_speed
 	_plan_next_intersection()
 	add_to_group("traffic")
 
@@ -151,7 +224,7 @@ func _drive(delta: float) -> void:
 		var from := global_position + Vector3.UP * 0.8
 		var q := PhysicsRayQueryParameters3D.create(from, from + heading * 9.0, Game.LAYER_ACTORS | Game.LAYER_PROPS, [get_rid()])
 		_blocked = not get_world_3d().direct_space_state.intersect_ray(q).is_empty()
-	_speed = move_toward(_speed, 0.0 if _blocked else DRIVE_SPEED, delta * (25.0 if _blocked else 6.0))
+	_speed = move_toward(_speed, 0.0 if _blocked and not getaway else drive_speed, delta * (25.0 if _blocked and not getaway else 6.0))
 	var p := global_position + heading * _speed * delta
 	# Reached the next intersection: maybe turn.
 	if (p.dot(heading) - _next_turn.dot(heading)) >= 0.0:
@@ -222,7 +295,7 @@ func _player_drive(delta: float) -> void:
 	var mv := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var throttle := -mv.y
 	var nitro := Input.is_action_pressed("sprint")
-	var top := NITRO_SPEED if nitro else TOP_SPEED
+	var top := (NITRO_SPEED if nitro else TOP_SPEED) * (1.35 if kind == "bike" else 1.0)
 	if Input.is_action_pressed("jump"):
 		_speed = move_toward(_speed, 0.0, 45.0 * delta)
 	elif throttle > 0.05:
@@ -256,7 +329,7 @@ func _player_drive(delta: float) -> void:
 	else:
 		p.y -= 12.0 * delta
 	global_position = p
-	rotation = Vector3(0, _yaw, -mv.x * grip * 0.05)
+	rotation = Vector3(0, _yaw, -mv.x * grip * (0.35 if kind == "bike" else 0.05))
 	# Running people over, and ramming other cars.
 	for k in _hit_cd.keys():
 		_hit_cd[k] -= delta
@@ -286,7 +359,20 @@ func _player_drive(delta: float) -> void:
 		world.exit_vehicle()
 
 
+func is_vehicle() -> bool:
+	return kind == "car" or kind == "bike"
+
+
 func hit(dmg: float, impulse: Vector3, source: Actor) -> void:
+	if getaway and driving:
+		# A getaway car keeps going until it's badly damaged.
+		hp -= dmg
+		FX.sparks(world, global_position + Vector3.UP, Color("#ffd080"), 6, 4.0)
+		if hp < max_hp * 0.35:
+			getaway = false
+			stop_driving()
+			FX.smoke(world, global_position + Vector3.UP, 2.0, 3.0)
+		return
 	if holder or player_driven:
 		if player_driven and not exploded:
 			hp -= dmg * 0.5
@@ -298,7 +384,7 @@ func hit(dmg: float, impulse: Vector3, source: Actor) -> void:
 		return
 	hp -= dmg
 	if hp <= 0.0:
-		if kind == "car":
+		if is_vehicle():
 			_explode(source)
 		else:
 			_smash()
@@ -332,17 +418,17 @@ func _on_body_entered(body: Node) -> void:
 		var src: Actor = thrown_by if thrown_t > 0.0 and is_instance_valid(thrown_by) else null
 		if src and not src.can_hurt(body):
 			return
-		var dmg := minf(70.0, speed * (2.2 if kind == "car" else 0.8))
+		var dmg := minf(70.0, speed * (2.2 if is_vehicle() else 0.8))
 		body.take_damage(dmg, src, "", linear_velocity.normalized() * 10.0 + Vector3.UP * 6.0)
 	if thrown_t > 0.0 and speed > 14.0 and not exploded:
-		hp -= speed * (1.5 if kind == "car" else 3.0)
+		hp -= speed * (1.5 if is_vehicle() else 3.0)
 		if hp <= 0.0:
-			if kind == "car":
+			if is_vehicle():
 				_explode(thrown_by if is_instance_valid(thrown_by) else null)
 			else:
 				_smash()
 	if world:
-		Sfx.play("slam" if kind == "car" else "punch", global_position, -6.0)
+		Sfx.play("slam" if is_vehicle() else "punch", global_position, -6.0)
 
 
 func _explode(source: Actor) -> void:
@@ -386,6 +472,25 @@ func _stop_fire() -> void:
 
 
 func _smash() -> void:
-	FX.sparks(world, global_position + Vector3.UP * 0.5, Color("#8a6a3a"), 16, 6.0, 0.6)
+	FX.sparks(world, global_position + Vector3.UP * 0.5, _body_mat.albedo_color if _body_mat else Color("#8a6a3a"), 16, 6.0, 0.6)
+	if kind == "hydrant" and world:
+		# A broken hydrant gushes water for a while.
+		var gush := CPUParticles3D.new()
+		var drop := SphereMesh.new()
+		drop.radius = 0.08
+		drop.height = 0.16
+		gush.mesh = drop
+		gush.material_override = CharacterModel.mat(Color(0.7, 0.85, 1.0), 0.0, true, 0.6)
+		gush.amount = 120
+		gush.lifetime = 1.4
+		gush.direction = Vector3.UP
+		gush.spread = 12.0
+		gush.initial_velocity_min = 9.0
+		gush.initial_velocity_max = 13.0
+		gush.local_coords = false
+		world.fx_root.add_child(gush)
+		gush.global_position = global_position + Vector3.UP * 0.4
+		world.get_tree().create_timer(12.0, false).timeout.connect(gush.queue_free)
+		Sfx.play("smoke", global_position, 0.0)
 	Sfx.play("punch", global_position, 0.0)
 	queue_free()

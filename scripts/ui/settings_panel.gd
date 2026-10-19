@@ -8,8 +8,13 @@ const CONTROLS_TEXT := """MOVE          W A S D / left stick
 LOOK          Mouse / right stick      ZOOM   Mouse wheel
 JUMP          Space / A                SPRINT / SUPER SPEED   Shift / L3
 PRIMARY       Left mouse / RT          SECONDARY              Right mouse / LT
-SPECIAL       Q / Y                    GRAPPLE / LIFT & THROW E / RB
-FLY (flyers)  F / LB  ·  Space up, Ctrl or C down, Shift to boost
+SPECIAL       Q / Y                    UTILITY, LIFT & THROW  E / RB
+ULTIMATE      R / R3                   FLY (flyers)           F / LB
+DODGE         V / X                    BLOCK (tap to parry)   B / D-pad right
+LOCK-ON       Z or middle mouse        INTERACT / TAKEDOWN    G / D-pad up
+COSTUME       T / D-pad down           SWITCH TO ALLY         Y
+SCAN          hold X                   MAP & FAST TRAVEL      M
+PHOTO MODE    P                        EMOTES                 1 2 3 4
 SANDBOX TOOLS Tab / Back               PAUSE  Esc / Start      HIDE HUD  F1"""
 
 
@@ -19,7 +24,9 @@ func _ready() -> void:
 	_slider("Mouse sensitivity", "mouse_sensitivity", 0.05, 1.0, 0.01)
 	_slider("Field of view", "fov", 55.0, 100.0, 1.0)
 	_slider("Master volume", "volume", 0.0, 1.0, 0.05)
+	_slider("Music volume", "music", 0.0, 1.0, 0.05)
 	_slider("View distance", "view_distance", 300.0, 2000.0, 50.0)
+	_slider("Difficulty (0 easy, 1 normal, 2 hard)", "difficulty", 0.0, 2.0, 1.0)
 	_check("Invert look Y", "invert_y")
 	_check("Shadows", "shadows")
 	_check("Fullscreen", "fullscreen")

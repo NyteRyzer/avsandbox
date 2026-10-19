@@ -74,6 +74,13 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Ultimate (when charged) | R | R3 |
 | Change in or out of costume | T | D-pad down |
 | Dodge | V | X |
+| Block (tap just before a hit to parry) | B | D-pad right |
+| Lock on to the nearest enemy | Z or middle mouse | D-pad left |
+| Switch to a recruited ally | Y | |
+| Scan (hold) | X | |
+| Map and fast travel | M | |
+| Photo mode | P | |
+| Emotes: wave, cheer, taunt, victory pose | 1 2 3 4 | |
 | Sandbox tools | Tab | Back |
 | Pause, change character, settings | Esc | Start |
 | Hide HUD | F1 | |
@@ -211,6 +218,46 @@ out corners, with more of them at night.
 - As a **villain**, you earn *Infamy* by breaking up police raids, taking down hero patrols and
   pulling off armored-truck heists. Your heat rises with every crime, and at 3 heroes start
   hunting you.
+
+**Combat.**
+- A **style meter** ranks your fighting from D to SSS. Mixing up attacks ranks it faster, and
+  getting hit knocks it down. Higher ranks multiply your score.
+- **Block and parry:** blocking soaks most damage, and a well-timed block stuns the attacker.
+- **Lock-on** keeps the camera on one enemy.
+- **Dive slams** come from attacking in mid-fall.
+- **Takedowns** finish off stunned enemies.
+- Bosses get a health bar and a slow-motion **final blow**.
+
+**The city.**
+- Benches, hydrants (which gush when broken), mailboxes, dumpsters and newspaper boxes can all be
+  thrown.
+- Motorcycles, including the Arrowbike outside Verdant, can be ridden.
+- A **news ticker** reports what you do, and news helicopters circle when the heat is up.
+- Weather now includes snow, and some Earths have their own weather.
+- There is a difficulty setting.
+
+**Exploration.**
+- 40 **Crisis Fragments** are hidden on rooftops and in far corners. Every five unlock one of
+  18 alternate suits, which you pick in character select.
+- The **map** (M) sets waypoints and fast-travels to landmarks you've visited.
+- **Scan** (hold X) highlights enemies and fragments and identifies characters.
+- **Photo mode** (P) has filters.
+
+**Progression.**
+- 24 achievements, and an Achievements & Stats page in the pause menu.
+- Three rotating challenges with rewards.
+
+**Activities.**
+- **Building fires:** carry the trapped civilians (G) to the ambulance and put out the flames with
+  ice, wind or super breath.
+- **Getaway chases:** wreck the car, then fight the robbers.
+- **Survival waves**, with a boss every fifth wave, from the sandbox or the S.T.A.R. Labs
+  training room.
+- **Recruit** up to three nearby heroes (G), then switch between them (Y).
+- Civilians cheer heroes, take photos of them, and run from villains.
+
+**Presentation.** Procedural music shifts between calm and combat loops, and every character has
+emotes and a catchphrase taunt.
 
 **Sandbox tools (Tab).**
 - Spawn any character as an ally who follows you or as an enemy (an "evil Supergirl" works).

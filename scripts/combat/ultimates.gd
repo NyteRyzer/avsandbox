@@ -128,6 +128,8 @@ static func start(a: Actor) -> bool:
 	u.world = a.world
 	u.spec = for_character(a.def)
 	a.ult_active = true
+	if a.is_player:
+		Game.record("ultimates")
 	a.world.fx_root.add_child(u)
 	u._begin()
 	return true

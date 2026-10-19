@@ -33,6 +33,7 @@ func _ready() -> void:
 	_main.add_child(UITheme.button("Sandbox Tools  [Tab]", _open_sandbox))
 	_main.add_child(UITheme.button("Change Character", _change_character))
 	_main.add_child(UITheme.button("Settings & Controls", _open_settings))
+	_main.add_child(UITheme.button("Achievements & Stats", _open_progress))
 	_main.add_child(UITheme.button("Restart the Crisis Campaign", _restart_campaign))
 	_main.add_child(UITheme.button("Quit to Title", _quit_to_title))
 	_main.add_child(UITheme.button("Quit Game", func() -> void: get_tree().quit()))
@@ -73,6 +74,37 @@ func _open_sandbox() -> void:
 func _change_character() -> void:
 	visible = false
 	world.change_character_requested.emit()
+
+
+var _progress: VBoxContainer
+var _progress_text: Label
+
+
+func _open_progress() -> void:
+	if _progress == null:
+		_progress = VBoxContainer.new()
+		_progress.custom_minimum_size = Vector2(760, 560)
+		_progress.add_child(UITheme.label("ACHIEVEMENTS & STATS", 26, UITheme.ACCENT))
+		var scroll := ScrollContainer.new()
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		_progress_text = UITheme.label("", 15)
+		scroll.add_child(_progress_text)
+		_progress.add_child(scroll)
+		_progress.add_child(UITheme.button("Back", func() -> void:
+			_progress.visible = false
+			_main.visible = true, 200))
+		_panel.add_child(_progress)
+	var s: Dictionary = Game.progress["stats"]
+	var stats := PackedStringArray()
+	for k in ["kos", "supers_defeated", "bosses", "takedowns", "parries", "events", "ultimates", "fragments", "discovered",
+			"races", "rescues", "chases", "waves_best", "drives", "travels", "changes", "photos"]:
+		stats.append("%s: %d" % [k.replace("_", " ").capitalize(), int(s.get(k, 0))])
+	stats.append("Distance on foot: %.1f km" % (float(s.get("distance", 0)) / 1000.0))
+	stats.append("Rank %d (%s), %d lifetime points" % [Game.rank(), Game.rank_title(Game.player_side()), int(Game.settings["xp"])])
+	_progress_text.text = "%d / %d achievements\n\n%s\n\nSTATS\n%s\n\nCURRENT CHALLENGES\n%s" % [
+		Game.progress["achievements"].size(), Achievements.LIST.size(), Achievements.describe(), "\n".join(stats), world.challenges.tracker()]
+	_main.visible = false
+	_progress.visible = true
 
 
 func _open_settings() -> void:

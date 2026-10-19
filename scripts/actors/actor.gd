@@ -50,6 +50,11 @@ var in_secondary := false
 var in_special := false
 var in_ability := false
 var in_ultimate := false
+var in_block := false
+var blocking := false
+var lock_target: Actor = null
+var style_kind := ""
+var _block_start := -10.0
 var aim_point := Vector3.ZERO
 var face_dir := Vector3.FORWARD
 
@@ -289,6 +294,7 @@ func _physics_process(delta: float) -> void:
 	in_ability = false
 	in_dodge = false
 	in_ultimate = false
+	in_block = false
 	if brain:
 		brain.update(self, delta)
 	if not can_act():
@@ -299,6 +305,18 @@ func _physics_process(delta: float) -> void:
 		in_special = false
 		in_ability = false
 		in_dodge = false
+	# Blocking: hold to soak hits from the front; time it right to parry.
+	var was_blocking := blocking
+	blocking = in_block and can_act() and not flying and not civilian and grapple_point == null
+	if blocking:
+		if not was_blocking:
+			_block_start = Time.get_ticks_msec() / 1000.0
+		in_move *= 0.3
+		in_sprint = false
+		in_primary = false
+		in_secondary = false
+		if not model.is_busy():
+			model.play("shield", 0.25)
 	if root_t > 0.0:
 		in_move = Vector3.ZERO
 		in_jump = false
@@ -583,7 +601,7 @@ func _move(delta: float) -> void:
 
 
 func _abilities(delta: float) -> void:
-	if changing:
+	if changing or blocking:
 		return
 	if civilian:
 		_civilian_abilities()
@@ -593,7 +611,18 @@ func _abilities(delta: float) -> void:
 		cooldowns["primary"] = 0.4
 		return
 	if in_ability and cooldowns["utility"] <= 0.0 and can_act():
+		style_kind = "utility"
 		_use_utility()
+	# Dive slam: attack while falling from a height to crash down on everyone.
+	if in_primary and not is_on_floor() and not flying and not slam_pending and velocity.y < -1.0 and cooldowns["primary"] <= 0.0 \
+			and def["primary"]["kind"] == "melee" and grapple_point == null and _height_above_ground() > 3.5:
+		slam_pending = true
+		velocity = Vector3(0, -55.0, 0) + forward() * 6.0
+		cooldowns["primary"] = 0.8
+		model.play("heavy", 0.5)
+		style_kind = "slam"
+		Sfx.play("whoosh", global_position, 2.0)
+		return
 	var any_beam := false
 	for slot in ["primary", "secondary"]:
 		var atk: Dictionary = def[slot]
@@ -609,6 +638,7 @@ func _abilities(delta: float) -> void:
 			if energy >= cost or (is_player and Game.cheats["infinite_energy"]):
 				energy -= cost
 				cooldowns[slot] = Abilities.cooldown(atk)
+				style_kind = str(atk["kind"]) + str(atk.get("style", ""))
 				Abilities.fire(self, atk)
 	if not any_beam:
 		for b in beams:
@@ -620,9 +650,16 @@ func _abilities(delta: float) -> void:
 		var sp: Dictionary = def["special"]
 		var cost := Abilities.special_cost(sp)
 		if energy >= cost or (is_player and Game.cheats["infinite_energy"]):
+			style_kind = str(sp["kind"])
 			if Abilities.special(self, sp):
 				energy -= cost
 				cooldowns["special"] = Abilities.special_cooldown(sp)
+
+
+func _height_above_ground() -> float:
+	var q := PhysicsRayQueryParameters3D.create(global_position, global_position + Vector3.DOWN * 60.0, Game.LAYER_WORLD, [get_rid()])
+	var hit := get_world_3d().direct_space_state.intersect_ray(q)
+	return 60.0 if hit.is_empty() else global_position.y - hit["position"].y
 
 
 ## In street clothes: ordinary punches and kicks, nothing else.
@@ -730,6 +767,25 @@ func utility_name() -> String:
 func combo_hit(n: int) -> void:
 	combo_count += n
 	combo_timer = 2.5
+	if is_player and world and world.style:
+		world.style.add(n, style_kind)
+
+
+## A perfectly timed block: the attacker is staggered and time slows.
+func _parry(source: Actor) -> void:
+	source.stun_t = maxf(source.stun_t, 1.5)
+	source.velocity = (source.global_position - global_position).normalized() * 8.0 + Vector3.UP * 3.0
+	if world:
+		FX.ring(world, chest(), Color("#ffe48a"), 2.5, 0.3, forward())
+		FX.flash(world, chest() + forward() * 0.5, Color("#ffffff"), 1.0, 0.15, 0.7)
+		Sfx.play("hit", global_position, 4.0, 0.0)
+		if is_player:
+			Game.hit_stop(0.18)
+			world.notify("PERFECT PARRY!", Color("#ffe48a"))
+			add_ult(12.0)
+			if world.style:
+				world.style.add(6, "parry")
+			Game.record("parries")
 
 
 func _tick_spheres(delta: float) -> void:
@@ -854,12 +910,25 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 				amount = hp + 1.0
 			_player_hit_side_effects(amount)
 		elif is_player:
-			amount *= 0.5
+			amount *= 0.5 * Game.damage_to_player()
 		if source.rage_t > 0.0:
 			amount *= 1.8
+	if blocking and is_instance_valid(source):
+		var to_src := source.global_position - global_position
+		to_src.y = 0.0
+		if to_src.length() < 0.2 or to_src.normalized().dot(forward()) > -0.1:
+			if Time.get_ticks_msec() / 1000.0 - _block_start < 0.3:
+				_parry(source)
+				return
+			amount *= 0.3
+			knock *= 0.15
+			if world:
+				FX.sparks(world, chest() + forward() * 0.4, Color("#e8eef4"), 6, 4.0, 0.25)
 	if invuln_t > 0.0:
 		amount *= 0.1
 		knock *= 0.2
+	if is_player and world and world.style and amount > 2.0:
+		world.style.hurt()
 	if field_t > 0.0:
 		amount = 0.0
 		knock = Vector3.ZERO
