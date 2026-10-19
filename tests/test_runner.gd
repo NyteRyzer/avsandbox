@@ -812,6 +812,10 @@ func test_activities_extra() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	check(world.door.get("name", "").contains("motorcycle"), "motorcycles can be ridden")
+	for k in 60:
+		if world.player.is_on_floor():
+			break
+		await get_tree().physics_frame
 	Emotes.play(world.player, 3)
 	check(Game.stat("emotes") >= 1.0, "emotes play")
 	world.clear_npcs()
