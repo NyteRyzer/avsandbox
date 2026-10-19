@@ -15,6 +15,8 @@ LOCK-ON       Z or middle mouse        INTERACT / TAKEDOWN    G / D-pad up
 COSTUME       T / D-pad down           SWITCH TO ALLY         Y
 SCAN          hold X                   MAP & FAST TRAVEL      M
 PHOTO MODE    P                        EMOTES                 1 2 3 4
+GLIDE (capes) hold Space while falling   TELEKINESIS  E (aim), LMB throws
+LOADOUT       character select, or any HQ armory
 SANDBOX TOOLS Tab / Back               PAUSE  Esc / Start      HIDE HUD  F1"""
 
 

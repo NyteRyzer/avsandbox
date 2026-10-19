@@ -92,6 +92,10 @@ func _draw() -> void:
 		var clamped := center + (s - center).limit_length(size.x * 0.5 - 10.0)
 		draw_circle(clamped, 8.0, Color("#ff6a4a"))
 		draw_circle(clamped, 3.5, Color("#ffffff"))
+	var mg: Vector3 = world.street_crime.target_pos()
+	if mg != Vector3.INF:
+		var s4: Vector2 = to_screen.call(mg.x, mg.z)
+		draw_circle(center + (s4 - center).limit_length(size.x * 0.5 - 10.0), 6.0, Color("#ffb070"))
 	var cp: Vector3 = world.char_missions.target_pos()
 	if cp != Vector3.INF:
 		var s3: Vector2 = to_screen.call(cp.x, cp.z)

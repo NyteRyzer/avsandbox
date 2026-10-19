@@ -7,6 +7,7 @@ signal back
 
 var swap_mode := false
 var _suit_pick: OptionButton
+var _loadout: LoadoutPanel
 var _filter := "all"
 var _search := ""
 var _grid: GridContainer
@@ -124,6 +125,12 @@ func _ready() -> void:
 	_suit_pick = OptionButton.new()
 	_suit_pick.item_selected.connect(_on_suit)
 	rv.add_child(_suit_pick)
+	rv.add_child(UITheme.button("LOADOUT: powers and weapons...", func() -> void:
+		if _selected != "":
+			_loadout.open(_selected), 0))
+	_loadout = LoadoutPanel.new()
+	add_child(_loadout)
+	_loadout.closed.connect(func(_changed: bool) -> void: _select(_selected))
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	rv.add_child(spacer)
@@ -250,7 +257,7 @@ func _select(id: String) -> void:
 	if not Game.by_id.has(id):
 		return
 	_selected = id
-	var c: Dictionary = Costumes.apply(Game.by_id[id], str(Game.suit_choice.get(id, "")))
+	var c: Dictionary = Loadout.apply(Costumes.apply(Game.by_id[id], str(Game.suit_choice.get(id, ""))))
 	_fill_suits(id)
 	if _model:
 		_model.queue_free()

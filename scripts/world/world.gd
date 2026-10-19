@@ -12,6 +12,9 @@ var population: Population
 var events: Events
 var missions: Missions
 var char_missions: CharMissions
+var loadout_panel: LoadoutPanel
+var pickups: Pickups
+var street_crime: StreetCrime
 var race: Race
 var style := StyleMeter.new()
 var news: News
@@ -82,6 +85,19 @@ func _ready() -> void:
 	char_missions = CharMissions.new()
 	char_missions.world = self
 	add_child(char_missions)
+	pickups = Pickups.new()
+	pickups.world = self
+	add_child(pickups)
+	street_crime = StreetCrime.new()
+	street_crime.world = self
+	add_child(street_crime)
+	loadout_panel = LoadoutPanel.new()
+	add_child(loadout_panel)
+	loadout_panel.closed.connect(func(changed: bool) -> void:
+		capture_mouse(true)
+		if changed and player and is_instance_valid(player):
+			spawn_player(str(player.def["id"]), player.global_position)
+			notify("Loadout: " + Loadout.describe(player.def), Color("#c8e8ff")))
 	cam = CameraRig.new()
 	add_child(cam)
 	day_night.follow = cam
@@ -185,7 +201,7 @@ func _exit_tree() -> void:
 
 ## Spawns (or replaces) the player as the given roster character.
 func spawn_player(id: String, at = null) -> void:
-	var c := Costumes.apply(Game.get_character(id), str(Game.suit_choice.get(id, "")))
+	var c := Loadout.apply(Costumes.apply(Game.get_character(id), str(Game.suit_choice.get(id, ""))))
 	var pos: Vector3
 	var yaw := cam.yaw
 	if at != null:
@@ -294,6 +310,7 @@ func _process(delta: float) -> void:
 	if player and is_instance_valid(player):
 		scanning = Input.is_action_pressed("scan") and not player.civilian and not player.dead
 		_space_check()
+		_tick_power_weather(delta)
 		_team_t -= delta
 		if _team_t <= 0.0:
 			_team_t = 0.5
@@ -381,7 +398,12 @@ func _nearest_door() -> Dictionary:
 	# People trapped in a fire, and heroes who might join you.
 	if best.is_empty() and carrying == null:
 		for o in get_tree().get_nodes_in_group("actors"):
-			if o == player or o.dead or o.global_position.distance_to(p) > 2.8:
+			if o == player or o.global_position.distance_to(p) > 2.8:
+				continue
+			if o.dead:
+				if Game.player_side() == 1 and o.team in ["villain", "thug"] and not o.has_meta("inmate") and not player.civilian:
+					best = {"name": "Arrest %s (carry them to a cell)" % o.display_name, "pos": o.global_position, "interior": "arrest", "actor": o}
+					break
 				continue
 			if o.has_meta("trapped"):
 				best = {"name": "Carry %s to safety" % o.display_name, "pos": o.global_position, "interior": "rescue", "actor": o}
@@ -493,6 +515,34 @@ func use_door(d: Dictionary) -> void:
 			survival.start()
 		"jsa_rollcall":
 			jsa_rollcall()
+		"cell":
+			_cell(d)
+		"arrest":
+			carrying = d["actor"]
+			carrying.collision_layer = 0
+			carrying.set_meta("pinned", true)
+			notify("Carry them to Iron Heights, Arkham or the CCPD holding cell. [G] at a cell locks them up.", Color("#9fc8ff"))
+		"elevator":
+			var room := str(d.get("data", inside))
+			if city.roofs.has(room):
+				_move_player(city.roofs[room])
+				inside = ""
+				_last_district = ""
+				notify("The elevator opens onto the roof.", Color("#ffe8a0"))
+			else:
+				notify("The elevator's out of order on this Earth.", Color("#ffe8a0"))
+		"armory":
+			capture_mouse(false)
+			loadout_panel.open(str(player.def["id"]))
+		"medbay":
+			player.heal(player.max_hp)
+			player.energy = player.max_energy
+			for a in get_tree().get_nodes_in_group("actors"):
+				if a.is_ally_of_player():
+					a.heal(a.max_hp)
+			FX.flash(self, player.chest(), Color("#60ff90"), 2.0, 0.4, 0.5)
+			notify("Patched up: full health and energy.", Color("#60ff90"))
+			Game.record("medbay")
 		"balcony":
 			leave_interior("catco", 60.0)
 		"exit_speedforce":
@@ -528,6 +578,31 @@ func _speed_force_talk() -> void:
 		Game.record("speed_force_charges")
 	else:
 		notify("\"You are not a speedster. But you are welcome here.\"", Color("#ffe8a0"))
+
+
+## Weather powers: a storm called down, a deep freeze. The sky changes for a
+## while, then goes back to what it was.
+var _power_weather_t := 0.0
+var _weather_before := ""
+
+
+func power_weather(w: String, seconds := 30.0) -> void:
+	if inside != "" or city.kind != "metro":
+		return
+	if _power_weather_t <= 0.0:
+		_weather_before = day_night.weather
+	_power_weather_t = seconds
+	if day_night.weather != w:
+		day_night.set_weather(w)
+		notify("The sky answers: %s rolls in." % ("a storm" if w == "storm" else ("snow" if w == "snow" else w)), Color("#c8e0ff"))
+
+
+func _tick_power_weather(delta: float) -> void:
+	if _power_weather_t <= 0.0:
+		return
+	_power_weather_t -= delta
+	if _power_weather_t <= 0.0:
+		day_night.set_weather(_weather_before if _weather_before != "" else "clear")
 
 
 ## The JSA brownstone's round table: three members of the Justice Society
@@ -616,6 +691,20 @@ func exit_vehicle() -> void:
 
 
 func _drop_carried() -> void:
+	if carrying and is_instance_valid(carrying) and carrying.dead and (inside in Interiors.PRISONS or inside == "ccpd"):
+		var key := ""
+		if inside in Interiors.PRISONS:
+			var pts := Interiors.cell_points(inside)
+			var best := 0
+			var bd := INF
+			for k in pts.size():
+				var dd: float = Interiors.to_world(inside, pts[k]).distance_to(player.global_position)
+				if dd < bd:
+					bd = dd
+					best = k
+			key = "%s:%d" % [inside, best]
+		_lock_up(key)
+		return
 	var c := carrying
 	carrying = null
 	if not is_instance_valid(c):
@@ -681,6 +770,7 @@ func swap_to_next_ally() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if carrying and is_instance_valid(carrying) and player and is_instance_valid(player):
+		carrying.dead_time = 0.0
 		carrying.global_position = player.global_position + Vector3.UP * 1.1 * player.size - player.forward() * 0.3
 		carrying.velocity = Vector3.ZERO
 		carrying.rotation.y = player.rotation.y
@@ -705,6 +795,89 @@ func enter_interior(id: String, remember := true) -> void:
 	inside = id
 	FX.flash(self, player.chest(), Color("#ffffff"), 1.2, 0.3, 0.4)
 	notify("Entered " + Interiors.NAMES[id], Color("#bfe8ff"))
+	_on_enter_room(id)
+
+
+# --- Prisons: inmates, arrests and jailbreaks ---------------------------------
+
+var inmates: Dictionary = {}       # "room:cell" -> Actor
+var _jailed: Dictionary = {}       # "room:cell" -> character id (who's locked up where)
+
+const INMATES := {"iron_heights": ["captain_cold", "heat_wave", "weather_wizard", "mirror_master", "golden_glider", "pied_piper",
+	"trickster", "king_shark", "atom_smasher", "livewire"],
+	"arkham": ["alice", "poison_ivy", "hush", "black_mask", "count_vertigo", "deadshot", "solomon_grundy", "eclipso", "dragon_king", "tigress"]}
+
+
+## Walking into a prison: its inmates sit behind the bars.
+func _on_enter_room(id: String) -> void:
+	if not id in Interiors.PRISONS:
+		return
+	var pts := Interiors.cell_points(id)
+	for k in pts.size():
+		var key := "%s:%d" % [id, k]
+		if inmates.has(key) and is_instance_valid(inmates[key]):
+			continue
+		var who: String = _jailed.get(key, INMATES[id][k % INMATES[id].size()])
+		if who == "" or not Game.by_id.has(who):
+			continue
+		var a: Actor = population.spawn_character(Game.get_character(who), "villain", Interiors.to_world(id, pts[k]) + Vector3(0, 0.3, 0))
+		a.brain = null
+		a.set_meta("pinned", true)
+		a.set_meta("inmate", key)
+		a.collision_layer = 0
+		inmates[key] = a
+
+
+func _cell(d: Dictionary) -> void:
+	var key := "%s:%s" % [inside, str(d.get("data", "0"))]
+	var a = inmates.get(key, null)
+	if carrying and is_instance_valid(carrying) and carrying.dead:
+		_lock_up(key)
+		return
+	if a == null or not is_instance_valid(a):
+		notify("The cell is empty. Knock out a villain and carry them here (G).", Color("#bcd4ff"))
+		return
+	if Game.player_side() == 1:
+		notify("%s glares at you through the bars." % a.display_name, Color("#bcd4ff"))
+		return
+	# Jailbreak: the inmate walks free and joins you.
+	inmates.erase(key)
+	_jailed[key] = ""
+	a.remove_meta("inmate")
+	a.collision_layer = Game.LAYER_ACTORS
+	a.brain = AIBrain.new()
+	a.brain.role = "fighter"
+	a.brain.home = a.global_position
+	a.brain.detect = 55.0
+	a.follow_target = player
+	a.team = player.team
+	a.global_position = player.global_position + player.forward() * 2.0
+	FX.flash(self, a.chest(), Color("#ff6a4a"), 1.4, 0.3)
+	notify("JAILBREAK: %s is free and on your side!" % a.display_name, Color("#ff9a6a"))
+	Game.record("jailbreaks")
+	Game.add_heat(1.0)
+	Game.add_score(60)
+
+
+## Arrests: a knocked-out villain carried into a cell (or CCPD's holding cell).
+func _lock_up(key := "") -> void:
+	var c := carrying
+	carrying = null
+	if not is_instance_valid(c):
+		return
+	var who := str(c.def.get("id", ""))
+	if key != "" and Game.by_id.has(who):
+		_jailed[key] = who
+		if inmates.has(key) and is_instance_valid(inmates[key]):
+			inmates[key].queue_free()
+		inmates.erase(key)
+	FX.flash(self, c.chest(), Color("#4f8aff"), 1.2, 0.3)
+	notify("ARRESTED: %s is behind bars.  +75" % c.display_name, Color("#9fc8ff"))
+	c.queue_free()
+	Game.record("arrests")
+	Game.add_score(75)
+	if key != "":
+		_on_enter_room(inside)
 
 
 ## Steps back outside. `lift` raises the exit point (the CatCo balcony).
@@ -807,6 +980,9 @@ func travel_to(id: String, how := "breach") -> void:
 	Game.record("travels")
 	missions._clear_marker()
 	char_missions._cleanup()
+	pickups.clear()
+	street_crime.stop()
+	inmates.clear()
 	missions.on_arrive(id)
 	collectibles.build()
 	waypoint = Vector3.INF
@@ -855,6 +1031,7 @@ func on_actor_ko(a: Actor, source: Actor) -> void:
 		return
 	kos += 1
 	Game.record("kos")
+	pickups.drop_from(a)
 	_gain_mastery(a)
 	if a.boss:
 		Game.record("bosses")

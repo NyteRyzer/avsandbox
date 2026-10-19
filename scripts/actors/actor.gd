@@ -71,6 +71,16 @@ var event_tag := ""
 var grapple_point = null
 var grapple_line: MeshInstance3D = null
 var held_prop: RigidBody3D = null
+## Telekinesis: what's floating in front of a telekinetic (a prop in
+## held_prop, or a person here).
+var tk_hold := false
+## A weapon picked up off the street: replaces the primary until the ammo runs out.
+var pickup_ammo := 0
+var _saved_primary: Dictionary = {}
+var _saved_gear := ""
+var tk_actor: Actor = null
+var _tk_t := 0.0
+var _tk_fx_t := 0.0
 var beam_sound_t := 0.0
 var dash_t := 0.0
 var dash_hit: Dictionary = {}
@@ -453,11 +463,32 @@ func _tick_status(delta: float) -> void:
 
 func _move(delta: float) -> void:
 	var was_gliding := gliding
+	var vy_before := velocity.y
+	var air_before := not is_on_floor()
 	gliding = false
 	_move_body(delta)
+	if air_before and is_on_floor() and vy_before < -26.0 and not civilian and not dead and not swimming:
+		_hero_landing(-vy_before)
 	model.gliding = gliding
 	if gliding and not was_gliding and world:
 		Sfx.play("whoosh", global_position, -6.0)
+
+
+## A superhero landing: one knee down, fist to the ground, the street cracks.
+func _hero_landing(speed: float) -> void:
+	model.play("hero_land", 0.7)
+	if world == null:
+		return
+	var col := Color(str(def["look"].get("trail", def["look"].get("accent", "#ffffff"))))
+	var r := clampf(speed * 0.18, 4.0, 10.0) * size
+	FX.shockwave(world, global_position, col.lerp(Color.WHITE, 0.4), r)
+	if speed > 40.0:
+		FX.ground_crack(world, global_position, col, r)
+	Abilities.area_damage(self, global_position + Vector3.UP * 0.5, r * 0.6, minf(speed * 0.5, 30.0) * power, "push", 14.0, 8.0)
+	world.shake_at(global_position, clampf(speed / 100.0, 0.15, 0.5))
+	Sfx.play("slam", global_position, 0.0)
+	if is_player:
+		Game.record("hero_landings")
 
 
 ## Caped characters (Batwoman...) can glide; flyers, civvies and the shrunken can't.
@@ -622,8 +653,138 @@ func _move_body(delta: float) -> void:
 		global_position = world.city.nearest_road_point(global_position) if world else Vector3(0, 2, 0)
 		velocity = Vector3.ZERO
 	if held_prop and is_instance_valid(held_prop):
-		held_prop.global_position = global_position + Vector3.UP * (2.6 * _cur_scale() + 0.8)
-		held_prop.global_rotation = Vector3(0, rotation.y, 0)
+		if tk_hold:
+			var hp := _tk_point()
+			held_prop.global_position = held_prop.global_position.lerp(hp, clampf(delta * 8.0, 0.0, 1.0))
+			held_prop.rotate_y(delta * 0.8)
+		else:
+			held_prop.global_position = global_position + Vector3.UP * (2.6 * _cur_scale() + 0.8)
+			held_prop.global_rotation = Vector3(0, rotation.y, 0)
+	_tk_tick(delta)
+
+
+## Where telekinesis holds things: up and out in front, bobbing a little.
+func _tk_point() -> Vector3:
+	return chest() + forward() * 4.5 * size + Vector3.UP * (1.6 + sin(Time.get_ticks_msec() * 0.003) * 0.25)
+
+
+func _tk_tick(delta: float) -> void:
+	var holding := (tk_hold and held_prop and is_instance_valid(held_prop)) or (tk_actor and is_instance_valid(tk_actor))
+	if not holding:
+		if tk_actor and not is_instance_valid(tk_actor):
+			tk_actor = null
+		return
+	_tk_t += delta
+	if tk_actor and is_instance_valid(tk_actor):
+		if tk_actor.dead or _tk_t > 8.0:
+			tk_release(false)
+			return
+		tk_actor.global_position = tk_actor.global_position.lerp(_tk_point() - Vector3.UP * 0.9, clampf(delta * 8.0, 0.0, 1.0))
+		tk_actor.velocity = Vector3.ZERO
+		tk_actor.stun_t = maxf(tk_actor.stun_t, 0.3)
+	elif _tk_t > 12.0:
+		tk_release(false)
+		return
+	_tk_fx_t -= delta
+	if _tk_fx_t <= 0.0 and world:
+		_tk_fx_t = 0.12
+		var col := Color(str(def["look"].get("trail", def["look"].get("glow", "#c47aff"))))
+		var obj: Vector3 = tk_actor.chest() if tk_actor and is_instance_valid(tk_actor) else held_prop.global_position
+		FX.lightning(world, model.hand_point(1.0), obj, col, 0.12, 0.25, 5, 0)
+		FX.sparks(world, obj, col, 3, 2.0, 0.3)
+
+
+func equip_pickup(weapon: Dictionary, ammo: int) -> void:
+	if pickup_ammo <= 0:
+		def = def.duplicate(true)
+		_saved_primary = def["primary"]
+		_saved_gear = str(def["look"].get("gear", {}).get("right", ""))
+	var w := weapon.duplicate(true)
+	var gear := str(w.get("_gear", ""))
+	for key in ["_gear", "_gear_left", "_back", "_source"]:
+		w.erase(key)
+	def["primary"] = w
+	pickup_ammo = ammo
+	if gear != "":
+		var look: Dictionary = def["look"]
+		var g: Dictionary = look.get("gear", {}).duplicate()
+		g["right"] = gear
+		look["gear"] = g
+		_rebuild_model(def["look"])
+
+
+func drop_pickup() -> void:
+	pickup_ammo = 0
+	if _saved_primary.is_empty():
+		return
+	def["primary"] = _saved_primary
+	_saved_primary = {}
+	var g: Dictionary = def["look"].get("gear", {}).duplicate()
+	if _saved_gear == "":
+		g.erase("right")
+	else:
+		g["right"] = _saved_gear
+	def["look"]["gear"] = g
+	_rebuild_model(def["look"])
+	if is_player and world:
+		world.notify("Out of ammo. Back to your own moves.", Color("#ffe8a0"))
+
+
+## Telekinesis: lift the prop or person under the crosshair.
+func tk_grab() -> bool:
+	var from := head_pos()
+	var dir := aim_dir(from)
+	var best = null
+	var best_score := 0.9
+	for prop in get_tree().get_nodes_in_group("props"):
+		var to: Vector3 = prop.global_position - from
+		if to.length() > 40.0 or to.length() < 1.0:
+			continue
+		var sc := dir.dot(to.normalized())
+		if sc > best_score:
+			best_score = sc
+			best = prop
+	var foe := Powers.aimed_foe(self, 30.0, 0.92)
+	if foe and (best == null or foe.global_position.distance_to(from) < best.global_position.distance_to(from)):
+		if foe.size < 1.8 and not foe.boss:
+			tk_actor = foe
+			_tk_t = 0.0
+			foe.grudges[get_instance_id()] = 20.0
+			FX.aura(foe, Color(str(def["look"].get("trail", "#c47aff"))), foe.size, 1.0)
+			model.play("levitate_cast", 0.6)
+			Sfx.play("teleport", global_position, -4.0)
+			return true
+	if best:
+		held_prop = best
+		best.pick_up(self)
+		tk_hold = true
+		_tk_t = 0.0
+		model.play("levitate_cast", 0.6)
+		Sfx.play("teleport", global_position, -4.0)
+		return true
+	return false
+
+
+## Let go: thrown at the crosshair, or just dropped.
+func tk_release(throw := true) -> void:
+	var dir := aim_dir(_tk_point())
+	if tk_actor and is_instance_valid(tk_actor):
+		var o := tk_actor
+		tk_actor = null
+		if throw:
+			o.take_damage(28.0 * power, self, "", dir * 32.0 + Vector3.UP * 5.0)
+			if o.size < 1.6:
+				o.model.tumble(12.0)
+		model.play("palm_push", 0.4)
+	elif tk_hold and held_prop and is_instance_valid(held_prop):
+		var prop: Prop = held_prop
+		held_prop = null
+		tk_hold = false
+		prop.throw_from(self, dir * 55.0 + Vector3.UP * 2.0 if throw else Vector3.ZERO)
+		model.play("palm_push", 0.4)
+	tk_hold = false
+	if throw:
+		Sfx.play("whoosh", global_position, 2.0)
 
 
 func _abilities(delta: float) -> void:
@@ -631,6 +792,11 @@ func _abilities(delta: float) -> void:
 		return
 	if civilian:
 		_civilian_abilities()
+		return
+	if (tk_hold or tk_actor) and (in_primary or in_ability):
+		tk_release(true)
+		cooldowns["primary"] = 0.4
+		cooldowns["utility"] = 0.4
 		return
 	if held_prop and (in_primary or in_ability):
 		Abilities.throw_prop(self)
@@ -666,6 +832,10 @@ func _abilities(delta: float) -> void:
 				cooldowns[slot] = Abilities.cooldown(atk)
 				style_kind = str(atk["kind"]) + str(atk.get("style", ""))
 				Abilities.fire(self, atk)
+				if slot == "primary" and pickup_ammo > 0:
+					pickup_ammo -= 1
+					if pickup_ammo <= 0:
+						drop_pickup()
 	if not any_beam:
 		for b in beams:
 			b.visible = false
@@ -722,6 +892,8 @@ func set_civilian(on: bool) -> void:
 		speed_mult = 1.0
 		civilian = true
 		_release_grapple()
+		if tk_hold or tk_actor:
+			tk_release(false)
 		if held_prop:
 			Abilities.drop_prop(self)
 		for b in beams:
@@ -760,6 +932,10 @@ func set_civilian(on: bool) -> void:
 ## E: lift something heavy if there is something to lift, otherwise use the
 ## character's utility power (grapple, blitz, breach, phase...).
 func _use_utility() -> void:
+	if def.get("telekinetic", false) and held_prop == null and tk_actor == null:
+		if tk_grab():
+			cooldowns["utility"] = 0.4
+			return
 	if strength and held_prop == null:
 		for prop in get_tree().get_nodes_in_group("props"):
 			if prop.global_position.distance_to(global_position) < 5.0 * size:
@@ -795,6 +971,27 @@ func combo_hit(n: int) -> void:
 	combo_timer = 2.5
 	if is_player and world and world.style:
 		world.style.add(n, style_kind)
+
+
+## Bosses get a second wind at half health: faster, angrier, with backup.
+func _enrage() -> void:
+	set_meta("enraged", true)
+	rage_t = maxf(rage_t, 30.0)
+	speed_mult *= 1.2
+	stun_t = 0.0
+	model.play("power_up", 0.9)
+	if world == null:
+		return
+	var col := Color("#ff3a3a")
+	FX.pillar(world, global_position, col, 40.0, 2.5, 1.0)
+	FX.burst_lines(world, chest(), col, 5.0, 18)
+	FX.shockwave(world, global_position, col, 10.0)
+	world.notify("%s is enraged!" % display_name, Color("#ff6a6a"))
+	for k in 2:
+		var g: Actor = world.population.spawn_thug(global_position + Vector3(randf_range(-6, 6), 0.5, randf_range(-6, 6)))
+		g.team = team
+		g.set_meta("pinned", true)
+		g.grudges = grudges.duplicate()
 
 
 ## A perfectly timed block: the attacker is staggered and time slows.
@@ -941,6 +1138,8 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 			amount *= 0.5 * Game.damage_to_player()
 		if source.rage_t > 0.0:
 			amount *= 1.8
+	if boss and not has_meta("enraged") and hp - amount < max_hp * 0.5 and hp > max_hp * 0.5:
+		_enrage()
 	if blocking and is_instance_valid(source):
 		var to_src := source.global_position - global_position
 		to_src.y = 0.0

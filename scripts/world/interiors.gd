@@ -12,16 +12,23 @@ extends RefCounted
 
 const DEPTH := -320.0
 const SPACING := 140.0
-const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider", "batcave", "kent_barn", "jsa_hq"]
+const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider", "batcave", "kent_barn", "jsa_hq",
+	"queen_consolidated", "ccpd", "l_corp", "iron_heights", "arkham", "garfield"]
+## Rooms with cells: inmates sit in them, and arrested villains go in them.
+const PRISONS := ["iron_heights", "arkham"]
 const BUNKER_SUITS := ["green_arrow", "speedy", "black_canary", "spartan", "wild_dog", "arsenal"]
 const NAMES := {"star_labs": "S.T.A.R. Labs", "bunker": "The Arrow Bunker", "jitters": "Jitters",
 	"catco": "CatCo Worldwide", "deo": "The D.E.O.", "waverider": "The Waverider",
-	"batcave": "The Batcave", "kent_barn": "The Kent Barn", "jsa_hq": "JSA Headquarters"}
+	"batcave": "The Batcave", "kent_barn": "The Kent Barn", "jsa_hq": "JSA Headquarters",
+	"queen_consolidated": "Queen Consolidated", "ccpd": "CCPD", "l_corp": "L-Corp", "iron_heights": "Iron Heights",
+	"arkham": "Arkham Asylum", "garfield": "Garfield High"}
 ## Room footprints (width, height, depth). The doorway is in the middle of
 ## the +Z wall, which faces the street when a room sits in its building.
 const SIZES := {"star_labs": Vector3(34, 6, 28), "bunker": Vector3(30, 5, 22), "jitters": Vector3(20, 4.2, 16),
 	"catco": Vector3(36, 4.6, 26), "deo": Vector3(34, 7, 30), "waverider": Vector3(22, 5, 20),
-	"batcave": Vector3(30, 9, 26), "kent_barn": Vector3(20, 8, 28), "jsa_hq": Vector3(30, 6, 24)}
+	"batcave": Vector3(30, 9, 26), "kent_barn": Vector3(20, 8, 28), "jsa_hq": Vector3(30, 6, 24),
+	"queen_consolidated": Vector3(30, 7, 26), "ccpd": Vector3(32, 6, 26), "l_corp": Vector3(30, 7, 26),
+	"iron_heights": Vector3(40, 6, 30), "arkham": Vector3(34, 6, 28), "garfield": Vector3(32, 5, 24)}
 const DOOR_W := 3.4
 const DOOR_H := 3.4
 
@@ -63,6 +70,22 @@ static func room_at(p: Vector3) -> String:
 
 static func is_inside(p: Vector3) -> bool:
 	return room_at(p) != ""
+
+
+## Room-local point to world, for any placed room.
+static func to_world(room: String, local: Vector3) -> Vector3:
+	var d: Dictionary = placed.get(room, {"origin": remote_origin(room), "yaw": 0.0})
+	return d["origin"] + local.rotated(Vector3.UP, float(d["yaw"]))
+
+
+## The cells of a prison room (room-local centres), five down each side.
+static func cell_points(room: String) -> Array:
+	var size: Vector3 = SIZES[room]
+	var out := []
+	for side in [-1.0, 1.0]:
+		for k in 5:
+			out.append(Vector3(side * (size.x * 0.5 - 2.2), 0.4, -size.z * 0.5 + 4.0 + k * 4.2))
+	return out
 
 
 ## A point just outside a room's doorway (on the street).
@@ -212,6 +235,27 @@ func mannequin(id: String, p: Vector3, face_z := -1.0) -> void:
 	interactable("Suit up as " + str(c["alias"]), p + Vector3(0, 0.5, 1.4 * face_z), "suit", id)
 
 
+## An armory rack (opens the loadout screen) and a med bay, against the side walls.
+func stations(armory := true, medbay := true) -> void:
+	var size: Vector3 = SIZES[id]
+	var x := size.x * 0.5 - 1.6
+	var z := size.z * 0.5 - 5.0
+	if armory:
+		box(Vector3(-x, 1.4, z), Vector3(0.6, 2.8, 3.6), "#2a2c30")
+		for k in 4:
+			box(Vector3(-x + 0.35, 0.8 + k * 0.55, z), Vector3(0.12, 0.08, 3.0), "#8a929c", false, 0.0)
+		box(Vector3(-x + 0.4, 2.9, z), Vector3(0.1, 0.25, 3.0), "#3affd0", false, 2.0)
+		label("ARMORY", Vector3(-x + 0.5, 3.3, z), 0.45, Color("#3affd0"), PI * 0.5)
+		interactable("Armory: change your loadout", Vector3(-x + 1.6, 0.5, z), "armory")
+	if medbay:
+		box(Vector3(x - 0.6, 0.45, z), Vector3(1.2, 0.9, 2.6), "#e8e8ec")
+		box(Vector3(x - 0.6, 0.95, z - 0.9), Vector3(1.0, 0.15, 0.6), "#ffffff")
+		box(Vector3(x - 0.05, 2.2, z), Vector3(0.1, 0.9, 0.3), "#60ff90", false, 2.0)
+		box(Vector3(x - 0.05, 2.2, z), Vector3(0.1, 0.3, 0.9), "#60ff90", false, 2.0)
+		label("MED BAY", Vector3(x - 0.5, 3.0, z), 0.45, Color("#60ff90"), -PI * 0.5)
+		interactable("Med bay: patch up", Vector3(x - 2.0, 0.5, z), "medbay")
+
+
 # --- Rooms --------------------------------------------------------------------
 
 func _star_labs() -> void:
@@ -245,6 +289,7 @@ func _star_labs() -> void:
 	label("BREACH ROOM", Vector3(8, 4.6, 12), 0.6, Color("#9fd0ff"))
 	interactable("Open a breach to another Earth", Vector3(8, 0.5, 9), "breach_room")
 	interactable("Start the Survival Simulator", Vector3(0, 0.5, -3.5), "training")
+	stations()
 	spawn(Vector3(0, 0.5, 9))
 	exit_door(Vector3(0, 0, 13.7), "S.T.A.R. Labs")
 
@@ -274,6 +319,7 @@ func _bunker() -> void:
 	for k in 8:
 		box(Vector3(11.8, 1.6, 2.5 + k * 0.4), Vector3(0.04, 1.6, 0.04), "#c8b090", false)
 	label("THE BUNKER", Vector3(0, 3.6, -10.8), 0.9, Color("#3aff6a"))
+	stations()
 	spawn(Vector3(0, 0.5, 0))
 	exit_door(Vector3(0, 0, 10.75), "Verdant")
 
@@ -332,6 +378,7 @@ func _deo() -> void:
 		screen(Vector3(-12 + k * 6.0, 3.0, -14.6), Vector2(4.5, 2.6), "#2a6aff")
 	for k in 6:
 		desk(Vector3(-12.5 + k * 5.0, 0, 8), 2.4, PI, "#2a6aff")
+	stations()
 	spawn(Vector3(0, 0.5, 10))
 	exit_door(Vector3(0, 0, 14.7), "The D.E.O.")
 
@@ -364,6 +411,7 @@ func _waverider() -> void:
 	for side in [-1.0, 1.0]:
 		for k in 3:
 			box(Vector3(side * 9.5, 1.0, -3 + k * 3.0), Vector3(1.4, 1.2, 2.2), "#4a525c")
+	stations()
 	spawn(Vector3(0, 0.5, 6))
 	exit_door(Vector3(0, 0, 9.7), "The Waverider")
 
@@ -390,6 +438,7 @@ func _batcave() -> void:
 	box(Vector3(9, 0.9, 4), Vector3(2.6, 1.0, 6.0), "#101014")
 	box(Vector3(9, 1.6, 4.6), Vector3(2.0, 0.6, 2.6), "#101014")
 	box(Vector3(9, 1.0, 1.0), Vector3(2.0, 0.2, 0.1), "#ff3a3a", false, 2.0)
+	stations()
 	spawn(Vector3(0, 0.5, 8))
 	exit_door(Vector3(0, 0, 12.75), "Wayne Tower")
 
@@ -457,5 +506,127 @@ func _jsa_hq() -> void:
 	label("COSMIC CONVERTER BELT", Vector3(11, 3.0, 4), 0.3, Color("#ffd23a"))
 	interactable("Call the Justice Society (recruit three members)", Vector3(0, 0.5, 2.5), "jsa_rollcall")
 	interactable("Start the Survival Simulator", Vector3(6, 0.5, 6), "training")
+	stations()
 	spawn(Vector3(0, 0.5, 8))
 	exit_door(Vector3(0, 0, 11.75), "JSA Headquarters")
+
+
+## A row of barred cells down both side walls.
+func _cells() -> void:
+	var size: Vector3 = SIZES[id]
+	for p in cell_points(id):
+		var side := signf(p.x)
+		var front_x: float = p.x - side * 2.0
+		for b in 7:
+			box(Vector3(front_x, 1.6, p.z - 1.8 + b * 0.6), Vector3(0.1, 3.2, 0.1), "#5a5f68")
+		box(Vector3(p.x, 1.6, p.z + 2.05), Vector3(4.2, 3.2, 0.2), "#4a4c50")
+		box(Vector3(p.x + side * 1.4, 0.35, p.z - 0.8), Vector3(1.0, 0.5, 2.0), "#7a7a74")
+		interactable("Cell", Vector3(front_x - side * 1.0, 0.5, p.z), "cell", str(cell_points(id).find(p)))
+
+
+func _queen_consolidated() -> void:
+	# The lobby of Queen Consolidated: marble, glass and the elevator up.
+	room(SIZES[id], "#d8d8d4", "#2a3a2e", "#e8e8e4")
+	light(Vector3(-8, 6, 0), Color(1, 0.98, 0.92), 1.6, 20.0)
+	light(Vector3(8, 6, 0), Color(1, 0.98, 0.92), 1.6, 20.0)
+	box(Vector3(0, 0.6, -2), Vector3(8, 1.2, 1.4), "#1a1a1e")
+	box(Vector3(0, 1.25, -2), Vector3(8.2, 0.1, 1.6), "#c8c8c0")
+	label("QUEEN CONSOLIDATED", Vector3(0, 5.0, -12.6), 1.0, Color("#3aff6a"))
+	box(Vector3(0, 5.0, -12.85), Vector3(14, 1.4, 0.2), "#1a2a1e", false, 0.4)
+	for x in [-12.0, 12.0]:
+		box(Vector3(x, 3.5, -6), Vector3(1.0, 7.0, 1.0), "#c8c8c0")
+		box(Vector3(x, 3.5, 4), Vector3(1.0, 7.0, 1.0), "#c8c8c0")
+	# Oliver's office corner: a glass desk and the hood on the wall.
+	desk(Vector3(-9, 0, -8), 2.6, 0.0, "#3aff6a")
+	mannequin("green_arrow", Vector3(-12, 0.2, -10.5), 1.0)
+	# Elevator
+	box(Vector3(10, 2.0, -12.7), Vector3(3.6, 4.0, 0.3), "#8a929c")
+	box(Vector3(10, 4.3, -12.6), Vector3(1.6, 0.3, 0.1), "#ffd23a", false, 2.0)
+	label("ELEVATOR TO THE ROOF", Vector3(10, 4.8, -12.4), 0.35, Color("#ffe8a0"))
+	interactable("Take the elevator to the roof", Vector3(10, 0.5, -10.5), "elevator", id)
+	spawn(Vector3(0, 0.5, 9))
+	exit_door(Vector3(0, 0, 12.75), "Queen Consolidated")
+
+
+func _ccpd() -> void:
+	# The Central City Police Department: the bullpen, Joe's desk, the holding
+	# cell and Barry's crime lab.
+	room(SIZES[id], "#5a5448", "#8a7a64", "#3a3a36")
+	light(Vector3(-8, 5, 0), Color(1, 0.95, 0.85), 1.5, 20.0)
+	light(Vector3(8, 5, 0), Color(1, 0.95, 0.85), 1.5, 20.0)
+	for k in 6:
+		desk(Vector3(-9.0 + (k % 3) * 5.0, 0, -2.0 + (k / 3) * 5.0), 2.2, 0.0, "#3a8aff")
+	label("DET. J. WEST", Vector3(-9, 1.6, -2.8), 0.25, Color("#ffffff"))
+	# Crime lab, up the stairs at the back.
+	box(Vector3(8, 1.6, -9), Vector3(14, 0.3, 8), "#4a4a46")
+	for k in 6:
+		box(Vector3(-0.5 + k * 0.6, 0.15 + k * 0.27, -5.8), Vector3(1.0, 0.3, 1.6), "#4a4a46")
+	box(Vector3(8, 2.3, -10), Vector3(6, 1.2, 1.2), "#e8e8ec")
+	screen(Vector3(8, 3.4, -12.6), Vector2(5, 2), "#ffd23a")
+	label("CSI BARRY ALLEN - CRIME LAB", Vector3(8, 4.8, -12.6), 0.4, Color("#ffd23a"))
+	# Holding cell for anyone you bring in.
+	for b in 7:
+		box(Vector3(-13.5 + b * 0.5, 1.6, -9.5), Vector3(0.1, 3.2, 0.1), "#5a5f68")
+	label("HOLDING - BRING ARRESTS HERE", Vector3(-12, 3.6, -9.4), 0.35, Color("#bcd4ff"))
+	stations(false, true)
+	spawn(Vector3(0, 0.5, 9))
+	exit_door(Vector3(0, 0, 12.75), "CCPD")
+
+
+func _l_corp() -> void:
+	room(SIZES[id], "#e8e8ec", "#b8c4d0", "#f0f0f4")
+	light(Vector3(0, 6, 0), Color(0.95, 0.98, 1.0), 1.8, 24.0)
+	box(Vector3(0, 0.6, -3), Vector3(7, 1.2, 1.4), "#2a2a2e")
+	label("L-CORP", Vector3(0, 5.0, -12.6), 1.2, Color("#5a6a7a"))
+	# Lena's lab: a lead-lined case and a kryptonite sample under glass.
+	box(Vector3(-9, 0.8, -8), Vector3(5, 1.6, 2.4), "#c8ccd4")
+	box(Vector3(-9, 1.9, -8), Vector3(1.0, 0.6, 1.0), "#6bff6b", false, 2.5)
+	label("KRYPTONITE - HANDLE WITH CARE", Vector3(-9, 2.8, -8), 0.3, Color("#6bff6b"))
+	screen(Vector3(-9, 3.4, -12.6), Vector2(5, 2), "#6bff6b")
+	box(Vector3(10, 2.0, -12.7), Vector3(3.6, 4.0, 0.3), "#8a929c")
+	label("ELEVATOR TO THE ROOF", Vector3(10, 4.8, -12.4), 0.35, Color("#2a3a4a"))
+	interactable("Take the elevator to the roof", Vector3(10, 0.5, -10.5), "elevator", id)
+	stations(true, true)
+	spawn(Vector3(0, 0.5, 9))
+	exit_door(Vector3(0, 0, 12.75), "L-Corp")
+
+
+func _iron_heights() -> void:
+	# Iron Heights: the meta wing, with power-dampening cells down both walls.
+	room(SIZES[id], "#4a4c50", "#6a6c70", "#2a2c30")
+	light(Vector3(0, 5, -6), Color(0.85, 0.9, 1.0), 1.5, 22.0)
+	light(Vector3(0, 5, 6), Color(0.85, 0.9, 1.0), 1.5, 22.0)
+	_cells()
+	box(Vector3(0, 0.6, -10), Vector3(6, 1.2, 1.4), "#2a2a2e")
+	screen(Vector3(0, 2.4, -10.8), Vector2(4, 1.4), "#3a8aff")
+	label("IRON HEIGHTS PENITENTIARY - META WING", Vector3(0, 5.0, -14.6), 0.7, Color("#ffb0a0"))
+	label("Heroes: bring in knocked-out villains (G to carry).  Villains: open the cells.", Vector3(0, 3.6, -14.6), 0.3, Color("#ffd8c8"))
+	spawn(Vector3(0, 0.5, 11))
+	exit_door(Vector3(0, 0, 14.75), "Iron Heights")
+
+
+func _arkham() -> void:
+	room(SIZES[id], "#5a6458", "#7a8474", "#3a4038")
+	light(Vector3(0, 5, -4), Color(0.8, 1.0, 0.85), 1.2, 20.0)
+	light(Vector3(0, 5, 6), Color(0.8, 1.0, 0.85), 1.0, 20.0)
+	_cells()
+	label("ARKHAM ASYLUM", Vector3(0, 5.0, -13.6), 0.9, Color("#c8e0c0"))
+	label("Heroes: bring them back.  Villains: let them out.", Vector3(0, 3.8, -13.6), 0.3, Color("#d8f0d0"))
+	box(Vector3(0, 0.6, -9), Vector3(5, 1.2, 1.4), "#2a2a2e")
+	spawn(Vector3(0, 0.5, 10))
+	exit_door(Vector3(0, 0, 13.75), "Arkham Asylum")
+
+
+func _garfield() -> void:
+	# Garfield High: the hallway, lockers and Principal Pierce's office.
+	room(SIZES[id], "#a8946c", "#c8b890", "#e8e0d0")
+	light(Vector3(0, 4.5, 0), Color(1, 0.96, 0.86), 1.6, 22.0)
+	for k in 12:
+		box(Vector3(-15.4, 1.0, -10.0 + k * 1.2), Vector3(0.6, 2.0, 1.1), "#2a6a9a" if k % 2 else "#2a5a8a")
+	desk(Vector3(9, 0, -8), 2.6, 0.0, "#ffd27a")
+	label("PRINCIPAL J. PIERCE", Vector3(9, 2.0, -9.2), 0.3, Color("#ffffff"))
+	mannequin("black_lightning", Vector3(13, 0.2, -10.5), 1.0)
+	label("GARFIELD HIGH - HOME OF THE PANTHERS", Vector3(0, 4.0, -11.6), 0.6, Color("#ffe0a0"))
+	stations(true, true)
+	spawn(Vector3(0, 0.5, 8))
+	exit_door(Vector3(0, 0, 11.75), "Garfield High")

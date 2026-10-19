@@ -64,6 +64,7 @@ var buildings: Array = []        # {rect: Rect2 (x/z footprint), h: float}
 var landmarks: Array = []        # {name, pos: Vector3, district}
 var parked: Array = []           # {kind, xform: Transform3D}
 var doors: Array = []            # {name, pos: Vector3, interior: String}
+var roofs: Dictionary = {}       # room id -> where its elevator comes out on the roof
 var interior_slots: Dictionary = {}  # room id -> {origin, yaw}: rooms built inside their buildings
 var islands: Array = []          # {name, center: Vector2, land: Rect2, grid: Rect2, style}
 var bridges: Array[Rect2] = []
@@ -902,9 +903,10 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 		var district: String = DISTRICTS[index]
 		match what:
 			"queen":
-				_tower(rect.grow(-14.0), 210.0 * float(spec.get("height", 1.0)), _glass_mats[0], Color("#3aff6a"))
+				var qh := 210.0 * float(spec.get("height", 1.0))
+				_hollow_tower(rect.grow(-14.0), "queen_consolidated", qh, _glass_mats[0], Color("#3aff6a"))
 				_label("QUEEN CONSOLIDATED", base + Vector3(0, 32, 0), 4.0, Color("#d8ffe0"))
-				_add_landmark("Queen Consolidated", front, district)
+				_add_landmark("Queen Consolidated", front, district, "queen_consolidated")
 			"verdant":
 				_hollow(rect.grow(-12.0), "bunker", 10.0, _dark_mat)
 				_label("VERDANT", base + Vector3(0, 13, 0), 3.0, Color("#3aff6a"))
@@ -920,9 +922,9 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_star_labs(base)
 				_add_landmark("S.T.A.R. Labs", Vector3(bc.x, 0.5, bc.y - 30.0), district, "star_labs")
 			"ccpd":
-				_add_building(rect.grow(-8.0), 24.0, facade_mats[1][1])
+				_hollow(rect.grow(-8.0), "ccpd", 24.0, facade_mats[1][1])
 				_label("CCPD", base + Vector3(0, 28, 0), 4.0, Color("#bcd4ff"))
-				_add_landmark("CCPD", front, district)
+				_add_landmark("CCPD", front, district, "ccpd")
 			"jitters":
 				var r := rect.grow(-6.0)
 				_add_building(Rect2(r.position + Vector2(0, r.size.y * 0.45), Vector2(r.size.x, r.size.y * 0.55)), 30.0, facade_mats[1][0])
@@ -947,13 +949,13 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_label("D.E.O.", base + Vector3(0, 130, 0), 4.0, Color("#bcd4ff"))
 				_add_landmark("The D.E.O.", front, district, "deo")
 			"lcorp":
-				_tower(rect.grow(-14.0), 150.0, _glass_mats[2], Color("#c8d8e8"))
+				_hollow_tower(rect.grow(-14.0), "l_corp", 150.0, _glass_mats[2], Color("#c8d8e8"))
 				_label("L-CORP", base + Vector3(0, 158, 0), 4.0, Color("#e8f0f8"))
-				_add_landmark("L-Corp", front, district)
+				_add_landmark("L-Corp", front, district, "l_corp")
 			"garfield":
-				_add_building(rect.grow(-6.0), 12.0, facade_mats[3][0])
+				_hollow(rect.grow(-6.0), "garfield", 12.0, facade_mats[3][0])
 				_label("GARFIELD HIGH", base + Vector3(0, 15, 0), 3.0, Color("#ffe0a0"))
-				_add_landmark("Garfield High", front, district)
+				_add_landmark("Garfield High", front, district, "garfield")
 			"wayne_tower":
 				var wr := rect.grow(-16.0)
 				_hollow(wr, "batcave", 260.0 * float(spec.get("height", 1.0)), facade_mats[4][1])
@@ -982,13 +984,13 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				_add_landmark("GCPD", front, district)
 			"arkham":
 				var ar := rect.grow(-6.0)
-				_add_building(ar, 16.0, facade_mats[4][0])
+				_hollow(ar, "arkham", 16.0, facade_mats[4][0])
 				_gothic_crown(Rect2(ar.get_center() - Vector2(8, 8), Vector2(16, 16)), 34.0, facade_mats[4][0])
-				_add_building(Rect2(ar.get_center() - Vector2(8, 8), Vector2(16, 16)), 34.0, facade_mats[4][0])
+				add_box(Vector3(ar.get_center().x, 25.0, ar.get_center().y), Vector3(16, 18, 16), facade_mats[4][0])
 				for side in [-1.0, 1.0]:
 					add_box(Vector3(bc.x + side * (BLOCK * 0.5 - 1.0), 2.0, bc.y), Vector3(0.5, 4.0, BLOCK), _steel_mat)
 				_label("ARKHAM ASYLUM", base + Vector3(0, 40, 0), 3.0, Color("#c8e0c0"))
-				_add_landmark("Arkham Asylum", front, district)
+				_add_landmark("Arkham Asylum", front, district, "arkham")
 			"crows":
 				_tower(rect.grow(-14.0), 140.0, _glass_mats[4], Color("#ff3a3a"))
 				_label("CROWS SECURITY", base + Vector3(0, 146, 0), 4.0, Color("#ff9a9a"))
@@ -1082,6 +1084,17 @@ func _hollow(r: Rect2, room: String, total_h: float, m: Material) -> void:
 	interior_slots[room] = {"origin": origin, "yaw": PI}
 
 
+## A skyscraper with a walk-in lobby (and an elevator down from the roof).
+func _hollow_tower(r: Rect2, room: String, h: float, m: Material, crown: Color) -> void:
+	_hollow(r, room, h, m)
+	var c := r.get_center()
+	add_box(Vector3(c.x, h - 4.0, c.y), Vector3(r.size.x + 0.4, 1.2, r.size.y + 0.4), _plain(crown, 0.5, 2.0), false)
+	add_box(Vector3(c.x, h + 12.0, c.y), Vector3(0.6, 24.0, 0.6), _plain(Color("#aaaaaa")), false)
+	add_box(Vector3(c.x + 6.0, h + 1.6, c.y + 6.0), Vector3(3.0, 2.6, 3.0), _concrete_mat)
+	doors.append({"name": "Elevator down to the lobby", "pos": Vector3(c.x + 6.0, h + 1.1, c.y + 3.8), "interior": room})
+	roofs[room] = Vector3(c.x + 6.0, h + 1.2, c.y + 2.5)
+
+
 func _tower(r: Rect2, h: float, m: Material, crown: Color) -> void:
 	_add_building(r, h, m)
 	var c := r.get_center()
@@ -1151,7 +1164,7 @@ func _build_iron_heights() -> void:
 	for cx in [-1.0, 1.0]:
 		for cz in [-1.0, 1.0]:
 			add_box(Vector3(c.x + cx * s * 0.5, 9.0, c.y + cz * s * 0.5), Vector3(5, 18, 5), _plain(Color("#6a6a6a")))
-	_add_building(Rect2(c.x - 40, c.y - 25, 80, 50), 18.0, _plain(Color("#7a7a74")))
+	_hollow(Rect2(c.x - 40, c.y - 25, 80, 50), "iron_heights", 18.0, _plain(Color("#7a7a74")))
 	_label("IRON HEIGHTS", Vector3(c.x, 26, c.y), 4.0, Color("#ffb0a0"))
 	_bridge(Vector2(ISLAND_CENTERS[1].x + LAND, c.y), Vector2(c.x - half, c.y), ROAD)
 	landmarks.append({"name": "Iron Heights", "pos": Vector3(c.x - 90.0, 0.5, c.y), "district": "Iron Heights"})

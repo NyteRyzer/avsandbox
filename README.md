@@ -143,6 +143,47 @@ while falling to sail forward, and hold descend to dive.
 - Ultimates open with the character powering up in a pillar of light.
 - Combo finishers burst with impact lines.
 
+**Loadouts.**
+- Pick each character's primary, secondary, special and utility from character select ("LOADOUT")
+  or from the armory in any HQ (S.T.A.R. Labs, the Bunker, the Batcave, the D.E.O., the JSA
+  brownstone, the Waverider, L-Corp, Garfield High).
+- Every slot lists the character's signature power first, then their alternate kit, then powers
+  that fit what they are (speedster, Kryptonian, archer, mystic, elemental, tech, brawler).
+- The armory's weapons are last: pistols, a rifle, a shotgun, a bo staff, a katana, escrima
+  sticks, Hawkgirl's mace, a bow, a crossbow, the cold gun and the heat gun, plus batarangs,
+  grenades and rockets. They show up in the character's hands.
+
+**Telekinesis.** Canon telekinetics (Gorilla Grodd, the Thinker, Damien Darhk, Brainwave,
+Doctor Fate, the Spectre, the Monitor, Astra Logue, Mallus, Martian Manhunter, Eclipso, Neron,
+Dreamer, Harbinger) press E to lift whatever they aim at. That can be a car, a bench or a
+person. Click to throw it.
+
+**Walk-in buildings.** No more teleporting through doors. These all have front entrances you
+walk through:
+- S.T.A.R. Labs, Verdant and the Bunker, Jitters, CatCo, the D.E.O., the Batcave, the Kent Barn
+  and the JSA brownstone.
+- New: Queen Consolidated's lobby, the CCPD with Barry's crime lab, L-Corp, Garfield High,
+  Arkham Asylum, and the Iron Heights cell block (cross the bridge, go through the yard gate, and
+  the door is on the north face).
+
+**Ten more features.**
+1. **Weapon pickups:** knocked-out thugs and police sometimes drop a pistol, rifle, shotgun or
+   katana. Walk over it to use it until the ammo runs out.
+2. **Superhero landings:** drop from a height and you land on one knee, the street cracking
+   around you, knocking back anyone nearby.
+3. **Boss rage:** at half health a boss powers up, gets faster and calls in backup.
+4. **Street muggings:** small crimes between the big events. Stop the mugger within 45 seconds.
+5. **Weather powers:** Weather Wizard's storm, lightning ultimates and Absolute Zero change the
+   sky for a while.
+6. **Med bays** in the HQs restore your health and energy, and your allies' too.
+7. **Armories** in the HQs open the loadout screen.
+8. **Arrests:** as a hero, press G on a knocked-out villain to carry them, then lock them up in an
+   Iron Heights or Arkham cell, or the CCPD holding cell.
+9. **Jailbreaks:** as a villain, open the cells at Iron Heights and Arkham and the inmates join
+   you.
+10. **Rooftop elevators:** Queen Consolidated and L-Corp have lobby elevators to the roof, and
+    back down again.
+
 **Teams.**
 - Every character belongs to a team: Team Flash, Team Arrow, the Legends, the Justice Society,
   the Injustice Society, the Legion of Doom, the Rogues and more. Filter by team in character

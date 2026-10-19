@@ -1175,6 +1175,11 @@ for c in heroes + villains:
     k = KITS.get(c["id"])
     if not k:
         continue
+    # Keep the first-draft kit as an alternate loadout.
+    alt = {"primary": c["primary"], "secondary": c["secondary"], "special": c["special"]}
+    if "utility" in c:
+        alt["utility"] = c["utility"]
+    c["alt_kit"] = alt
     c["primary"], c["secondary"], c["special"] = k["P"], k["S"], k["Q"]
     if "E" in k:
         c["utility"] = k["E"]
@@ -1642,6 +1647,12 @@ ULTS = {
  "brainwave_": None,
 }
 ULTS.pop("brainwave_")
+# Canon telekinetics: they lift and throw things (and people) with their minds.
+TELEKINETICS = ["grodd", "thinker", "damien_darhk", "brainwave", "spectre", "the_monitor", "dr_fate", "astra_logue", "mallus",
+                "martian_manhunter", "eclipso", "neron", "dreamer", "harbinger"]
+for c in heroes + villains:
+    if c["id"] in TELEKINETICS:
+        c["telekinetic"] = True
 # Caped characters who can glide (hold jump while falling).
 GLIDERS = ["batwoman", "ryan_wilder", "dr_midnite", "red_death"]
 for c in heroes + villains:

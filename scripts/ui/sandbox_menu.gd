@@ -250,6 +250,9 @@ func _events_tab() -> Control:
 		g.add_child(UITheme.button(names[k], func() -> void:
 			world.events.start_random(kind)
 			close(), 380))
+	g.add_child(UITheme.button("Street mugging", func() -> void:
+		world.street_crime.start()
+		close(), 380))
 	g.add_child(UITheme.button("Street race (checkpoints)", func() -> void:
 		close()
 		world.race.start(false), 380))

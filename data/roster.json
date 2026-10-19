@@ -65,6 +65,24 @@
     "kind": "grapple",
     "name": "Grappling Arrow"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow"
+    },
+    "secondary": {
+     "kind": "explosive_arrow",
+     "name": "Explosive Arrow"
+    },
+    "special": {
+     "kind": "arrow_storm",
+     "name": "Arrow Volley"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Arrow"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -164,6 +182,32 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 7,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ffd23a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "time_slow",
+     "name": "Speed Force Slow-Mo"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -256,6 +300,26 @@
     }
    },
    "fly_speed": 1.5,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 20
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Heat Vision",
+     "style": "eyes",
+     "color": "#ff2a1a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "breath",
+     "name": "Freeze Breath",
+     "element": "ice"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -360,6 +424,30 @@
     "element": "push"
    },
    "fly_speed": 1.6,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 24
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Heat Vision",
+     "style": "eyes",
+     "color": "#ff2a1a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Thunderclap Slam"
+    },
+    "utility": {
+     "kind": "breath",
+     "name": "Super Breath",
+     "element": "push"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -453,6 +541,24 @@
      "run": "stomp",
      "fly": "jet",
      "cadence": 1.1
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Gauntlet Blast",
+     "style": "energy",
+     "color": "#4fc3ff",
+     "origin": "hands",
+     "speed": 70
+    },
+    "secondary": {
+     "kind": "missiles",
+     "name": "Micro Missiles"
+    },
+    "special": {
+     "kind": "shrink",
+     "name": "Shrink"
     }
    },
    "civilian": {
@@ -550,6 +656,28 @@
     "kind": "dodge_flip",
     "name": "Acrobatics"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Bo Staff",
+     "style": "staff",
+     "damage": 15,
+     "range": 3.0
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Throwing Knife",
+     "model": "knife"
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Canary Smoke"
+    },
+    "utility": {
+     "kind": "dodge_flip",
+     "name": "League Flip"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -632,6 +760,23 @@
      "run": "sprinter",
      "arms": 0.9,
      "cadence": 1.1
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kickboxing",
+     "style": "kick",
+     "damage": 13
+    },
+    "secondary": {
+     "kind": "sonic",
+     "name": "Canary Cry",
+     "origin": "mouth"
+    },
+    "special": {
+     "kind": "sonic_scream",
+     "name": "Sonic Scream"
     }
    },
    "civilian": {
@@ -719,6 +864,24 @@
      "run": "marching",
      "stride": 0.95,
      "arms": 0.6
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Tactical Strikes",
+     "style": "punch",
+     "damage": 15
+    },
+    "secondary": {
+     "kind": "gun",
+     "name": "Service Pistol",
+     "damage": 9,
+     "cooldown": 0.22
+    },
+    "special": {
+     "kind": "frag_grenade",
+     "name": "Frag Grenade"
     }
    },
    "civilian": {
@@ -816,6 +979,26 @@
     "kind": "grapple",
     "name": "Grappling Arrow"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow",
+     "color": "#c9b38a"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Martial Arts",
+     "style": "kick"
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Smoke Bomb"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Arrow"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -912,6 +1095,32 @@
    "utility": {
     "kind": "phase",
     "name": "Phase Through"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 7,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ffd23a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "tornado",
+     "name": "Speed Vortex"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
    },
    "civilian": {
     "look": {
@@ -1011,6 +1220,30 @@
     "kind": "teleport",
     "name": "Breach"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Vibe Blast",
+     "style": "vibe",
+     "color": "#4fa8ff",
+     "origin": "hands",
+     "speed": 75
+    },
+    "secondary": {
+     "kind": "sonic",
+     "name": "Vibrational Wave",
+     "color": "#4fa8ff",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "teleport",
+     "name": "Breach"
+    },
+    "utility": {
+     "kind": "teleport",
+     "name": "Breach"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -1104,6 +1337,32 @@
    "utility": {
     "kind": "ice_wall",
     "name": "Ice Wall"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Ice Shard",
+     "style": "ice",
+     "color": "#a8e8ff",
+     "element": "ice",
+     "origin": "hands"
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Frost Beam",
+     "style": "hands",
+     "color": "#bff0ff",
+     "element": "ice"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Blizzard",
+     "element": "ice"
+    },
+    "utility": {
+     "kind": "ice_wall",
+     "name": "Ice Wall"
+    }
    },
    "civilian": {
     "look": {
@@ -1199,6 +1458,29 @@
      "arms": 1.1
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Fireball",
+     "style": "fireball",
+     "color": "#ff8a1e",
+     "element": "fire",
+     "origin": "hands",
+     "speed": 60
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Nuclear Beam",
+     "style": "hands",
+     "color": "#ffb347",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Nuclear Burst",
+     "element": "fire"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#5e3a26",
@@ -1289,6 +1571,30 @@
     "kind": "phase",
     "name": "Density Shift"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Martian Strength",
+     "style": "heavy_punch",
+     "damage": 20
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Martian Vision",
+     "style": "eyes",
+     "color": "#ff5a2a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "invisibility",
+     "name": "Phase & Vanish"
+    },
+    "utility": {
+     "kind": "phase",
+     "name": "Density Shift"
+    }
+   },
+   "telekinetic": true,
    "civilian": {
     "look": {
      "skin": "#5e3a26",
@@ -1395,6 +1701,28 @@
     "kind": "grapple",
     "name": "Grapnel Gun"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Combat Strikes",
+     "style": "punch",
+     "damage": 14
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Batarang",
+     "model": "batarang",
+     "color": "#202022"
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Smoke Pellet"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grapnel Gun"
+    }
+   },
    "glide": true,
    "civilian": {
     "look": {
@@ -1490,6 +1818,26 @@
     }
    },
    "fly_speed": 0.8,
+   "alt_kit": {
+    "primary": {
+     "kind": "lightning",
+     "name": "Lightning Strike",
+     "color": "#8fd0ff",
+     "origin": "hands"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Charged Punch",
+     "style": "punch",
+     "element": "shock",
+     "damage": 16
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Lightning Storm",
+     "element": "shock"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#5e3a26",
@@ -1586,6 +1934,28 @@
     "kind": "invulnerable",
     "name": "Max Density"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Density Punch",
+     "style": "heavy_punch",
+     "damage": 20
+    },
+    "secondary": {
+     "kind": "sonic",
+     "name": "Thunderclap",
+     "color": "#d8c068",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Seismic Stomp"
+    },
+    "utility": {
+     "kind": "invulnerable",
+     "name": "Max Density"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#8d5a3b",
@@ -1670,6 +2040,28 @@
      "run": "bounce",
      "fly": "palm_forward",
      "tempo": 1.2
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Energy Bolt",
+     "style": "energy",
+     "color": "#ffcc66",
+     "element": "shock",
+     "origin": "hands",
+     "speed": 72
+    },
+    "secondary": {
+     "kind": "lightning",
+     "name": "Arc Blast",
+     "color": "#ffd88a",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Overload",
+     "element": "shock"
     }
    },
    "civilian": {
@@ -1764,6 +2156,30 @@
     "kind": "emp",
     "name": "T-Sphere EMP"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Decathlete Strikes",
+     "style": "kick",
+     "damage": 13
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "T-Sphere Shot",
+     "style": "tsphere",
+     "color": "#ff4040",
+     "element": "shock",
+     "speed": 55
+    },
+    "special": {
+     "kind": "t_spheres",
+     "name": "T-Sphere Swarm"
+    },
+    "utility": {
+     "kind": "emp",
+     "name": "EMP Pulse"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#8d5a3b",
@@ -1854,6 +2270,23 @@
      "tempo": 1.2
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Animal Strikes",
+     "style": "claw",
+     "damage": 16
+    },
+    "secondary": {
+     "kind": "dash",
+     "name": "Cheetah Pounce",
+     "style": "pounce"
+    },
+    "special": {
+     "kind": "animal_spirit",
+     "name": "Spirit of the Gorilla"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#5e3a26",
@@ -1941,6 +2374,25 @@
     }
    },
    "fly_speed": 1.15,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Nth Metal Mace",
+     "style": "mace",
+     "damage": 20,
+     "range": 2.8
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Mace Toss",
+     "model": "mace",
+     "damage": 18
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Dive Bomb"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -2018,6 +2470,23 @@
      "run": "stomp",
      "bounce": 1.3,
      "tempo": 0.7
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Steel Fist",
+     "style": "heavy_punch",
+     "damage": 21
+    },
+    "secondary": {
+     "kind": "dash",
+     "name": "Steel Charge",
+     "style": "charge"
+    },
+    "special": {
+     "kind": "invulnerable",
+     "name": "Steel Skin"
     }
    },
    "civilian": {
@@ -2116,6 +2585,27 @@
      "fly": "staff_ride",
      "bounce": 1.2,
      "tempo": 1.3
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Cosmic Blast",
+     "style": "cosmic",
+     "color": "#ffe066",
+     "origin": "muzzle",
+     "speed": 72
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Cosmic Ray",
+     "style": "muzzle",
+     "color": "#fff3a0"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Star Burst",
+     "element": "shock"
     }
    },
    "civilian": {
@@ -2217,6 +2707,30 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 7,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Helmet Throw",
+     "model": "helmet",
+     "color": "#b8b8b8",
+     "damage": 18
+    },
+    "special": {
+     "kind": "tornado",
+     "name": "Speed Vortex"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -2312,6 +2826,32 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 7,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ffd23a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "time_slow",
+     "name": "Speed Force Slow-Mo"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
    },
    "civilian": {
     "look": {
@@ -2409,6 +2949,32 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 7,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#b46cff",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "time_slow",
+     "name": "Speed Force Slow-Mo"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -2500,6 +3066,24 @@
      "bounce": 1.4
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Stretch Punch",
+     "style": "stretch",
+     "damage": 15,
+     "range": 7.0
+    },
+    "secondary": {
+     "kind": "dash",
+     "name": "Slingshot",
+     "style": "slingshot"
+    },
+    "special": {
+     "kind": "invulnerable",
+     "name": "Rubber Body"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -2584,6 +3168,23 @@
      "run": "marching",
      "stride": 1.0,
      "arms": 0.4
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Shield Strike",
+     "style": "shield_bash",
+     "damage": 16
+    },
+    "secondary": {
+     "kind": "dash",
+     "name": "Shield Charge",
+     "style": "charge"
+    },
+    "special": {
+     "kind": "shield_wall",
+     "name": "Shield Wall"
     }
    },
    "civilian": {
@@ -2677,6 +3278,23 @@
     }
    },
    "fly_speed": 1.3,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 19
+    },
+    "secondary": {
+     "kind": "breath",
+     "name": "Super Breath",
+     "element": "push"
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Meteor Drop"
+    }
+   },
    "utility": {
     "kind": "dodge_flip",
     "name": "Aerial Roll"
@@ -2778,6 +3396,31 @@
     "kind": "foresight",
     "name": "Precognition"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Dream Blast",
+     "style": "dream",
+     "color": "#8fd8ff",
+     "origin": "hands",
+     "speed": 65
+    },
+    "secondary": {
+     "kind": "sonic",
+     "name": "Dream Wave",
+     "color": "#b8e6ff",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "teleport",
+     "name": "Dream Walk"
+    },
+    "utility": {
+     "kind": "foresight",
+     "name": "Precognition"
+    }
+   },
+   "telekinetic": true,
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -2872,6 +3515,29 @@
     "kind": "teleport",
     "name": "Legion Flight Ring"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Coluan Blast",
+     "style": "energy",
+     "color": "#4dff8a",
+     "element": "shock",
+     "origin": "hands"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Force Field Punch",
+     "style": "punch"
+    },
+    "special": {
+     "kind": "force_field",
+     "name": "Force Field"
+    },
+    "utility": {
+     "kind": "teleport",
+     "name": "Legion Flight Ring"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -2965,6 +3631,25 @@
     "kind": "grapple",
     "name": "Grappling Arrow"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Street Fighting",
+     "style": "punch"
+    },
+    "special": {
+     "kind": "arrow_storm",
+     "name": "Arrow Volley"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Arrow"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -3052,6 +3737,24 @@
      "sway": -0.1
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "gun",
+     "name": "Twin Pistols",
+     "dual": true,
+     "damage": 7,
+     "cooldown": 0.13
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Brawling",
+     "style": "punch"
+    },
+    "special": {
+     "kind": "frag_grenade",
+     "name": "Flashbang"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#b07b56",
@@ -3135,6 +3838,25 @@
      "run": "heavy",
      "cadence": 0.85,
      "sway": 0.1
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "flame",
+     "name": "Heat Gun",
+     "color": "#ff7a1a",
+     "element": "fire"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Haymaker",
+     "style": "heavy_punch",
+     "damage": 17
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Inferno",
+     "element": "fire"
     }
    },
    "civilian": {
@@ -3232,6 +3954,31 @@
    "utility": {
     "kind": "teleport",
     "name": "Teleportation Spell"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Hellfire",
+     "style": "fireball",
+     "color": "#ff8a2a",
+     "element": "fire",
+     "origin": "hands",
+     "speed": 60
+    },
+    "secondary": {
+     "kind": "psychic",
+     "name": "Banishing Spell",
+     "color": "#ffd27a"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Circle of Hellfire",
+     "element": "fire"
+    },
+    "utility": {
+     "kind": "teleport",
+     "name": "Teleportation Spell"
+    }
    },
    "civilian": {
     "look": {
@@ -3331,6 +4078,28 @@
     "name": "Wind Step"
    },
    "fly_speed": 1.2,
+   "alt_kit": {
+    "primary": {
+     "kind": "sonic",
+     "name": "Wind Blast",
+     "color": "#c8e8ff",
+     "origin": "hands",
+     "element": "push"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Krav Maga",
+     "style": "kick"
+    },
+    "special": {
+     "kind": "tornado",
+     "name": "Air Totem Cyclone"
+    },
+    "utility": {
+     "kind": "dodge_flip",
+     "name": "Wind Step"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#b07b56",
@@ -3423,6 +4192,27 @@
     "kind": "dodge_flip",
     "name": "Assassin's Flip"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow",
+     "damage": 20
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "League Blade",
+     "style": "blade",
+     "damage": 17
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "League Smoke"
+    },
+    "utility": {
+     "kind": "dodge_flip",
+     "name": "Assassin's Flip"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -3514,6 +4304,25 @@
     }
    },
    "fly_speed": 1.15,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Nth Metal Mace",
+     "style": "mace",
+     "damage": 24,
+     "range": 2.9
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Mace Toss",
+     "model": "mace",
+     "damage": 20
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Dive Bomb"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#c99a74",
@@ -3616,6 +4425,32 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Punches",
+     "style": "flurry",
+     "damage": 8,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ffd23a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "tornado",
+     "name": "Speed Vortex"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -3711,6 +4546,32 @@
     "name": "Spectral Step"
    },
    "fly_speed": 1.4,
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Spectral Bolt",
+     "style": "magic",
+     "color": "#5aff8a",
+     "element": "shock",
+     "origin": "hands",
+     "speed": 80
+    },
+    "secondary": {
+     "kind": "telekinesis",
+     "name": "Spectral Grip",
+     "color": "#5aff8a"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Wrath of God",
+     "element": "shock"
+    },
+    "utility": {
+     "kind": "teleport",
+     "name": "Spectral Step"
+    }
+   },
+   "telekinetic": true,
    "civilian": {
     "look": {
      "skin": "#efd2bb",
@@ -3801,6 +4662,25 @@
     }
    },
    "fly_speed": 1.2,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 16
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Heat Vision",
+     "style": "eyes",
+     "color": "#ff2a1a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Super Stomp"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -4473,6 +5353,7 @@
     "kind": "teleport",
     "name": "Hell Step"
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "dark_magic",
     "name": "Lord of Hell"
@@ -5078,6 +5959,7 @@
     "kind": "teleport",
     "name": "Mystic Portal"
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "dark_magic",
     "name": "Lord of Order"
@@ -6502,6 +7384,7 @@
     "kind": "teleport",
     "name": "Multiversal Jump"
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "antimatter_wave",
     "name": "Paragons' Light",
@@ -6574,6 +7457,7 @@
     "name": "Herald's Step"
    },
    "fly_speed": 1.3,
+   "telekinetic": true,
    "ultimate": {
     "kind": "breach_barrage",
     "name": "Herald of the Crisis"
@@ -6667,6 +7551,25 @@
     "kind": "grapple",
     "name": "Grappling Arrow"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow",
+     "color": "#d0d0d0"
+    },
+    "secondary": {
+     "kind": "explosive_arrow",
+     "name": "Explosive Arrow"
+    },
+    "special": {
+     "kind": "arrow_storm",
+     "name": "Arrow Volley"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Arrow"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -6750,6 +7653,25 @@
      "lean": 0.05,
      "stride": 1.05,
      "tempo": 0.8
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Katana",
+     "style": "blade",
+     "damage": 18,
+     "range": 2.9
+    },
+    "secondary": {
+     "kind": "gun",
+     "name": "Sidearm",
+     "damage": 9,
+     "cooldown": 0.22
+    },
+    "special": {
+     "kind": "rage",
+     "name": "Mirakuru"
     }
    },
    "civilian": {
@@ -6843,6 +7765,29 @@
     "kind": "grapple",
     "name": "Grapnel"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "throw",
+     "name": "Shuriken",
+     "model": "shuriken",
+     "color": "#c0c0c0"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Sword",
+     "style": "blade",
+     "damage": 17,
+     "range": 2.8
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Vanish"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Line"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -6926,6 +7871,25 @@
      "tempo": 0.7
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "telekinesis",
+     "name": "Telekinetic Grip",
+     "color": "#9b4dff"
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Dark Magic",
+     "style": "magic",
+     "color": "#7a2bd6",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "drain",
+     "name": "Life Drain"
+    }
+   },
+   "telekinetic": true,
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -7026,6 +7990,32 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Phasing Strike",
+     "style": "flurry",
+     "damage": 9,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ff2a2a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "time_slow",
+     "name": "Negative Speed Force"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -7114,6 +8104,29 @@
    "utility": {
     "kind": "phase",
     "name": "Phase Through"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Clawed Strikes",
+     "style": "claw",
+     "damage": 11,
+     "cooldown": 0.13
+    },
+    "secondary": {
+     "kind": "lightning",
+     "name": "Blue Lightning",
+     "color": "#3aa0ff",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "tornado",
+     "name": "Speed Vortex"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
    },
    "civilian": {
     "look": {
@@ -7211,6 +8224,32 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Blade Claws",
+     "style": "claw",
+     "damage": 17,
+     "cooldown": 0.2
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#bfe8ff",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "rage",
+     "name": "God of Speed"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
    }
   },
   {
@@ -7259,7 +8298,27 @@
      "idle": "regal",
      "run": "glide"
     }
-   }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Mind Bolt",
+     "style": "magic",
+     "color": "#c0a0ff",
+     "element": "shock",
+     "origin": "head"
+    },
+    "secondary": {
+     "kind": "telekinesis",
+     "name": "Telekinesis",
+     "color": "#c0a0ff"
+    },
+    "special": {
+     "kind": "teleport",
+     "name": "Hover Warp"
+    }
+   },
+   "telekinetic": true
   },
   {
    "id": "captain_cold",
@@ -7311,6 +8370,25 @@
      "run": "swagger",
      "sway": -0.15,
      "tempo": 0.75
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "beam",
+     "name": "Cold Gun",
+     "style": "cold",
+     "color": "#a8e8ff",
+     "element": "ice"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Pistol Whip",
+     "style": "punch"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Absolute Zero",
+     "element": "ice"
     }
    },
    "civilian": {
@@ -7403,6 +8481,25 @@
      "sway": 0.15
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "flame",
+     "name": "Heat Gun",
+     "color": "#ff7a1a",
+     "element": "fire"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Haymaker",
+     "style": "heavy_punch",
+     "damage": 17
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Inferno",
+     "element": "fire"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -7487,6 +8584,24 @@
      "run": "swagger",
      "fly": "conductor",
      "tempo": 1.0
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "lightning",
+     "name": "Lightning Call",
+     "color": "#d6e6ff",
+     "origin": "sky"
+    },
+    "secondary": {
+     "kind": "sonic",
+     "name": "Gale Force",
+     "color": "#9fb3c8",
+     "origin": "hands"
+    },
+    "special": {
+     "kind": "storm",
+     "name": "Superstorm"
     }
    },
    "civilian": {
@@ -7583,6 +8698,25 @@
     }
    },
    "fly_speed": 1.5,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 22
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Heat Vision",
+     "style": "eyes",
+     "color": "#ff2a1a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "rage",
+     "name": "Purge"
+    }
+   },
    "utility": {
     "kind": "invulnerable",
     "name": "Worldkiller Skin"
@@ -7681,6 +8815,24 @@
      "cadence": 0.85
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Warsuit Blast",
+     "style": "energy",
+     "color": "#6bff6b",
+     "origin": "hands",
+     "speed": 72
+    },
+    "secondary": {
+     "kind": "missiles",
+     "name": "Missile Salvo"
+    },
+    "special": {
+     "kind": "missile_barrage",
+     "name": "Kryptonite Barrage"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -7766,6 +8918,24 @@
      "lean": -0.05,
      "cadence": 0.85,
      "tempo": 0.6
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Scimitar",
+     "style": "blade",
+     "damage": 19,
+     "range": 2.9
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Throwing Dagger",
+     "model": "knife"
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "League Smoke"
     }
    },
    "civilian": {
@@ -7856,6 +9026,26 @@
      "cadence": 0.9
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "throw",
+     "name": "Dagger Throw",
+     "model": "cicada_dagger",
+     "color": "#ff3a3a",
+     "element": "shock",
+     "returns": true
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Dagger Slash",
+     "style": "blade",
+     "damage": 18
+    },
+    "special": {
+     "kind": "dampen",
+     "name": "Dampening Pulse"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -7934,7 +9124,26 @@
      "run": "lumber",
      "tempo": 0.7
     }
-   }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Gorilla Smash",
+     "style": "heavy",
+     "damage": 25,
+     "range": 3.2
+    },
+    "secondary": {
+     "kind": "psychic",
+     "name": "Psychic Blast",
+     "color": "#c47aff"
+    },
+    "special": {
+     "kind": "mind_control",
+     "name": "Mind Control"
+    }
+   },
+   "telekinetic": true
   },
   {
    "id": "vandal_savage",
@@ -7987,6 +9196,24 @@
      "stride": 1.05,
      "sway": 0.0,
      "tempo": 0.65
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Ancient Blade",
+     "style": "blade",
+     "damage": 19,
+     "range": 2.9
+    },
+    "secondary": {
+     "kind": "throw",
+     "name": "Knife Throw",
+     "model": "knife"
+    },
+    "special": {
+     "kind": "rage",
+     "name": "Immortal Fury"
     }
    },
    "utility": {
@@ -8078,6 +9305,23 @@
      "sway": 0.1
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "sonic",
+     "name": "Siren Cry",
+     "damage": 14,
+     "origin": "mouth"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Street Fighting",
+     "style": "kick"
+    },
+    "special": {
+     "kind": "sonic_scream",
+     "name": "Siren Scream"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -8162,6 +9406,24 @@
      "run": "swagger",
      "sway": 0.05,
      "cadence": 0.95
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "gun",
+     "name": "Pistol",
+     "damage": 9,
+     "cooldown": 0.2
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Knife Fighting",
+     "style": "blade",
+     "damage": 15
+    },
+    "special": {
+     "kind": "rage",
+     "name": "Dragon's Wrath"
     }
    },
    "civilian": {
@@ -8253,6 +9515,23 @@
      "tempo": 1.3
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "throw",
+     "name": "Knife Throw",
+     "model": "knife"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Knife Slash",
+     "style": "blade",
+     "damage": 14
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Down the Rabbit Hole"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#efd2bb",
@@ -8340,6 +9619,25 @@
      "sway": 0.2
     }
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "throw",
+     "name": "Boomerang",
+     "model": "boomerang",
+     "returns": true,
+     "damage": 16
+    },
+    "secondary": {
+     "kind": "explosive_arrow",
+     "name": "Explosive Boomerang",
+     "model": "boomerang",
+     "color": "#ffaa33"
+    },
+    "special": {
+     "kind": "boomerang_storm",
+     "name": "Boomerang Storm"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -8425,6 +9723,27 @@
      "cadence": 0.7,
      "tempo": 0.4
     }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "beam",
+     "name": "Antimatter Beam",
+     "style": "eyes",
+     "color": "#ff4fd8"
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Antimatter Orb",
+     "style": "antimatter",
+     "color": "#ff6ae0",
+     "element": "shock",
+     "speed": 50
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Wave of Destruction",
+     "element": "shock"
+    }
    }
   },
   {
@@ -8486,6 +9805,26 @@
     }
    },
    "fly_speed": 1.5,
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Kryptonian Strikes",
+     "style": "heavy_punch",
+     "damage": 20
+    },
+    "secondary": {
+     "kind": "beam",
+     "name": "Heat Vision",
+     "style": "eyes",
+     "color": "#ff2a1a",
+     "element": "fire"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Solar Overload",
+     "element": "fire"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -8578,6 +9917,24 @@
     "kind": "grapple",
     "name": "Grappling Arrow"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "arrow",
+     "name": "Arrow"
+    },
+    "secondary": {
+     "kind": "explosive_arrow",
+     "name": "Explosive Arrow"
+    },
+    "special": {
+     "kind": "arrow_storm",
+     "name": "Arrow Volley"
+    },
+    "utility": {
+     "kind": "grapple",
+     "name": "Grappling Arrow"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -8663,6 +10020,24 @@
      "cadence": 0.75,
      "sway": 0.1,
      "tempo": 0.6
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "gun",
+     "name": "Revolver",
+     "damage": 11,
+     "cooldown": 0.3
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Brutal Strikes",
+     "style": "heavy_punch",
+     "damage": 18
+    },
+    "special": {
+     "kind": "rage",
+     "name": "Kingpin Fury"
     }
    },
    "civilian": {
@@ -8753,6 +10128,25 @@
      "cadence": 0.85,
      "tempo": 0.9
     }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Shark Bite",
+     "style": "claw",
+     "damage": 26,
+     "range": 3.0
+    },
+    "secondary": {
+     "kind": "dash",
+     "name": "Shark Lunge",
+     "style": "pounce",
+     "damage": 24
+    },
+    "special": {
+     "kind": "ground_slam",
+     "name": "Tidal Slam"
+    }
    }
   },
   {
@@ -8809,6 +10203,29 @@
    "utility": {
     "kind": "phase",
     "name": "Into the Mirror"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "bolt",
+     "name": "Glass Shards",
+     "style": "ice",
+     "color": "#cfe8ff",
+     "speed": 80,
+     "damage": 16
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Brass Knuckles",
+     "style": "punch"
+    },
+    "special": {
+     "kind": "teleport",
+     "name": "Mirror Jump"
+    },
+    "utility": {
+     "kind": "phase",
+     "name": "Into the Mirror"
+    }
    },
    "civilian": {
     "look": {
@@ -8897,6 +10314,26 @@
     }
    },
    "fly_speed": 1.2,
+   "alt_kit": {
+    "primary": {
+     "kind": "lightning",
+     "name": "Arc Lightning",
+     "color": "#cfefff",
+     "origin": "hands"
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Static Bolt",
+     "style": "lightning",
+     "color": "#9fd0ff",
+     "element": "shock"
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Blackout",
+     "element": "shock"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#dfe6ee",
@@ -8988,6 +10425,26 @@
      "stride": 1.0,
      "cadence": 0.9,
      "tempo": 0.5
+    }
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "beam",
+     "name": "Kryptonite Beam",
+     "style": "hands",
+     "color": "#6bff6b",
+     "element": "shock"
+    },
+    "secondary": {
+     "kind": "melee",
+     "name": "Steel Fists",
+     "style": "heavy_punch",
+     "damage": 20
+    },
+    "special": {
+     "kind": "nova",
+     "name": "Kryptonite Pulse",
+     "element": "shock"
     }
    },
    "civilian": {
@@ -9089,6 +10546,32 @@
     "kind": "blitz",
     "name": "Speed Blitz"
    },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Lightning Strikes",
+     "style": "flurry",
+     "damage": 9,
+     "cooldown": 0.12
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#e8e8ff",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "time_slow",
+     "name": "Speed of a God"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
+   },
    "civilian": {
     "look": {
      "skin": "#e0b896",
@@ -9186,6 +10669,32 @@
    "utility": {
     "kind": "blitz",
     "name": "Speed Blitz"
+   },
+   "alt_kit": {
+    "primary": {
+     "kind": "melee",
+     "name": "Speed Claws",
+     "style": "claw",
+     "damage": 12,
+     "cooldown": 0.13
+    },
+    "secondary": {
+     "kind": "bolt",
+     "name": "Lightning Throw",
+     "style": "lightning",
+     "color": "#ff2a2a",
+     "element": "shock",
+     "speed": 95,
+     "damage": 18
+    },
+    "special": {
+     "kind": "smoke_bomb",
+     "name": "Red Smoke"
+    },
+    "utility": {
+     "kind": "blitz",
+     "name": "Speed Blitz"
+    }
    },
    "glide": true,
    "civilian": {
@@ -9369,6 +10878,7 @@
      "tempo": 0.7
     }
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "mass_telekinesis",
     "name": "Psychic Domination"
@@ -9790,6 +11300,7 @@
     "kind": "teleport",
     "name": "Shadow Shift"
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "antimatter_wave",
     "name": "Total Eclipse",
@@ -11484,6 +12995,7 @@
      "tempo": 0.4
     }
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "dark_magic",
     "name": "Time Demon Unbound"
@@ -11542,6 +13054,7 @@
     "kind": "teleport",
     "name": "Hell Portal"
    },
+   "telekinetic": true,
    "ultimate": {
     "kind": "dark_magic",
     "name": "King of Hell"

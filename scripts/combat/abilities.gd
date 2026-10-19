@@ -214,7 +214,7 @@ static func fire(a: Actor, atk: Dictionary) -> void:
 		FX.sparks(w, a.chest(), Color("#ff3a2a"), 6, 3.0)
 		return
 	if kind in ["arrow", "explosive_arrow"]:
-		atk["_bow"] = a.def["look"].get("gear", {}).get("left", "") == "bow"
+		atk["_bow"] = a.def["look"].get("gear", {}).get("left", "") == "bow" or a.def["look"].get("gear", {}).get("right", "") == "crossbow"
 	if kind != "melee" and kind != "dash":
 		a.model.play(_pose_for(kind, atk), 0.45)
 	match kind:
@@ -972,6 +972,8 @@ static func _special_impl(a: Actor, sp: Dictionary) -> bool:
 			Sfx.play("teleport", a.global_position, -4.0)
 			return true
 		"storm":
+			if a.is_player and w.has_method("power_weather"):
+				w.power_weather("storm", 30.0)
 			a.storm_t = 6.0
 			FX.storm_cloud(w, a.global_position + Vector3.UP * 32.0, 18.0, 6.0)
 			w.shake_at(a.global_position, 0.3)

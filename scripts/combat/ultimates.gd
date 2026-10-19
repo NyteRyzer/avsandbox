@@ -160,6 +160,11 @@ func _begin() -> void:
 		FX.ground_crack(world, actor.global_position, c, 12.0)
 	if actor.is_player:
 		world.hud.show_banner("ULTIMATE: " + str(spec.get("name", "")).to_upper(), c)
+		match str(spec["kind"]):
+			"absolute_zero":
+				world.power_weather("snow", 40.0)
+			"lightning_god":
+				world.power_weather("storm", 40.0)
 		world.shake_at(actor.global_position, 0.4)
 		Game.hit_stop(0.12)
 	Sfx.play("slowmo", actor.global_position, 0.0)

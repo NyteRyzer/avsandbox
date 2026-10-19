@@ -25,6 +25,10 @@ func _ready() -> void:
 		await _new_places()
 		get_tree().quit()
 		return
+	if only == "entrances":
+		await _entrance_shots()
+		get_tree().quit()
+		return
 	if only == "space":
 		await _space_shots()
 		get_tree().quit()
@@ -467,3 +471,38 @@ func _space_shots() -> void:
 	for i in 14:
 		await get_tree().physics_frame
 	await _snap("ground_pound", 2)
+
+
+func _entrance_shots() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = false
+	w.events.cooldown = 9999.0
+	w.char_missions.enabled = false
+	w.street_crime.enabled = false
+	w.day_night.frozen = true
+	w.day_night.hour = 15.0
+	w.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	for room in ["queen_consolidated", "ccpd", "iron_heights", "arkham"]:
+		var out := Interiors.outside_point(room)
+		var d: Dictionary = Interiors.placed[room]
+		var back: Vector3 = (out - d["origin"]).normalized()
+		w.inside = ""
+		w.player.global_position = out + back * 8.0
+		w.cam.yaw = atan2(back.x, back.z)
+		w.cam.pitch = 0.05
+		w.cam.zoom = 6.0
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap("entrance_" + room, 6)
+		w.enter_interior(room)
+		w.cam.yaw = 0.0
+		w.cam.pitch = -0.15
+		w.cam.zoom = 7.0
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap("inside_" + room, 6)
+		w.leave_interior(room)
+	w.loadout_panel.open("flash")
+	await _snap("loadout_screen", 6)
+	w.loadout_panel.close()

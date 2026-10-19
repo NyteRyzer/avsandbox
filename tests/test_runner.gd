@@ -43,6 +43,8 @@ func _ready() -> void:
 	await test_teams_and_new_heroes()
 	_current = "test_space_glide_missions"
 	await test_space_glide_missions()
+	_current = "test_loadouts_and_buildings"
+	await test_loadouts_and_buildings()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -122,6 +124,7 @@ func test_world_smoke() -> void:
 	world = World.new()
 	add_child(world)
 	world.char_missions.enabled = false   # only the personal-mission test turns them on
+	world.street_crime.enabled = false
 	world.spawn_player("flash")
 	check(world.player != null and world.player.is_player, "player spawned")
 	check(world.city.parked.size() > 50, "props were placed")
@@ -981,9 +984,12 @@ func test_space_glide_missions() -> void:
 	check(world.char_missions.foes.size() == 3, "reaching the mission spawns the fight")
 	for f in world.char_missions.foes.duplicate():
 		if is_instance_valid(f):
+			f.blocking = false
+			f.in_block = false
+			f.invuln_t = 0.0
 			f.take_damage(99999.0, world.player)
 	await _frames(3)
-	check(world.char_missions.index == 1, "beating them advances the story")
+	check(world.char_missions.index == 1, "beating them advances the story (%d)" % world.char_missions.index)
 	Game.progress["char_missions"].erase("flash")
 	world.char_missions.set_character(world.player.def)
 	world.char_missions.enabled = false
@@ -992,6 +998,155 @@ func test_space_glide_missions() -> void:
 	world.player.energy = world.player.max_energy
 	Abilities.special(world.player, sp)
 	check(world.player.model._action == "ground_pound", "a ground slam plays its own animation")
+	world.clear_npcs()
+	world.events.enabled = true
+
+
+func test_loadouts_and_buildings() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.events.enabled = false
+	# Loadouts
+	var flash: Dictionary = Game.get_character("flash")
+	var prim := Loadout.options(flash, "primary")
+	check(prim.size() > 6 and prim[0]["name"] == flash["primary"]["name"], "the Flash has a list of primaries, his own first")
+	var names := prim.map(func(o) -> String: return str(o["name"]))
+	check(names.has("Mach Kicks") and names.has("Cold Gun"), "speedster powers and armory weapons are on offer")
+	for id in ["green_arrow", "supergirl", "constantine", "atom", "batwoman", "grodd", "flash"]:
+		var d: Dictionary = Game.get_character(id)
+		for slot in Loadout.SLOTS:
+			for o in Loadout.options(d, slot):
+				if not Loadout._valid(slot, o):
+					check(false, "%s has a bad %s option %s" % [id, slot, o.get("name", "")])
+	var ci := names.find("Cold Gun")
+	Loadout.choose("flash", "primary", ci)
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	check(world.player.def["primary"]["name"] == "Cold Gun", "a chosen weapon is equipped")
+	check(world.player.def["look"]["gear"].get("right", "") == "cold_gun", "and it's in his hand")
+	world.player.in_primary = true
+	for k in 4:
+		await get_tree().physics_frame
+	world.player.in_primary = false
+	Loadout.reset("flash")
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	check(world.player.def["primary"]["name"] == flash["primary"]["name"], "resetting brings back the signature kit")
+	check(Game.get_character("flash")["primary"]["name"] == flash["primary"]["name"], "the roster itself is untouched")
+	world.loadout_panel.open("supergirl")
+	check(world.loadout_panel.visible and world.loadout_panel._rows.get_child_count() == 4, "the loadout screen has four slots")
+	world.loadout_panel.close()
+	# Telekinesis
+	check(Game.get_character("grodd").get("telekinetic", false) and Game.get_character("thinker").get("telekinetic", false), "canon telekinetics are marked")
+	world.spawn_player("damien_darhk", Vector3(560, 0.5, -440))
+	var p: Actor = world.player
+	var car := Prop.new()
+	car.build(world, "car")
+	world.props_root.add_child(car)
+	car.global_position = p.global_position + Vector3(0, 0.6, -14)
+	await _frames(3)
+	p.aim_point = car.global_position
+	p.rotation.y = 0.0
+	check(p.tk_grab(), "a telekinetic lifts a car from 14 m away")
+	await _frames(20)
+	check(car.global_position.y > p.global_position.y + 1.0, "it floats in the air")
+	p.tk_release(true)
+	await _frames(5)
+	check(not p.tk_hold and car.linear_velocity.length() > 10.0, "and is thrown")
+	var foe: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0.3, -8))
+	await _frames(3)
+	p.aim_point = foe.chest()
+	check(p.tk_grab() and p.tk_actor == foe, "telekinesis can lift a person")
+	await _frames(15)
+	check(foe.global_position.y > p.global_position.y + 0.5, "they hang helpless in the air")
+	p.tk_release(true)
+	check(foe.hp < foe.max_hp, "and get thrown")
+	world.clear_npcs()
+	# Walk-in entrances
+	for room in ["star_labs", "queen_consolidated", "ccpd", "l_corp", "iron_heights", "arkham", "garfield"]:
+		check(world.city.interior_slots.has(room), "%s has a front entrance you walk through" % Interiors.NAMES[room])
+	var front := Interiors.outside_point("iron_heights")
+	world.spawn_player("superman", front)
+	world.inside = ""
+	var into := Interiors.to_world("iron_heights", Vector3(0, 0.5, 8))
+	world.player.global_position = into
+	await _frames(3)
+	world._process(0.016)
+	check(Interiors.room_at(world.player.global_position) == "iron_heights", "Iron Heights' cell block is inside the prison")
+	# Elevators
+	world.enter_interior("queen_consolidated")
+	world.use_door({"interior": "elevator", "data": "queen_consolidated"})
+	check(world.player.global_position.y > 150.0, "the Queen Consolidated elevator goes to the roof")
+	# Arrests and jailbreaks
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	var crook: Actor = world.population.spawn_thug(world.player.global_position + Vector3(1.5, 0.3, 0))
+	await _frames(2)
+	crook.take_damage(99999.0, world.player)
+	await _frames(2)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check(world.door.get("interior", "") == "arrest", "a knocked-out crook can be arrested")
+	world.interact()
+	check(world.carrying == crook, "you carry them")
+	var before := Game.stat("arrests")
+	world.enter_interior("ccpd")
+	world.interact()
+	check(Game.stat("arrests") == before + 1.0, "dropping them at the CCPD books them")
+	world.spawn_player("captain_cold", Vector3(560, 0.5, -440))
+	world.enter_interior("iron_heights")
+	check(world.inmates.size() >= 8, "Iron Heights is full of inmates")
+	world.use_door({"interior": "cell", "data": "0"})
+	var freed := 0
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a.follow_target == world.player:
+			freed += 1
+	check(freed == 1, "a villain can break an inmate out")
+	world.leave_interior("iron_heights")
+	world.clear_npcs()
+	world.inmates.clear()
+	Game.clear_heat()
+	# Med bay
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	world.player.hp = 10.0
+	world.use_door({"interior": "medbay"})
+	check(world.player.hp == world.player.max_hp, "the med bay patches you up")
+	# Weapon pickups
+	world.pickups.spawn(world.player.global_position + Vector3(0, 0.6, 0), "Shotgun", 3)
+	await _frames(3)
+	check(world.player.pickup_ammo == 3 and world.player.def["primary"]["name"] == "Shotgun", "walking over a dropped shotgun picks it up")
+	for k in 3:
+		world.player.cooldowns["primary"] = 0.0
+		world.player.in_primary = true
+		world.player._abilities(0.016)
+	world.player.in_primary = false
+	check(world.player.pickup_ammo == 0 and world.player.def["primary"]["name"] == flash["primary"]["name"], "out of ammo, back to your own powers")
+	# Superhero landing
+	world.spawn_player("superman", Vector3(560, 40.0, -440))
+	world.player.velocity = Vector3(0, -45.0, 0)
+	var landed := false
+	for k in 90:
+		await get_tree().physics_frame
+		if world.player.model._action == "hero_land":
+			landed = true
+			break
+	check(landed, "dropping from a height makes a superhero landing")
+	# Boss rage
+	var boss: Actor = world.population.spawn_character(Game.get_character("zoom"), "villain", Vector3(570, 0.5, -440))
+	boss.make_boss(2.0)
+	boss.blocking = false
+	boss.take_damage(boss.max_hp * 0.6, world.player)
+	check(boss.has_meta("enraged") and boss.rage_t > 0.0, "a boss at half health is enraged")
+	world.clear_npcs()
+	# Muggings and weather powers
+	world.street_crime.enabled = true
+	world.street_crime.start()
+	check(is_instance_valid(world.street_crime.mugger), "a mugging can break out")
+	world.street_crime.mugger.take_damage(99999.0, world.player)
+	await _frames(2)
+	check(world.street_crime.mugger == null, "stopping the mugger ends it")
+	world.street_crime.enabled = false
+	world.power_weather("storm", 1.0)
+	check(world.day_night.weather == "storm", "Weather Wizard's storm changes the weather")
+	world._tick_power_weather(2.0)
+	check(world.day_night.weather != "storm", "and it clears up again")
 	world.clear_npcs()
 	world.events.enabled = true
 

@@ -1233,6 +1233,20 @@ func _action_pose(action: String, t: float, step: int) -> Dictionary:
 			p["th_l"] = 0.3
 			p["kn_l"] = -0.35
 			p["th_r"] = -0.2
+		"hero_land":
+			# The superhero landing: one knee down, one fist on the ground.
+			var rise := clampf((t - 0.6) / 0.4, 0.0, 1.0)
+			p["drop"] = lerpf(-0.6, 0.0, rise)
+			p["th_l"] = lerpf(1.5, 0.0, rise)
+			p["kn_l"] = lerpf(-1.4, 0.0, rise)
+			p["th_r"] = lerpf(0.2, 0.0, rise)
+			p["kn_r"] = lerpf(-1.9, 0.0, rise)
+			p["spine_x"] = lerpf(0.55, 0.0, rise)
+			p["sh_r_x"] = lerpf(1.0, 0.0, rise)
+			p["el_r"] = lerpf(0.2, 0.2, rise)
+			p["sh_l_z"] = lerpf(-0.9, -0.1, rise)
+			p["el_l"] = 0.4
+			p["head_x"] = lerpf(-0.35, 0.0, rise)
 		"ground_pound":
 			# Leap up, then both fists smash down in a deep crouch.
 			var down := clampf((t - 0.35) / 0.25, 0.0, 1.0)

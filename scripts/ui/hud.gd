@@ -358,7 +358,9 @@ func _process(delta: float) -> void:
 	var util := p.utility_name()
 	if util != "":
 		e_text = "[E]  " + util + _cd(p, "utility")
-	if p.strength:
+	if p.def.get("telekinetic", false):
+		e_text += ("  ·  " if e_text != "" else "[E]  ") + ("Telekinetic throw (LMB)" if p.tk_hold or p.tk_actor else "Telekinesis: lift what you aim at")
+	elif p.strength:
 		e_text += ("  ·  " if e_text != "" else "[E]  ") + "Lift / throw"
 	ability_labels[3].text = e_text
 	var move_text := ""
@@ -406,6 +408,8 @@ func _process(delta: float) -> void:
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
 	mission_label.text = world.missions.tracker()
+	if world.street_crime.mugger:
+		mission_label.text = "MUGGING: stop him! %ds\n\n" % int(world.street_crime.time_left) + mission_label.text
 	var personal: String = world.char_missions.tracker()
 	if personal != "":
 		mission_label.text = personal + ("\n\n" + mission_label.text if mission_label.text != "" else "")
