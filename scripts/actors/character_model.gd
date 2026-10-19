@@ -268,7 +268,12 @@ func _trim() -> Color:
 
 func _skin() -> Color:
 	# Slightly darkened: lofted skin reads brighter than flat-shaded boxes did.
-	return _c("skin", "#c99a78").darkened(0.12)
+	var c := _c("skin", "#c99a78")
+	# Lofted skin catches more light than flat boxes did: deepen it a little,
+	# more for pale tones (which otherwise wash out to white), and warm it.
+	c = c.darkened(0.12 + 0.08 * c.v)
+	c.s = minf(1.0, c.s * 1.18 + 0.02)
+	return c
 
 
 # --- Body parts ---------------------------------------------------------------
@@ -510,7 +515,12 @@ func _build_hair(k: float) -> void:
 	if _has("cowl") or _has("helmet") or _has("helmet_savitar") or _has("mask_deathstroke") or build_type == "gorilla" or style == "bald":
 		return
 	var hair := _c("hair", "#3b2a1e")
-	var hb := _mb(head)
+	var hb := _mb(head, "gloss")
+	# Strands: stripes of lighter and darker hair, darker at the roots.
+	var strands := func(t: float, theta: float, _r: Dictionary) -> Color:
+		var v := sin(theta * 23.0 + t * 3.0) * 0.5 + sin(theta * 41.0) * 0.3
+		var c := hair.lightened(0.1 * maxf(0.0, v)).darkened(0.12 * maxf(0.0, -v))
+		return c.darkened(0.1 * (1.0 - t))
 	var thick := 0.012 if style == "buzz" else 0.02
 	if style == "curly" or style == "wild":
 		thick = 0.032
@@ -521,7 +531,7 @@ func _build_hair(k: float) -> void:
 		thick = 0.012
 	for r in R:
 		rings.append({"y": r[0] * k, "rx": r[1] * k + thick * 0.5, "rz": r[2] * k + thick * 0.5, "cz": 0.014 * k})
-	hb.loft(rings, Transform3D(), hair, 18)
+	hb.loft(rings, Transform3D(), strands, 24)
 	# Sides and back (arc leaves the face open)
 	var back_len := 0.06
 	match style:
@@ -540,7 +550,7 @@ func _build_hair(k: float) -> void:
 	]
 	if style == "long":
 		side_rings.push_front({"y": (0.07 - back_len - 0.03) * k, "rx": 0.07 * k, "rz": 0.05 * k, "cz": 0.06 * k})
-	hb.loft(side_rings, Transform3D(), hair, 18, false, false, 0.62)
+	hb.loft(side_rings, Transform3D(), strands, 24, false, false, 0.62)
 	if style == "ponytail":
 		hb.tube(Vector3(0, 0.07 * k, 0.1 * k), Vector3(0, -0.18 * k, 0.13 * k), 0.025 * k, 0.012 * k, Transform3D(), hair, 8)
 
@@ -627,10 +637,16 @@ func _build_arm(side: float) -> void:
 	var trim := _trim()
 	var has_trim := look.has("trim")
 	var sleeve := suit
-	if _has("sleeveless"):
-		sleeve = _skin()
+	var skin := _skin()
+	# Sleeve length: 2 = full sleeves, 1 = to the elbow, 0.45 = a T-shirt, 0 = bare arms.
+	var sleeve_len := float(look.get("sleeve", 0.0 if _has("sleeveless") else 2.0))
+	var upper_cut := 1.0 - minf(sleeve_len, 1.0)
+	var fore_cut := 1.0 - clampf(sleeve_len - 1.0, 0.0, 1.0)
 	var kind := "metal" if build_type == "armored" else ("gloss" if _has("leather") else "skin")
 	var arm_col := func(t: float, theta: float, _r: Dictionary) -> Color:
+		# t runs elbow (0) to shoulder (1)
+		if t < upper_cut:
+			return skin
 		if has_trim and absf(absf(theta) - PI * 0.5) < 0.16:
 			return trim
 		return sleeve
@@ -639,12 +655,14 @@ func _build_arm(side: float) -> void:
 		{"y": -up * 0.55, "rx": r * 0.98, "rz": r, "cz": -0.004},
 		{"y": -up * 0.25, "rx": r * 1.02, "rz": r * 1.02},
 		{"y": 0.01, "rx": r * 0.95, "rz": r * 0.95},
-	], Transform3D(), arm_col, 12)
+	], Transform3D(), arm_col, 12, true, true, 1.0, [upper_cut] if upper_cut > 0.01 and upper_cut < 0.99 else [], 2)
 	var glove_from := float(look.get("glove_length", 0.55))
 	var fore_col := func(t: float, theta: float, _r: Dictionary) -> Color:
 		# t runs wrist (0) to elbow (1)
 		if t < glove_from:
 			return gloves
+		if t < fore_cut:
+			return skin
 		if has_trim and absf(absf(theta) - PI * 0.5) < 0.16:
 			return trim
 		return sleeve
@@ -653,16 +671,29 @@ func _build_arm(side: float) -> void:
 		{"y": -fo * 0.5, "rx": r * 0.77, "rz": r * 0.71},
 		{"y": -fo * 0.2, "rx": r * 0.86, "rz": r * 0.84, "cz": -0.003},
 		{"y": 0.015, "rx": r * 0.8, "rz": r * 0.8},
-	], Transform3D(), fore_col, 12, true, true, 1.0, [glove_from] if glove_from > 0.01 and glove_from < 0.99 else [], 2)
-	_mb(el, kind).ellipsoid(Vector3(0, 0.0, 0.0), Vector3(r * 0.84, r * 0.84, r * 0.84), Transform3D(), sleeve, 10, 6)
+	], Transform3D(), fore_col, 12, true, true, 1.0, ([glove_from] if glove_from > 0.01 and glove_from < 0.99 else []) + ([fore_cut] if fore_cut > 0.01 and fore_cut < 0.99 else []), 2)
+	_mb(el, kind).ellipsoid(Vector3(0, 0.0, 0.0), Vector3(r * 0.84, r * 0.84, r * 0.84), Transform3D(), sleeve if sleeve_len > 1.05 else skin, 10, 6)
 	# Fist with a thumb
 	var hk := r / 0.056
 	var hand_col := gloves if glove_from > 0.01 else _skin()
 	if build_type == "gorilla":
 		hand_col = _skin().darkened(0.2)
-	var hb := _mb(hand, kind)
-	hb.ellipsoid(Vector3(0, -0.045 * hk, -0.004), Vector3(0.036, 0.05, 0.03) * hk, Transform3D(), hand_col, 10, 6)
-	hb.ellipsoid(Vector3(-side * -0.0 + side * -0.026 * hk, -0.035 * hk, -0.022 * hk), Vector3(0.012, 0.025, 0.012) * hk, Transform3D(), hand_col, 6, 4)
+	var hb := _mb(hand, kind if glove_from > 0.01 else "skin")
+	if build_type == "gorilla":
+		hb.ellipsoid(Vector3(0, -0.045 * hk, -0.004), Vector3(0.036, 0.05, 0.03) * hk, Transform3D(), hand_col, 10, 6)
+	else:
+		# A hand: palm, four curled fingers with knuckles, and a thumb.
+		hb.ellipsoid(Vector3(0, -0.038 * hk, 0.0), Vector3(0.033, 0.042, 0.017) * hk, Transform3D(), hand_col, 10, 6)
+		for f in 4:
+			var fx := (-0.021 + f * 0.014) * hk
+			var flen := (0.022 if f in [1, 2] else 0.019) * hk
+			var base_pt := Vector3(fx, -0.072 * hk, -0.002 * hk)
+			var mid := base_pt + Vector3(0, -flen, -0.006 * hk)
+			var tip := mid + Vector3(0, -0.006 * hk, -0.016 * hk)
+			hb.tube(base_pt, mid, 0.0072 * hk, 0.0066 * hk, Transform3D(), hand_col, 6)
+			hb.tube(mid, tip, 0.0066 * hk, 0.0058 * hk, Transform3D(), hand_col, 6)
+		var tb := Vector3(side * -0.026 * hk, -0.03 * hk, -0.01 * hk)
+		hb.tube(tb, tb + Vector3(side * -0.006, -0.026, -0.014) * hk, 0.0085 * hk, 0.007 * hk, Transform3D(), hand_col, 6)
 	if _has("armor") and build_type != "gorilla":
 		_mb(el, "metal").loft([{"y": -fo * 0.9, "rx": r * 0.95, "rz": r * 0.95}, {"y": -fo * 0.35, "rx": r * 1.05, "rz": r * 1.05}],
 			Transform3D(), _accent(), 12)

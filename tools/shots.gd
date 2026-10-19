@@ -135,6 +135,17 @@ func _closeups(ids: Array, pose: String) -> void:
 			if idx >= ids.size():
 				break
 			var c := Game.get_character(ids[idx])
+			if str(ids[idx]).begins_with("npc_"):
+				var pop := Population.new()
+				pop.rng.seed = idx * 7919 + batch
+				match str(ids[idx]).trim_prefix("npc_").rstrip("0123456789"):
+					"police":
+						c = pop.police_def()
+					"thug":
+						c = pop.thug_def(idx % 4)
+					_:
+						c = pop.civilian_def()
+				pop.free()
 			var m := CharacterModel.new()
 			root.add_child(m)
 			m.build(c["look"])

@@ -207,23 +207,65 @@ func spawn_thug(pos: Vector3, gang := -1) -> Actor:
 	return spawn_character(thug_def(gang), "thug", pos)
 
 
+const SHOES := ["#f2f2ee", "#1a1a1a", "#5a3a22", "#2a2a3a", "#8a8a8a", "#b02a2a"]
+const JEANS := ["#2a3a5a", "#1e2a44", "#3a4a6a", "#22222a", "#5a5a5e", "#6a5a44", "#2e3a2e"]
+
+
+## A passer-by: real clothes (T-shirts, hoodies, business suits, dresses,
+## jackets), bare hands, shoes, all sorts of hair and builds.
 func civilian_def() -> Dictionary:
-	var shirt := Color.from_hsv(rng.randf(), rng.randf_range(0.2, 0.7), rng.randf_range(0.35, 0.9))
-	var legs := Color.from_hsv(rng.randf(), rng.randf_range(0.1, 0.5), rng.randf_range(0.15, 0.5))
-	var extras := []
-	if rng.randf() < 0.45:
-		extras.append("hair_long")
-	if rng.randf() < 0.15:
-		extras.append("coat")
+	var female := rng.randf() < 0.5
+	var shirt := Color.from_hsv(rng.randf(), rng.randf_range(0.15, 0.7), rng.randf_range(0.35, 0.92))
+	var skin: String = SKINS[rng.randi() % SKINS.size()]
+	var look := {
+		"suit": shirt.to_html(false), "pants": JEANS[rng.randi() % JEANS.size()], "accent": "#2a2a2a",
+		"skin": skin, "hair": HAIRS[rng.randi() % HAIRS.size()], "extras": [], "build": "female" if female else "male",
+		"gloves": skin, "glove_length": 0.0, "boots": SHOES[rng.randi() % SHOES.size()], "boot_height": 0.1,
+		"no_belt": rng.randf() < 0.6, "belt": "#3a2a1e", "scale": rng.randf_range(0.92, 1.05),
+		"eye_color": ["#3a2a1a", "#2a4a6a", "#4a5a2a", "#1a1a1a"][rng.randi() % 4],
+	}
+	if female:
+		look["hair_style"] = ["long", "ponytail", "bob", "curly", "wild", "long"][rng.randi() % 6]
+	else:
+		look["hair_style"] = ["short", "buzz", "slick", "curly", "bald", "short", "long"][rng.randi() % 7]
+		if rng.randf() < 0.4:
+			look["facial"] = ["stubble", "beard", "goatee"][rng.randi() % 3]
+	if rng.randf() < 0.12 and not female:
+		look["build"] = "bulky"
+	match rng.randi() % 6:
+		0, 1:
+			look["sleeve"] = 0.45    # T-shirt
+		2:
+			look["extras"].append("jacket")
+			look["coat_color"] = Color.from_hsv(rng.randf(), rng.randf_range(0.1, 0.5), rng.randf_range(0.15, 0.5)).to_html(false)
+		3:
+			# Office clothes
+			look["suit"] = ["#1e2430", "#2a2a2e", "#3a3a40", "#4a3a2a"][rng.randi() % 4]
+			look["pants"] = look["suit"]
+			look["collar"] = "#e8e8e8"
+			look["extras"].append("coat_short")
+			look["coat_color"] = look["suit"]
+			look["boots"] = "#1a1a1a"
+		4:
+			if female:
+				look["extras"].append("skirt")
+				look["skirt_color"] = shirt.darkened(0.2).to_html(false)
+				look["sleeve"] = 0.45
+			else:
+				look["sleeve"] = 1.0    # sleeves rolled up
+		5:
+			look["sleeve"] = 0.0 if rng.randf() < 0.5 else 2.0
+			if look["sleeve"] == 2.0:
+				look["extras"].append("coat")
+				look["coat_color"] = ["#5a4a3a", "#2a2a30", "#6a5a48", "#3a4a5a"][rng.randi() % 4]
+	look["anim"] = _civ_anim()
 	var name: String = FIRST_NAMES[rng.randi() % FIRST_NAMES.size()]
 	return {
 		"id": "civilian", "name": name, "alias": name, "side": "", "home": "any",
 		"health": 35, "speed": rng.randf_range(0.75, 0.95), "power": 0.4, "movement": "run",
 		"primary": {"kind": "melee", "damage": 4}, "secondary": {"kind": "melee", "damage": 4},
 		"special": {"kind": "rage"},
-		"look": {"suit": shirt.to_html(false), "legs": legs.to_html(false), "accent": "#222222",
-			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
-			"extras": extras, "scale": rng.randf_range(0.92, 1.05), "anim": _civ_anim()},
+		"look": look,
 	}
 
 
@@ -237,14 +279,19 @@ func _civ_anim() -> Dictionary:
 
 
 func police_def() -> Dictionary:
+	var skin: String = SKINS[rng.randi() % SKINS.size()]
+	var female := rng.randf() < 0.3
 	return {
 		"id": "police", "name": "Police Officer", "alias": "Police Officer", "side": "hero", "home": "any",
 		"health": 70, "speed": 0.95, "power": 0.7, "movement": "run",
 		"primary": {"kind": "gun", "damage": 5, "cooldown": 0.45}, "secondary": {"kind": "melee", "damage": 7},
 		"special": {"kind": "rage"},
-		"look": {"suit": "#1d2a44", "legs": "#151a24", "accent": "#0e0e0e",
-			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
-			"extras": ["cap", "emblem_star"], "anim": {"run": "marching", "idle": ["hands_hips", "arms_crossed", "relaxed"][rng.randi() % 3],
+		"look": {"suit": "#1d2a44", "pants": "#151a24", "accent": "#0e0e0e", "skin": skin,
+			"hair": HAIRS[rng.randi() % HAIRS.size()], "extras": ["cap", "emblem_star"], "build": "female" if female else "male",
+			"hair_style": "ponytail" if female else ["short", "buzz"][rng.randi() % 2], "gloves": skin, "glove_length": 0.0,
+			"boots": "#0e0e0e", "boot_height": 0.14, "belt": "#0e0e0e", "sleeve": 0.45 if rng.randf() < 0.5 else 2.0,
+			"gear": {"right": "pistol"},
+			"anim": {"run": "marching", "idle": ["hands_hips", "arms_crossed", "relaxed"][rng.randi() % 3],
 				"stride": rng.randf_range(0.9, 1.1), "tempo": rng.randf_range(0.8, 1.1)}},
 	}
 
@@ -252,9 +299,12 @@ func police_def() -> Dictionary:
 func thug_def(gang: int) -> Dictionary:
 	var g: Dictionary = GANGS[clampi(gang, 0, GANGS.size() - 1)]
 	var armed := rng.randf() < 0.55
-	var extras := ["mask_bandana"]
-	if rng.randf() < 0.6:
+	var extras := []
+	if rng.randf() < 0.5:
+		extras.append("mask_bandana")
+	if rng.randf() < 0.45:
 		extras.append("hood")
+	extras.append("jacket" if rng.randf() < 0.6 else "leather")
 	return {
 		"id": "thug", "name": g["name"], "alias": g["name"], "side": "villain", "home": "any",
 		"health": 55, "speed": 0.95, "power": 0.7, "movement": "run",
@@ -263,6 +313,9 @@ func thug_def(gang: int) -> Dictionary:
 		"special": {"kind": "rage"},
 		"look": {"suit": g["suit"], "legs": g["legs"], "accent": g["accent"],
 			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
+			"coat_color": g["suit"], "glove_length": 0.0, "boots": SHOES[rng.randi() % SHOES.size()], "boot_height": 0.12,
+			"hair_style": ["short", "buzz", "bald", "curly"][rng.randi() % 4], "facial": ["", "stubble", "beard", "goatee"][rng.randi() % 4],
+			"no_belt": true, "sleeve": 2.0 if rng.randf() < 0.7 else 0.45,
 			"extras": extras, "anim": {"run": ["swagger", "heavy", "stalk", "athlete"][rng.randi() % 4],
 				"idle": ["menace", "pockets", "fists", "hunched"][rng.randi() % 4], "cadence": rng.randf_range(0.85, 1.15), "sway": rng.randf_range(0.0, 0.2)}},
 	}

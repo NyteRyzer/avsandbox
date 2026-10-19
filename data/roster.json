@@ -651,8 +651,8 @@
     "color": "#4fa8ff"
    },
    "look": {
-    "suit": "#1d2130",
-    "accent": "#3b6fd1",
+    "suit": "#1e1e21",
+    "accent": "#55555c",
     "skin": "#c99a74",
     "hair": "#16110e",
     "extras": [
@@ -661,8 +661,11 @@
      "jacket"
     ],
     "hair_style": "long",
-    "coat_color": "#22273a",
-    "gloves": "#3b6fd1",
+    "coat_color": "#2b2725",
+    "pants": "#1c1c1f",
+    "boots": "#141414",
+    "gloves": "#2a2a2d",
+    "trim": "#46464d",
     "goggle_glow": "#4fa8ff",
     "gear": {
      "right": "gauntlet",
@@ -1023,7 +1026,7 @@
    },
    "look": {
     "suit": "#3a3a3a",
-    "accent": "#c9b34a",
+    "accent": "#5a5a62",
     "skin": "#8d5a3b",
     "hair": "#16110e",
     "extras": [
@@ -1033,6 +1036,8 @@
     ],
     "build": "female",
     "hair_style": "curly",
+    "gloves": "#1a1a1a",
+    "boots": "#1a1a1a",
     "coat_color": "#2a2a2a",
     "emblem": {
      "kind": "diamond_l",
@@ -1146,6 +1151,8 @@
     ],
     "hair_style": "bald",
     "coat_color": "#202020",
+    "gloves": "#1b1b1b",
+    "boots": "#1b1b1b",
     "emblem": {
      "kind": "t",
      "c1": "#d02020",
@@ -1205,6 +1212,8 @@
     "build": "female",
     "hair_style": "curly",
     "coat_color": "#6a5236",
+    "gloves": "#5b4630",
+    "boots": "#3a2a1a",
     "emblem": {
      "kind": "circle",
      "c1": "#c9a24a",
@@ -1972,6 +1981,8 @@
      "jacket"
     ],
     "coat_color": "#26282b",
+    "gloves": "#2a2a2a",
+    "boots": "#2a2a2a",
     "gear": {
      "right": "pistol",
      "left": "pistol"

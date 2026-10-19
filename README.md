@@ -94,6 +94,24 @@ special power, often a utility power (E), and a signature **ultimate** (R):
   the Anti-Monitor, Overgirl, Dark Arrow, Tobias Whale, King Shark, Mirror Master, Livewire,
   Metallo, Godspeed and Red Death.
 
+**Every character plays differently.** Kits mix 60+ mechanics: chain lightning that jumps
+between enemies (XS, Zoom, Godspeed, Livewire), momentum punches that hit harder the faster you
+run (Kid Flash, the Flash of Earth-90), Reverse-Flash's phasing strike that goes straight through
+shields, Green Arrow's trick quiver (net, flash and freeze arrows) and Speedy's triple shot,
+Arsenal's tracer arrows, Nyssa's poison, Killer Frost's ice spikes, Elongated Man's long arm,
+Kid Flash's sound-barrier dash, Godspeed's clone army and Savitar's time remnants, the Martian
+Manhunter shapeshifting into a passer-by, Mirror Master, Vibe and Constantine trapping enemies
+in mirrors, breaches or Hell, Heat Wave's napalm, Metallo's kryptonite field (deadly to
+Kryptonians), Stargirl's gravity well, Batwoman's bat swarm, Ra's al Ghul's Lazarus Pit,
+Dreamer and Alice putting crowds to sleep, and Black Lightning's overload.
+
+**Every character moves differently.** Each has their own idle mannerism (arms crossed, hands on
+hips, a boxer's bounce, a bow at the ready, hovering, hunched...), their own gait (a sprinter, a
+heavy stomp, a prowl, a swagger, a ninja run, a glide...), and speedsters and fliers have their
+own sprint and flight poses: Superman's fist forward, Supergirl's arms at her sides, the Martian
+Manhunter's crossed arms, Hawkgirl's flapping wings, Stargirl riding her staff, Livewire's
+corkscrew, Jordan Kent's wobbly first flights, Zoom's arms-back sprint and Jay Garrick's upright run.
+
 **Ultimates.** Fighting fills a gold meter; at 100% press R. Speedsters blitz every enemy in
 range, Kryptonians go invulnerable and sweep heat vision across the crowd, Green Arrow calls in
 Team Arrow and White Canary the Legends, Black Lightning and Livewire call down lightning storms,
