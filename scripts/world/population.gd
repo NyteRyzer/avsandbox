@@ -140,7 +140,8 @@ func shadow_demon_def() -> Dictionary:
 		"secondary": {"kind": "bolt", "damage": 10, "color": "#ff2a3a", "style": "antimatter"},
 		"special": {"kind": "rage"},
 		"look": {"suit": "#0a0406", "legs": "#0a0406", "accent": "#3a0a10", "skin": "#140808", "hair": "#000000",
-			"extras": ["wings"], "eye_glow": "#ff2a3a", "build": "bulky", "scale": 1.1},
+			"extras": ["wings"], "eye_glow": "#ff2a3a", "build": "bulky", "scale": 1.1,
+			"anim": {"idle": "hunched", "run": "lumber", "fly": "cosmic_dive"}},
 	}
 
 
@@ -152,7 +153,8 @@ func wraith_def() -> Dictionary:
 		"secondary": {"kind": "psychic", "damage": 10},
 		"special": {"kind": "rage"},
 		"look": {"suit": "#141820", "legs": "#0c0e14", "accent": "#2a3040", "skin": "#3a3e48", "hair": "#0a0a0a",
-			"extras": ["hood", "cape"], "cape": "#10141c", "eye_glow": "#c8e0ff", "build": "male", "scale": 1.15},
+			"extras": ["hood", "cape"], "cape": "#10141c", "eye_glow": "#c8e0ff", "build": "male", "scale": 1.15,
+			"anim": {"idle": "hunched", "run": "stalk", "fly": "hunched"}},
 	}
 
 
@@ -221,8 +223,17 @@ func civilian_def() -> Dictionary:
 		"special": {"kind": "rage"},
 		"look": {"suit": shirt.to_html(false), "legs": legs.to_html(false), "accent": "#222222",
 			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
-			"extras": extras, "scale": rng.randf_range(0.92, 1.05)},
+			"extras": extras, "scale": rng.randf_range(0.92, 1.05), "anim": _civ_anim()},
 	}
+
+
+## Everyday people walk all sorts of ways.
+func _civ_anim() -> Dictionary:
+	var runs := ["athlete", "strut", "swagger", "bounce", "glide", "marching", "heavy"]
+	var idles := ["relaxed", "pockets", "hands_hips", "arms_crossed", "relaxed", "regal"]
+	return {"run": runs[rng.randi() % runs.size()], "idle": idles[rng.randi() % idles.size()],
+		"stride": rng.randf_range(0.85, 1.15), "cadence": rng.randf_range(0.85, 1.15), "arms": rng.randf_range(0.6, 1.3),
+		"lean": rng.randf_range(-0.05, 0.15), "tempo": rng.randf_range(0.7, 1.3)}
 
 
 func police_def() -> Dictionary:
@@ -233,7 +244,8 @@ func police_def() -> Dictionary:
 		"special": {"kind": "rage"},
 		"look": {"suit": "#1d2a44", "legs": "#151a24", "accent": "#0e0e0e",
 			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
-			"extras": ["cap", "emblem_star"]},
+			"extras": ["cap", "emblem_star"], "anim": {"run": "marching", "idle": ["hands_hips", "arms_crossed", "relaxed"][rng.randi() % 3],
+				"stride": rng.randf_range(0.9, 1.1), "tempo": rng.randf_range(0.8, 1.1)}},
 	}
 
 
@@ -251,5 +263,6 @@ func thug_def(gang: int) -> Dictionary:
 		"special": {"kind": "rage"},
 		"look": {"suit": g["suit"], "legs": g["legs"], "accent": g["accent"],
 			"skin": SKINS[rng.randi() % SKINS.size()], "hair": HAIRS[rng.randi() % HAIRS.size()],
-			"extras": extras},
+			"extras": extras, "anim": {"run": ["swagger", "heavy", "stalk", "athlete"][rng.randi() % 4],
+				"idle": ["menace", "pockets", "fists", "hunched"][rng.randi() % 4], "cadence": rng.randf_range(0.85, 1.15), "sway": rng.randf_range(0.0, 0.2)}},
 	}

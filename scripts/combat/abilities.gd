@@ -66,6 +66,8 @@ const ELEMENT_COLORS := {"fire": Color("#ff7a1a"), "ice": Color("#a8e8ff"), "sho
 static func p(atk: Dictionary, key: String):
 	if atk.has(key):
 		return atk[key]
+	if Powers.ATTACK_DEFAULTS.has(atk["kind"]):
+		return Powers.ATTACK_DEFAULTS[atk["kind"]].get(key, 0.0)
 	return ATTACK_DEFAULTS[atk["kind"]].get(key, 0.0)
 
 
@@ -78,11 +80,17 @@ static func cooldown(atk: Dictionary) -> float:
 
 
 static func special_cost(sp: Dictionary) -> float:
-	return float(sp.get("energy", SPECIAL_DEFAULTS[sp["kind"]]["energy"]))
+	return float(sp.get("energy", _special_defaults(sp)["energy"]))
 
 
 static func special_cooldown(sp: Dictionary) -> float:
-	return float(sp.get("cooldown", SPECIAL_DEFAULTS[sp["kind"]]["cooldown"]))
+	return float(sp.get("cooldown", _special_defaults(sp)["cooldown"]))
+
+
+static func _special_defaults(sp: Dictionary) -> Dictionary:
+	if Powers.SPECIAL_DEFAULTS.has(sp["kind"]):
+		return Powers.SPECIAL_DEFAULTS[sp["kind"]]
+	return SPECIAL_DEFAULTS[sp["kind"]]
 
 
 static func describe(atk: Dictionary) -> String:
@@ -173,6 +181,12 @@ static func _pose_for(kind: String, atk: Dictionary) -> String:
 			return "scream" if str(atk.get("origin", "mouth")) == "mouth" else "two_hands"
 		"psychic", "telekinesis":
 			return "temples"
+		"chain_lightning":
+			return "two_hands"
+		"ground_spikes":
+			return "cast_up"
+		"grab":
+			return "stretch"
 		"bolt", "lightning", "missiles":
 			var o := str(atk.get("origin", ""))
 			if o == "hands":
@@ -219,9 +233,26 @@ static func fire(a: Actor, atk: Dictionary) -> void:
 			elif kind == "throw":
 				style = model if model != "" else "knife"
 			var radius := float(p(atk, "radius")) if kind == "explosive_arrow" else 0.0
-			var proj := Projectile.new()
-			proj.returns = bool(atk.get("returns", style in ["boomerang", "helmet", "cicada_dagger"]))
-			proj.setup(w, a, from, dir * speed, dmg, style, _color(atk), element, radius)
+			var effect := str(atk.get("effect", ""))
+			if effect == "cycle":
+				# Green Arrow's trick quiver: net, flash, then a freeze arrow.
+				effect = ["net", "flash", "freeze"][a.trick_index % 3]
+				a.trick_index += 1
+				if a.is_player:
+					a.world.notify(effect.capitalize() + " arrow", Color("#c8ffc8"))
+			var spread := int(atk.get("spread", 1))
+			var tracer: Actor = Powers.aimed_foe(a, 80.0, 0.7) if bool(atk.get("tracer", false)) else null
+			for k in spread:
+				var d := dir
+				if spread > 1:
+					d = dir.rotated(Vector3.UP, (k - (spread - 1) * 0.5) * 0.09)
+				var proj := Projectile.new()
+				proj.returns = bool(atk.get("returns", style in ["boomerang", "helmet", "cicada_dagger"]))
+				proj.effect = effect
+				proj.ricochet = int(atk.get("ricochet", 0))
+				if tracer:
+					proj.homing = tracer
+				proj.setup(w, a, from, d * speed, dmg, style, _color(atk), element, radius)
 			var sound := "arrow"
 			if kind == "bolt":
 				sound = "lightning" if style == "lightning" else ("fire" if style == "fireball" else "zap")
@@ -277,6 +308,8 @@ static func fire(a: Actor, atk: Dictionary) -> void:
 			_missiles(a, 4, dmg, null)
 		"telekinesis":
 			_telekinesis(a, atk, dmg)
+		"chain_lightning", "ground_spikes", "grab":
+			Powers.fire(a, atk, dmg)
 
 
 ## Three-hit combos. The third hit of every combo is a finisher that launches,
@@ -293,6 +326,11 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 	var reach := float(p(atk, "range")) * a.size * (0.5 if a.shrunk else 1.0)
 	if a.shrunk:
 		dmg *= 1.4
+	var speed_now := Vector3(a.velocity.x, 0, a.velocity.z).length()
+	if style == "momentum":
+		# Kid Flash / the Flash of Earth-90: the faster you run, the harder it lands.
+		dmg *= 1.0 + speed_now / 16.0
+		finisher = finisher or speed_now > 25.0
 	if finisher:
 		dmg *= 1.6
 	# Animation
@@ -324,6 +362,12 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 			a.stretch_t = 0.25
 		"shield_bash":
 			anim = "shield"
+		"momentum":
+			anim = "uppercut" if finisher else "punch"
+			anim_len = 0.22
+		"phase":
+			anim = "claw"
+			anim_len = 0.2
 		_:
 			anim = ["punch", "punch", "uppercut"][step]
 	a.model.play(anim, anim_len, step)
@@ -362,7 +406,15 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 		var knock := dir * (4.0 + dmg * 0.4) + Vector3.UP * (2.0 + dmg * 0.15)
 		if finisher:
 			knock = dir * (10.0 + dmg * 0.5) + Vector3.UP * (9.0 + dmg * 0.12)
+		if style == "phase":
+			# Reverse-Flash: a vibrating hand passes straight through shields.
+			o.invuln_t = 0.0
+			o.shield_t = 0.0
+			o.field_t = 0.0
+			o.stun_t = maxf(o.stun_t, 0.45)
 		o.take_damage(dmg, a, element, knock)
+		if style == "momentum" and speed_now > 20.0:
+			FX.sonic_boom(a.world, o.chest(), fwd)
 		if finisher and o.size < 1.6:
 			o.model.tumble(14.0)
 		FX.sparks(a.world, o.chest(), ELEMENT_COLORS.get(element, Color(1, 0.95, 0.8)), 8 if finisher else 5, 5.0, 0.25)
@@ -897,6 +949,8 @@ static func special(a: Actor, sp: Dictionary) -> bool:
 			a.breath_t = 2.2
 			a.breath_spec = {"kind": "breath", "element": str(sp.get("element", "ice")), "damage": 30.0, "range": 16.0, "energy": 0.0}
 			return true
+	if sp["kind"] in Powers.SPECIALS:
+		return Powers.special(a, sp)
 	return utility(a, sp)
 
 

@@ -14,11 +14,13 @@ const LAYER_ACTORS := 2
 const LAYER_PROPS := 4
 
 const ATTACK_KINDS := ["melee", "arrow", "explosive_arrow", "throw", "bolt", "beam", "sonic", "lightning", "gun", "dash",
-	"flame", "breath", "missiles", "telekinesis", "psychic"]
+	"flame", "breath", "missiles", "telekinesis", "psychic", "chain_lightning", "ground_spikes", "grab"]
 const SPECIAL_KINDS := ["time_slow", "tornado", "ground_slam", "smoke_bomb", "nova", "rage", "shrink",
 	"invisibility", "invulnerable", "teleport", "drain", "sonic_scream", "arrow_storm", "boomerang_storm",
 	"breath", "frag_grenade", "t_spheres", "animal_spirit", "shield_wall", "force_field", "storm",
-	"missile_barrage", "dampen", "mind_control"]
+	"missile_barrage", "dampen", "mind_control", "sonic_boom", "speed_clones", "whirlwind", "shapeshift",
+	"mirror_trap", "hazard_field", "meteor_dash", "gravity_well", "bat_swarm", "lazarus", "summon_goons", "sleep",
+	"overload", "flashbang", "emp"]
 const UTILITY_KINDS := ["grapple", "blitz", "dodge_flip", "emp", "foresight", "ice_wall", "phase", "teleport",
 	"breath", "invulnerable"]
 const MOVEMENTS := ["run", "speed", "flight", "grapple", "superjump", "ice", "hover"]

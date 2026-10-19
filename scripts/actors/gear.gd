@@ -34,14 +34,23 @@ static func build(kind: String, mb: MeshBuilder, glow: MeshBuilder, xf: Transfor
 			for x in [-0.85, -0.12, 0.12, 0.85]:
 				mb.tube(Vector3(x - 0.03, 0, 0), Vector3(x + 0.03, 0, 0), 0.019, 0.019, xf, DARK)
 		"cosmic_staff":
-			mb.tube(Vector3(0, 0.35, 0), Vector3(0, -1.0, 0), 0.014, 0.014, xf, Color("#d9c27a"))
-			mb.ellipsoid(Vector3(0, -1.04, 0), Vector3(0.04, 0.04, 0.04), xf, Color("#b8a060"))
-			var star := PackedVector2Array()
-			for i in 10:
-				var a := -PI * 0.5 + i * PI / 5.0
-				var r := 0.09 if i % 2 == 0 else 0.038
-				star.append(Vector2(cos(a) * r, sin(a) * r))
-			glow.prism(star, 0.03, xf * Transform3D(Basis(Vector3.RIGHT, PI * 0.5), Vector3(0, -1.12, 0)), Color("#fff2a0"))
+			# Starman's Cosmic Staff: a long brass-and-steel rod with a leather
+			# grip, banded segments, and a forked crescent head around a glowing core.
+			var brass := Color("#c9a85a")
+			var steel := Color("#b8bec6")
+			mb.tube(Vector3(0, 0.78, 0), Vector3(0, -0.98, 0), 0.019, 0.017, xf, steel, 10)
+			mb.tube(Vector3(0, 0.1, 0), Vector3(0, -0.12, 0), 0.023, 0.023, xf, Color("#3a2a1e"), 10)
+			for y in [0.62, 0.38, 0.16, -0.16, -0.42, -0.68]:
+				mb.tube(Vector3(0, y + 0.018, 0), Vector3(0, y - 0.018, 0), 0.025, 0.025, xf, brass, 10)
+			mb.tube(Vector3(0, 0.78, 0), Vector3(0, 0.84, 0), 0.026, 0.012, xf, brass, 10)
+			mb.tube(Vector3(0, -0.96, 0), Vector3(0, -1.03, 0), 0.03, 0.036, xf, brass, 10)
+			for side in [-1.0, 1.0]:
+				var pts := [Vector3(side * 0.03, -1.02, 0), Vector3(side * 0.085, -1.1, 0), Vector3(side * 0.095, -1.2, 0),
+					Vector3(side * 0.06, -1.29, 0), Vector3(side * 0.018, -1.33, 0)]
+				for k in pts.size() - 1:
+					mb.tube(pts[k], pts[k + 1], 0.012, 0.009, xf, brass, 6)
+			glow.ellipsoid(Vector3(0, -1.17, 0), Vector3(0.045, 0.06, 0.045), xf, Color("#fff2a0"))
+			glow.ellipsoid(Vector3(0, -1.17, 0), Vector3(0.02, 0.09, 0.02), xf, Color("#ffffff"))
 		"weather_wand":
 			mb.tube(Vector3(0, 0.08, 0), Vector3(0, -0.45, 0), 0.016, 0.012, xf, DARK)
 			glow.ellipsoid(Vector3(0, -0.5, 0), Vector3(0.035, 0.05, 0.035), xf, Color("#bfe0ff"))

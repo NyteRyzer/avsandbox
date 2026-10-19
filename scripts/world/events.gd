@@ -155,7 +155,8 @@ func dominator_def() -> Dictionary:
 		"secondary": {"kind": "psychic", "damage": 12},
 		"special": {"kind": "rage"},
 		"look": {"suit": "#4a3a5a", "legs": "#3a2a4a", "accent": "#c47aff", "skin": "#8a8a7a", "hair": "#8a8a7a",
-			"extras": ["glow_eyes", "armor"], "hair_style": "bald", "eye_glow": "#ffd23a", "build": "armored", "scale": 1.2},
+			"extras": ["glow_eyes", "armor"], "hair_style": "bald", "eye_glow": "#ffd23a", "build": "armored", "scale": 1.2,
+			"anim": {"idle": "regal", "run": "glide", "fly": "levitate"}},
 	}
 
 

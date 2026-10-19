@@ -83,6 +83,12 @@ func _range_for(atk: Dictionary) -> float:
 			return 18.0
 		"missiles":
 			return 26.0
+		"chain_lightning":
+			return 22.0
+		"ground_spikes":
+			return 10.0
+		"grab":
+			return 12.0
 	return 18.0
 
 

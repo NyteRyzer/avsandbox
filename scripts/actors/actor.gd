@@ -119,6 +119,13 @@ var controlled_t := 0.0
 var _orig_team := ""
 var _orig_follow: Actor = null
 var boss := false
+var root_t := 0.0             # netted: can't move
+var poison_t := 0.0
+var whirl_t := 0.0
+var _whirl_tick := 0.0
+var disguise_t := 0.0
+var trick_index := 0
+var _true_look: Dictionary = {}
 var hp_bar: Node3D = null
 var hp_bar_t := 0.0
 var _ice: Node3D = null
@@ -286,6 +293,9 @@ func _physics_process(delta: float) -> void:
 		in_special = false
 		in_ability = false
 		in_dodge = false
+	if root_t > 0.0:
+		in_move = Vector3.ZERO
+		in_jump = false
 	if lift_t > 0.0:
 		_lifted(delta)
 	_move(delta)
@@ -311,6 +321,25 @@ func _tick_status(delta: float) -> void:
 		if randf() < delta * 10.0 and world:
 			FX.sparks(world, chest(), Color("#ff7a1a"), 3, 1.5)
 	stun_t = maxf(0.0, stun_t - delta)
+	root_t = maxf(0.0, root_t - delta)
+	if poison_t > 0.0:
+		poison_t -= delta
+		_raw_damage(5.0 * delta, null)
+		if randf() < delta * 6.0 and world:
+			FX.sparks(world, chest(), Color("#6aff4a"), 2, 1.0)
+	if whirl_t > 0.0:
+		whirl_t -= delta
+		model.rotation.y += delta * 28.0
+		_whirl_tick -= delta
+		if _whirl_tick <= 0.0:
+			_whirl_tick = 0.25
+			Powers.whirl_tick(self)
+		if whirl_t <= 0.0:
+			model.rotation.y = 0.0
+	if disguise_t > 0.0:
+		disguise_t -= delta
+		if disguise_t <= 0.0 or in_primary or in_secondary:
+			_end_disguise()
 	invuln_t = maxf(0.0, invuln_t - delta)
 	rage_t = maxf(0.0, rage_t - delta)
 	dampened_t = maxf(0.0, dampened_t - delta)
@@ -804,7 +833,10 @@ func _raw_damage(amount: float, source: Actor) -> void:
 		q.center_offset.x = -0.43 + 0.43 * ratio
 	damaged.emit(self, amount)
 	if hp <= 0.0:
-		die(source if source else last_attacker)
+		var killer: Actor = source if is_instance_valid(source) else null
+		if killer == null and is_instance_valid(last_attacker):
+			killer = last_attacker
+		die(killer)
 
 
 func _player_hit_side_effects(amount: float) -> void:
@@ -864,6 +896,44 @@ func revive() -> void:
 	collision_layer = Game.LAYER_ACTORS
 	collision_mask = Game.LAYER_WORLD | Game.LAYER_PROPS | Game.LAYER_ACTORS
 	model.hips.rotation = Vector3.ZERO
+
+
+## The Martian Manhunter takes the shape of a passer-by: enemies lose you
+## until you attack.
+func shapeshift(seconds: float) -> void:
+	if disguise_t > 0.0:
+		return
+	_true_look = def["look"]
+	var civ: Dictionary = world.population.civilian_def() if world else {}
+	_rebuild_model(civ.get("look", _true_look))
+	disguise_t = seconds
+	invis_t = maxf(invis_t, seconds)
+	for o in get_tree().get_nodes_in_group("actors"):
+		o.grudges.erase(get_instance_id())
+	if world:
+		FX.flash(world, chest(), Color("#5aff8a"), 2.0, 0.4)
+		if is_player:
+			world.notify("You look like just another civilian.", Color("#a0ffb0"))
+
+
+func _end_disguise() -> void:
+	disguise_t = 0.0
+	invis_t = 0.0
+	if not _true_look.is_empty():
+		_rebuild_model(_true_look)
+		_true_look = {}
+	if world:
+		FX.flash(world, chest(), Color("#5aff8a"), 2.0, 0.4)
+
+
+func _rebuild_model(look: Dictionary) -> void:
+	var old := model
+	model = CharacterModel.new()
+	add_child(model)
+	model.build(look)
+	model.scale = old.scale
+	if old:
+		old.queue_free()
 
 
 func set_shrunk(value: bool) -> void:

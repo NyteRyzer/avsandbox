@@ -21,6 +21,8 @@ var style := "energy"
 var returns := false
 var homing: Actor = null
 var fuse := -1.0
+var effect := ""        # trick arrows: net, flash, poison, fire, freeze, drain
+var ricochet := 0       # bounces on to this many more foes
 var _exclude: Array[RID] = []
 var _spin: Node3D
 var _spin_axis := Vector3.UP
@@ -246,6 +248,25 @@ func _physics_process(delta: float) -> void:
 			_coming_back = true
 			global_position = hit["position"] + hit["normal"] * 0.2
 			return
+		if ricochet > 0 and col is Actor:
+			# Guardian's shield, Captain Boomerang: bounce on to the next foe.
+			_damage(hit["position"], col)
+			_exclude.append(col.get_rid())
+			ricochet -= 1
+			var next: Actor = null
+			var nd := 18.0
+			for o in get_tree().get_nodes_in_group("actors"):
+				if o == col or not is_instance_valid(shooter) or not shooter.can_hurt(o) or o.team == "civilian":
+					continue
+				var d: float = o.global_position.distance_to(col.global_position)
+				if d < nd:
+					nd = d
+					next = o
+			if next:
+				global_position = hit["position"]
+				velocity = (next.chest() - global_position).normalized() * maxf(velocity.length(), 40.0)
+				life = maxf(life, 1.5)
+				return
 		_finish(hit["position"], col, hit.get("normal", Vector3.UP))
 		return
 	global_position = to
@@ -280,6 +301,8 @@ func _damage(pos: Vector3, col) -> void:
 	if col is Actor:
 		var knock := velocity.normalized() * (3.0 + damage * 0.2) + Vector3.UP * 2.0
 		col.take_damage(damage, src, element, knock)
+		if effect != "":
+			Powers.on_projectile_hit(src, col, effect, color)
 		if src:
 			src.combo_hit(1)
 		Sfx.play("hit", pos, -4.0)

@@ -21,6 +21,8 @@ func _ready() -> void:
 	await test_combat()
 	_current = "test_player_input"
 	await test_player_input()
+	_current = "test_new_powers"
+	await test_new_powers()
 	_current = "test_ultimates"
 	await test_ultimates()
 	_current = "test_places"
@@ -59,9 +61,9 @@ func test_roster_has_both_sides() -> void:
 
 func test_ability_defaults_cover_roster() -> void:
 	for kind in Game.ATTACK_KINDS:
-		check(Abilities.ATTACK_DEFAULTS.has(kind), "no defaults for attack " + kind)
+		check(Abilities.ATTACK_DEFAULTS.has(kind) or Powers.ATTACK_DEFAULTS.has(kind), "no defaults for attack " + kind)
 	for kind in Game.SPECIAL_KINDS:
-		check(Abilities.SPECIAL_DEFAULTS.has(kind), "no defaults for special " + kind)
+		check(Abilities.SPECIAL_DEFAULTS.has(kind) or Powers.SPECIAL_DEFAULTS.has(kind), "no defaults for special " + kind)
 	for c in Game.roster:
 		check(Abilities.cooldown(c["primary"]) >= 0.0, c["id"] + " primary cooldown")
 		check(Abilities.special_cost(c["special"]) > 0.0, c["id"] + " special cost")
@@ -290,6 +292,53 @@ func test_player_input() -> void:
 	check(Engine.time_scale < 1.0, "Q starts speed-force slow motion")
 	Game.end_slowmo()
 	world.population.enabled = true
+
+
+func test_new_powers() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	var seen := {}
+	for c in Game.roster:
+		var kinds := [c["primary"]["kind"], c["secondary"]["kind"], c["special"]["kind"]]
+		var fresh := false
+		for k in kinds:
+			if (k in Powers.ATTACKS or k in Powers.SPECIALS) and not seen.has(k):
+				fresh = true
+		var effect := str(c["primary"].get("effect", c["secondary"].get("effect", "")))
+		var style := str(c["primary"].get("style", "")) + str(c["secondary"].get("style", ""))
+		if not fresh and effect == "" and not ("phase" in style or "momentum" in style):
+			continue
+		for k in kinds:
+			seen[k] = true
+		world.clear_npcs()
+		await _frames(1)
+		world.spawn_player(c["id"], Vector3(560, 0.5, -440))
+		world.cam.yaw = 0.0
+		world.cam.pitch = 0.0
+		var foe: Actor = world.population.spawn_thug(Vector3(560, 0.5, -446))
+		foe.make_boss(20.0)
+		await _frames(2)
+		var p := world.player
+		p.aim_point = foe.chest()
+		p.face_dir = Vector3.FORWARD
+		p.energy = p.max_energy
+		for slot in ["primary", "secondary"]:
+			var atk: Dictionary = c[slot]
+			if is_instance_valid(foe):
+				p.aim_point = foe.chest()
+			if atk["kind"] in Abilities.HELD_KINDS:
+				for i in 20:
+					Abilities.held_tick(p, atk, 0.05, slot)
+			else:
+				Abilities.fire(p, atk)
+			await _frames(30)
+		p.energy = p.max_energy
+		var ok := Abilities.special(p, c["special"])
+		await _frames(90)
+		check(ok, "%s special %s runs" % [c["id"], c["special"]["kind"]])
+		check(not is_instance_valid(foe) or foe.hp < foe.max_hp or c["special"]["kind"] in ["shapeshift", "lazarus", "speed_clones", "summon_goons"], "%s's kit hurts a foe in front" % c["id"])
+	check(seen.size() > 10, "new powers exercised (%d kinds)" % seen.size())
+	world.clear_npcs()
 
 
 func test_ultimates() -> void:

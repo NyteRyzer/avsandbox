@@ -141,10 +141,17 @@ func _closeups(ids: Array, pose: String) -> void:
 			var s := float(c["look"].get("scale", 1.0))
 			m.scale = Vector3.ONE * minf(1.0, 1.25 / s)
 			m.position = Vector3(i * 1.6, 0, 0) if cam.fov > 30 else Vector3(1.65 + i * 0.5, 0, 0)
-			m.rotation.y = PI + 0.5
+			m.rotation.y = PI + 0.5 if not pose in ["run", "sprint", "fly", "cruise"] else PI * 0.5 + 0.35
+			if pose in ["fly", "cruise"]:
+				m.position.y = 0.6
 			models.append(m)
-		for f in 30:
+		var motion := {"run": [9.0, true, false], "sprint": [40.0, true, false], "fly": [2.0, false, true], "cruise": [30.0, false, true], "idle": [0.0, true, false]}
+		for f in (34 if motion.has(pose) else 30):
 			for m in models:
+				if motion.has(pose):
+					var mv: Array = motion[pose]
+					m.animate(1.0 / 60.0, mv[0], mv[1], mv[2], 0.0, false)
+					continue
 				if pose != "" and f % 12 == 0:
 					m.play(pose, 0.8, f / 12)
 				m.animate(1.0 / 60.0, 0.0, true, false, 0.0, false)

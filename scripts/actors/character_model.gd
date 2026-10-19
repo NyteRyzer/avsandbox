@@ -844,7 +844,7 @@ func _build_gear() -> void:
 			var reach := {"pistol": 0.15, "pistol_big": 0.2, "cold_gun": 0.39, "heat_gun": 0.45}
 			muzzle = _pivot(pivot, Vector3(0, -0.045 - float(reach[kind]), -0.025), "Muzzle")
 		if kind == "cosmic_staff":
-			muzzle = _pivot(pivot, Vector3(0, -0.045 - 1.12, 0), "Muzzle")
+			muzzle = _pivot(pivot, Vector3(0, -0.045 - 1.17, 0), "Muzzle")
 		if kind == "weather_wand":
 			muzzle = _pivot(pivot, Vector3(0, -0.55, 0), "Muzzle")
 
@@ -948,9 +948,15 @@ func animate(delta: float, hspeed: float, grounded: bool, flying: bool, vspeed: 
 	_apply_pose(p, delta, dead)
 
 
+func _anim(key: String, fallback):
+	var a: Dictionary = look.get("anim", {})
+	return a.get(key, fallback)
+
+
 func _locomotion(delta: float, hspeed: float, grounded: bool, flying: bool, vspeed: float, dead: bool) -> Dictionary:
 	var p := {}
-	var breathe := sin(_breath * 1.8) * 0.025
+	var tempo := float(_anim("tempo", 1.0))
+	var breathe := sin(_breath * 1.8 * tempo) * 0.025
 	p["sh_l_z"] = -0.1
 	p["sh_r_z"] = 0.1
 	p["el_l"] = 0.2
@@ -978,21 +984,7 @@ func _locomotion(delta: float, hspeed: float, grounded: bool, flying: bool, vspe
 		p["el_r"] = 1.2
 		return p
 	if flying:
-		var t := clampf(hspeed / 30.0, 0.0, 1.0)
-		var hover := sin(_breath * 2.2) * 0.04
-		p["pitch"] = -t * 1.35
-		p["drop"] = hover
-		p["th_l"] = lerpf(0.15, 0.05, t)
-		p["th_r"] = lerpf(-0.05, 0.0, t)
-		p["kn_l"] = lerpf(-0.45, -0.25, t)
-		p["kn_r"] = lerpf(-0.2, -0.05, t)
-		p["sh_r_x"] = lerpf(0.25, 3.05, t)
-		p["el_r"] = lerpf(0.4, 0.0, t)
-		p["sh_l_x"] = lerpf(0.25, 0.2, t)
-		p["sh_l_z"] = lerpf(-0.3, -0.12, t)
-		p["el_l"] = lerpf(0.4, 0.1, t)
-		p["head_x"] = t * 0.9
-		return p
+		return _fly_pose(hspeed, vspeed)
 	if not grounded:
 		if vspeed > 0.0:
 			p["th_l"] = 0.9
@@ -1011,32 +1003,124 @@ func _locomotion(delta: float, hspeed: float, grounded: bool, flying: bool, vspe
 			p["sh_r_z"] = 0.7
 		return p
 	if hspeed < 0.3:
-		return p
+		return _idle_pose(p)
+	return _run_pose(delta, hspeed, p)
+
+
+## Standing still: each character's mannerism, with a little life in it.
+func _idle_pose(p: Dictionary) -> Dictionary:
+	var style := str(_anim("idle", "relaxed"))
+	var base: Dictionary = Motion.IDLES.get(style, {})
+	for k in base:
+		p[k] = base[k]
+	var tempo := float(_anim("tempo", 1.0))
+	match style:
+		"fists":
+			p["drop"] = -0.03 + sin(_breath * 4.0 * tempo) * 0.025
+			p["spine_y"] = p.get("spine_y", 0.0) + sin(_breath * 2.0 * tempo) * 0.06
+		"bounce":
+			p["drop"] = absf(sin(_breath * 6.0 * tempo)) * 0.05
+			p["head_y"] = sin(_breath * 1.3) * 0.4
+			p["sh_l_x"] = p.get("sh_l_x", 0.0) + sin(_breath * 6.0 * tempo) * 0.2
+			p["sh_r_x"] = p.get("sh_r_x", 0.0) - sin(_breath * 6.0 * tempo) * 0.2
+		"menace":
+			p["head_y"] = p.get("head_y", 0.0) + sin(_breath * 0.6) * 0.2
+		"casting":
+			p["el_l"] = p.get("el_l", 0.0) + sin(_breath * 2.5 * tempo) * 0.2
+			p["el_r"] = p.get("el_r", 0.0) + cos(_breath * 2.5 * tempo) * 0.2
+		"float":
+			p["drop"] = 0.06 + sin(_breath * 1.6) * 0.05
+		"pockets", "relaxed", "regal":
+			p["head_y"] = p.get("head_y", 0.0) + sin(_breath * 0.45) * 0.25
+		"hunched":
+			p["spine_x"] = p.get("spine_x", 0.0) + sin(_breath * 1.4 * tempo) * 0.05
+		"heavy":
+			p["spine_x"] = p.get("spine_x", 0.0) + sin(_breath * 1.2) * 0.06
+	p["spine_x"] = p.get("spine_x", 0.0) + sin(_breath * 1.8 * tempo) * 0.025
+	return p
+
+
+## Walking and running, shaped by the character's gait.
+func _run_pose(delta: float, hspeed: float, p: Dictionary) -> Dictionary:
+	var g: Dictionary = Motion.RUNS.get(str(_anim("run", "athlete")), Motion.RUNS["athlete"])
+	var stride := float(g.get("stride", 1.0)) * float(_anim("stride", 1.0))
+	var cadence := float(g.get("cadence", 1.0)) * float(_anim("cadence", 1.0))
+	var arms := float(g.get("arms", 1.0)) * float(_anim("arms", 1.0))
+	var lean := float(g.get("lean", 0.18)) + float(_anim("lean", 0.0))
+	var bounce := float(g.get("bounce", 1.0)) * float(_anim("bounce", 1.0))
+	var spread := float(g.get("spread", 0.0))
+	var sway := float(g.get("sway", 0.0)) + float(_anim("sway", 0.0))
+	var elbow := float(g.get("elbow", 1.1))
+	var knee := float(g.get("knee", 1.0))
+	var sprint: Dictionary = {}
+	if hspeed > 14.0:
+		sprint = Motion.SPRINTS.get(str(_anim("sprint", "classic")), Motion.SPRINTS["classic"])
+		stride *= float(sprint.get("stride", 1.0))
+		bounce *= float(sprint.get("bounce", 1.0))
 	var amp := clampf(hspeed / 6.0, 0.0, 1.0)
 	var rate := hspeed * 1.45 if hspeed < 14.0 else 20.3 + (hspeed - 14.0) * 0.12
-	_phase += delta * rate
+	_phase += delta * rate * cadence
 	var s := sin(_phase)
 	var running := hspeed > 7.5
-	var leg := (0.55 if not running else 0.95) * amp
+	var leg := (0.55 if not running else 0.95) * amp * stride
 	p["th_l"] = s * leg
 	p["th_r"] = -s * leg
-	p["kn_l"] = -(0.1 + maxf(0.0, -cos(_phase)) * (0.7 if not running else 1.5)) * amp
-	p["kn_r"] = -(0.1 + maxf(0.0, cos(_phase)) * (0.7 if not running else 1.5)) * amp
-	p["sh_l_x"] = -s * (0.5 if not running else 0.9) * amp
-	p["sh_r_x"] = s * (0.5 if not running else 0.9) * amp
-	p["el_l"] = 0.25 + (1.1 if running else 0.15) * amp
-	p["el_r"] = 0.25 + (1.1 if running else 0.15) * amp
-	p["drop"] = -absf(cos(_phase)) * 0.035 * amp
-	p["spine_y"] = s * 0.12 * amp
-	if running:
-		p["spine_x"] = -0.18
-	if hspeed > 14.0:
-		p["spine_x"] = -0.55
-		p["head_x"] = 0.35
-		p["sh_l_x"] = -s * 1.4 - 0.2
-		p["sh_r_x"] = s * 1.4 - 0.2
-		p["el_l"] = 1.55
-		p["el_r"] = 1.55
+	p["kn_l"] = -(0.1 + maxf(0.0, -cos(_phase)) * (0.7 if not running else 1.5) * knee) * amp
+	p["kn_r"] = -(0.1 + maxf(0.0, cos(_phase)) * (0.7 if not running else 1.5) * knee) * amp
+	var swing := (0.5 if not running else 0.9) * amp * arms
+	p["sh_l_x"] = -s * swing
+	p["sh_r_x"] = s * swing
+	p["sh_l_z"] = -0.1 - spread
+	p["sh_r_z"] = 0.1 + spread
+	p["el_l"] = 0.25 + (elbow if running else 0.15) * amp
+	p["el_r"] = 0.25 + (elbow if running else 0.15) * amp
+	p["drop"] = -absf(cos(_phase)) * 0.035 * amp * bounce
+	p["spine_y"] = s * (0.12 + sway) * amp
+	if sway > 0.0:
+		p["yaw"] = s * sway * 0.4 * amp
+	p["spine_x"] = -(lean if running else lean * 0.4)
+	var extra: Dictionary = g.get("pose", {})
+	for k in extra:
+		p[k] = p.get(k, 0.0) + float(extra[k]) * (1.0 if k.begins_with("sh_") or k.begins_with("head") or k == "drop" else amp)
+	if not sprint.is_empty():
+		var sw := float(sprint.get("arms", 1.4))
+		p["spine_x"] = -float(sprint.get("lean", 0.55))
+		p["head_x"] = float(sprint.get("head", 0.35))
+		p["sh_l_x"] = -s * sw - 0.2
+		p["sh_r_x"] = s * sw - 0.2
+		p["sh_l_z"] = -0.1
+		p["sh_r_z"] = 0.1
+		p["el_l"] = float(sprint.get("elbow", 1.55))
+		p["el_r"] = float(sprint.get("elbow", 1.55))
+		var sp_pose: Dictionary = sprint.get("pose", {})
+		for k in sp_pose:
+			var wiggle: float = (p.get(k, 0.0) + 0.2) * 0.15 if k in ["sh_l_x", "sh_r_x"] else 0.0
+			p[k] = float(sp_pose[k]) + wiggle
+	return p
+
+
+## Flying: each character has their own flight pose, blended by speed.
+func _fly_pose(hspeed: float, vspeed: float) -> Dictionary:
+	var style := str(_anim("fly", "superman"))
+	var pair: Array = Motion.FLIGHTS.get(style, Motion.FLIGHTS["superman"])
+	var t := clampf(hspeed / 30.0, 0.0, 1.0)
+	var p := Motion.lerp_pose(pair[0], pair[1], t)
+	var fx: Dictionary = Motion.FLIGHT_FX.get(style, {})
+	var bob := float(fx.get("bob", 1.0))
+	p["drop"] = p.get("drop", 0.0) + sin(_breath * 2.2) * 0.04 * bob
+	if fx.has("flap"):
+		var flap := sin(_breath * (5.0 if t < 0.5 else 3.0)) * (0.45 - t * 0.25)
+		p["sh_l_z"] = p.get("sh_l_z", 0.0) - flap
+		p["sh_r_z"] = p.get("sh_r_z", 0.0) + flap
+	if fx.has("roll") and t > 0.5:
+		p["roll"] = fmod(_breath * float(fx["roll"]), TAU)
+	if fx.has("wobble"):
+		var w := float(fx["wobble"])
+		p["roll"] = sin(_breath * 1.7) * 0.2 * w
+		p["sh_l_z"] = p.get("sh_l_z", 0.0) + sin(_breath * 3.1) * 0.25 * w
+		p["sh_r_z"] = p.get("sh_r_z", 0.0) - sin(_breath * 2.7) * 0.25 * w
+	if vspeed > 3.0 and t < 0.4:
+		p["head_x"] = p.get("head_x", 0.0) - 0.25
 	return p
 
 
@@ -1230,6 +1314,10 @@ func _apply_pose(p: Dictionary, delta: float, dead: bool) -> void:
 		_tumble = 0.0
 	hips.position.y = lerpf(hips.position.y, D["hip_y"] + p.get("drop", 0.0), k)
 	hips.rotation.y = p.get("yaw", 0.0) if p.has("yaw") else lerpf(hips.rotation.y, 0.0, k)
+	if p.has("roll") and absf(p["roll"]) > 0.6:
+		hips.rotation.z = p["roll"]
+	else:
+		_pose_lerp(hips, "rotation:z", p.get("roll", 0.0), slow)
 	if build_type == "gorilla":
 		p["spine_x"] = p.get("spine_x", 0.0) - 0.45
 		p["head_x"] = p.get("head_x", 0.0) + 0.4
@@ -1245,14 +1333,20 @@ func _apply_pose(p: Dictionary, delta: float, dead: bool) -> void:
 	_pose_lerp(el_r, "rotation:x", p.get("el_r", 0.0), k)
 	_pose_lerp(th_l, "rotation:x", p.get("th_l", 0.0), k)
 	_pose_lerp(th_r, "rotation:x", p.get("th_r", 0.0), k)
+	_pose_lerp(th_l, "rotation:z", p.get("th_l_z", 0.0), k)
+	_pose_lerp(th_r, "rotation:z", p.get("th_r_z", 0.0), k)
 	_pose_lerp(kn_l, "rotation:x", p.get("kn_l", 0.0), k)
 	_pose_lerp(kn_r, "rotation:x", p.get("kn_r", 0.0), k)
 	el_r.scale.y = lerpf(el_r.scale.y, _stretch, k)
 	if cape:
-		var sway := clampf(absf(p.get("pitch", 0.0)) + (0.3 if p.get("spine_x", 0.0) < -0.3 else 0.0), 0.0, 1.4)
-		var flutter := sin(_breath * 9.0) * 0.06 * (0.3 + sway)
-		_pose_lerp(cape, "rotation:x", -0.06 - sway * 0.9 - flutter, slow)
-		_pose_lerp(cape_low, "rotation:x", -0.1 - sway * 0.5 + flutter * 1.5, slow)
+		# Running leans lift the cape off the back; in level flight it streams
+		# out behind along the legs instead of standing up.
+		var pitch_amt := absf(p.get("pitch", 0.0))
+		var lean_amt := clampf(-p.get("spine_x", 0.0), 0.0, 1.0)
+		var sway := clampf(lean_amt * 1.2 + pitch_amt * 0.2, 0.0, 1.2)
+		var flutter := sin(_breath * 9.0) * 0.06 * (0.3 + sway + pitch_amt * 0.5)
+		_pose_lerp(cape, "rotation:x", -0.06 - sway * 0.8 - flutter, slow)
+		_pose_lerp(cape_low, "rotation:x", -0.1 - sway * 0.4 + flutter * 1.5, slow)
 	for i in wings.size():
 		var side := -1.0 if i == 0 else 1.0
 		var flap := sin(_breath * 7.0) * 0.4 if p.has("pitch") and absf(p["pitch"]) > 0.0 else 0.0
