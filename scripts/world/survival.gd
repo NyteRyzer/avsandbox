@@ -80,7 +80,7 @@ func _spawn_wave() -> void:
 			a = world.population.spawn_thug(pos)
 		_prep(a)
 	if wave % 5 == 0:
-		var boss := world.population.spawn_character(Game.random_character(enemy_side), enemy_side, p + Vector3(0, 0.5, -30))
+		var boss: Actor = world.population.spawn_character(Game.random_character(enemy_side), enemy_side, p + Vector3(0, 0.5, -30))
 		boss.make_boss(3.0 + wave * 0.2)
 		boss.display_name += " (BOSS)"
 		_prep(boss)

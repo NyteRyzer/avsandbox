@@ -45,6 +45,16 @@ func build() -> void:
 	for e in extra:
 		if spots.size() < TOTAL:
 			spots.append(e)
+	# Top up with more rooftops if the map has fewer islands.
+	var all_roofs: Array = city.buildings_near(Vector3(0, 0, 150), 4000.0).filter(func(b) -> bool: return b["h"] > 12.0)
+	var guard := 0
+	while spots.size() < TOTAL and not all_roofs.is_empty() and guard < 400:
+		guard += 1
+		var b: Dictionary = all_roofs[r.randi() % all_roofs.size()]
+		var rc: Vector2 = b["rect"].get_center()
+		var sp := Vector3(rc.x, float(b["h"]) + 2.0, rc.y)
+		if not spots.has(sp):
+			spots.append(sp)
 	var out := []
 	for k in mini(spots.size(), TOTAL):
 		out.append({"id": "frag_%02d" % k, "pos": spots[k]})

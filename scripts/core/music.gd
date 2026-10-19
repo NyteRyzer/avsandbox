@@ -77,7 +77,7 @@ func _combat_sample(t: float) -> float:
 	var eighth := fmod(t, BEAT * 0.5)
 	v += (randf() * 2.0 - 1.0) * exp(-eighth * 60.0) * 0.08
 	# Bass: A - A - F - G
-	var bass := [0, 0, -4, -2][int(t / 2.0) % 4]
+	var bass: int = [0, 0, -4, -2][int(t / 2.0) % 4]
 	var bf := _note(float(bass) - 24.0)
 	v += (1.0 if fmod(t * bf, 1.0) < 0.5 else -1.0) * 0.12 * (0.6 + 0.4 * exp(-fmod(t, BEAT * 0.5) * 6.0))
 	# Stabs on the off-beats.
