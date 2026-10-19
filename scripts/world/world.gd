@@ -131,7 +131,7 @@ func _ready() -> void:
 
 
 func _apply_rank(a: Actor) -> void:
-	var b := Game.rank_bonus()
+	var b := Game.rank_bonus() * Game.mastery_bonus(str(a.def.get("id", "")))
 	a.max_hp = float(a.def.get("health", 100)) * b
 	a.hp = a.max_hp
 	a.power = float(a.def.get("power", 1.0)) * b
@@ -283,6 +283,10 @@ func _process(delta: float) -> void:
 	style.tick(delta / maxf(Engine.time_scale, 0.01))
 	if player and is_instance_valid(player):
 		scanning = Input.is_action_pressed("scan") and not player.civilian and not player.dead
+		_team_t -= delta
+		if _team_t <= 0.0:
+			_team_t = 0.5
+			_update_team_bonus()
 		_discover_t -= delta
 		if _discover_t <= 0.0:
 			_discover_t = 1.0
@@ -476,6 +480,8 @@ func use_door(d: Dictionary) -> void:
 			recruit(d["actor"])
 		"training":
 			survival.start()
+		"jsa_rollcall":
+			jsa_rollcall()
 		"balcony":
 			leave_interior("catco", 60.0)
 		"exit_speedforce":
@@ -483,6 +489,20 @@ func use_door(d: Dictionary) -> void:
 		_:
 			if what in Interiors.ORDER:
 				enter_interior(what)
+
+
+## The JSA brownstone's round table: three members of the Justice Society
+## join you (if they aren't you already).
+func jsa_rollcall() -> void:
+	var ids: Array = Teams.members("Justice Society").filter(func(id) -> bool: return id != str(player.def.get("id", "")))
+	ids.shuffle()
+	var names := []
+	for id in ids.slice(0, 3):
+		var a: Actor = population.spawn_character(Game.get_character(id), player.team, player.global_position + Vector3(randf_range(-3, 3), 0.3, randf_range(2, 4)), player)
+		a.set_meta("pinned", true)
+		names.append(str(a.def["alias"]))
+	notify("The Justice Society answers: " + ", ".join(names), Color("#ffd23a"))
+	Game.record("recruits", names.size())
 
 
 ## The last enemy (or a boss) goes down in slow motion.
@@ -772,6 +792,7 @@ func on_actor_ko(a: Actor, source: Actor) -> void:
 		return
 	kos += 1
 	Game.record("kos")
+	_gain_mastery(a)
 	if a.boss:
 		Game.record("bosses")
 		news.on_boss(a.display_name)
@@ -802,6 +823,44 @@ func on_actor_ko(a: Actor, source: Actor) -> void:
 					notify("You defeated %s!  +%d" % [a.display_name, pts], Color("#ffd23a"))
 			else:
 				Game.add_heat(0.6)
+
+
+## Mastery XP for the character you're playing.
+func _gain_mastery(a: Actor) -> void:
+	if a.team == "civilian" or a.side() == Game.player_side():
+		return
+	var id := str(player.def.get("id", ""))
+	var xp := 80.0 if a.boss else (30.0 if a.def.get("id", "") not in ["thug", "police"] else 10.0)
+	if team_bonus != "":
+		xp *= 1.25
+	var lvl := Game.add_mastery(id, xp)
+	if lvl > 0:
+		var ratio := player.hp / maxf(player.max_hp, 1.0)
+		_apply_rank(player)
+		player.hp = player.max_hp * ratio
+		hud.show_banner("%s  MASTERY %d" % [str(player.def["alias"]).to_upper(), lvl], Color("#ffd23a"))
+		notify("Mastery level %d: +%d%% health and power" % [lvl, int(round((Game.mastery_bonus(id) - 1.0) * 100.0))], Color("#ffd23a"))
+
+
+## Team-up: fighting next to a recruited teammate hits harder.
+var team_bonus := ""
+var _team_t := 0.0
+
+
+func _update_team_bonus() -> void:
+	var was := team_bonus
+	team_bonus = ""
+	if player == null or not is_instance_valid(player) or player.civilian:
+		return
+	var pid := str(player.def.get("id", ""))
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a.follow_target == player and not a.dead and a.global_position.distance_to(player.global_position) < 30.0:
+			var t := Teams.share_team(pid, str(a.def.get("id", "")))
+			if t != "":
+				team_bonus = t
+				break
+	if team_bonus != "" and team_bonus != was:
+		notify("TEAM-UP: %s! Your attacks hit harder." % team_bonus, Teams.color(team_bonus))
 
 
 func _on_player_died(_a: Actor, source: Actor) -> void:

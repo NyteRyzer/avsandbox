@@ -9,7 +9,8 @@ extends RefCounted
 
 const ATTACKS := ["chain_lightning", "ground_spikes", "grab"]
 const SPECIALS := ["sonic_boom", "speed_clones", "whirlwind", "shapeshift", "mirror_trap", "hazard_field",
-	"meteor_dash", "gravity_well", "bat_swarm", "lazarus", "summon_goons", "sleep", "overload", "flashbang"]
+	"meteor_dash", "gravity_well", "bat_swarm", "lazarus", "summon_goons", "sleep", "overload", "flashbang",
+	"construct", "miraclo", "shadows", "ankh", "thunderbolt", "grow"]
 const ATTACK_DEFAULTS := {
 	"chain_lightning": {"damage": 16.0, "cooldown": 0.75, "energy": 14.0, "range": 40.0, "chain": 4, "color": "#ff6ad0"},
 	"ground_spikes": {"damage": 20.0, "cooldown": 1.1, "energy": 16.0, "range": 14.0, "color": "#bfeaff", "element": "ice"},
@@ -30,6 +31,12 @@ const SPECIAL_DEFAULTS := {
 	"sleep": {"energy": 50.0, "cooldown": 18.0},
 	"overload": {"energy": 50.0, "cooldown": 12.0},
 	"flashbang": {"energy": 25.0, "cooldown": 7.0},
+	"construct": {"energy": 40.0, "cooldown": 8.0},
+	"miraclo": {"energy": 50.0, "cooldown": 24.0},
+	"shadows": {"energy": 45.0, "cooldown": 13.0},
+	"ankh": {"energy": 50.0, "cooldown": 16.0},
+	"thunderbolt": {"energy": 55.0, "cooldown": 14.0},
+	"grow": {"energy": 50.0, "cooldown": 20.0},
 }
 
 const KRYPTONIANS := ["supergirl", "superman", "mon_el", "reign", "overgirl", "jordan_kent"]
@@ -373,6 +380,146 @@ static func special(a: Actor, sp: Dictionary) -> bool:
 			a.model.play("cast_up", 0.5)
 			Sfx.play("lightning", a.global_position, 4.0)
 			return not foes.is_empty() or a.is_player
+		"construct":
+			# Green Lantern: a giant fist of hard light drops on the target.
+			var target := aim_ground(a, 40.0)
+			var fist := Node3D.new()
+			w.fx_root.add_child(fist)
+			fist.global_position = target + Vector3.UP * 16.0
+			for part in [[Vector3.ZERO, Vector3(2.6, 2.2, 2.4)], [Vector3(0, 0, -1.5), Vector3(2.2, 0.7, 0.8)], [Vector3(0, 2.2, 0), Vector3(1.4, 2.4, 1.4)]]:
+				var mi := MeshInstance3D.new()
+				var bm := BoxMesh.new()
+				bm.size = part[1]
+				mi.mesh = bm
+				mi.position = part[0]
+				mi.material_override = FX.glow_mat(color, 0.75)
+				fist.add_child(mi)
+			FX.line(w, a.model.hand_point(1.0), fist.global_position, color, 0.06, 0.4)
+			var tw := fist.create_tween()
+			tw.tween_property(fist, "global_position", target + Vector3.UP * 1.1, 0.3).set_ease(Tween.EASE_IN)
+			var src: WeakRef = weakref(a)
+			tw.tween_callback(func() -> void:
+				var s = src.get_ref()
+				if s and is_instance_valid(s) and not s.dead:
+					Abilities.area_damage(s, target + Vector3.UP, 6.5, 34.0 * s.power, "push", 26.0, 12.0)
+					s.world.shake_at(target, 0.4)
+				FX.ring(w, target + Vector3.UP * 0.2, color, 8.0, 0.4)
+				FX.sparks(w, target + Vector3.UP, color, 30, 10.0, 0.5)
+				Sfx.play("slam", target, 4.0))
+			tw.tween_property(fist, "scale", Vector3.ONE * 0.01, 0.25)
+			tw.tween_callback(fist.queue_free)
+			a.model.play("cast_up", 0.5)
+			return true
+		"miraclo":
+			# Hourman: one hour of power (twelve seconds of it, anyway).
+			a.rage_t = maxf(a.rage_t, 12.0)
+			a.invuln_t = maxf(a.invuln_t, 1.0)
+			a.heal(35.0)
+			FX.aura(a, Color("#e6b422"), a.size, 12.0)
+			FX.flash(w, a.chest(), Color("#ffd23a"), 3.0, 0.4, 0.6)
+			Sfx.play("slam", a.global_position, -2.0)
+			if a.is_player:
+				w.notify("Miraclo: one hour of power. Make it count.", Color("#ffd23a"))
+			return true
+		"shadows":
+			# The Shade / Obsidian: drown the area in living darkness.
+			var dark := MeshInstance3D.new()
+			var sm := SphereMesh.new()
+			sm.radius = 10.0
+			sm.height = 14.0
+			dark.mesh = sm
+			var mat := FX.glow_mat(Color(0.06, 0.03, 0.12), 0.75)
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+			dark.material_override = mat
+			w.fx_root.add_child(dark)
+			dark.global_position = a.global_position + Vector3.UP
+			dark.scale = Vector3.ONE * 0.1
+			var tw := dark.create_tween()
+			tw.tween_property(dark, "scale", Vector3.ONE, 0.35)
+			tw.tween_interval(3.0)
+			tw.tween_property(dark, "scale", Vector3.ONE * 0.05, 0.6)
+			tw.tween_callback(dark.queue_free)
+			for o in a.get_tree().get_nodes_in_group("actors"):
+				if a.can_hurt(o) and o.team != "civilian" and o.global_position.distance_to(a.global_position) < 11.0:
+					o.take_damage(14.0 * a.power, a, "", Vector3.UP * 2.0)
+					o.stun_t = maxf(o.stun_t, 3.0)
+					o.grudges.erase(a.get_instance_id())
+			a.invis_t = maxf(a.invis_t, 3.5)
+			Sfx.play("smoke", a.global_position, 2.0)
+			return true
+		"ankh":
+			# Doctor Fate: a golden ankh that heals friends and blasts foes.
+			var gold := Color("#ffd23a")
+			for o in a.get_tree().get_nodes_in_group("actors"):
+				if o.dead or o.global_position.distance_to(a.global_position) > 16.0:
+					continue
+				if a.can_hurt(o):
+					if o.team != "civilian":
+						o.take_damage(22.0 * a.power, a, "shock", (o.global_position - a.global_position).normalized() * 10.0 + Vector3.UP * 6.0)
+				elif o == a or Game.side_of(o.team) == Game.side_of(a.team):
+					o.heal(40.0)
+					FX.sparks(w, o.chest(), gold, 10, 4.0, 0.5)
+			a.field_t = maxf(a.field_t, 4.0)
+			FX.bubble(a, gold, a.size, 4.0)
+			FX.ring(w, a.global_position + Vector3.UP * 0.3, gold, 16.0, 0.6)
+			var ankh := Node3D.new()
+			w.fx_root.add_child(ankh)
+			ankh.global_position = a.head_pos() + Vector3.UP * 2.5
+			for part in [[Vector3(0, -0.6, 0), Vector3(0.3, 1.6, 0.1)], [Vector3(0, 0.15, 0), Vector3(1.3, 0.3, 0.1)]]:
+				var mi := MeshInstance3D.new()
+				var bm := BoxMesh.new()
+				bm.size = part[1]
+				mi.mesh = bm
+				mi.position = part[0]
+				mi.material_override = FX.glow_mat(gold, 0.9)
+				ankh.add_child(mi)
+			var loop := MeshInstance3D.new()
+			var tm := TorusMesh.new()
+			tm.inner_radius = 0.28
+			tm.outer_radius = 0.45
+			loop.mesh = tm
+			loop.rotation.x = PI * 0.5
+			loop.position.y = 0.7
+			loop.material_override = FX.glow_mat(gold, 0.9)
+			ankh.add_child(loop)
+			FX._free_after(ankh, 1.5)
+			a.model.play("cast_up", 0.8)
+			Sfx.play("teleport", a.global_position, 2.0)
+			return true
+		"thunderbolt":
+			# Johnny Thunder: "Say you, Thunderbolt!" Lightning from a clear sky.
+			var foes := Abilities._nearest_foes(a, 40.0, 6)
+			for o in foes:
+				FX.lightning(w, o.chest() + Vector3.UP * 30.0, o.chest(), Color("#ffe066"), 0.35, 1.2, 9, 2)
+				o.take_damage(30.0 * a.power, a, "shock", Vector3.UP * 6.0)
+				o.stun_t = maxf(o.stun_t, 1.0)
+			FX.flash(w, a.head_pos() + Vector3.UP * 2.0, Color("#ffe066"), 3.0, 0.5, 0.6)
+			Sfx.play("lightning", a.global_position, 6.0)
+			w.shake_at(a.global_position, 0.3)
+			if a.is_player:
+				w.notify("\"Say you, Thunderbolt!\"" if not foes.is_empty() else "Thunderbolt: \"So cue me already.\"", Color("#ffe066"))
+			return true
+		"grow":
+			# Atom Smasher: absorb the radiation and grow for a while.
+			if a.has_meta("grow_base"):
+				return false
+			a.set_meta("grow_base", [a.size, a.power])
+			a.size *= 1.8
+			a.power *= 1.5
+			a.set_shrunk(false)
+			FX.flash(w, a.chest(), Color("#ff4a3a"), 4.0, 0.5, 0.5)
+			w.shake_at(a.global_position, 0.4)
+			Sfx.play("slam", a.global_position, 2.0)
+			var wr: WeakRef = weakref(a)
+			w.get_tree().create_timer(12.0, false).timeout.connect(func() -> void:
+				var ref = wr.get_ref()
+				if ref and is_instance_valid(ref) and ref.has_meta("grow_base"):
+					var base: Array = ref.get_meta("grow_base")
+					ref.size = base[0]
+					ref.power = base[1]
+					ref.remove_meta("grow_base")
+					ref.set_shrunk(false))
+			return true
 		"flashbang":
 			var from := a.hand_pos()
 			var proj := Projectile.new()

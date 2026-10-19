@@ -438,6 +438,8 @@ func _process(delta: float) -> void:
 		status_label.text += "  BLOCKING"
 	if p.lock_target:
 		status_label.text += "  LOCKED ON"
+	if world.team_bonus != "":
+		status_label.text += "  TEAM-UP: " + str(world.team_bonus).to_upper()
 
 
 func _cd(p: Actor, slot: String) -> String:

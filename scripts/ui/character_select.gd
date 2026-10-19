@@ -21,6 +21,8 @@ var _powers: Label
 var _play: Button
 var _selected := ""
 var _filter_buttons: Dictionary = {}
+var _team_pick: OptionButton
+var _team := ""
 
 
 func _ready() -> void:
@@ -62,6 +64,14 @@ func _ready() -> void:
 		_search = t.to_lower()
 		_rebuild())
 	bar.add_child(search)
+	_team_pick = OptionButton.new()
+	_team_pick.add_item("All teams")
+	for t in Teams.TEAMS.keys():
+		_team_pick.add_item(t)
+	_team_pick.item_selected.connect(func(i: int) -> void:
+		_team = "" if i == 0 else str(Teams.TEAMS.keys()[i - 1])
+		_rebuild())
+	bar.add_child(_team_pick)
 	bar.add_child(UITheme.button("Random", _pick_random, 110))
 	left.add_child(bar)
 	var scroll := ScrollContainer.new()
@@ -183,6 +193,8 @@ func _rebuild() -> void:
 	for c in Game.roster:
 		if _filter != "all" and c["side"] != _filter:
 			continue
+		if _team != "" and not Teams.TEAMS[_team]["members"].has(c["id"]):
+			continue
 		if _search != "":
 			var hay := ("%s %s %s" % [c["alias"], c["name"], c["show"]]).to_lower()
 			if not hay.contains(_search):
@@ -251,7 +263,8 @@ func _select(id: String) -> void:
 	_name.text = c["alias"]
 	_name.add_theme_color_override("font_color", UITheme.side_color(c["side"]).lightened(0.35))
 	_alias.text = "%s  ·  %s" % [c["name"], "Hero" if c["side"] == "hero" else "Villain"]
-	_show.text = c["show"]
+	var teams := Teams.of(id)
+	_show.text = str(c["show"]) + ("  ·  " + ", ".join(teams) if not teams.is_empty() else "")
 	_bio.text = c["bio"]
 	for k in _stats.get_children():
 		k.queue_free()
@@ -267,6 +280,12 @@ func _select(id: String) -> void:
 		lines.append("E    " + str(c["utility"].get("name", c["utility"]["kind"])))
 	lines.append("R    ULTIMATE: " + str(Ultimate.for_character(c).get("name", "")))
 	lines.append("Moves: " + move_names.get(c["movement"], c["movement"]) + ("  ·  Super strength" if c.get("strength", false) else ""))
+	var lvl := Game.mastery_level(id)
+	var next: String = "MAX" if lvl >= Game.MASTERY_XP.size() else "%d / %d XP" % [int(Game.mastery_xp(id)), Game.MASTERY_XP[lvl]]
+	lines.append("Mastery level %d  (%s)" % [lvl, next])
+	var nem := Teams.nemesis(id)
+	if nem != "" and Game.by_id.has(nem):
+		lines.append("Nemesis: " + str(Game.by_id[nem]["alias"]))
 	_powers.text = "\n".join(lines)
 	_play.text = ("BECOME " if swap_mode else "PLAY AS ") + str(c["alias"]).to_upper()
 

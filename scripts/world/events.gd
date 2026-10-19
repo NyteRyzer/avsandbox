@@ -6,8 +6,9 @@ extends Node
 
 signal changed
 
-const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak", "fire", "chase"]
-const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators"]
+const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak", "fire", "chase",
+	"team_attack", "nemesis"]
+const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators", "team_patrol", "nemesis"]
 
 var world
 var active: Dictionary = {}
@@ -141,6 +142,47 @@ func start_random(kind := "") -> void:
 			actors.append(pop.spawn_character(h, "hero", pos))
 			for k in 2:
 				actors.append(pop.spawn_police(_near(pos, 6.0)))
+		"team_attack", "team_patrol":
+			# A whole team at once: the Injustice Society, the Rogues, the Legends...
+			var side := "villain" if kind == "team_attack" else "hero"
+			var team := Teams.random_team(side, 3)
+			var ids: Array = Teams.members(team).filter(func(id) -> bool: return id != str(world.player.def.get("id", "")))
+			ids.shuffle()
+			color = Teams.color(team)
+			title = ("The %s is attacking %s!" if team.begins_with("Injustice") or team.begins_with("Legion") else "%s strike %s!") % [team, district]
+			if side == "hero":
+				title = "%s on patrol in %s" % [team, district]
+			for id in ids.slice(0, 3):
+				var a: Actor = pop.spawn_character(Game.get_character(id), side, _near(pos, 7.0))
+				a.grudges[world.player.get_instance_id()] = 30.0
+				actors.append(a)
+			if actors.is_empty():
+				return
+			actors[0].make_boss(1.6)
+		"nemesis":
+			# Your archenemy comes for you, personally.
+			var nid := Teams.nemesis(str(world.player.def.get("id", "")))
+			if nid == "" or not Game.by_id.has(nid):
+				kind = "villain_attack" if hero else "hero_patrol"
+				var v := Game.random_character("villain" if hero else "hero")
+				nid = v["id"]
+			var nd: Dictionary = Game.get_character(nid)
+			var nside := str(nd["side"])
+			if nside == str(world.player.team):
+				nside = enemy_team
+			title = "NEMESIS: %s has come for you" % nd["alias"]
+			color = Color("#ff2a6a")
+			var n: Actor = pop.spawn_character(nd, nside, pos)
+			n.make_boss(2.2)
+			n.display_name = str(nd["alias"])
+			n.grudges[world.player.get_instance_id()] = 120.0
+			n.brain.detect = 120.0
+			actors.append(n)
+			var line: String = Emotes.LINES.get(nid, "")
+			if line != "":
+				world.notify("%s: \"%s\"" % [nd["alias"], line], color)
+			if world.news:
+				world.news.report("%s spotted in %s, hunting %s." % [nd["alias"], district, world.player.def["alias"]])
 		"heist":
 			title = "Heist: take out the armored-truck guards"
 			color = Color("#ffd23a")
@@ -155,6 +197,9 @@ func start_random(kind := "") -> void:
 		a.brain.home = pos
 		a.brain.leash = 30.0
 		a.brain.detect = 38.0
+		if kind == "nemesis":
+			a.brain.leash = 400.0
+			a.brain.detect = 150.0
 	active = {"kind": kind, "title": title, "pos": pos, "actors": actors, "time": 0.0,
 		"remaining": actors.size(), "total": actors.size(), "district": district}
 	_spawn_marker(pos, color, title)

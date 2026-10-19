@@ -906,6 +906,8 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 		if not is_player:
 			grudges[source.get_instance_id()] = 10.0
 		if source.is_player:
+			if world and world.team_bonus != "":
+				amount *= 1.2
 			if Game.cheats["one_hit_ko"]:
 				amount = hp + 1.0
 			_player_hit_side_effects(amount)

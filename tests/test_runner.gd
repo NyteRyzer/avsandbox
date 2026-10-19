@@ -39,6 +39,8 @@ func _ready() -> void:
 	await test_world_extras()
 	_current = "test_activities_extra"
 	await test_activities_extra()
+	_current = "test_teams_and_new_heroes"
+	await test_teams_and_new_heroes()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -819,6 +821,89 @@ func test_activities_extra() -> void:
 	Emotes.play(world.player, 3)
 	check(Game.stat("emotes") >= 1.0, "emotes play")
 	world.clear_npcs()
+
+
+func test_teams_and_new_heroes() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.events.enabled = false
+	check(Game.roster.size() >= 130, "the roster has 130 characters (%d)" % Game.roster.size())
+	for id in ["rip_hunter", "wildcat", "hourman", "dr_fate", "green_lantern", "icicle", "solomon_grundy", "the_shade", "doomsday", "black_flash"]:
+		check(Game.by_id.has(id), "%s is playable" % id)
+	var bad := []
+	for t in Teams.TEAMS:
+		for id in Teams.TEAMS[t]["members"]:
+			if not Game.by_id.has(id):
+				bad.append(id)
+	for h in Teams.NEMESIS:
+		if not Game.by_id.has(h) or not Game.by_id.has(Teams.NEMESIS[h]):
+			bad.append(h)
+	check(bad.is_empty(), "every team member and nemesis exists (%s)" % str(bad))
+	check(Teams.share_team("stargirl", "wildcat") == "Justice Society", "Stargirl and Wildcat are both JSA")
+	check(Teams.nemesis("flash") == "reverse_flash" and Teams.nemesis("reverse_flash") == "flash", "the Flash and the Reverse-Flash are nemeses")
+	# The new powers all work.
+	var specials := {"green_lantern": "construct", "hourman": "miraclo", "the_shade": "shadows", "dr_fate": "ankh",
+		"johnny_thunder": "thunderbolt", "atom_smasher": "grow"}
+	for id in specials:
+		world.spawn_player(id, Vector3(560, 0.5, -440))
+		var p: Actor = world.player
+		var foe: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0.3, -5))
+		foe.set_meta("pinned", true)
+		await _frames(3)
+		p.aim_point = foe.chest()
+		check(p.def["special"]["kind"] == specials[id], "%s has %s" % [id, specials[id]])
+		p.energy = p.max_energy
+		var ok: bool = Abilities.special(p, p.def["special"])
+		await _frames(30)
+		check(ok and (foe.hp < foe.max_hp or foe.dead or id == "hourman" or id == "atom_smasher"), "%s's %s works" % [id, specials[id]])
+		if id == "atom_smasher":
+			check(p.size > 1.5, "Atom Smasher grows")
+		if id == "hourman":
+			check(p.rage_t > 0.0, "Miraclo powers Hourman up")
+		world.clear_npcs()
+	# Every new character can spawn and fight.
+	for id in ["rip_hunter", "ava_sharpe", "stripe", "huntress", "spooner", "batwing", "icicle", "bizarro", "doomsday", "hush", "black_mask"]:
+		world.spawn_player(id, Vector3(560, 0.5, -440))
+		await _frames(2)
+		world.player.in_primary = true
+		world.player._abilities(0.016)
+		world.player.in_primary = false
+		check(is_instance_valid(world.player) and not world.player.dead, "%s spawns and attacks" % id)
+	# Team-up bonus
+	world.spawn_player("stargirl", Vector3(560, 0.5, -440))
+	var ally: Actor = world.population.spawn_character(Game.get_character("wildcat"), "hero", Vector3(562, 0.5, -440), world.player)
+	world._update_team_bonus()
+	check(world.team_bonus == "Justice Society", "fighting beside a teammate gives a team-up bonus")
+	ally.queue_free()
+	await get_tree().process_frame
+	world._update_team_bonus()
+	check(world.team_bonus == "", "and it ends when they're gone")
+	# Mastery
+	var before := Game.mastery_level("stargirl")
+	Game.progress["mastery"]["stargirl"] = float(Game.MASTERY_XP[1]) - 1.0
+	check(Game.add_mastery("stargirl", 5.0) == 2, "mastery levels up")
+	check(Game.mastery_bonus("stargirl") > 1.0, "mastery makes you stronger")
+	Game.progress["mastery"]["stargirl"] = 0.0
+	# Team and nemesis events
+	world.events.start_random("team_attack")
+	check(world.events.active.get("actors", []).size() == 3, "a villain team attacks together")
+	world.events.reset()
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	world.events.start_random("nemesis")
+	var acts: Array = world.events.active.get("actors", [])
+	check(acts.size() == 1 and acts[0].def["id"] == "reverse_flash" and acts[0].boss, "the Reverse-Flash hunts the Flash")
+	world.events.reset()
+	world.clear_npcs()
+	# JSA Headquarters
+	check(Interiors.ORDER.has("jsa_hq") and world.city.landmark("JSA Headquarters").size() > 0, "the JSA has a headquarters in Smallville")
+	world.jsa_rollcall()
+	var jsa := 0
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a.follow_target == world.player and Teams.TEAMS["Justice Society"]["members"].has(a.def.get("id", "")):
+			jsa += 1
+	check(jsa == 3, "the round table calls three JSA members")
+	world.clear_npcs()
+	world.events.enabled = true
 
 
 func test_campaign() -> void:

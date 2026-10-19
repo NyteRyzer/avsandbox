@@ -20,9 +20,9 @@ const SPECIAL_KINDS := ["time_slow", "tornado", "ground_slam", "smoke_bomb", "no
 	"breath", "frag_grenade", "t_spheres", "animal_spirit", "shield_wall", "force_field", "storm",
 	"missile_barrage", "dampen", "mind_control", "sonic_boom", "speed_clones", "whirlwind", "shapeshift",
 	"mirror_trap", "hazard_field", "meteor_dash", "gravity_well", "bat_swarm", "lazarus", "summon_goons", "sleep",
-	"overload", "flashbang", "emp"]
+	"overload", "flashbang", "emp", "construct", "miraclo", "shadows", "ankh", "thunderbolt", "grow"]
 const UTILITY_KINDS := ["grapple", "blitz", "dodge_flip", "emp", "foresight", "ice_wall", "phase", "teleport",
-	"breath", "invulnerable"]
+	"breath", "invulnerable", "force_field"]
 const MOVEMENTS := ["run", "speed", "flight", "grapple", "superjump", "ice", "hover"]
 const ELEMENTS := ["", "fire", "ice", "shock", "push"]
 const HOMES := ["star", "central", "national", "freeland", "gotham", "smallville", "any"]
@@ -193,7 +193,7 @@ signal stat_changed(key: String, value: float)
 ## Lifetime progress, saved with the settings: stats (KOs, distance...),
 ## unlocked achievements, collectibles found and alternate suits unlocked.
 var suit_choice: Dictionary = {}   # character id -> alternate suit name
-var progress := {"stats": {}, "achievements": [], "collected": [], "suits": [], "discovered": []}
+var progress := {"stats": {}, "achievements": [], "collected": [], "suits": [], "discovered": [], "mastery": {}}
 
 
 func record(key: String, amount := 1.0) -> void:
@@ -205,6 +205,40 @@ func record(key: String, amount := 1.0) -> void:
 ## How hard enemies hit the player: easy, normal, hard.
 func damage_to_player() -> float:
 	return [0.5, 1.0, 1.7][clampi(int(settings["difficulty"]), 0, 2)]
+
+
+# --- Character mastery: every character levels up separately (1-10) --------
+
+const MASTERY_XP := [0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200]
+
+
+func mastery_xp(id: String) -> float:
+	return float(progress["mastery"].get(id, 0.0))
+
+
+func mastery_level(id: String) -> int:
+	var xp := mastery_xp(id)
+	var lvl := 1
+	for k in MASTERY_XP.size():
+		if xp >= MASTERY_XP[k]:
+			lvl = k + 1
+	return lvl
+
+
+## Health and power multiplier from mastery: +3% per level above 1.
+func mastery_bonus(id: String) -> float:
+	return 1.0 + 0.03 * (mastery_level(id) - 1)
+
+
+## Adds mastery XP; returns the new level if it went up, else 0.
+func add_mastery(id: String, amount: float) -> int:
+	var before := mastery_level(id)
+	progress["mastery"][id] = mastery_xp(id) + amount
+	var after := mastery_level(id)
+	if after > before:
+		record("mastery_levels")
+		return after
+	return 0
 
 
 func stat(key: String) -> float:

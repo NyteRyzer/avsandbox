@@ -405,9 +405,19 @@ func _build_head() -> void:
 	var stubble := facial == "stubble"
 	var goatee := facial == "goatee"
 	var hair := _c("hair", "#3b2a1e")
+	var skull := _has("mask_skull")
+	var bandage := _has("mask_bandage")
 	var col := func(t: float, theta: float, r: Dictionary) -> Color:
 		var y: float = r["y"] / k
 		var front := absf(theta) < 1.05
+		if skull:
+			if front and y > 0.015 and y < 0.05 and absf(absf(theta) - 0.42) < 0.24:
+				return Color("#4a4a4a")
+			return Color("#141414")
+		if bandage:
+			if front and y > 0.015 and y < 0.05 and absf(theta) < 0.8:
+				return Color("#c8a890")
+			return Color("#e8e4dc") if int(floor(y * 70.0 + theta * 2.0)) % 2 == 0 else Color("#d4cec2")
 		if deathstroke:
 			return accent if theta > 0.0 else Color("#141414")
 		if cowl:
@@ -512,7 +522,7 @@ static func _head_profile(female: bool) -> Array:
 
 func _build_hair(k: float) -> void:
 	var style := str(look.get("hair_style", "short"))
-	if _has("cowl") or _has("helmet") or _has("helmet_savitar") or _has("mask_deathstroke") or build_type == "gorilla" or style == "bald":
+	if _has("cowl") or _has("helmet") or _has("helmet_savitar") or _has("helmet_fate") or _has("mask_deathstroke") or _has("mask_skull") or _has("mask_bandage") or build_type == "gorilla" or style == "bald":
 		return
 	var hair := _c("hair", "#3b2a1e")
 	var hb := _mb(head, "gloss")
@@ -576,6 +586,29 @@ func _build_headgear(k: float) -> void:
 			var wing := PackedVector2Array([Vector2(0, 0), Vector2(0.05, 0.012), Vector2(0.1, 0.05), Vector2(0.045, 0.028), Vector2(0.075, 0.06), Vector2(0.01, 0.03)])
 			var xf := Transform3D(Basis(Vector3.UP, side * PI * 0.5) * Basis.from_scale(Vector3(side, 1, 1)), Vector3(side * 0.083 * k, 0.015 * k, 0.01 * k))
 			_mb(head, "metal").prism(wing, 0.006, xf, Color("#e6b422"))
+	if _has("cat_ears"):
+		for side in [-1.0, 1.0]:
+			hb.tube(Vector3(side * 0.055 * k, 0.1 * k, 0.0), Vector3(side * 0.07 * k, 0.155 * k, 0.005), 0.022 * k, 0.0, Transform3D(), suit, 4)
+	if _has("glasses_dark"):
+		for side in [-1.0, 1.0]:
+			gloss.box(Vector3(side * 0.031 * k, 0.03 * k, -0.106 * k), Vector3(0.032, 0.022, 0.005) * k, Transform3D(), Color("#0a0a0c"))
+		gloss.box(Vector3(0, 0.032 * k, -0.107 * k), Vector3(0.014, 0.004, 0.004) * k, Transform3D(), Color("#0a0a0c"))
+	if _has("helmet_fate"):
+		# The Helmet of Fate: polished gold, with a T-shaped eye slit.
+		var gold := Color("#d8a21e")
+		_mb(head, "metal").loft([
+			{"y": -0.15 * k, "rx": 0.1 * k, "rz": 0.11 * k, "cz": 0.0},
+			{"y": -0.08 * k, "rx": 0.105 * k, "rz": 0.118 * k},
+			{"y": 0.0, "rx": 0.107 * k, "rz": 0.12 * k},
+			{"y": 0.08 * k, "rx": 0.104 * k, "rz": 0.116 * k},
+			{"y": 0.15 * k, "rx": 0.08 * k, "rz": 0.09 * k, "cz": 0.005},
+			{"y": 0.2 * k, "rx": 0.03 * k, "rz": 0.04 * k, "cz": 0.01},
+			{"y": 0.21 * k, "rx": 0.002, "rz": 0.002, "cz": 0.01},
+		], Transform3D(), gold, 22)
+		hb.box(Vector3(0, 0.035 * k, -0.121 * k), Vector3(0.13, 0.024, 0.008) * k, Transform3D(), Color("#0a0a0c"))
+		hb.box(Vector3(0, -0.02 * k, -0.12 * k), Vector3(0.026, 0.09, 0.008) * k, Transform3D(), Color("#0a0a0c"))
+		for side in [-1.0, 1.0]:
+			_mb(head, "metal").box(Vector3(side * 0.112 * k, -0.02 * k, 0.0), Vector3(0.01, 0.1, 0.06) * k, Transform3D(), gold.darkened(0.2))
 	if _has("bat_ears"):
 		for side in [-1.0, 1.0]:
 			hb.tube(Vector3(side * 0.05 * k, 0.11 * k, 0.01), Vector3(side * 0.062 * k, 0.2 * k, 0.012), 0.016 * k, 0.0, Transform3D(), suit, 6)

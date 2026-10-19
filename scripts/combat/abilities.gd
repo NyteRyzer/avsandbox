@@ -259,10 +259,14 @@ static func fire(a: Actor, atk: Dictionary) -> void:
 			Sfx.play(sound, from, -4.0)
 		"gun":
 			var hands: Array = [1.0, -1.0] if atk.get("dual", false) else [1.0]
-			for side in hands:
+			# Shotguns fire a spread of pellets.
+			var pellets := int(atk.get("spread", 1))
+			var jitter := 0.012 if pellets <= 1 else 0.07
+			for shot in pellets * hands.size():
+				var side: float = hands[shot % hands.size()]
 				var from: Vector3 = a.model.hand_point(side) + a.forward() * 0.25 if not a.model.muzzle or side < 0 else a.model.muzzle_point()
 				var dir := assist(a, from, a.aim_dir(from), float(p(atk, "range")))
-				dir = (dir + Vector3(randf_range(-1, 1), randf_range(-1, 1), randf_range(-1, 1)) * 0.012).normalized()
+				dir = (dir + Vector3(randf_range(-1, 1), randf_range(-1, 1), randf_range(-1, 1)) * jitter).normalized()
 				var end := from + dir * float(p(atk, "range"))
 				var hit := attack_ray(a, from, end)
 				if not hit.is_empty():
@@ -999,6 +1003,11 @@ static func utility(a: Actor, sp: Dictionary) -> bool:
 			return true
 		"ice_wall":
 			_ice_wall(a)
+			return true
+		"force_field":
+			a.field_t = 5.0
+			FX.bubble(a, Color(str(a.def["look"].get("glow", "#5ce07a"))), a.size, 5.0)
+			Sfx.play("teleport", a.global_position, -4.0)
 			return true
 		"phase":
 			a.phase_t = 3.5

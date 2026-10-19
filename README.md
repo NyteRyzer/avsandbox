@@ -87,7 +87,7 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 
 ## What's in the game
 
-**Characters.** 41 heroes and 31 villains, each with their own costume, stats, two attacks, a
+**Characters.** 70 heroes and 60 villains, each with their own costume, stats, two attacks, a
 special power, often a utility power (E), and a signature **ultimate** (R):
 
 - **Heroes:** Green Arrow, The Flash, Supergirl, Superman, The Atom, White Canary, Black Canary,
@@ -95,12 +95,34 @@ special power, often a utility power (E), and a signature **ultimate** (R):
   Black Lightning, Thunder, Lightning, Mr. Terrific, Vixen, Hawkgirl, Citizen Steel, Stargirl,
   Jay Garrick, Jesse Quick, XS, Elongated Man, Guardian, Mon-El, Dreamer, Brainiac 5, Arsenal,
   Wild Dog, Heat Wave (Legend), Constantine, Zari, Nyssa al Ghul, Hawkman, the Flash of Earth-90,
-  the Spectre and Jordan Kent.
+  the Spectre, Jordan Kent, Rip Hunter, Amaya (Vixen of 1942), Ava Sharpe, Mona Wu (Wolfie),
+  Charlie, Behrad Tarazi, Astra Logue, Spooner, Wildcat, Hourman, Dr. Mid-Nite, Starman,
+  Doctor Fate, Green Lantern (Alan Scott), Jade, Obsidian, S.T.R.I.P.E., Johnny Thunder,
+  Huntress, Mia Smoak, Ragman, Sentinel, Steel (John Henry Irons), Ryan Wilder's Batwoman,
+  Batwing, Grace Choi, the Ray, the Monitor and Harbinger.
 - **Villains:** Malcolm Merlyn, Deathstroke, Prometheus, Damien Darhk, Reverse-Flash, Zoom,
   Savitar, The Thinker, Captain Cold, Heat Wave, Weather Wizard, Reign, Lex Luthor, Ra's al Ghul,
   Cicada, Gorilla Grodd, Vandal Savage, Black Siren, Ricardo Diaz, Alice, Captain Boomerang,
   the Anti-Monitor, Overgirl, Dark Arrow, Tobias Whale, King Shark, Mirror Master, Livewire,
-  Metallo, Godspeed and Red Death.
+  Metallo, Godspeed, Red Death, and from the Injustice Society: Icicle, Brainwave, Solomon Grundy,
+  the Shade, Sportsmaster, Tigress, Eclipso, Dragon King and Cindy Burman. Also Bronze Tiger,
+  Count Vertigo, Deadshot, Talia al Ghul, Golden Glider, Pied Piper, the Trickster, the Black
+  Flash, Atom Smasher, Bizarro, Doomsday, Tal-Rho, General Astra, Cyborg Superman, Poison Ivy,
+  Hush, Black Mask, Mallus, Neron and Painkiller.
+
+**Teams.**
+- Every character belongs to a team: Team Flash, Team Arrow, the Legends, the Justice Society,
+  the Injustice Society, the Legion of Doom, the Rogues and more. Filter by team in character
+  select.
+- **Team-up bonus:** fight next to a recruited teammate and your attacks hit 20% harder.
+- **Team events:** a whole villain team hits the city at once.
+- **Nemesis:** your archenemy (the Reverse-Flash for the Flash, Icicle for Stargirl...) hunts
+  you down as a boss.
+- **Mastery:** every character levels up separately (1-10). Each level adds health and power.
+- **JSA Headquarters:** the Justice Society's brownstone in Smallville. Walk in, see the Golden
+  Age suits and call three JSA members to the round table.
+- New powers: Green Lantern constructs, Miraclo, the Shade's darkness, Doctor Fate's ankh,
+  Johnny Thunder's Thunderbolt and Atom Smasher's growth.
 
 **Every character plays differently.** Kits mix 60+ mechanics: chain lightning that jumps
 between enemies (XS, Zoom, Godspeed, Livewire), momentum punches that hit harder the faster you

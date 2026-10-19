@@ -12,16 +12,16 @@ extends RefCounted
 
 const DEPTH := -320.0
 const SPACING := 140.0
-const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider", "batcave", "kent_barn"]
+const ORDER := ["star_labs", "bunker", "jitters", "catco", "deo", "waverider", "batcave", "kent_barn", "jsa_hq"]
 const BUNKER_SUITS := ["green_arrow", "speedy", "black_canary", "spartan", "wild_dog", "arsenal"]
 const NAMES := {"star_labs": "S.T.A.R. Labs", "bunker": "The Arrow Bunker", "jitters": "Jitters",
 	"catco": "CatCo Worldwide", "deo": "The D.E.O.", "waverider": "The Waverider",
-	"batcave": "The Batcave", "kent_barn": "The Kent Barn"}
+	"batcave": "The Batcave", "kent_barn": "The Kent Barn", "jsa_hq": "JSA Headquarters"}
 ## Room footprints (width, height, depth). The doorway is in the middle of
 ## the +Z wall, which faces the street when a room sits in its building.
 const SIZES := {"star_labs": Vector3(34, 6, 28), "bunker": Vector3(30, 5, 22), "jitters": Vector3(20, 4.2, 16),
 	"catco": Vector3(36, 4.6, 26), "deo": Vector3(34, 7, 30), "waverider": Vector3(22, 5, 20),
-	"batcave": Vector3(30, 9, 26), "kent_barn": Vector3(20, 8, 28)}
+	"batcave": Vector3(30, 9, 26), "kent_barn": Vector3(20, 8, 28), "jsa_hq": Vector3(30, 6, 24)}
 const DOOR_W := 3.4
 const DOOR_H := 3.4
 
@@ -418,3 +418,44 @@ func _kent_barn() -> void:
 	label("KENT FARM", Vector3(0, 6.0, -14.6), 0.9, Color("#ffe0a0"))
 	spawn(Vector3(0, 0.5, 10))
 	exit_door(Vector3(0, 0, 13.75), "Kent Farm")
+
+
+func _jsa_hq() -> void:
+	# The Justice Society's old brownstone: wood panels, the round table, and
+	# the costumes of the Golden Age on display.
+	room(SIZES[id], "#4a3424", "#5a3a2a", "#2a1e16")
+	light(Vector3(-8, 5, 0), Color(1, 0.85, 0.6), 1.5, 20.0)
+	light(Vector3(8, 5, 0), Color(1, 0.85, 0.6), 1.5, 20.0)
+	light(Vector3(0, 4, -2), Color(1, 0.9, 0.7), 1.2, 12.0)
+	# The round table, with a chair for every member.
+	var table := CylinderMesh.new()
+	table.top_radius = 3.0
+	table.bottom_radius = 3.0
+	table.height = 0.15
+	var mi := MeshInstance3D.new()
+	mi.mesh = table
+	mi.material_override = _m("#6a4a2a")
+	mi.position = _w(Vector3(0, 0.9, -2))
+	city.add_child(mi)
+	box(Vector3(0, 0.45, -2), Vector3(0.8, 0.9, 0.8), "#3a2a1a")
+	for k in 8:
+		var ang := k * TAU / 8.0
+		box(Vector3(cos(ang) * 3.8, 0.5, -2 + sin(ang) * 3.8), Vector3(0.7, 1.0, 0.7), "#2a1e16", true, 0.0, -ang)
+	box(Vector3(0, 0.99, -2), Vector3(1.6, 0.02, 1.6), "#e6b422", false, 0.8)
+	label("JUSTICE SOCIETY OF AMERICA", Vector3(0, 4.6, -11.6), 0.9, Color("#ffd23a"))
+	box(Vector3(0, 4.6, -11.85), Vector3(12, 1.2, 0.2), "#1d3fa8", false, 0.3)
+	# The trophy wall: suits of the JSA.
+	var suits := ["stargirl", "starman", "wildcat", "hourman", "dr_midnite", "dr_fate", "green_lantern", "hawkman"]
+	for k in suits.size():
+		mannequin(suits[k], Vector3(-12.25 + k * 3.5, 0.2, -10.2), 1.0)
+	# The Thunderbolt's pen, Fate's helmet case and the Cosmic Converter Belt.
+	box(Vector3(-11, 1.0, 4), Vector3(1.4, 2.0, 1.4), "#2a1e16")
+	box(Vector3(-11, 2.2, 4), Vector3(0.7, 0.7, 0.7), "#d8a21e", false, 0.6)
+	label("HELMET OF FATE", Vector3(-11, 3.0, 4), 0.3, Color("#ffd23a"))
+	box(Vector3(11, 1.0, 4), Vector3(1.4, 2.0, 1.4), "#2a1e16")
+	box(Vector3(11, 2.1, 4), Vector3(0.9, 0.18, 0.4), "#c8102e", false, 0.4)
+	label("COSMIC CONVERTER BELT", Vector3(11, 3.0, 4), 0.3, Color("#ffd23a"))
+	interactable("Call the Justice Society (recruit three members)", Vector3(0, 0.5, 2.5), "jsa_rollcall")
+	interactable("Start the Survival Simulator", Vector3(6, 0.5, 6), "training")
+	spawn(Vector3(0, 0.5, 8))
+	exit_door(Vector3(0, 0, 11.75), "JSA Headquarters")

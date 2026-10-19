@@ -107,6 +107,15 @@ func _spawn_tab() -> Control:
 	g.add_child(UITheme.button("Random allied team (3)", func() -> void: _spawn_random(true, 3), 380))
 	g.add_child(UITheme.button("Random enemy squad (3)", func() -> void: _spawn_random(false, 3), 380))
 	v.add_child(g)
+	v.add_child(UITheme.label("Teams", 20, UITheme.ACCENT))
+	_team_pick = OptionButton.new()
+	for t in Teams.TEAMS.keys():
+		_team_pick.add_item("%s  (%d)" % [t, Teams.members(t).size()])
+	v.add_child(_team_pick)
+	var gt := _grid(2)
+	gt.add_child(UITheme.button("Spawn team as allies", func() -> void: _spawn_team(true), 380))
+	gt.add_child(UITheme.button("Spawn team as enemies", func() -> void: _spawn_team(false), 380))
+	v.add_child(gt)
 	v.add_child(UITheme.label("People and props", 20, UITheme.ACCENT))
 	var g2 := _grid(3)
 	g2.add_child(UITheme.button("Civilians x10", func() -> void: _crowd("civilian", 10), 250))
@@ -121,6 +130,19 @@ func _spawn_tab() -> Control:
 
 func _spawn_selected(ally: bool) -> void:
 	world.spawn_npc_character(_ids[_char_pick.selected], ally)
+
+
+var _team_pick: OptionButton
+
+
+## Up to four members of the picked team (allies cap at three followers).
+func _spawn_team(ally: bool) -> void:
+	var team: String = Teams.TEAMS.keys()[_team_pick.selected]
+	var ids: Array = Teams.members(team).filter(func(id) -> bool: return id != str(world.player.def.get("id", "")))
+	ids.shuffle()
+	for id in ids.slice(0, 3 if ally else 4):
+		world.spawn_npc_character(id, ally)
+	world.notify("%s %s!" % [team, "assembles" if ally else "attacks"], Teams.color(team))
 
 
 func _spawn_random(ally: bool, n: int) -> void:
@@ -221,6 +243,7 @@ func _events_tab() -> Control:
 		"breach": "Breach: doppelgangers", "police_raid": "Police raid", "hero_patrol": "Hero patrol",
 		"heist": "Armored-truck heist", "dominators": "Dominator invasion", "jailbreak": "Iron Heights jailbreak",
 		"fire": "Building fire rescue", "chase": "Getaway car chase",
+		"team_attack": "Villain team attack", "team_patrol": "Hero team patrol", "nemesis": "Your nemesis attacks",
 	}
 	for k in names.keys():
 		var kind: String = k

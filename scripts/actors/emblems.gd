@@ -84,6 +84,22 @@ static func texture(kind: String, c1: Color, c2: Color) -> Texture2D:
 		"bird":
 			_poly(img, [Vector2(0.5, 0.35), Vector2(0.95, 0.15), Vector2(0.75, 0.45), Vector2(0.6, 0.5), Vector2(0.55, 0.85),
 				Vector2(0.45, 0.85), Vector2(0.4, 0.5), Vector2(0.25, 0.45), Vector2(0.05, 0.15)], c1)
+		"hourglass":
+			_circle(img, 0.5, 0.5, 0.48, c2)
+			_poly(img, [Vector2(0.25, 0.15), Vector2(0.75, 0.15), Vector2(0.53, 0.5), Vector2(0.75, 0.85), Vector2(0.25, 0.85), Vector2(0.47, 0.5)], c1)
+		"crescent":
+			_circle(img, 0.5, 0.5, 0.45, c1)
+			_circle(img, 0.62, 0.42, 0.38, Color(0, 0, 0, 0))
+		"lantern":
+			_circle(img, 0.5, 0.5, 0.47, c2)
+			_circle(img, 0.5, 0.5, 0.34, c1)
+			_circle(img, 0.5, 0.5, 0.2, c2)
+			_poly(img, [Vector2(0.1, 0.44), Vector2(0.9, 0.44), Vector2(0.9, 0.56), Vector2(0.1, 0.56)], c1)
+		"ankh":
+			_circle(img, 0.5, 0.28, 0.2, c1)
+			_circle(img, 0.5, 0.28, 0.1, c2)
+			_poly(img, [Vector2(0.18, 0.46), Vector2(0.82, 0.46), Vector2(0.82, 0.56), Vector2(0.18, 0.56)], c1)
+			_poly(img, [Vector2(0.44, 0.46), Vector2(0.56, 0.46), Vector2(0.6, 0.96), Vector2(0.4, 0.96)], c1)
 		_:
 			return null
 	img.generate_mipmaps()

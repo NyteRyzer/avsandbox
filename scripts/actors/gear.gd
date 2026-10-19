@@ -83,6 +83,15 @@ static func build(kind: String, mb: MeshBuilder, glow: MeshBuilder, xf: Transfor
 		"heavy_claws":
 			for x in [-0.03, 0.0, 0.03]:
 				mb.tube(Vector3(x, -0.04, -0.02), Vector3(x * 1.4, -0.26, -0.06), 0.01, 0.002, xf, Color("#e0e8f0"), 5)
+		"ring":
+			# A power ring glowing on the fist.
+			glow.ellipsoid(Vector3(0, -0.07, -0.03), Vector3(0.016, 0.016, 0.012), xf, Color(str(look.get("glow", "#3aff6a"))))
+			mb.tube(Vector3(-0.012, -0.07, -0.02), Vector3(0.012, -0.07, -0.02), 0.012, 0.012, xf, Color("#c9a85a"), 6)
+		"crossbow":
+			mb.box(Vector3(0, -0.08, -0.12), Vector3(0.04, 0.05, 0.42), xf, Color("#2a2420"))
+			mb.tube(Vector3(-0.22, -0.06, -0.28), Vector3(0.0, -0.06, -0.32), 0.012, 0.012, xf, GUNMETAL, 5)
+			mb.tube(Vector3(0.22, -0.06, -0.28), Vector3(0.0, -0.06, -0.32), 0.012, 0.012, xf, GUNMETAL, 5)
+			mb.box(Vector3(0, -0.04, -0.2), Vector3(0.01, 0.01, 0.34), xf, STEEL)
 		"t_gauntlet", "gauntlet":
 			mb.tube(Vector3(0, 0.2, 0), Vector3(0, 0.02, 0), 0.05, 0.048, xf, accent)
 			glow.ellipsoid(Vector3(0, -0.03, -0.045), Vector3(0.018, 0.018, 0.01), xf, Color(str(look.get("glow", "#4fc3ff"))))

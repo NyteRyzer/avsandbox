@@ -541,7 +541,8 @@ const LANDMARK_BLOCKS := {
 	2: {Vector2i(3, 3): "catco", Vector2i(5, 2): "deo", Vector2i(4, 5): "park", Vector2i(2, 5): "lcorp"},
 	3: {Vector2i(3, 3): "garfield", Vector2i(5, 4): "court", Vector2i(2, 5): "clinic", Vector2i(4, 4): "park"},
 	4: {Vector2i(3, 3): "wayne_tower", Vector2i(5, 2): "gcpd", Vector2i(1, 6): "arkham", Vector2i(4, 5): "park", Vector2i(6, 4): "crows"},
-	5: {Vector2i(2, 5): "kent_farm", Vector2i(4, 3): "water_tower", Vector2i(5, 4): "smallville_high", Vector2i(3, 3): "main_street"},
+	5: {Vector2i(2, 5): "kent_farm", Vector2i(4, 3): "water_tower", Vector2i(5, 4): "smallville_high", Vector2i(3, 3): "main_street",
+		Vector2i(4, 1): "jsa_hq"},
 }
 
 
@@ -1004,6 +1005,12 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 				add_box(Vector3(bc.x, 0.18, bc.y), Vector3(BLOCK - 2.0, 0.1, BLOCK - 2.0), _grass_mat, false)
 				_label("KENT FARM", Vector3(bc.x, 3.0, rect.position.y - 1.0), 1.5, Color("#ffffff"))
 				_add_landmark("Kent Farm", Vector3(rect.position.x + 41.0, 0.5, rect.position.y + 20.0), district, "kent_barn")
+			"jsa_hq":
+				var brick := _plain(Color("#7a3a2a"))
+				_hollow(rect.grow(-14.0), "jsa_hq", 16.0, brick)
+				add_box(Vector3(bc.x, 16.8, bc.y), Vector3(rect.size.x - 26.0, 1.0, rect.size.y - 26.0), _plain(Color("#3a2a1e")), false)
+				_label("JUSTICE SOCIETY OF AMERICA", base + Vector3(0, 18.5, 0), 2.2, Color("#ffd23a"))
+				_add_landmark("JSA Headquarters", Vector3(bc.x, 0.5, rect.position.y + 12.0), district, "jsa_hq")
 			"water_tower":
 				for k in 4:
 					var off := Vector2(-4 if k % 2 == 0 else 4, -4 if k < 2 else 4)
