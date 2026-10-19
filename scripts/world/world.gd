@@ -11,6 +11,7 @@ var day_night: DayNight
 var population: Population
 var events: Events
 var missions: Missions
+var char_missions: CharMissions
 var race: Race
 var style := StyleMeter.new()
 var news: News
@@ -78,6 +79,9 @@ func _ready() -> void:
 	missions = Missions.new()
 	missions.world = self
 	add_child(missions)
+	char_missions = CharMissions.new()
+	char_missions.world = self
+	add_child(char_missions)
 	cam = CameraRig.new()
 	add_child(cam)
 	day_night.follow = cam
@@ -217,6 +221,10 @@ func spawn_player(id: String, at = null) -> void:
 	Game.heat = old_heat if at == null else 0.0
 	hud.on_player_changed()
 	notify("You are %s" % c["alias"], Color("#ffffff"))
+	if str(char_missions.char_id) != id:
+		char_missions.set_character(c)
+	if c.get("glide", false):
+		notify("Hold [Space] while falling to glide on your cape.", Color("#ffe080"))
 	if not _tips_shown:
 		_tips_shown = true
 		notify("Tab: sandbox tools (spawn anyone, time, weather, teleport)", Color("#ffe080"))
@@ -231,6 +239,8 @@ func spawn_point_for(c: Dictionary) -> Vector3:
 	var idx := {"star": 0, "central": 1, "national": 2, "freeland": 3, "gotham": 4, "smallville": 5}
 	var home: String = c.get("home", "any")
 	var center := Vector3(20, 0, 20)
+	if city.kind == "metro":
+		center = city.district_center(1)
 	if idx.has(home):
 		center = city.district_center(idx[home])
 	return city.snap_to_road(center + Vector3(randf_range(-60, 60), 0, randf_range(-60, 60))) + Vector3.UP * 0.5
@@ -283,6 +293,7 @@ func _process(delta: float) -> void:
 	style.tick(delta / maxf(Engine.time_scale, 0.01))
 	if player and is_instance_valid(player):
 		scanning = Input.is_action_pressed("scan") and not player.civilian and not player.dead
+		_space_check()
 		_team_t -= delta
 		if _team_t <= 0.0:
 			_team_t = 0.5
@@ -486,9 +497,37 @@ func use_door(d: Dictionary) -> void:
 			leave_interior("catco", 60.0)
 		"exit_speedforce":
 			travel_to("earth1", "speed")
+		"speedforce_talk":
+			_speed_force_talk()
 		_:
 			if what in Interiors.ORDER:
 				enter_interior(what)
+
+
+## The Speed Force speaks through a familiar face, and charges up a speedster.
+const SPEED_FORCE_LINES := [
+	"\"You can't outrun this, Barry. But you don't have to run alone.\"",
+	"\"I am the Speed Force. I have always been with you.\"",
+	"\"Every moment you've ever lived is here. Stop running from them.\"",
+	"\"Your mother's death is not your fault. Let it go, and run.\"",
+	"\"The Speed Force is in everything that moves. Even you.\"",
+]
+
+
+func _speed_force_talk() -> void:
+	var line: String = SPEED_FORCE_LINES[randi() % SPEED_FORCE_LINES.size()]
+	notify("The Speed Force: " + line, Color("#ffe8a0"))
+	FX.flash(self, player.chest(), Color("#ffe8a0"), 4.0, 0.6, 0.6)
+	if player.movement == "speed":
+		player.energy = player.max_energy
+		player.add_ult(100.0)
+		player.heal(player.max_hp)
+		player.rage_t = maxf(player.rage_t, 20.0)
+		FX.aura(player, Color("#ffd23a"), player.size, 20.0)
+		notify("You are charged with the Speed Force: full energy, full ultimate.", Color("#ffd23a"))
+		Game.record("speed_force_charges")
+	else:
+		notify("\"You are not a speedster. But you are welcome here.\"", Color("#ffe8a0"))
 
 
 ## The JSA brownstone's round table: three members of the Justice Society
@@ -747,13 +786,27 @@ func travel_to(id: String, how := "breach") -> void:
 		pos = spawn_point_for(player.def)
 	else:
 		pos = Vector3(0, 0.5, 30)
+	if how == "space":
+		pos = Vector3(0, 140, 520)
+		if ship.piloted:
+			ship.global_position = pos + Vector3(0, 20, 30)
+	elif how == "reentry":
+		var back := _space_return
+		pos = city.snap_to_road(Vector3(back.x, 0, back.z)) + Vector3.UP * 0.5
+		if player.movement == "flight" or ship.piloted:
+			pos = Vector3(back.x, 420.0, back.z)
+		if ship.piloted:
+			ship.global_position = pos + Vector3(0, 10, 20)
 	if not ship.piloted:
 		_move_player(pos)
+		if (how == "space" or (how == "reentry" and pos.y > 100.0)) and player.movement == "flight":
+			player.flying = true
 	inside = was_inside
 	_last_district = ""
 	missions._spawned_for = -1
 	Game.record("travels")
 	missions._clear_marker()
+	char_missions._cleanup()
 	missions.on_arrive(id)
 	collectibles.build()
 	waypoint = Vector3.INF
@@ -762,7 +815,13 @@ func travel_to(id: String, how := "breach") -> void:
 	FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
 	FX.flash(self, player.chest(), color, 3.0, 0.5, 0.6)
 	Sfx.play("teleport", null, 0.0)
-	var verb := {"speed": "You ran to", "time": "The Waverider arrives in", "breach": "You breached to"}
+	if how == "space":
+		color = Color("#bfe8ff")
+	elif how == "reentry":
+		color = Color("#ff8a3a")
+		FX.flash(self, player.chest(), Color("#ff6a1a"), 6.0, 0.8, 0.7)
+	var verb := {"speed": "You ran to", "time": "The Waverider arrives in", "breach": "You breached to",
+		"space": "You leave Earth's atmosphere. Ahead:", "reentry": "Re-entering the atmosphere over"}
 	notify("%s %s" % [verb.get(how, "Welcome to"), d["name"]], color)
 	if city.kind == "speedforce":
 		notify("Time Wraiths hunt speedsters here. Find the way home (or press G at the light).", Color("#ffd27a"))
@@ -770,6 +829,10 @@ func travel_to(id: String, how := "breach") -> void:
 	elif city.kind == "antimatter":
 		notify("Shadow Demons swarm the Anti-Matter Universe. The way home is the column of light.", Color("#ff9a9a"))
 		population.spawn_wraiths(3)
+	elif city.kind == "argo":
+		notify("Argo City, the last city of Krypton. Dive off the edge to fall back to Earth.", Color("#bfe8ff"))
+		population.spawn_kryptonians(12)
+		Game.record("argo_visits")
 
 
 func notify(text: String, color := Color.WHITE) -> void:
@@ -840,6 +903,30 @@ func _gain_mastery(a: Actor) -> void:
 		player.hp = player.max_hp * ratio
 		hud.show_banner("%s  MASTERY %d" % [str(player.def["alias"]).to_upper(), lvl], Color("#ffd23a"))
 		notify("Mastery level %d: +%d%% health and power" % [lvl, int(round((Game.mastery_bonus(id) - 1.0) * 100.0))], Color("#ffd23a"))
+
+
+## Flying high enough leaves the atmosphere for Argo City; falling off Argo
+## City (or flying far away from it) brings you back down to Earth.
+const SPACE_ALTITUDE := 700.0
+var _space_return := Vector3(560, 0, -440)
+var _space_from := "earth1"
+var _space_hint := false
+
+
+func _space_check() -> void:
+	var p: Vector3 = ship.global_position if ship.piloted else player.global_position
+	if city.kind == "metro" and inside == "":
+		if p.y > 450.0 and not _space_hint and (player.flying or ship.piloted):
+			_space_hint = true
+			notify("The sky is turning black... keep climbing to reach space.", Color("#bfe8ff"))
+		if p.y > SPACE_ALTITUDE and (player.flying or ship.piloted):
+			_space_return = p
+			_space_from = place_id
+			_space_hint = false
+			travel_to("argo", "space")
+	elif city.kind == "argo":
+		if p.y < -140.0 or Vector2(p.x, p.z).length() > 1700.0:
+			travel_to(_space_from if Multiverse.DESTS.has(_space_from) else "earth1", "reentry")
 
 
 ## Team-up: fighting next to a recruited teammate hits harder.

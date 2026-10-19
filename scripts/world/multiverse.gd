@@ -39,13 +39,13 @@ const DESTS := {
 		"spec": {"earth": "Earth-Prime", "label": "EARTH-PRIME", "tint": "#e0e8ff", "tint_amount": 0.12, "height": 1.15,
 			"sky": ["#3a7aff", "#d8e8ff", 0.25]}},
 	"argo": {"name": "Argo City", "desc": "The last Kryptonian city, drifting through space.",
-		"spec": {"kind": "argo", "sky": ["#02030a", "#1a2a5a", 0.95], "haze": 0.5, "sun": "#fff0d0"}},
+		"spec": {"kind": "argo", "space": true, "sky": ["#000002", "#05081a", 1.0], "haze": 0.15, "sun": "#ffffff"}},
 	"antimatter": {"name": "The Anti-Matter Universe", "desc": "The Anti-Monitor's realm. Shadow Demons everywhere.",
 		"spec": {"kind": "antimatter", "sky": ["#0a0204", "#6a0a1a", 0.95], "haze": 2.0, "sun": "#ff4a5a"}},
 	"vanishing_point": {"name": "Vanishing Point", "desc": "The Time Bureau's station at the end of time.",
 		"spec": {"kind": "vanishing_point", "sky": ["#140a30", "#a58aff", 0.9], "haze": 0.8, "sun": "#e0d8ff"}},
 	"speedforce": {"name": "The Speed Force", "desc": "Where all speed comes from. Watch for Time Wraiths.",
-		"spec": {"kind": "speedforce", "sky": ["#060c28", "#4a7aff", 0.9], "haze": 1.5, "sun": "#bcd4ff"}},
+		"spec": {"kind": "speedforce", "sky": ["#01030c", "#1a3a9a", 1.0], "haze": 0.7, "sun": "#bcd4ff"}},
 }
 
 

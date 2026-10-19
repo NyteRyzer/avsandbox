@@ -18,20 +18,25 @@ extends Node3D
 const CELL := 80.0
 const ROAD := 16.0
 const BLOCK := CELL - ROAD
-const N := 8                              # blocks per island side
+const N := 12                             # blocks per island side
+const LM_OFF := 2                         # landmark block layout is centred in the bigger grid
+const REALM_HALF := 320.0                 # road grid of the smaller realms (Speed Force, Argo...)
 const HALF := N * CELL * 0.5              # half-size of an island's road grid
 const SHORE := 50.0                       # land beyond the outer roads
 const LAND := HALF + SHORE                # half-size of an island
-const SEA := 4500.0
+const SEA := 9000.0
 const FACADE_SHADER := preload("res://shaders/facade.gdshader")
 const DISTRICTS := ["Star City", "Central City", "National City", "Freeland", "Gotham City", "Smallville"]
-const ISLAND_CENTERS := [Vector2(-560, -560), Vector2(560, -560), Vector2(-560, 560), Vector2(560, 560),
-	Vector2(-560, 1720), Vector2(1840, 560)]
+const ISLAND_CENTERS := [Vector2(-1440, -560), Vector2(560, -560), Vector2(-1440, 1440), Vector2(560, 1440),
+	Vector2(-1440, 3440), Vector2(2560, 1440)]
+## Bridges between islands (index pairs), along their central avenues.
+const BRIDGE_PAIRS := [[0, 1], [2, 3], [0, 2], [1, 3], [2, 4], [3, 5]]
+const BAY_X := -440.0                     # middle of the Star City - Central City channel
 const REALM_NAMES := {"western": "Old West", "speedforce": "The Speed Force", "antimatter": "The Anti-Matter Universe",
 	"vanishing_point": "Vanishing Point", "argo": "Argo City"}
 const DISTRICT_CENTERS := ISLAND_CENTERS  # kept for older callers
-const LIAN_YU := Vector2(-1560, -1400)
-const IRON_HEIGHTS := Vector2(1280, -560)
+const LIAN_YU := Vector2(-2900, -1900)
+const IRON_HEIGHTS := Vector2(1700, -560)
 
 ## Per-island architecture.
 const STYLES := [
@@ -63,7 +68,7 @@ var interior_slots: Dictionary = {}  # room id -> {origin, yaw}: rooms built ins
 var islands: Array = []          # {name, center: Vector2, land: Rect2, grid: Rect2, style}
 var bridges: Array[Rect2] = []
 var extra_land: Array = []       # {rect: Rect2, name}
-var waverider_dock := Vector3(0, 4.5, -500)
+var waverider_dock := Vector3(BAY_X, 4.5, -500)
 var facade_mats: Array = []
 var lit_mats: Array[ShaderMaterial] = []
 var _instances: Dictionary = {}
@@ -181,7 +186,7 @@ func district_center(index: int) -> Vector3:
 
 func _nearest_grid(p: Vector3) -> Rect2:
 	if kind != "metro":
-		return Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
+		return Rect2(-REALM_HALF, -REALM_HALF, REALM_HALF * 2.0, REALM_HALF * 2.0)
 	var best := Rect2()
 	var best_d := INF
 	for isl in islands:
@@ -198,7 +203,7 @@ func on_grid(p: Vector3) -> bool:
 	for isl in islands:
 		if isl["grid"].grow(1.0).has_point(Vector2(p.x, p.z)):
 			return true
-	return kind != "metro" and absf(p.x) <= HALF and absf(p.z) <= HALF
+	return kind != "metro" and absf(p.x) <= REALM_HALF and absf(p.z) <= REALM_HALF
 
 
 ## Snaps a point onto the nearest street (roads run along every multiple of CELL).
@@ -552,7 +557,7 @@ func _build_block(index: int, i: int, j: int) -> void:
 	var rect := _block_rect(c, i, j)
 	var bc := rect.get_center()
 	add_box(Vector3(bc.x, 0.08, bc.y), Vector3(BLOCK, 0.16, BLOCK), _sidewalk_mat, false)
-	var key := Vector2i(i, j)
+	var key := Vector2i(i - LM_OFF, j - LM_OFF)
 	var reserved: Dictionary = LANDMARK_BLOCKS[index]
 	if reserved.has(key):
 		var what: String = reserved[key]
@@ -561,7 +566,7 @@ func _build_block(index: int, i: int, j: int) -> void:
 		elif what == "court":
 			_build_court(rect)
 		return
-	if st.get("rural", false) and absi(i - 3) + absi(j - 3) > 1:
+	if st.get("rural", false) and absi(key.x - 3) + absi(key.y - 3) > 1:
 		_build_farm(rect)
 		return
 	var glades := index == 0 and i >= 5 and j >= 5
@@ -829,16 +834,11 @@ func _build_shore(index: int, c: Vector2) -> void:
 
 func _build_bridges() -> void:
 	# Four suspension bridges ring the bay along the islands' central avenues.
-	var specs := [
-		[Vector2(-560 + LAND, -560), Vector2(560 - LAND, -560)],
-		[Vector2(-560 + LAND, 560), Vector2(560 - LAND, 560)],
-		[Vector2(-560, -560 + LAND), Vector2(-560, 560 - LAND)],
-		[Vector2(560, -560 + LAND), Vector2(560, 560 - LAND)],
-		[Vector2(-560, 560 + LAND), Vector2(-560, 1720 - LAND)],   # National City - Gotham
-		[Vector2(560 + LAND, 560), Vector2(1840 - LAND, 560)],     # Freeland - Smallville
-	]
-	for s in specs:
-		_bridge(s[0], s[1], ROAD + 6.0)
+	for pair in BRIDGE_PAIRS:
+		var a: Vector2 = ISLAND_CENTERS[pair[0]]
+		var b: Vector2 = ISLAND_CENTERS[pair[1]]
+		var d := (b - a).normalized()
+		_bridge(a + d * LAND, b - d * LAND, ROAD + 6.0)
 
 
 func _bridge(a: Vector2, b: Vector2, width: float) -> void:
@@ -895,7 +895,7 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 	var reserved: Dictionary = LANDMARK_BLOCKS[index]
 	for key in reserved.keys():
 		var what: String = reserved[key]
-		var rect := _block_rect(c, key.x, key.y)
+		var rect := _block_rect(c, key.x + LM_OFF, key.y + LM_OFF)
 		var bc := rect.get_center()
 		var base := Vector3(bc.x, 0, bc.y)
 		var front := Vector3(bc.x, 0.5, rect.position.y - 4.0)
@@ -1041,16 +1041,16 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 
 func _build_bay_landmarks() -> void:
 	# The Waverider's landing pad, off the Star City - Central City bridge.
-	var pad := Rect2(-45, -549, 90, 110)
-	add_box(Vector3(0, -0.45, pad.get_center().y), Vector3(pad.size.x, 1.0, pad.size.y), _concrete_mat)
+	var pad := Rect2(BAY_X - 45, -549, 90, 110)
+	add_box(Vector3(BAY_X, -0.45, pad.get_center().y), Vector3(pad.size.x, 1.0, pad.size.y), _concrete_mat)
 	var stripe := _plain(Color("#ffd23a"), 0.6, 0.8)
 	for side in [-1.0, 1.0]:
-		add_box(Vector3(side * 20.0, 0.06, pad.get_center().y), Vector3(1.0, 0.1, 90.0), stripe, false)
+		add_box(Vector3(BAY_X + side * 20.0, 0.06, pad.get_center().y), Vector3(1.0, 0.1, 90.0), stripe, false)
 	for k in 6:
-		add_box(Vector3(-40 + k * 16.0, 0.3, pad.end.y - 1.0), Vector3(0.4, 0.6, 0.4), _plain(Color("#6ad0ff"), 0.2, 3.0), false)
+		add_box(Vector3(BAY_X - 40 + k * 16.0, 0.3, pad.end.y - 1.0), Vector3(0.4, 0.6, 0.4), _plain(Color("#6ad0ff"), 0.2, 3.0), false)
 	extra_land.append({"rect": pad, "name": "Waverider Landing Pad"})
-	_label("TIME BUREAU PAD", Vector3(0, 3.0, pad.end.y - 2.0), 1.6, Color("#bfe8ff"))
-	landmarks.append({"name": "The Waverider", "pos": Vector3(0, 0.5, -462), "district": "Waverider Landing Pad"})
+	_label("TIME BUREAU PAD", Vector3(BAY_X, 3.0, pad.end.y - 2.0), 1.6, Color("#bfe8ff"))
+	landmarks.append({"name": "The Waverider", "pos": Vector3(BAY_X, 0.5, -462), "district": "Waverider Landing Pad"})
 
 
 ## A building whose ground floor is hollow, with an open doorway in the
@@ -1153,7 +1153,7 @@ func _build_iron_heights() -> void:
 			add_box(Vector3(c.x + cx * s * 0.5, 9.0, c.y + cz * s * 0.5), Vector3(5, 18, 5), _plain(Color("#6a6a6a")))
 	_add_building(Rect2(c.x - 40, c.y - 25, 80, 50), 18.0, _plain(Color("#7a7a74")))
 	_label("IRON HEIGHTS", Vector3(c.x, 26, c.y), 4.0, Color("#ffb0a0"))
-	_bridge(Vector2(560 + LAND, c.y), Vector2(c.x - half, c.y), ROAD)
+	_bridge(Vector2(ISLAND_CENTERS[1].x + LAND, c.y), Vector2(c.x - half, c.y), ROAD)
 	landmarks.append({"name": "Iron Heights", "pos": Vector3(c.x - 90.0, 0.5, c.y), "district": "Iron Heights"})
 
 
@@ -1198,10 +1198,10 @@ func _build_lian_yu() -> void:
 func _build_western() -> void:
 	var sand := _plain(Color("#c8a874"))
 	add_box(Vector3(0, -1.5, 0), Vector3(SEA * 0.6, 3.0, SEA * 0.6), sand)
-	var grid := Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
+	var grid := Rect2(-REALM_HALF, -REALM_HALF, REALM_HALF * 2.0, REALM_HALF * 2.0)
 	islands.append({"name": "Old West", "center": Vector2.ZERO, "land": Rect2(-SEA, -SEA, SEA * 2.0, SEA * 2.0), "grid": grid, "style": STYLES[3], "index": 3})
 	var dirt := PlaneMesh.new()
-	dirt.size = Vector2(ROAD * 1.5, HALF * 2.0)
+	dirt.size = Vector2(ROAD * 1.5, REALM_HALF * 2.0)
 	_mesh_instance(dirt, Transform3D(Basis(), Vector3(0, 0.02, 0)), _plain(Color("#a88a5a")))
 	var wood := [_plain(Color("#7a5a3a")), _plain(Color("#8a6a44")), _plain(Color("#6a4a2e"))]
 	var names := ["SALOON", "SHERIFF", "BANK", "GENERAL STORE", "HOTEL", "STABLES", "TELEGRAPH"]
@@ -1237,7 +1237,7 @@ func _build_western() -> void:
 ## fragments of memories (pieces of the city) floating in the haze.
 ## A floating realm: a platform with a single road grid so spawning works.
 func _realm_island(name: String, size: float) -> void:
-	var grid := Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
+	var grid := Rect2(-REALM_HALF, -REALM_HALF, REALM_HALF * 2.0, REALM_HALF * 2.0)
 	islands.append({"name": name, "center": Vector2.ZERO, "land": Rect2(-size, -size, size * 2.0, size * 2.0), "grid": grid, "style": STYLES[1], "index": 1})
 
 
@@ -1297,48 +1297,278 @@ func _build_vanishing_point() -> void:
 
 
 ## Argo City: Kryptonian crystal towers on a rock adrift in space.
+## Argo City: the last Kryptonian city, a domed disc of crystal towers
+## drifting in orbit. Earth hangs below it, the Moon off to one side, stars
+## all around. Fly up out of Earth's atmosphere to get here; dive off the edge
+## to fall home.
 func _build_argo() -> void:
-	add_box(Vector3(0, -6.0, 0), Vector3(700, 12.0, 700), _plain(Color("#5a5048"), 0.9))
-	add_box(Vector3(0, -20.0, 0), Vector3(500, 20.0, 500), _plain(Color("#4a4038"), 0.9))
+	var rock := _plain(Color("#4a4038"), 0.95)
+	var rock2 := _plain(Color("#3a322c"), 0.95)
+	# The city's disc and the jagged chunk of Krypton it sits on.
+	add_box(Vector3(0, -4.0, 0), Vector3(700, 8.0, 700), _plain(Color("#5a5048"), 0.9))
+	for k in 18:
+		var ang := k * TAU / 18.0 + rng.randf() * 0.2
+		var d := rng.randf_range(80.0, 290.0)
+		var h := rng.randf_range(40.0, 140.0)
+		add_box(Vector3(cos(ang) * d, -8.0 - h * 0.5, sin(ang) * d), Vector3(rng.randf_range(80, 160), h, rng.randf_range(80, 160)), rock if k % 2 == 0 else rock2, false, ang)
+	add_box(Vector3(0, -120.0, 0), Vector3(260, 200.0, 260), rock2, false, 0.6)
 	_realm_island("Argo City", 350.0)
 	var crystal := _plain(Color("#bfe8ff"), 0.1, 1.2)
-	var white := _plain(Color("#aab4c0"), 0.4)
+	var crystal_gold := _plain(Color("#ffe08a"), 0.1, 1.0)
+	var white := _plain(Color("#c8d0dc"), 0.35)
+	var silver := _plain(Color("#9aa6b4"), 0.25)
+	# Plaza: the House of El's crest set into the floor.
 	add_box(Vector3(0, 0.05, 0), Vector3(120, 0.1, 120), _plain(Color("#6a7484"), 0.3), false)
-	for k in 24:
-		var ang := k * TAU / 24.0
-		var d := rng.randf_range(80.0, 300.0)
-		var p := Vector3(cos(ang) * d, 0, sin(ang) * d)
-		var h := rng.randf_range(20.0, 110.0)
-		_add_building(Rect2(p.x - 8, p.z - 8, 16, 16), h, white)
-		add_box(p + Vector3(0, h + 10.0, 0), Vector3(4.0, 20.0, 4.0), crystal, false, ang)
+	add_box(Vector3(0, 0.12, 0), Vector3(30, 0.06, 30), _plain(Color("#c8102e"), 0.3, 0.4), false, PI * 0.25)
+	add_box(Vector3(0, 0.14, 0), Vector3(20, 0.06, 20), _plain(Color("#f2c21b"), 0.3, 0.6), false, PI * 0.25)
+	# Rings of crystal towers, tallest in the middle.
+	for ring in 3:
+		var count := 10 + ring * 6
+		for k in count:
+			var ang := k * TAU / count + ring * 0.3
+			var d := 90.0 + ring * 75.0 + rng.randf_range(-12.0, 12.0)
+			var p := Vector3(cos(ang) * d, 0, sin(ang) * d)
+			var h := rng.randf_range(40.0, 130.0) * (1.25 - ring * 0.25)
+			var w := rng.randf_range(10.0, 18.0)
+			_add_building(Rect2(p.x - w * 0.5, p.z - w * 0.5, w, w), h, white if k % 3 else silver)
+			add_box(p + Vector3(0, h + 9.0, 0), Vector3(w * 0.35, 18.0, w * 0.35), crystal if k % 4 else crystal_gold, false, ang)
+			add_box(p + Vector3(0, h * 0.5, 0), Vector3(w + 0.6, 1.2, w + 0.6), _plain(Color("#8fd8ff"), 0.2, 1.6), false, 0.0)
+	# The Hall of Elders: a great crystal spire behind the plaza.
+	_add_building(Rect2(-18, -78, 36, 36), 60.0, white)
+	add_box(Vector3(0, 110, -60), Vector3(10.0, 100.0, 10.0), crystal, true, PI * 0.25)
 	for k in 6:
 		var ang := k * TAU / 6.0
 		add_box(Vector3(cos(ang) * 30.0, 18.0, sin(ang) * 30.0), Vector3(3.0, 36.0, 3.0), crystal, true, ang)
+	# The dome that keeps the air in (no collision: fly in and out).
+	var dome := SphereMesh.new()
+	dome.radius = 360.0
+	dome.height = 360.0
+	dome.is_hemisphere = true
+	dome.radial_segments = 48
+	dome.rings = 16
+	var dm := StandardMaterial3D.new()
+	dm.albedo_color = Color(0.6, 0.85, 1.0, 0.08)
+	dm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	dm.cull_mode = BaseMaterial3D.CULL_DISABLED
+	dm.emission_enabled = true
+	dm.emission = Color(0.4, 0.7, 1.0)
+	dm.emission_energy_multiplier = 0.15
+	dm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var dmi := _mesh_instance(dome, Transform3D(Basis(), Vector3(0, 0, 0)), dm)
+	dmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_build_space_backdrop()
 	_label("ARGO CITY", Vector3(0, 50, 0), 8.0, Color("#bfe8ff"))
 	_label("THE HOUSE OF EL", Vector3(0, 6, -40), 2.0, Color("#ffd23a"))
+	_label("HALL OF ELDERS", Vector3(0, 66, -40), 3.0, Color("#bfe8ff"))
 	landmarks.append({"name": "Argo City Plaza", "pos": Vector3(0, 0.5, 20), "district": "Argo City"})
+	landmarks.append({"name": "Hall of Elders", "pos": Vector3(0, 0.5, -36), "district": "Argo City"})
+	landmarks.append({"name": "The Dome's Edge", "pos": Vector3(0, 0.5, 330), "district": "Argo City"})
+
+
+## Earth below, the Moon, and a field of stars.
+func _build_space_backdrop() -> void:
+	var earth := SphereMesh.new()
+	earth.radius = 2400.0
+	earth.height = 4800.0
+	earth.radial_segments = 64
+	earth.rings = 32
+	var em := StandardMaterial3D.new()
+	em.albedo_color = Color("#1a4a9a")
+	em.emission_enabled = true
+	em.emission = Color("#0a2a6a")
+	em.emission_energy_multiplier = 0.5
+	em.roughness = 0.6
+	var earth_center := Vector3(0, -2950, -400)
+	_mesh_instance(earth, Transform3D(Basis(), earth_center), em).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# Continents and clouds: flattened patches lying on the sphere.
+	var land := _plain(Color("#3a7a3a"), 0.9, 0.3)
+	var desert := _plain(Color("#b89a5a"), 0.9, 0.3)
+	var cloud := StandardMaterial3D.new()
+	cloud.albedo_color = Color(1, 1, 1, 0.55)
+	cloud.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	cloud.emission_enabled = true
+	cloud.emission = Color(0.8, 0.85, 0.9)
+	cloud.emission_energy_multiplier = 0.4
+	for k in 26:
+		var dir := Vector3(rng.randf_range(-0.6, 0.6), 1.0, rng.randf_range(-0.6, 0.6)).normalized()
+		var basis := Basis(Quaternion(Vector3.UP, dir))
+		var patch := SphereMesh.new()
+		var r := rng.randf_range(120.0, 380.0)
+		patch.radius = r
+		patch.height = r * 0.08
+		var mat: Material = land if k % 3 else desert
+		var lift := 2402.0
+		if k >= 16:
+			mat = cloud
+			lift = 2430.0
+		_mesh_instance(patch, Transform3D(basis * Basis.from_scale(Vector3(1.0, 1.0, rng.randf_range(0.5, 1.4))), earth_center + dir * lift), mat).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var atmo := SphereMesh.new()
+	atmo.radius = 2470.0
+	atmo.height = 4940.0
+	atmo.radial_segments = 64
+	atmo.rings = 32
+	var am := StandardMaterial3D.new()
+	am.albedo_color = Color(0.4, 0.7, 1.0, 0.12)
+	am.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	am.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	am.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_mesh_instance(atmo, Transform3D(Basis(), earth_center), am).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# The Moon
+	var moon := SphereMesh.new()
+	moon.radius = 140.0
+	moon.height = 280.0
+	_mesh_instance(moon, Transform3D(Basis(), Vector3(1300, 420, -1500)), _plain(Color("#b8b8b0"), 1.0, 0.25))
+	for k in 8:
+		var crater := SphereMesh.new()
+		crater.radius = rng.randf_range(12.0, 30.0)
+		crater.height = crater.radius * 0.4
+		var dir := Vector3(rng.randf_range(-1, 0.2), rng.randf_range(-0.6, 0.6), rng.randf_range(0.2, 1.0)).normalized()
+		_mesh_instance(crater, Transform3D(Basis(Quaternion(Vector3.UP, dir)), Vector3(1300, 420, -1500) + dir * 139.0), _plain(Color("#8a8a84"), 1.0, 0.15))
+	# Stars
+	var star := _plain(Color("#ffffff"), 0.2, 4.0)
+	var warm := _plain(Color("#ffe8c0"), 0.2, 4.0)
+	for k in 520:
+		var dir := Vector3(rng.randf_range(-1, 1), rng.randf_range(-0.3, 1), rng.randf_range(-1, 1)).normalized()
+		var d := rng.randf_range(1500.0, 2100.0)
+		var sz := rng.randf_range(1.5, 4.5)
+		add_box(dir * d, Vector3(sz, sz, sz), star if k % 5 else warm, false, rng.randf() * TAU)
 
 
 func _build_speed_force() -> void:
-	var floor_mat := _plain(Color("#22305a"), 0.3, 0.5)
-	add_box(Vector3(0, -1.0, 0), Vector3(1600, 2.0, 1600), floor_mat)
-	var grid := Rect2(-HALF, -HALF, HALF * 2.0, HALF * 2.0)
-	islands.append({"name": "The Speed Force", "center": Vector2.ZERO, "land": Rect2(-800, -800, 1600, 1600), "grid": grid, "style": STYLES[1], "index": 1})
-	var shard_mats := [_plain(Color("#9ac8ff"), 0.2, 1.5), _plain(Color("#ffe48a"), 0.2, 1.5), facade_mats[1][0], facade_mats[0][0]]
+	# The Speed Force as Barry sees it: a dark blue void lit by blue and gold
+	# lightning, a lightning road running into the swirling time vortex, and
+	# moments of his life drifting past like windows.
+	var fx := SpeedForceFX.new()
+	fx.name = "SpeedForceFX"
+	add_child(fx)
+	var void_floor := _plain(Color("#060a1c"), 0.15, 0.2)
+	add_box(Vector3(0, -1.0, 0), Vector3(1600, 2.0, 1600), void_floor)
+	_realm_island("The Speed Force", 800.0)
+	# Veins of light in the floor, like lightning frozen in glass.
 	for k in 70:
-		var p := Vector3(rng.randf_range(-600, 600), rng.randf_range(15, 160), rng.randf_range(-600, 600))
-		var s := Vector3(rng.randf_range(6, 30), rng.randf_range(6, 40), rng.randf_range(6, 30))
-		add_box(p, s, shard_mats[rng.randi() % shard_mats.size()], k % 3 == 0, rng.randf() * TAU)
-	for k in 30:
-		var p := Vector3(rng.randf_range(-500, 500), 0, rng.randf_range(-500, 500))
-		add_box(p + Vector3.UP * 2.0, Vector3(1.0, 4.0, 1.0), _plain(Color("#ffe48a"), 0.2, 3.0), false)
-	# Streaks of lightning frozen in the floor
-	for k in 40:
 		var p := Vector3(rng.randf_range(-600, 600), 0.02, rng.randf_range(-600, 600))
-		add_box(p, Vector3(rng.randf_range(20, 80), 0.05, 0.6), _plain(Color("#ffd23a"), 0.2, 2.5), false, rng.randf() * TAU)
-	# The way home: a column of light
+		var col := Color("#4fa8ff") if k % 2 else Color("#ffd23a")
+		add_box(p, Vector3(rng.randf_range(20, 90), 0.05, rng.randf_range(0.3, 0.9)), _plain(col, 0.2, 2.5), false, rng.randf() * TAU)
+	# The lightning road: a glowing runway toward the vortex.
+	for k in 60:
+		var z := -40.0 - k * 9.0
+		var x := sin(k * 0.21) * 10.0
+		add_box(Vector3(x, 0.08, z), Vector3(6.0, 0.12, 8.0), _plain(Color("#ffd23a") if k % 2 else Color("#ffe48a"), 0.2, 2.8), false, sin(k * 0.21) * 0.3)
+		if k % 3 == 0:
+			for side in [-1.0, 1.0]:
+				add_box(Vector3(x + side * 4.5, 1.2, z), Vector3(0.3, 2.4, 0.3), _plain(Color("#4fa8ff"), 0.2, 3.0), false)
+	# The time vortex: rings of light swirling around a tunnel at the end of the road.
+	var vortex_z := -620.0
+	for k in 14:
+		var torus := TorusMesh.new()
+		torus.inner_radius = 40.0 + k * 9.0
+		torus.outer_radius = torus.inner_radius + 4.0 + k * 0.4
+		torus.rings = 48
+		torus.ring_segments = 8
+		var col := Color("#4fa8ff").lerp(Color("#ffd23a"), float(k % 4) / 3.0)
+		var ring := MeshInstance3D.new()
+		ring.mesh = torus
+		ring.material_override = FX.glow_mat(col, 0.55 - k * 0.025)
+		ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		ring.transform = Transform3D(Basis(Vector3.RIGHT, PI * 0.5).rotated(Vector3.FORWARD, k * 0.37), Vector3(0, 70, vortex_z - k * 18.0))
+		ring.set_meta("spin", (0.6 if k % 2 == 0 else -0.45) * (1.0 + k * 0.05))
+		fx.add_child(ring)
+		fx.rings.append(ring)
+	var core := SphereMesh.new()
+	core.radius = 38.0
+	core.height = 76.0
+	_mesh_instance(core, Transform3D(Basis(), Vector3(0, 70, vortex_z - 260.0)), FX.glow_mat(Color("#ffffff"), 0.85))
+	_label("THE TIME VORTEX", Vector3(0, 140, vortex_z), 10.0, Color("#bfe0ff"))
+	# Memories: pieces of Barry's life floating in the void.
+	var memories := [
+		["THE ALLEN HOUSE, 2000", "#8a6a4a", "house"], ["S.T.A.R. LABS", "#c8ccd4", "labs"],
+		["JITTERS", "#6a3a22", "shop"], ["THE PARTICLE ACCELERATOR", "#3a4a6a", "ring"],
+		["THE WEST HOUSE", "#a87a5a", "house"], ["CCPD CRIME LAB", "#5a5a6a", "shop"],
+		["NORA ALLEN", "#ffe8c0", "window"], ["THE NIGHT OF THE STORM", "#4fa8ff", "window"],
+		["IRIS", "#ffd8a0", "window"], ["CENTRAL CITY, 2049", "#ffd23a", "window"]]
+	for k in memories.size():
+		var mem: Array = memories[k]
+		var ang := k * TAU / memories.size() + 0.3
+		var dist := 140.0 + (k % 3) * 70.0
+		var node := Node3D.new()
+		fx.add_child(node)
+		node.position = Vector3(cos(ang) * dist, 25.0 + (k % 4) * 14.0, sin(ang) * dist - 80.0)
+		node.set_meta("base", node.position)
+		node.set_meta("phase", k * 0.9)
+		node.set_meta("turn", 0.04 if k % 2 else -0.05)
+		fx.drifting.append(node)
+		_memory(node, str(mem[0]), Color(str(mem[1])), str(mem[2]))
+	# The heart of the Speed Force, where it waits in a shape Barry knows.
+	landmarks.append({"name": "Speed Force Heart", "pos": Vector3(0, 0.5, 0), "district": "The Speed Force"})
+	add_box(Vector3(0, 0.1, 0), Vector3(18, 0.2, 18), _plain(Color("#ffe48a"), 0.2, 1.5), false, PI * 0.25)
+	var avatar := CharacterModel.new()
+	avatar.position = Vector3(0, 0.2, -10)
+	add_child(avatar)
+	avatar.build({"suit": "#fff4d8", "pants": "#fff4d8", "accent": "#ffd23a", "skin": "#fff0d0", "hair": "#e8c890",
+		"extras": ["glow_eyes", "coat"], "coat_color": "#fff8e8", "eye_glow": "#ffffff", "build": "female", "hair_style": "long",
+		"boots": "#fff4d8", "gloves": "#fff0d0", "glove_length": 0.0, "anim": {"idle": "float"}})
+	var glow := OmniLight3D.new()
+	glow.light_color = Color("#ffe8a0")
+	glow.light_energy = 3.0
+	glow.omni_range = 18.0
+	glow.position = Vector3(0, 2.0, -10)
+	add_child(glow)
+	_label("THE SPEED FORCE (as Nora Allen)", Vector3(0, 3.0, -10), 0.6, Color("#ffe8a0"))
+	# The way home: a column of light.
 	add_box(Vector3(0, 40, 60), Vector3(3, 80, 3), _plain(Color("#ffffff"), 0.2, 4.0), false)
 	_label("THE WAY HOME", Vector3(0, 6, 60), 2.0, Color("#ffffff"))
 	_label("THE SPEED FORCE", Vector3(0, 40, -120), 10.0, Color("#fff2a0"))
-	landmarks.append({"name": "Speed Force Heart", "pos": Vector3(0, 0.5, 0), "district": "The Speed Force"})
 	doors.append({"name": "Way home", "pos": Vector3(0, 0.5, 60), "interior": "exit_speedforce"})
+	doors.append({"name": "Talk to the Speed Force", "pos": Vector3(0, 0.5, -6), "interior": "speedforce_talk"})
+
+
+## A memory: a framed window of light, or a broken-off chunk of a real place.
+func _memory(node: Node3D, title: String, col: Color, shape: String) -> void:
+	var parts := []   # [mesh, transform, material]
+	var frame := FX.glow_mat(Color("#bfe0ff"), 0.9)
+	match shape:
+		"window":
+			parts.append([_bm(Vector3(22, 13, 0.4)), Transform3D(), FX.glow_mat(col, 0.55)])
+			for e in [[Vector3(0, 6.7, 0), Vector3(23, 0.6, 0.6)], [Vector3(0, -6.7, 0), Vector3(23, 0.6, 0.6)],
+					[Vector3(11.2, 0, 0), Vector3(0.6, 14, 0.6)], [Vector3(-11.2, 0, 0), Vector3(0.6, 14, 0.6)]]:
+				parts.append([_bm(e[1]), Transform3D(Basis(), e[0]), frame])
+		"house":
+			parts.append([_bm(Vector3(14, 8, 12)), Transform3D(), _plain(col, 0.8, 0.3)])
+			parts.append([_bm(Vector3(15, 1.2, 13)), Transform3D(Basis(), Vector3(0, 4.6, 0)), _plain(Color("#4a2a1e"), 0.8, 0.2)])
+			parts.append([_bm(Vector3(2.2, 3.4, 0.2)), Transform3D(Basis(), Vector3(0, -2.3, -6.05)), FX.glow_mat(Color("#ffe8a0"), 0.9)])
+			parts.append([_bm(Vector3(18, 2.5, 16)), Transform3D(Basis(), Vector3(0, -5.2, 0)), _plain(Color("#3a3028"), 0.95)])
+		"labs":
+			parts.append([_bm(Vector3(24, 10, 16)), Transform3D(), _plain(col, 0.4, 0.3)])
+			parts.append([_bm(Vector3(24.4, 1.0, 16.4)), Transform3D(Basis(), Vector3(0, 2, 0)), FX.glow_mat(Color("#ff3a2a"), 0.8)])
+			parts.append([_bm(Vector3(28, 2.5, 20)), Transform3D(Basis(), Vector3(0, -6.2, 0)), _plain(Color("#3a3a40"), 0.95)])
+		"shop":
+			parts.append([_bm(Vector3(14, 7, 8)), Transform3D(), _plain(col, 0.8, 0.3)])
+			parts.append([_bm(Vector3(12, 3.5, 0.2)), Transform3D(Basis(), Vector3(0, -0.5, -4.05)), FX.glow_mat(Color("#ffd8a0"), 0.85)])
+			parts.append([_bm(Vector3(16, 2.0, 10)), Transform3D(Basis(), Vector3(0, -4.4, 0)), _plain(Color("#3a3028"), 0.95)])
+		"ring":
+			var t := TorusMesh.new()
+			t.inner_radius = 12.0
+			t.outer_radius = 14.5
+			parts.append([t, Transform3D(), _plain(col, 0.4, 0.4)])
+			parts.append([SphereMesh.new(), Transform3D(Basis.from_scale(Vector3.ONE * 5.0), Vector3.ZERO), FX.glow_mat(Color("#ffd23a"), 0.9)])
+	for part in parts:
+		var mi := MeshInstance3D.new()
+		mi.mesh = part[0]
+		mi.transform = part[1]
+		mi.material_override = part[2]
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.add_child(mi)
+	var l := Label3D.new()
+	l.text = title
+	l.font_size = 96
+	l.pixel_size = 0.03
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	l.modulate = Color("#e8f0ff")
+	l.position = Vector3(0, 10.5, 0)
+	node.add_child(l)
+
+
+func _bm(size: Vector3) -> BoxMesh:
+	var b := BoxMesh.new()
+	b.size = size
+	return b

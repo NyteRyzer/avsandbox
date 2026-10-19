@@ -184,6 +184,19 @@ func _apply() -> void:
 		horizon = horizon.lerp(Color(str(look[1])) * (0.35 + day * 0.65), amt)
 	if spec.has("sun"):
 		sun.light_color = sun.light_color.lerp(Color(str(spec["sun"])), 0.6)
+	# Space: a black sky and a hard white sun whatever the hour. Climbing high
+	# above Earth fades the sky toward it.
+	var space_t := 1.0 if spec.get("space", false) else 0.0
+	if space_t == 0.0 and city and city.kind == "metro" and follow and is_instance_valid(follow):
+		space_t = clampf((follow.global_position.y - 250.0) / 450.0, 0.0, 1.0)
+	if space_t > 0.0:
+		top = top.lerp(Color(0.0, 0.0, 0.015), space_t)
+		horizon = horizon.lerp(Color(0.02, 0.04, 0.1), space_t * 0.85)
+		if spec.get("space", false):
+			sun.rotation = Vector3(deg_to_rad(-35.0), deg_to_rad(40.0), 0)
+			sun.light_color = Color(1, 0.98, 0.94)
+			sun.light_energy = 1.4
+			day = 1.0
 	if _flash_t > 0.0:
 		top = top.lerp(Color.WHITE, 0.6)
 		horizon = horizon.lerp(Color.WHITE, 0.6)
@@ -195,7 +208,7 @@ func _apply() -> void:
 	env.ambient_light_energy = lerpf(0.3, 0.75, day) + (2.0 if _flash_t > 0.0 else 0.0)
 	env.fog_light_color = horizon
 	var view: float = Game.settings["view_distance"]
-	env.fog_density = (0.006 if _effective() == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0)))
+	env.fog_density = (0.006 if _effective() == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0))) * (1.0 - space_t * 0.85)
 	env.fog_enabled = not indoors
 	if indoors:
 		sun.light_energy = 0.0

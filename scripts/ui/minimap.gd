@@ -92,6 +92,12 @@ func _draw() -> void:
 		var clamped := center + (s - center).limit_length(size.x * 0.5 - 10.0)
 		draw_circle(clamped, 8.0, Color("#ff6a4a"))
 		draw_circle(clamped, 3.5, Color("#ffffff"))
+	var cp: Vector3 = world.char_missions.target_pos()
+	if cp != Vector3.INF:
+		var s3: Vector2 = to_screen.call(cp.x, cp.z)
+		var cl := center + (s3 - center).limit_length(size.x * 0.5 - 10.0)
+		draw_circle(cl, 8.0, Color("#3ab8ff"))
+		draw_circle(cl, 3.5, Color("#ffffff"))
 	# Player arrow (always points up: the map rotates with the camera).
 	var facing: float = -(player.rotation.y - yaw)
 	var tip := Vector2(0, -9).rotated(facing)

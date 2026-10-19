@@ -406,6 +406,9 @@ func _process(delta: float) -> void:
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
 	mission_label.text = world.missions.tracker()
+	var personal: String = world.char_missions.tracker()
+	if personal != "":
+		mission_label.text = personal + ("\n\n" + mission_label.text if mission_label.text != "" else "")
 	if world.waypoint != Vector3.INF:
 		var wd := Vector2(world.waypoint.x - p.global_position.x, world.waypoint.z - p.global_position.z).length()
 		mission_label.text += "\nWaypoint: %d m" % int(wd)

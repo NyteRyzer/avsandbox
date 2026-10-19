@@ -121,8 +121,14 @@ func _fast_travel() -> void:
 
 ## World -> map coordinates: fit the whole play area into the panel.
 func _to_map(x: float, z: float) -> Vector2:
-	var span := 4400.0 if world.city.kind == "metro" else 1700.0
-	var center := Vector2(0, 150) if world.city.kind == "metro" else Vector2.ZERO
+	var bounds := Rect2(-850, -850, 1700, 1700)
+	if world.city.kind == "metro" and not world.city.islands.is_empty():
+		bounds = world.city.islands[0]["land"]
+		for isl in world.city.islands:
+			bounds = bounds.merge(isl["land"])
+		bounds = bounds.grow(250.0)
+	var span := maxf(bounds.size.x, bounds.size.y)
+	var center := bounds.get_center()
 	var s := minf(_map.size.x, _map.size.y) / span
 	return _map.size * 0.5 + (Vector2(x, z) - center) * s
 
@@ -161,6 +167,9 @@ func _draw_map() -> void:
 	var mp: Vector3 = world.missions.target_pos()
 	if mp != Vector3.INF:
 		_map.draw_circle(_to_map(mp.x, mp.z), 7.0, Color("#ff6a4a"))
+	var cp: Vector3 = world.char_missions.target_pos()
+	if cp != Vector3.INF:
+		_map.draw_circle(_to_map(cp.x, cp.z), 7.0, Color("#3ab8ff"))
 	if world.waypoint != Vector3.INF:
 		var wp: Vector3 = world.waypoint
 		_map.draw_circle(_to_map(wp.x, wp.z), 8.0, Color("#3affd0"))

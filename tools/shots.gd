@@ -317,8 +317,8 @@ func _new_places() -> void:
 	w.events.cooldown = 9999.0
 	w.day_night.frozen = true
 	w.day_night.hour = 15.0
-	var spots := [["gotham", Vector3(-600, 0.5, 1640), 0.3], ["gotham_air", Vector3(-560, 160, 1400), 0.0],
-		["smallville", Vector3(1760, 0.5, 520), 0.8], ["kent_farm", Vector3(1720, 0.5, 790), 0.0]]
+	var spots := [["gotham", Vector3(-1480, 0.5, 3360), 0.3], ["gotham_air", Vector3(-1440, 160, 3120), 0.0],
+		["smallville", Vector3(2480, 0.5, 1400), 0.8], ["kent_farm", Vector3(2440, 0.5, 1470), 0.0]]
 	for sp in spots:
 		w.spawn_player("batwoman" if str(sp[0]).begins_with("gotham") else "superman", sp[1])
 		if sp[1].y > 5.0:

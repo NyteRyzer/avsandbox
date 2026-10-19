@@ -40,8 +40,8 @@ func build() -> void:
 			spots.append(city.snap_to_road(p, 6.0) + Vector3.UP * 1.4)
 	# The rest in the far corners of the map.
 	var extra := [Vector3(City.LIAN_YU.x + 40, 2.0, City.LIAN_YU.y + 120), Vector3(City.LIAN_YU.x - 80, 9.0, City.LIAN_YU.y - 60),
-		Vector3(City.IRON_HEIGHTS.x, 2.0, City.IRON_HEIGHTS.y + 50), Vector3(0, 2.0, -462),
-		Vector3(0, 46.0, -560), Vector3(-560, 46.0, 0)]
+		Vector3(City.IRON_HEIGHTS.x, 2.0, City.IRON_HEIGHTS.y + 50), Vector3(City.BAY_X, 2.0, -462),
+		Vector3(City.BAY_X, 46.0, -560), Vector3(-1440, 46.0, 440)]
 	for e in extra:
 		if spots.size() < TOTAL:
 			spots.append(e)

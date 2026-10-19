@@ -42,6 +42,7 @@ var display_name := ""
 var in_move := Vector3.ZERO
 var in_sprint := false
 var in_jump := false
+var gliding := false
 var in_up := false
 var in_down := false
 var in_fly_toggle := false
@@ -451,6 +452,20 @@ func _tick_status(delta: float) -> void:
 
 
 func _move(delta: float) -> void:
+	var was_gliding := gliding
+	gliding = false
+	_move_body(delta)
+	model.gliding = gliding
+	if gliding and not was_gliding and world:
+		Sfx.play("whoosh", global_position, -6.0)
+
+
+## Caped characters (Batwoman...) can glide; flyers, civvies and the shrunken can't.
+func _can_glide() -> bool:
+	return bool(def.get("glide", false)) and not civilian and not shrunk and movement != "flight"
+
+
+func _move_body(delta: float) -> void:
 	var base := 6.5 * speed_mult
 	var sprint := base * 1.75
 	var jump := 8.5
@@ -560,6 +575,17 @@ func _move(delta: float) -> void:
 			velocity.y = jump
 			_jump_buffer = 0.0
 			_coyote = 0.0
+		elif not is_on_floor() and _can_glide() and in_up and velocity.y < 0.0 and _height_above_ground() > 2.5:
+			# Cape glide: hold jump while falling. Sink slowly and sail forward;
+			# hold descend (Ctrl) to dive.
+			gliding = true
+			var dive := in_down
+			var glide_dir := in_move if in_move.length() > 0.1 else forward()
+			var glide_speed := 34.0 if dive else 21.0
+			var ghv := Vector3(velocity.x, 0, velocity.z).lerp(glide_dir.normalized() * glide_speed, clampf(delta * 1.8, 0.0, 1.0))
+			velocity.x = ghv.x
+			velocity.z = ghv.z
+			velocity.y = lerpf(velocity.y, -11.0 if dive else -2.6, clampf(delta * 3.0, 0.0, 1.0))
 		elif not is_on_floor():
 			velocity.y -= GRAVITY * delta * (world.gravity_scale if world else 1.0)
 		# Speedsters run up walls and across water.

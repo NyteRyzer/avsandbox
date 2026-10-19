@@ -52,6 +52,8 @@ var _flash_mat: StandardMaterial3D
 var _builders: Dictionary = {}
 var _stretch := 1.0
 var _pose: Dictionary = {}
+## Batwoman-style cape glide: body level, arms out, cape spread like wings.
+var gliding := false
 
 
 static func mat(color: Color, emission := 0.0, unshaded := false, alpha := 1.0) -> StandardMaterial3D:
@@ -1060,6 +1062,21 @@ func _locomotion(delta: float, hspeed: float, grounded: bool, flying: bool, vspe
 		return p
 	if flying:
 		return _fly_pose(hspeed, vspeed)
+	if gliding and not grounded:
+		p["pitch"] = -1.15
+		p["sh_l_z"] = -1.45
+		p["sh_r_z"] = 1.45
+		p["sh_l_x"] = 0.15
+		p["sh_r_x"] = 0.15
+		p["el_l"] = 0.1
+		p["el_r"] = 0.1
+		p["th_l"] = -0.1
+		p["th_r"] = -0.1
+		p["kn_l"] = -0.25
+		p["kn_r"] = -0.25
+		p["head_x"] = 0.9
+		p["roll"] = sin(_breath * 1.3) * 0.08
+		return p
 	if not grounded:
 		if vspeed > 0.0:
 			p["th_l"] = 0.9
@@ -1420,8 +1437,15 @@ func _apply_pose(p: Dictionary, delta: float, dead: bool) -> void:
 		var lean_amt := clampf(-p.get("spine_x", 0.0), 0.0, 1.0)
 		var sway := clampf(lean_amt * 1.2 + pitch_amt * 0.2, 0.0, 1.2)
 		var flutter := sin(_breath * 9.0) * 0.06 * (0.3 + sway + pitch_amt * 0.5)
-		_pose_lerp(cape, "rotation:x", -0.06 - sway * 0.8 - flutter, slow)
-		_pose_lerp(cape_low, "rotation:x", -0.1 - sway * 0.4 + flutter * 1.5, slow)
+		if gliding:
+			# Spread the cape into wings, stiff and wide, trailing behind.
+			_pose_lerp(cape, "rotation:x", -0.25 + flutter * 0.3, slow)
+			_pose_lerp(cape_low, "rotation:x", -0.05, slow)
+			cape.scale = cape.scale.lerp(Vector3(2.3, 1.15, 1.0), slow)
+		else:
+			_pose_lerp(cape, "rotation:x", -0.06 - sway * 0.8 - flutter, slow)
+			_pose_lerp(cape_low, "rotation:x", -0.1 - sway * 0.4 + flutter * 1.5, slow)
+			cape.scale = cape.scale.lerp(Vector3.ONE, slow)
 	for i in wings.size():
 		var side := -1.0 if i == 0 else 1.0
 		var flap := sin(_breath * 7.0) * 0.4 if p.has("pitch") and absf(p["pitch"]) > 0.0 else 0.0

@@ -1642,7 +1642,11 @@ ULTS = {
  "brainwave_": None,
 }
 ULTS.pop("brainwave_")
+# Caped characters who can glide (hold jump while falling).
+GLIDERS = ["batwoman", "ryan_wilder", "dr_midnite", "red_death"]
 for c in heroes + villains:
+    if c["id"] in GLIDERS:
+        c["glide"] = True
     if c["id"] in ULTS:
         c["ultimate"] = ULTS[c["id"]]
 

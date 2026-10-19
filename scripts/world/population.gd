@@ -132,6 +132,26 @@ func spawn_wraiths(count: int) -> void:
 		FX.portal(world, a.chest(), Color("#a8c8ff"))
 
 
+## Argo City's citizens: Kryptonians in robes bearing their houses' crests.
+func spawn_kryptonians(count: int) -> void:
+	var houses := [["#c8102e", "#f2c21b"], ["#1d3fa8", "#bfe8ff"], ["#5a5a6a", "#e8e8e8"], ["#2a7a4a", "#e8e0a0"]]
+	for k in count:
+		var d := civilian_def()
+		var h: Array = houses[rng.randi() % houses.size()]
+		d["alias"] = "Kryptonian"
+		d["name"] = "Citizen of Argo"
+		d["look"]["suit"] = "#e8e8ee" if k % 2 == 0 else "#2a3a6a"
+		d["look"]["pants"] = d["look"]["suit"]
+		d["look"]["coat_color"] = "#d8dce4" if k % 2 == 0 else "#1a2448"
+		d["look"]["extras"] = ["coat", "cape"]
+		d["look"]["cape"] = h[0]
+		d["look"]["emblem"] = {"kind": "glyph", "c1": h[1], "c2": h[0], "size": 0.12}
+		var ang := rng.randf() * TAU
+		var dist := rng.randf_range(20.0, 160.0)
+		var a := spawn_character(d, "civilian", Vector3(cos(ang) * dist, 0.5, sin(ang) * dist))
+		a.set_meta("pinned", true)
+
+
 func shadow_demon_def() -> Dictionary:
 	return {
 		"id": "shadow_demon", "name": "Shadow Demon", "alias": "Shadow Demon", "side": "villain", "home": "any",
