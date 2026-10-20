@@ -37,7 +37,7 @@ def E(kind, color, c2=None, size=0.15, **k):
     return d
 
 # Skin tones and hair colours
-PALE, LIGHT, OLIVE, TAN, BROWN_S, DARK = "#efd2bb", "#e0b896", "#c99a74", "#b07b56", "#8d5a3b", "#5e3a26"
+PALE, LIGHT, OLIVE, TAN, BROWN_S, DARK = "#e6c0a2", "#d8a882", "#c0906a", "#a8724e", "#875536", "#5a3724"
 BLOND, PLAT, BRUNETTE, AUBURN, BLACK, GREY, WHITE, RED = "#d9b468", "#eadcb0", "#4a3020", "#7a3a22", "#16110e", "#8a8a8a", "#e8eef4", "#9c2b1c"
 
 # Common kit pieces

@@ -140,14 +140,18 @@ func _dims() -> Dictionary:
 	var d := {
 		"hip_y": 0.95, "thigh": 0.44, "shin": 0.44, "upper": 0.29, "fore": 0.26,
 		"shoulder": 0.205, "chest_rx": 0.17, "chest_rz": 0.115, "waist_rx": 0.135, "waist_rz": 0.092,
-		"hip_rx": 0.15, "hip_rz": 0.1, "arm_r": 0.056, "thigh_r": 0.083, "head": 1.0, "neck_r": 0.05,
+		"hip_rx": 0.15, "hip_rz": 0.1, "arm_r": 0.056, "thigh_r": 0.083, "head": 1.0, "neck_r": 0.058,
 		"spine_len": 0.45, "bust": 0.0,
 	}
 	match build_type:
 		"female":
 			d.merge({"shoulder": 0.18, "chest_rx": 0.148, "chest_rz": 0.1, "waist_rx": 0.112, "waist_rz": 0.082,
-				"hip_rx": 0.158, "hip_rz": 0.105, "arm_r": 0.045, "thigh_r": 0.08, "neck_r": 0.042, "bust": 0.035,
+				"hip_rx": 0.158, "hip_rz": 0.105, "arm_r": 0.045, "thigh_r": 0.08, "neck_r": 0.047, "bust": 0.035,
 				"upper": 0.27, "fore": 0.245, "head": 0.96}, true)
+		"heavy":
+			# Everyday people with a bit of a belly.
+			d.merge({"shoulder": 0.215, "chest_rx": 0.19, "chest_rz": 0.135, "waist_rx": 0.185, "waist_rz": 0.15,
+				"hip_rx": 0.175, "hip_rz": 0.12, "arm_r": 0.062, "thigh_r": 0.095, "neck_r": 0.062}, true)
 		"bulky":
 			d.merge({"shoulder": 0.25, "chest_rx": 0.21, "chest_rz": 0.14, "waist_rx": 0.17, "waist_rz": 0.12,
 				"hip_rx": 0.17, "hip_rz": 0.115, "arm_r": 0.072, "thigh_r": 0.098, "neck_r": 0.065}, true)
@@ -302,6 +306,55 @@ func _build_pelvis() -> void:
 		_mb(hips, "metal").box(Vector3(0, 0.052, -D["waist_rz"] - 0.006), Vector3(0.055, 0.032, 0.012), Transform3D(), _c("buckle", "#c9a227"))
 
 
+## Muscle tone and creases painted into a suit: pecs, a sternum line, abs,
+## shadow under the arms and above the belt. Subtle on cloth, stronger on
+## the bulky and armoured.
+func _torso_shade(c: Color, theta: float, y: float, L: float) -> Color:
+	if build_type == "female" or build_type == "gorilla" or _has("coat") or _has("jacket") or _has("coat_short") or _has("hoodie"):
+		return c.darkened(0.08 * clampf((L * 0.12 - y) / (L * 0.12), 0.0, 1.0))
+	var k := 1.4 if build_type in ["bulky", "armored"] else 1.0
+	var front := absf(theta) < 1.1
+	var d := 0.0
+	if front:
+		# Under the pecs
+		if absf(y - L * 0.6) < L * 0.035 and absf(theta) < 0.9:
+			d += 0.13
+		# Sternum
+		if absf(theta) < 0.05 and y > L * 0.25 and y < L * 0.82:
+			d += 0.1
+		# Abs: two columns, three rows
+		if y > L * 0.12 and y < L * 0.52 and absf(theta) < 0.42:
+			for row in [0.22, 0.34, 0.46]:
+				if absf(y - L * row) < L * 0.012:
+					d += 0.08
+	# Armpits and flanks
+	var side_d := absf(absf(theta) - PI * 0.5)
+	if y > L * 0.66 and side_d < 0.35:
+		d += 0.12 * (1.0 - side_d / 0.35)
+	elif side_d < 0.5:
+		d += 0.05
+	# Above the belt
+	if y < L * 0.08:
+		d += 0.08
+	return c.darkened(clampf(d * k, 0.0, 0.3))
+
+
+## Skin with a little life: blush on the cheeks, shadow under the jaw and in
+## the eye sockets, a touch of colour on the lips' corners.
+func _skin_shade(skin: Color, theta: float, y: float) -> Color:
+	var c := skin
+	var at := absf(theta)
+	if at > 0.5 and at < 1.05 and y > -0.045 and y < 0.015:
+		c = c.lerp(Color(0.86, 0.42, 0.38), 0.13 * (1.0 - absf(y + 0.015) / 0.03))
+	if y < -0.085:
+		c = c.darkened(0.14 * clampf((-0.085 - y) / 0.03, 0.0, 1.0))
+	if at > 0.15 and at < 0.7 and y > 0.012 and y < 0.05:
+		c = c.darkened(0.07)
+	if at > 1.9:
+		c = c.darkened(0.05)
+	return c
+
+
 func _build_torso() -> void:
 	var wx: float = D["waist_rx"]
 	var wz: float = D["waist_rz"]
@@ -326,7 +379,7 @@ func _build_torso() -> void:
 			return collar
 		if has_trim and absf(absf(theta) - PI * 0.5) < 0.11:
 			return trim
-		return suit
+		return _torso_shade(suit, theta, y, L)
 	var rings := [
 		{"y": 0.0, "rx": wx, "rz": wz},
 		{"y": L * 0.2, "rx": wx * 1.02, "rz": wz * 1.02},
@@ -347,6 +400,11 @@ func _build_torso() -> void:
 	for side in [-1.0, 1.0]:
 		_mb(spine, kind).ellipsoid(Vector3(side * (D["shoulder"] - 0.012), L - 0.04, 0.0),
 			Vector3(D["arm_r"] * 1.02, D["arm_r"] * 0.94, D["arm_r"] * 1.02), Transform3D(), suit, 14, 8)
+		# Trapezius: the slope from the neck down to the shoulder.
+		if build_type != "gorilla":
+			var trap_col := suit
+			_mb(spine, kind).ellipsoid(Vector3(side * D["shoulder"] * 0.5, L + 0.005, 0.012), Vector3(D["shoulder"] * 0.42, 0.034, cz * 0.5),
+				Transform3D(Basis(Vector3.BACK, side * 0.3)), _torso_shade(trap_col, 0.0, L * 0.9, L), 12, 6)
 	if straps:
 		# Martian Manhunter's X harness: two straps crossing the chest.
 		for side in [-1.0, 1.0]:
@@ -424,7 +482,7 @@ func _build_head() -> void:
 			return accent if theta > 0.0 else Color("#141414")
 		if cowl:
 			if front and y < -0.015:
-				return skin
+				return _skin_shade(skin, theta, y)
 			return suit
 		if hockey and front and y < 0.09:
 			return Color("#ebebe6")
@@ -440,7 +498,7 @@ func _build_head() -> void:
 			return mask_col
 		if mask and front and y > 0.012 and y < 0.058 and absf(theta) < 0.95:
 			return mask_col
-		return skin
+		return _skin_shade(skin, theta, y)
 	var R := _head_profile(build_type == "female")
 	if gorilla:
 		R = [[-0.13, 0.07, 0.07, 0.0], [-0.1, 0.085, 0.1, -0.03], [-0.06, 0.1, 0.12, -0.04], [-0.02, 0.105, 0.11, -0.02],
@@ -533,7 +591,7 @@ static func _head_profile(female: bool) -> Array:
 
 func _build_hair(k: float) -> void:
 	var style := str(look.get("hair_style", "short"))
-	if _has("cowl") or _has("helmet") or _has("helmet_savitar") or _has("helmet_fate") or _has("mask_deathstroke") or _has("mask_skull") or _has("mask_bandage") or build_type == "gorilla" or style == "bald":
+	if _has("cowl") or _has("helmet") or _has("helmet_savitar") or _has("helmet_fate") or _has("mask_deathstroke") or _has("mask_skull") or _has("mask_bandage") or _has("hood") or build_type == "gorilla" or style == "bald":
 		return
 	var hair := _c("hair", "#3b2a1e")
 	var hb := _mb(head, "gloss")
@@ -577,6 +635,16 @@ func _build_hair(k: float) -> void:
 	_hair_locks(hb, style, hair, thick, k)
 
 
+## A basis whose Y is `normal` and whose Z runs along `along` (in the plane).
+func _tangent_basis(normal: Vector3, along: Vector3) -> Basis:
+	var y := normal.normalized()
+	var z := (along - y * y.dot(along)).normalized()
+	if z.length() < 0.1:
+		z = Vector3.BACK
+	var x := y.cross(z).normalized()
+	return Basis(x, y, z)
+
+
 ## Locks of hair that break up the cap's outline: a fringe at the hairline,
 ## tufts on the crown, strands down the back, curls for curly hair.
 func _hair_locks(hb: MeshBuilder, style: String, hair: Color, thick: float, k: float) -> void:
@@ -585,24 +653,32 @@ func _hair_locks(hb: MeshBuilder, style: String, hair: Color, thick: float, k: f
 	var lighter := hair.lightened(0.12)
 	var darker := hair.darkened(0.12)
 	var wobble := func(i: int) -> float: return sin(i * 12.9898 + hair.r * 78.2) * 0.5
-	# Fringe across the forehead
+	# Fringe: soft clumps lying over the hairline, combed down and to the side.
 	var fringe := 7 if style != "slick" else 0
 	for i in fringe:
-		var x := lerpf(-0.062, 0.062, float(i) / maxf(1.0, fringe - 1)) * k
-		var a := Vector3(x, 0.135 * k, -0.06 * k)
-		var b := Vector3(x * 1.15 + wobble.call(i) * 0.012 * k, (0.082 + wobble.call(i + 3) * 0.01) * k, -0.1 * k - thick * 0.6)
-		if style in ["long", "bob"]:
-			b.y -= 0.01 * k
-		hb.tube(a, b, 0.016 * k, 0.004 * k, Transform3D(), lighter if i % 2 else hair, 6)
-	# Crown tufts, swept back (hidden under hats and hoods)
+		var u := float(i) / maxf(1.0, fringe - 1)
+		var ang := lerpf(-0.75, 0.75, u)
+		var n := Vector3(sin(ang) * 0.8, 0.55, -cos(ang)).normalized()
+		var p := Vector3(sin(ang) * 0.075, 0.118, -cos(ang) * 0.088) * k + n * thick * 0.4
+		var down: Vector3 = (Vector3(sin(ang) * 0.25 + float(wobble.call(i)) * 0.3, -1.0, -0.2) - n * n.dot(Vector3(0, -1, -0.2))).normalized()
+		var length := 0.042 if style in ["long", "bob", "wild", "curly"] else 0.03
+		hb.ellipsoid(Vector3.ZERO, Vector3(0.02, 0.009, length) * k, Transform3D(_tangent_basis(n, down), p),
+			lighter if i % 2 else hair, 8, 4)
+	# Crown: overlapping flattened clumps swept back, so the hair has volume
+	# and texture without spikes. Hidden under hats and hoods.
 	var covered := _has("beanie") or _has("cap") or _has("hood")
-	for i in (0 if covered else 12):
-		var ang := float(i) / 12.0 * TAU
-		var root := Vector3(sin(ang) * 0.05 * k, 0.152 * k, cos(ang) * 0.055 * k + 0.01 * k)
-		var tip := root + Vector3(sin(ang) * 0.025, -0.012 + wobble.call(i) * 0.01, cos(ang) * 0.02 + 0.03) * k
-		if style == "slick":
-			tip = root + Vector3(0, -0.01, 0.05) * k
-		hb.tube(root, tip, 0.02 * k + thick * 0.4, 0.004 * k, Transform3D(), darker if i % 3 == 0 else hair, 6)
+	for i in (0 if covered else 16):
+		var lon: float = float(i) / 16.0 * TAU + float(wobble.call(i)) * 0.3
+		var lat := lerpf(0.25, 1.15, float((i * 7) % 16) / 16.0)
+		var n := Vector3(sin(lon) * sin(lat), cos(lat), cos(lon) * sin(lat)).normalized()
+		if n.z < -0.55 and lat > 0.7:
+			continue
+		var p := Vector3(n.x * 0.086, 0.06 + n.y * 0.098, n.z * 0.1 + 0.012) * k + n * thick * 0.6
+		var back := (Vector3(0, -0.35, 1.0) - n * n.dot(Vector3(0, -0.35, 1.0))).normalized()
+		if style == "wild":
+			back = (back + Vector3(float(wobble.call(i)), 0.4, 0)).normalized()
+		hb.ellipsoid(Vector3.ZERO, Vector3(0.034, 0.012, 0.05) * k, Transform3D(_tangent_basis(n, back), p),
+			darker if i % 3 == 0 else (lighter if i % 3 == 1 else hair), 8, 4)
 	# Strands down the back of long hair
 	if style in ["long", "wild"]:
 		for i in 9:
@@ -672,15 +748,44 @@ func _build_headgear(k: float) -> void:
 			hb.tube(Vector3(side * 0.05 * k, 0.11 * k, 0.01), Vector3(side * 0.062 * k, 0.2 * k, 0.012), 0.016 * k, 0.0, Transform3D(), suit, 6)
 	if _has("hood"):
 		var hood_col := suit.darkened(0.12)
-		var rings := [
-			{"y": -0.14 * k, "rx": 0.16 * k, "rz": 0.12 * k, "cz": 0.04 * k},
-			{"y": -0.06 * k, "rx": 0.115 * k, "rz": 0.12 * k, "cz": 0.02 * k},
-			{"y": 0.03 * k, "rx": 0.1 * k, "rz": 0.118 * k, "cz": 0.005 * k},
-			{"y": 0.11 * k, "rx": 0.088 * k, "rz": 0.106 * k, "cz": 0.0},
-			{"y": 0.165 * k, "rx": 0.05 * k, "rz": 0.075 * k, "cz": 0.0},
-			{"y": 0.188 * k, "rx": 0.006, "rz": 0.02, "cz": -0.02 * k},
+		# Lower drape is open at the face; the crown closes over the brow.
+		var low := [
+			{"y": -0.15 * k, "rx": 0.122 * k, "rz": 0.108 * k, "cz": 0.035 * k},
+			{"y": -0.06 * k, "rx": 0.104 * k, "rz": 0.116 * k, "cz": 0.02 * k},
+			{"y": 0.0, "rx": 0.1 * k, "rz": 0.118 * k, "cz": 0.008 * k},
+			{"y": 0.075 * k, "rx": 0.097 * k, "rz": 0.116 * k, "cz": 0.002 * k},
 		]
-		_mb(head).loft(rings, Transform3D(), hood_col, 20, false, true, 0.8)
+		var top := [
+			{"y": 0.075 * k, "rx": 0.097 * k, "rz": 0.116 * k, "cz": 0.002 * k},
+			{"y": 0.125 * k, "rx": 0.085 * k, "rz": 0.104 * k, "cz": 0.0},
+			{"y": 0.17 * k, "rx": 0.052 * k, "rz": 0.074 * k, "cz": 0.004 * k},
+			{"y": 0.192 * k, "rx": 0.006, "rz": 0.02, "cz": 0.02 * k},
+		]
+		var arc := 0.74
+		var cb := _mb(head, "cloth")
+		cb.loft(low, Transform3D(), hood_col, 20, false, false, arc)
+		cb.loft(top, Transform3D(), hood_col, 20, false, true)
+		# Darker lining just inside, so the opening reads as a deep cowl.
+		var inner := []
+		for r in low:
+			var d: Dictionary = (r as Dictionary).duplicate()
+			d["rx"] = float(d["rx"]) - 0.007
+			d["rz"] = float(d["rz"]) - 0.007
+			inner.append(d)
+		cb.loft(inner, Transform3D(), hood_col.darkened(0.5), 20, false, false, arc)
+		# Rolled rim around the face opening: up both sides, across the brow.
+		var edge := PI * (1.0 - arc)
+		var rim := hood_col.lightened(0.06)
+		var hp := func(r: Dictionary, th: float) -> Vector3:
+			return Vector3(sin(th) * float(r["rx"]), float(r["y"]), float(r.get("cz", 0.0)) - cos(th) * float(r["rz"]) - 0.002)
+		for side in [-1.0, 1.0]:
+			for i in low.size() - 1:
+				cb.tube(hp.call(low[i], edge * side), hp.call(low[i + 1], edge * side), 0.008 * k, 0.008 * k, Transform3D(), rim, 6)
+		var brow: Dictionary = low[low.size() - 1]
+		for j in 6:
+			var t0 := lerpf(-edge, edge, j / 6.0)
+			var t1 := lerpf(-edge, edge, (j + 1) / 6.0)
+			cb.tube(hp.call(brow, t0), hp.call(brow, t1), 0.009 * k, 0.009 * k, Transform3D(), rim, 6)
 	if _has("helmet") or _has("helmet_hawk"):
 		var hcol := accent.lightened(0.12) if _has("helmet") else Color("#b08a3a")
 		var rings := [
@@ -904,10 +1009,20 @@ func _build_costume_extras() -> void:
 			{"y": 0.08, "rx": D["waist_rx"] + 0.018, "rz": D["waist_rz"] + 0.018},
 		], Transform3D(), coat, 20, false, false, 0.78 if _has("coat") else open)
 		for side in [-1.0, 1.0]:
-			_mb(sh_l if side < 0 else sh_r, "gloss").loft([{"y": -D["upper"] - 0.005, "rx": D["arm_r"] + 0.012, "rz": D["arm_r"] + 0.012},
-				{"y": 0.015, "rx": D["arm_r"] * 1.05 + 0.012, "rz": D["arm_r"] * 1.05 + 0.012}], Transform3D(), coat, 12, false, false)
-			_mb(el_l if side < 0 else el_r, "gloss").loft([{"y": -D["fore"] * 0.55, "rx": D["arm_r"] * 0.8 + 0.012, "rz": D["arm_r"] * 0.75 + 0.012},
-				{"y": 0.015, "rx": D["arm_r"] * 0.82 + 0.012, "rz": D["arm_r"] * 0.82 + 0.012}], Transform3D(), coat, 12, false, false)
+			# Sleeves follow the shape of the arm, a fabric's thickness out.
+			var ar: float = D["arm_r"]
+			var up: float = D["upper"]
+			var fo: float = D["fore"]
+			_mb(sh_l if side < 0 else sh_r, "gloss").loft([
+				{"y": -up - 0.01, "rx": ar * 0.82 + 0.008, "rz": ar * 0.84 + 0.008},
+				{"y": -up * 0.55, "rx": ar * 1.0 + 0.008, "rz": ar * 1.02 + 0.008, "cz": -0.004},
+				{"y": -up * 0.25, "rx": ar * 1.04 + 0.008, "rz": ar * 1.04 + 0.008},
+				{"y": 0.012, "rx": ar * 0.98 + 0.008, "rz": ar * 0.98 + 0.008}], Transform3D(), coat, 14, false, false)
+			_mb(el_l if side < 0 else el_r, "gloss").loft([
+				{"y": -fo * 0.62, "rx": ar * 0.72 + 0.008, "rz": ar * 0.66 + 0.008},
+				{"y": -fo * 0.62 + 0.012, "rx": ar * 0.8 + 0.01, "rz": ar * 0.74 + 0.01},
+				{"y": -fo * 0.2, "rx": ar * 0.86 + 0.008, "rz": ar * 0.84 + 0.008},
+				{"y": 0.015, "rx": ar * 0.84 + 0.008, "rz": ar * 0.84 + 0.008}], Transform3D(), coat.darkened(0.04), 14, false, false)
 	if _has("skirt"):
 		var stripes := _c("skirt_color", "#c8102e")
 		var col := func(_t: float, theta: float, _r: Dictionary) -> Color:

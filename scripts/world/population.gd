@@ -15,7 +15,7 @@ const GANGS := [
 	{"name": "Cadmus Agent", "suit": "#3a4248", "legs": "#2a3036", "accent": "#1a1a1a"},
 	{"name": "The 100", "suit": "#2a2a2a", "legs": "#2a3a5a", "accent": "#b01818"},
 ]
-const SKINS := ["#f1c9a5", "#e3b896", "#c99a78", "#a8714d", "#8d5a3b", "#5e3a26"]
+const SKINS := ["#e6bc98", "#d6a47e", "#c0906a", "#a26c48", "#875536", "#5a3724", "#7a4a30"]
 const HAIRS := ["#16110e", "#3b2a1e", "#6a4a2a", "#c9a25a", "#8a3a1a", "#9a9a9a"]
 
 var world
@@ -252,6 +252,8 @@ func civilian_def() -> Dictionary:
 			look["facial"] = ["stubble", "beard", "goatee"][rng.randi() % 3]
 	if rng.randf() < 0.12 and not female:
 		look["build"] = "bulky"
+	elif rng.randf() < 0.14:
+		look["build"] = "heavy"
 	match rng.randi() % 6:
 		0, 1:
 			look["sleeve"] = 0.45    # T-shirt

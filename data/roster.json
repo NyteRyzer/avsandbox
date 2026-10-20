@@ -33,7 +33,7 @@
    "look": {
     "suit": "#2c5a2e",
     "accent": "#16301a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "hood",
@@ -85,12 +85,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "short",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -153,7 +153,7 @@
    "look": {
     "suit": "#8e0f16",
     "accent": "#e6b422",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "cowl",
@@ -210,10 +210,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -274,7 +274,7 @@
    "look": {
     "suit": "#1d3c9a",
     "accent": "#b81820",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "cape"
@@ -322,12 +322,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -391,7 +391,7 @@
    "look": {
     "suit": "#1b3a94",
     "accent": "#b81820",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "cape"
@@ -450,12 +450,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "slick",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -517,7 +517,7 @@
    "look": {
     "suit": "#9aa2ad",
     "accent": "#2d6bd6",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "helmet",
@@ -563,11 +563,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -629,7 +629,7 @@
    "look": {
     "suit": "#ececec",
     "accent": "#cfcfcf",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "mask_dark",
@@ -680,12 +680,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -744,7 +744,7 @@
    "look": {
     "suit": "#141416",
     "accent": "#2a2a2e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "mask_dark",
@@ -781,12 +781,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -845,7 +845,7 @@
    "look": {
     "suit": "#2b2f35",
     "accent": "#555c66",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "helmet",
@@ -886,12 +886,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -950,7 +950,7 @@
    "look": {
     "suit": "#8b1a1a",
     "accent": "#3a0c0c",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "hood",
@@ -1001,12 +1001,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1066,7 +1066,7 @@
    "look": {
     "suit": "#d4a017",
     "accent": "#a3111a",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "cowl",
@@ -1124,10 +1124,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1189,7 +1189,7 @@
    "look": {
     "suit": "#1e1e21",
     "accent": "#55555c",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#16110e",
     "extras": [
      "goggles",
@@ -1246,11 +1246,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#16110e",
      "hair_style": "long",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1312,7 +1312,7 @@
    "look": {
     "suit": "#1a2440",
     "accent": "#8fd6ff",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#e8eef4",
     "extras": [
      "glow_eyes",
@@ -1366,12 +1366,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#8a5a3a",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1435,7 +1435,7 @@
    "look": {
     "suit": "#b33c12",
     "accent": "#e8e0d0",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "flame_head",
@@ -1483,10 +1483,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1666,7 +1666,7 @@
    "look": {
     "suit": "#141416",
     "accent": "#b0101a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#b3261e",
     "extras": [
      "cowl",
@@ -1726,12 +1726,12 @@
    "glide": true,
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#7a2a1a",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1793,7 +1793,7 @@
    "look": {
     "suit": "#121212",
     "accent": "#3aa0ff",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "goggles",
@@ -1840,12 +1840,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "facial": "goatee",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1905,7 +1905,7 @@
    "look": {
     "suit": "#3a3a3a",
     "accent": "#5a5a62",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "mask_dark",
@@ -1958,12 +1958,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "hair_style": "curly",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2024,7 +2024,7 @@
    "look": {
     "suit": "#262626",
     "accent": "#ffb02e",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "glow_eyes",
@@ -2066,12 +2066,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2127,7 +2127,7 @@
    "look": {
     "suit": "#1b1b1b",
     "accent": "#d02020",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "mask_t",
@@ -2182,11 +2182,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "hair_style": "bald",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2246,7 +2246,7 @@
    "look": {
     "suit": "#5b4630",
     "accent": "#c9a24a",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "leather",
@@ -2289,12 +2289,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "curly",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2353,7 +2353,7 @@
    "look": {
     "suit": "#5a3a1e",
     "accent": "#c9a24a",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#7a3a22",
     "extras": [
      "wings",
@@ -2395,12 +2395,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#7a3a22",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2456,7 +2456,7 @@
    "look": {
     "suit": "#8a929c",
     "accent": "#c0c8d2",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "leather"
@@ -2491,12 +2491,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2558,7 +2558,7 @@
    "look": {
     "suit": "#1d3fa8",
     "accent": "#e8e8e8",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "mask_dark",
@@ -2610,13 +2610,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "ponytail",
      "build": "female",
      "scale": 0.95,
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2678,7 +2678,7 @@
    "look": {
     "suit": "#b0141c",
     "accent": "#c9a227",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#8a8a8a",
     "extras": [
      "winged_helmet"
@@ -2733,11 +2733,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#8a8a8a",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2800,7 +2800,7 @@
    "look": {
     "suit": "#c9971a",
     "accent": "#8a1414",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -2855,12 +2855,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -2920,7 +2920,7 @@
    "look": {
     "suit": "#5b2a86",
     "accent": "#efe9ff",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -2977,12 +2977,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#4a3020",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3044,7 +3044,7 @@
    "look": {
     "suit": "#9a1a28",
     "accent": "#1d1d1d",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -3086,10 +3086,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3153,7 +3153,7 @@
    "look": {
     "suit": "#a6adb5",
     "accent": "#4a5058",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "helmet",
@@ -3189,11 +3189,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3254,7 +3254,7 @@
    "look": {
     "suit": "#1b2440",
     "accent": "#c8102e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "cape",
@@ -3301,13 +3301,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "facial": "stubble",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3368,7 +3368,7 @@
    "look": {
     "suit": "#1f3a6e",
     "accent": "#e0c068",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#16110e",
     "extras": [
      "mask_star",
@@ -3423,12 +3423,12 @@
    "telekinetic": true,
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3605,7 +3605,7 @@
    "look": {
     "suit": "#8b1a1a",
     "accent": "#3a0a0a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "hood",
@@ -3652,10 +3652,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3715,7 +3715,7 @@
    "look": {
     "suit": "#2c2f33",
     "accent": "#e8e8e8",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "mask_hockey",
@@ -3757,10 +3757,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3818,7 +3818,7 @@
    "look": {
     "suit": "#5a3a22",
     "accent": "#2a1a10",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "goggles",
@@ -3861,13 +3861,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "facial": "stubble",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3931,7 +3931,7 @@
    "look": {
     "suit": "#e8e4dc",
     "accent": "#7a1a1a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "coat"
@@ -3942,7 +3942,7 @@
     "pants": "#2a2a2e",
     "collar": "#7a1a1a",
     "boots": "#2a1e14",
-    "gloves": "#e0b896",
+    "gloves": "#d8a882",
     "glove_length": 0.0,
     "anim": {
      "idle": "pockets",
@@ -3982,12 +3982,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "short",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4047,7 +4047,7 @@
    "look": {
     "suit": "#3a3a4a",
     "accent": "#e8c040",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "jacket",
@@ -4057,7 +4057,7 @@
     "hair_style": "long",
     "coat_color": "#6a3a2a",
     "boots": "#2a1a12",
-    "gloves": "#b07b56",
+    "gloves": "#a8724e",
     "glove_length": 0.0,
     "emblem": {
      "kind": "circle",
@@ -4102,12 +4102,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4169,7 +4169,7 @@
    "look": {
     "suit": "#2a2622",
     "accent": "#7a5a2a",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#16110e",
     "extras": [
      "hood",
@@ -4215,12 +4215,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4281,7 +4281,7 @@
    "look": {
     "suit": "#5a3a1e",
     "accent": "#c9a24a",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#4a3020",
     "extras": [
      "wings",
@@ -4325,12 +4325,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#4a3020",
      "hair_style": "short",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4395,7 +4395,7 @@
    "look": {
     "suit": "#a01818",
     "accent": "#e6b422",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "cowl",
@@ -4453,11 +4453,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4520,7 +4520,7 @@
    "look": {
     "suit": "#1e4a22",
     "accent": "#5aff8a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#d9b468",
     "extras": [
      "hood",
@@ -4574,11 +4574,11 @@
    "telekinetic": true,
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#d9b468",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4641,7 +4641,7 @@
    "look": {
     "suit": "#3a4a6a",
     "accent": "#b81820",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "jacket"
@@ -4650,7 +4650,7 @@
     "coat_color": "#2a3448",
     "pants": "#2a3040",
     "boots": "#3a3a3a",
-    "gloves": "#e0b896",
+    "gloves": "#d8a882",
     "glove_length": 0.0,
     "anim": {
      "idle": "pockets",
@@ -4683,11 +4683,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4748,7 +4748,7 @@
    "look": {
     "suit": "#5a3a22",
     "accent": "#2a1a10",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "coat",
@@ -4785,12 +4785,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4849,7 +4849,7 @@
    "look": {
     "suit": "#6a4a2a",
     "accent": "#c9a24a",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "leather",
@@ -4860,7 +4860,7 @@
     "coat_color": "#7a5a32",
     "pants": "#3a2a1a",
     "boots": "#3a2a1a",
-    "gloves": "#5e3a26",
+    "gloves": "#5a3724",
     "glove_length": 0.0,
     "emblem": {
      "kind": "circle",
@@ -4885,12 +4885,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "curly",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -4951,7 +4951,7 @@
    "look": {
     "suit": "#2a2e3a",
     "accent": "#c8c8d0",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "coat_short"
@@ -4961,7 +4961,7 @@
     "coat_color": "#2a2e3a",
     "pants": "#22252e",
     "boots": "#141414",
-    "gloves": "#e0b896",
+    "gloves": "#d8a882",
     "glove_length": 0.0,
     "collar": "#e8e8e8",
     "gear": {
@@ -4985,12 +4985,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5050,7 +5050,7 @@
    "look": {
     "suit": "#5a4a3a",
     "accent": "#3a2a1e",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "glow_eyes",
@@ -5075,12 +5075,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "hair_style": "wild",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5139,7 +5139,7 @@
    "look": {
     "suit": "#2a2a2e",
     "accent": "#c83a3a",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "leather",
@@ -5166,12 +5166,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "hair_style": "short",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5233,7 +5233,7 @@
    "look": {
     "suit": "#3a5a6a",
     "accent": "#c8e8ff",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "jacket"
@@ -5267,12 +5267,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "hair_style": "curly",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5330,7 +5330,7 @@
    "look": {
     "suit": "#1a1418",
     "accent": "#a01a2a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "coat",
@@ -5360,12 +5360,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5425,7 +5425,7 @@
    "look": {
     "suit": "#3a4a3a",
     "accent": "#c8a03a",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#16110e",
     "extras": [
      "jacket",
@@ -5453,12 +5453,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#16110e",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5518,7 +5518,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#2a2a2a",
-    "skin": "#c99a74",
+    "skin": "#c0906a",
     "hair": "#16110e",
     "extras": [
      "cowl",
@@ -5556,12 +5556,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#c99a74",
+     "skin": "#c0906a",
      "hair": "#16110e",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#c99a74",
+     "gloves": "#c0906a",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5620,7 +5620,7 @@
    "look": {
     "suit": "#e6b422",
     "accent": "#3a3a3a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "cape",
@@ -5653,12 +5653,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5719,7 +5719,7 @@
    "look": {
     "suit": "#1a1a2a",
     "accent": "#e8e8e8",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "goggles",
@@ -5755,12 +5755,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "curly",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5821,7 +5821,7 @@
    "look": {
     "suit": "#c8102e",
     "accent": "#1d3fa8",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "mask_dark",
@@ -5861,11 +5861,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -5928,7 +5928,7 @@
    "look": {
     "suit": "#1d3fa8",
     "accent": "#e6b422",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#8a8a8a",
     "extras": [
      "helmet_fate",
@@ -5966,11 +5966,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#8a8a8a",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6032,7 +6032,7 @@
    "look": {
     "suit": "#c8102e",
     "accent": "#2a8a3a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "cape",
@@ -6074,11 +6074,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6238,7 +6238,7 @@
    "look": {
     "suit": "#141418",
     "accent": "#3a2a5a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#16110e",
     "extras": [
      "glow_eyes",
@@ -6265,11 +6265,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#16110e",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6367,7 +6367,7 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "build": "bulky",
@@ -6432,7 +6432,7 @@
    "look": {
     "suit": "#3a5a8a",
     "accent": "#ffe066",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "jacket"
@@ -6457,11 +6457,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "wild",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6521,7 +6521,7 @@
    "look": {
     "suit": "#2a1a3a",
     "accent": "#6a3a8a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#16110e",
     "extras": [
      "mask_dark",
@@ -6554,12 +6554,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6617,7 +6617,7 @@
    "look": {
     "suit": "#2c5a2e",
     "accent": "#16301a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "hood",
@@ -6651,12 +6651,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6717,7 +6717,7 @@
    "look": {
     "suit": "#8a7a5a",
     "accent": "#4a3a2a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "hood",
@@ -6744,10 +6744,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6805,7 +6805,7 @@
    "look": {
     "suit": "#1a1a24",
     "accent": "#c8102e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#7a3a22",
     "extras": [
      "armor",
@@ -6838,12 +6838,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#7a3a22",
      "hair_style": "short",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -6905,7 +6905,7 @@
    "look": {
     "suit": "#8a929c",
     "accent": "#c8102e",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "armor",
@@ -6938,12 +6938,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7002,7 +7002,7 @@
    "look": {
     "suit": "#141416",
     "accent": "#b0101a",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "cowl",
@@ -7046,12 +7046,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "hair_style": "short",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7110,7 +7110,7 @@
    "look": {
     "suit": "#141416",
     "accent": "#c8102e",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "armor",
@@ -7143,12 +7143,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7206,7 +7206,7 @@
    "look": {
     "suit": "#5a3a5a",
     "accent": "#c8a050",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#5a2a6a",
     "extras": [
      "jacket",
@@ -7261,7 +7261,7 @@
    "look": {
     "suit": "#ffd23a",
     "accent": "#c8102e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -7293,11 +7293,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7359,7 +7359,7 @@
    "look": {
     "suit": "#1a2a4a",
     "accent": "#e6b422",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "cape",
@@ -7426,7 +7426,7 @@
    "look": {
     "suit": "#e8e8e8",
     "accent": "#3a6ad0",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "cape",
@@ -7464,12 +7464,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7526,7 +7526,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#2e2e2e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "hood",
@@ -7572,11 +7572,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "facial": "beard",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7636,7 +7636,7 @@
    "look": {
     "suit": "#161616",
     "accent": "#d8761a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#8a8a8a",
     "extras": [
      "mask_deathstroke",
@@ -7676,11 +7676,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#8a8a8a",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7741,7 +7741,7 @@
    "look": {
     "suit": "#1c1c1c",
     "accent": "#8a6a2a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "hood",
@@ -7790,10 +7790,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7854,7 +7854,7 @@
    "look": {
     "suit": "#22232a",
     "accent": "#6a2bb0",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d8d8d8",
     "extras": [
      "coat"
@@ -7892,11 +7892,11 @@
    "telekinetic": true,
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d8d8d8",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -7960,7 +7960,7 @@
    "look": {
     "suit": "#d8a514",
     "accent": "#a3111a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "cowl",
@@ -8018,10 +8018,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#5a4a3a",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8083,7 +8083,7 @@
    "look": {
     "suit": "#0d0d10",
     "accent": "#1a1a20",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#16110e",
     "extras": [
      "cowl",
@@ -8130,10 +8130,10 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#16110e",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8199,7 +8199,7 @@
    "look": {
     "suit": "#cdd5de",
     "accent": "#5a6470",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "armor",
@@ -8285,7 +8285,7 @@
    "look": {
     "suit": "#2a2a33",
     "accent": "#7a5cff",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#7a5cff",
     "extras": [
      "glow_head",
@@ -8354,7 +8354,7 @@
    "look": {
     "suit": "#4a5a6a",
     "accent": "#2a3540",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "goggles",
@@ -8393,11 +8393,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8459,7 +8459,7 @@
    "look": {
     "suit": "#5a3a22",
     "accent": "#2a1a10",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "goggles",
@@ -8502,13 +8502,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "facial": "stubble",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8568,7 +8568,7 @@
    "look": {
     "suit": "#2f3540",
     "accent": "#5a6b80",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "coat"
@@ -8606,12 +8606,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8672,7 +8672,7 @@
    "look": {
     "suit": "#121214",
     "accent": "#a00000",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "cape",
@@ -8723,12 +8723,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8788,8 +8788,8 @@
    "look": {
     "suit": "#2e6a32",
     "accent": "#5a1b8a",
-    "skin": "#e0b896",
-    "hair": "#e0b896",
+    "skin": "#d8a882",
+    "hair": "#d8a882",
     "extras": [
      "armor",
      "helmet"
@@ -8835,12 +8835,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
-     "hair": "#e0b896",
+     "skin": "#d8a882",
+     "hair": "#d8a882",
      "hair_style": "bald",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -8901,7 +8901,7 @@
    "look": {
     "suit": "#3a2a1a",
     "accent": "#7a5a2a",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#8a8a8a",
     "extras": [
      "coat"
@@ -8940,12 +8940,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#8a8a8a",
      "hair_style": "short",
      "facial": "beard",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9007,7 +9007,7 @@
    "look": {
     "suit": "#1a1a1a",
     "accent": "#a00000",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -9048,11 +9048,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9178,7 +9178,7 @@
    "look": {
     "suit": "#2a2a2a",
     "accent": "#5a1a1a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "coat"
@@ -9222,13 +9222,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "slick",
      "facial": "beard",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9290,7 +9290,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#2a2a2a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "leather",
@@ -9324,12 +9324,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9388,7 +9388,7 @@
    "look": {
     "suit": "#161616",
     "accent": "#2e2e2e",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "jacket",
@@ -9428,12 +9428,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "hair_style": "buzz",
      "facial": "beard",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9495,7 +9495,7 @@
    "look": {
     "suit": "#e2d8c6",
     "accent": "#7a1a2a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#eadcb0",
     "extras": [
      "skirt"
@@ -9534,12 +9534,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#eadcb0",
      "hair_style": "wild",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9600,7 +9600,7 @@
    "look": {
     "suit": "#2a3a5a",
     "accent": "#d8d8d8",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "goggles",
@@ -9640,11 +9640,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9780,7 +9780,7 @@
    "look": {
     "suit": "#121214",
     "accent": "#b00000",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "cape",
@@ -9827,12 +9827,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "bob",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -9892,7 +9892,7 @@
    "look": {
     "suit": "#14161a",
     "accent": "#3a0a0a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "hood",
@@ -9937,11 +9937,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -10183,7 +10183,7 @@
    "look": {
     "suit": "#2a2a2e",
     "accent": "#cfe8ff",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "coat"
@@ -10229,12 +10229,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "slick",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -10404,7 +10404,7 @@
    "look": {
     "suit": "#7a7f88",
     "accent": "#4a4f58",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "armor"
@@ -10449,12 +10449,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -10519,7 +10519,7 @@
    "look": {
     "suit": "#c8ccd4",
     "accent": "#2a3a8a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "armor",
@@ -10574,11 +10574,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -10642,7 +10642,7 @@
    "look": {
     "suit": "#5a0a0a",
     "accent": "#ff2a2a",
-    "skin": "#8d5a3b",
+    "skin": "#875536",
     "hair": "#16110e",
     "extras": [
      "cowl",
@@ -10699,11 +10699,11 @@
    "glide": true,
    "civilian": {
     "look": {
-     "skin": "#8d5a3b",
+     "skin": "#875536",
      "hair": "#16110e",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#8d5a3b",
+     "gloves": "#875536",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -10798,7 +10798,7 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "slick",
      "accent": "#2a2a2a",
@@ -10860,7 +10860,7 @@
    "look": {
     "suit": "#2a2a3a",
     "accent": "#c87aff",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#8a8a8a",
     "extras": [
      "coat_short",
@@ -10885,11 +10885,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#8a8a8a",
      "hair_style": "short",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11006,7 +11006,7 @@
    "look": {
     "suit": "#1a1a1e",
     "accent": "#3a2a5a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#16110e",
     "extras": [
      "coat",
@@ -11034,11 +11034,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#16110e",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11096,7 +11096,7 @@
    "look": {
     "suit": "#2a2a2e",
     "accent": "#c8102e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_hockey",
@@ -11121,12 +11121,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11181,7 +11181,7 @@
    "look": {
     "suit": "#e8a03a",
     "accent": "#141414",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#7a3a22",
     "extras": [
      "leather",
@@ -11211,12 +11211,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#7a3a22",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11427,7 +11427,7 @@
    "look": {
     "suit": "#5a1a3a",
     "accent": "#e6b422",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#eadcb0",
     "extras": [
      "leather",
@@ -11453,12 +11453,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#eadcb0",
      "hair_style": "ponytail",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11517,7 +11517,7 @@
    "look": {
     "suit": "#6a4a2a",
     "accent": "#c9a24a",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "leather",
@@ -11543,13 +11543,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "facial": "goatee",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11608,7 +11608,7 @@
    "look": {
     "suit": "#3a3a40",
     "accent": "#6aff6a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "coat"
@@ -11629,11 +11629,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11692,7 +11692,7 @@
    "look": {
     "suit": "#5a2a2a",
     "accent": "#2a2a2a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "leather",
@@ -11719,12 +11719,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11781,7 +11781,7 @@
    "look": {
     "suit": "#1a1a1a",
     "accent": "#7a1a1a",
-    "skin": "#b07b56",
+    "skin": "#a8724e",
     "hair": "#16110e",
     "extras": [
      "hood",
@@ -11812,12 +11812,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#b07b56",
+     "skin": "#a8724e",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#b07b56",
+     "gloves": "#a8724e",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11877,7 +11877,7 @@
    "look": {
     "suit": "#e6b422",
     "accent": "#2a2a2e",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "leather",
@@ -11902,12 +11902,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -11969,7 +11969,7 @@
    "look": {
     "suit": "#3a2a4a",
     "accent": "#c8a0ff",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#7a3a22",
     "extras": [
      "coat"
@@ -11993,11 +11993,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#7a3a22",
      "hair_style": "slick",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12055,7 +12055,7 @@
    "look": {
     "suit": "#5a1a8a",
     "accent": "#3aff6a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
      "jacket"
@@ -12079,11 +12079,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#d9b468",
      "hair_style": "wild",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12209,7 +12209,7 @@
    "look": {
     "suit": "#c8102e",
     "accent": "#1a1a1a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "mask_dark",
@@ -12238,13 +12238,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "buzz",
      "build": "bulky",
      "scale": 1.25,
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12430,7 +12430,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#b81820",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "cape",
@@ -12459,13 +12459,13 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "slick",
      "facial": "beard",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12525,7 +12525,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#5a5a5a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "cape",
@@ -12554,12 +12554,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12617,7 +12617,7 @@
    "look": {
     "suit": "#8a929c",
     "accent": "#b81820",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "armor",
@@ -12646,12 +12646,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12714,7 +12714,7 @@
    "look": {
     "suit": "#2a6a2a",
     "accent": "#8aff4a",
-    "skin": "#efd2bb",
+    "skin": "#e6c0a2",
     "hair": "#9c2b1c",
     "extras": [
      "leather"
@@ -12736,12 +12736,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#efd2bb",
+     "skin": "#e6c0a2",
      "hair": "#9c2b1c",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
-     "gloves": "#efd2bb",
+     "gloves": "#e6c0a2",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -12889,7 +12889,7 @@
    "look": {
     "suit": "#e8e8e8",
     "accent": "#141414",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#16110e",
     "extras": [
      "coat_short",
@@ -12915,11 +12915,11 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#16110e",
      "hair_style": "bald",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -13035,7 +13035,7 @@
    "look": {
     "suit": "#2a2a2e",
     "accent": "#a01a1a",
-    "skin": "#e0b896",
+    "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
      "coat",
@@ -13061,12 +13061,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#e0b896",
+     "skin": "#d8a882",
      "hair": "#4a3020",
      "hair_style": "short",
      "facial": "stubble",
      "accent": "#2a2a2a",
-     "gloves": "#e0b896",
+     "gloves": "#d8a882",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -13127,7 +13127,7 @@
    "look": {
     "suit": "#141414",
     "accent": "#3a8aff",
-    "skin": "#5e3a26",
+    "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "mask_dark",
@@ -13151,12 +13151,12 @@
    },
    "civilian": {
     "look": {
-     "skin": "#5e3a26",
+     "skin": "#5a3724",
      "hair": "#16110e",
      "hair_style": "buzz",
      "build": "bulky",
      "accent": "#2a2a2a",
-     "gloves": "#5e3a26",
+     "gloves": "#5a3724",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
