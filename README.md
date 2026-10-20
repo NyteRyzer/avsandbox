@@ -81,7 +81,9 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Scan (hold) | X | |
 | Map and fast travel | M | |
 | Photo mode | P | |
-| Emotes: wave, cheer, taunt, victory pose | 1 2 3 4 | |
+| Emotes: wave, cheer, taunt, victory pose | 5 6 7 8 | |
+| Extra powers | 1 2 3 | |
+| Weapon wheel (hold) | H | |
 | Sandbox tools | Tab | Back |
 | Pause, change character, settings | Esc | Start |
 | Hide HUD | F1 | |
@@ -142,6 +144,31 @@ while falling to sail forward, and hold descend to dive.
   lines or energy streaming into the hands.
 - Ultimates open with the character powering up in a pillar of light.
 - Combo finishers burst with impact lines.
+
+**Weapon wheel and extra powers.**
+- Hold **H** for the weapon wheel and point at a weapon or power. Let go to equip it.
+- Time slows while the wheel is open. The mouse wheel (or Q / E) flips between rings: primary,
+  secondary, power (Q), utility (E) and emotes.
+- Every character also has **three extra powers on keys 1, 2 and 3**. These come from their
+  alternate kit and archetype: a speedster gets a speed vortex, a sound barrier and time
+  remnants; a mystic gets a life drain, a hex of sleep and a teleport. Enemies use them too.
+- Emotes moved to keys 5 to 8 (and the wheel).
+
+**Bigger, busier cities.**
+- Each city is now 14 x 14 blocks.
+- New kinds of block: plazas with fountains (toss a coin for luck), parking lots full of cars,
+  building sites with a steel frame and a tower crane to climb, basketball courts, and gas
+  stations.
+- Street things you can use:
+  - **Subway stations:** ride to any other station.
+  - **Hot dog carts:** heal you.
+  - **Vending machines:** refill your energy.
+  - **ATMs:** villains can crack them, and the police come running.
+  - **Phone booths:** call a teammate to join you.
+  - **Basketball hoops** you can shoot at.
+- **The map (M)** now shows building footprints, entrances, subway stations, street stops and
+  any Crisis Fragments still to find. Zoom with the mouse wheel and drag to pan. The minimap
+  shows subways and street stops too.
 
 **Better looking.**
 - **Vehicles:** real body shapes for sedans, hatchbacks, SUVs, vans, sports cars and pickups, plus

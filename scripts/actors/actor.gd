@@ -61,7 +61,10 @@ var face_dir := Vector3.FORWARD
 
 # State
 var flying := false
-var cooldowns := {"primary": 0.0, "secondary": 0.0, "special": 0.0}
+var cooldowns := {"primary": 0.0, "secondary": 0.0, "special": 0.0, "power1": 0.0, "power2": 0.0, "power3": 0.0}
+## Extra powers on keys 1-3 (see Loadout.extra_powers).
+var powers: Array = []
+var in_power := [false, false, false]
 var ult := 0.0                 # ultimate meter, 0..100
 var ult_active := false
 var grudges: Dictionary = {}  # instance_id -> seconds remaining
@@ -155,6 +158,7 @@ var _ice_trail_t := 0.0
 func setup(character: Dictionary, team_name: String) -> void:
 	def = character
 	team = team_name
+	powers = Loadout.extra_powers(character) if character.has("special") and team_name != "civilian" else []
 	display_name = character.get("alias", character.get("name", "Someone"))
 	max_hp = float(character.get("health", 100))
 	hp = max_hp
@@ -694,6 +698,27 @@ func _tk_tick(delta: float) -> void:
 		FX.sparks(world, obj, col, 3, 2.0, 0.3)
 
 
+## Swap powers and weapons on the spot (the weapon wheel).
+func set_kit(d: Dictionary) -> void:
+	if pickup_ammo > 0:
+		pickup_ammo = 0
+		_saved_primary = {}
+	def = def.duplicate(true)
+	for slot in ["primary", "secondary", "special"]:
+		def[slot] = d[slot]
+	if d.has("utility"):
+		def["utility"] = d["utility"]
+	else:
+		def.erase("utility")
+	def["look"]["gear"] = d["look"].get("gear", {})
+	if d["look"].has("back"):
+		def["look"]["back"] = d["look"]["back"]
+	powers = Loadout.extra_powers(def)
+	if not civilian:
+		_rebuild_model(def["look"])
+		model.scale = Vector3.ONE * _cur_scale()
+
+
 func equip_pickup(weapon: Dictionary, ammo: int) -> void:
 	if pickup_ammo <= 0:
 		def = def.duplicate(true)
@@ -842,6 +867,16 @@ func _abilities(delta: float) -> void:
 	if in_ultimate and (ult >= 100.0 or is_player and Game.cheats["infinite_energy"]) and dampened_t <= 0.0:
 		if Ultimate.start(self):
 			ult = 0.0
+	for i in powers.size():
+		var key := "power%d" % (i + 1)
+		if in_power[i] and cooldowns.get(key, 0.0) <= 0.0 and dampened_t <= 0.0 and can_act():
+			var pw: Dictionary = powers[i]
+			var pcost := Abilities.special_cost(pw)
+			if energy >= pcost or (is_player and Game.cheats["infinite_energy"]):
+				style_kind = str(pw["kind"])
+				if Abilities.special(self, pw):
+					energy -= pcost
+					cooldowns[key] = Abilities.special_cooldown(pw)
 	if in_special and cooldowns["special"] <= 0.0 and dampened_t <= 0.0:
 		var sp: Dictionary = def["special"]
 		var cost := Abilities.special_cost(sp)

@@ -18,8 +18,8 @@ extends Node3D
 const CELL := 80.0
 const ROAD := 16.0
 const BLOCK := CELL - ROAD
-const N := 12                             # blocks per island side
-const LM_OFF := 2                         # landmark block layout is centred in the bigger grid
+const N := 14                             # blocks per island side
+const LM_OFF := 3                         # landmark block layout is centred in the bigger grid
 const REALM_HALF := 320.0                 # road grid of the smaller realms (Speed Force, Argo...)
 const HALF := N * CELL * 0.5              # half-size of an island's road grid
 const SHORE := 50.0                       # land beyond the outer roads
@@ -64,7 +64,9 @@ var buildings: Array = []        # {rect: Rect2 (x/z footprint), h: float}
 var landmarks: Array = []        # {name, pos: Vector3, district}
 var parked: Array = []           # {kind, xform: Transform3D}
 var doors: Array = []            # {name, pos: Vector3, interior: String}
-var roofs: Dictionary = {}       # room id -> where its elevator comes out on the roof
+var roofs: Dictionary = {}
+var subways: Array = []          # {name, pos, island}
+var points: Array = []           # interactive street things, for the map: {kind, pos}       # room id -> where its elevator comes out on the roof
 var interior_slots: Dictionary = {}  # room id -> {origin, yaw}: rooms built inside their buildings
 var islands: Array = []          # {name, center: Vector2, land: Rect2, grid: Rect2, style}
 var bridges: Array[Rect2] = []
@@ -473,20 +475,26 @@ func _add_building(rect: Rect2, height: float, m: Material) -> void:
 	_building_details(rect, height, m)
 
 
+func _init_detail_mats() -> void:
+	if _shop_glass != null:
+		return
+	_shop_glass = _plain(Color("#1a2a34"), 0.1, 0.25)
+	_shop_glass.metallic = 0.5
+	_ledge_mat = _plain(Color("#b8b2a6"), 0.8)
+	for col in ["#a8241e", "#1e5a2e", "#1d3f8a", "#d8a514", "#5a2a6a", "#2a2a2a", "#c86a1e"]:
+		_awning_mats.append(_plain(Color(col), 0.8))
+	for col in ["#ff5a4a", "#4affd0", "#ffd23a", "#ff6ad0", "#6ab0ff"]:
+		_sign_mats.append(_plain(Color(col), 0.4, 1.6))
+
+
 ## Street-level shopfronts with awnings and signs, stone ledges between
 ## floors, a parapet round the roof, and rooftop clutter: AC units, a water
 ## tank on legs, a stair hut, antennas.
 func _building_details(rect: Rect2, height: float, m: Material) -> void:
 	var c := rect.get_center()
-	if _shop_glass == null:
-		_shop_glass = _plain(Color("#1a2a34"), 0.1, 0.25)
-		_shop_glass.metallic = 0.5
-		_ledge_mat = _plain(Color("#b8b2a6"), 0.8)
-		for col in ["#a8241e", "#1e5a2e", "#1d3f8a", "#d8a514", "#5a2a6a", "#2a2a2a", "#c86a1e"]:
-			_awning_mats.append(_plain(Color(col), 0.8))
-		for col in ["#ff5a4a", "#4affd0", "#ffd23a", "#ff6ad0", "#6ab0ff"]:
-			_sign_mats.append(_plain(Color(col), 0.4, 1.6))
+	_init_detail_mats()
 	var rural: bool = kind == "metro" and bool(spec.get("ruined", false))
+
 	# Shopfronts: a glass band on each face of buildings that front a street.
 	if height >= 8.0 and height <= 160.0 and not rural and rect.size.x > 10.0 and rect.size.y > 10.0:
 		var shop_h := 3.6
@@ -602,6 +610,202 @@ func _add_landmark(name: String, pos: Vector3, district: String, door := "") -> 
 		doors.append({"name": name, "pos": pos, "interior": door})
 
 
+# --- Plazas, lots, building sites, courts and gas stations --------------------
+
+func _interactable(name: String, pos: Vector3, what: String, data := "") -> void:
+	doors.append({"name": name, "pos": pos, "interior": what, "data": data})
+	if what in ["subway", "food_cart", "vending", "atm", "phone_booth", "hoop", "fountain"]:
+		points.append({"kind": what, "pos": pos})
+
+
+## A paved square with a fountain you can toss a coin into, benches, trees
+## and a food cart.
+func _build_plaza(rect: Rect2) -> void:
+	var c := rect.get_center()
+	add_box(Vector3(c.x, 0.19, c.y), Vector3(rect.size.x - 2.0, 0.06, rect.size.y - 2.0), _plain(Color("#b8ac98"), 0.85), false)
+	for k in 8:
+		add_box(Vector3(c.x - rect.size.x * 0.4 + k * rect.size.x * 0.114, 0.23, c.y), Vector3(0.3, 0.02, rect.size.y - 6.0), _plain(Color("#a09480"), 0.85), false)
+	var bowl := CylinderMesh.new()
+	bowl.top_radius = 4.0
+	bowl.bottom_radius = 4.3
+	bowl.height = 0.8
+	_mesh_instance(bowl, Transform3D(Basis(), Vector3(c.x, 0.4, c.y)), _concrete_mat)
+	var water := CylinderMesh.new()
+	water.top_radius = 3.6
+	water.bottom_radius = 3.6
+	water.height = 0.1
+	_mesh_instance(water, Transform3D(Basis(), Vector3(c.x, 0.82, c.y)), _plain(Color("#3a8ab8"), 0.05, 0.2))
+	var spout := CylinderMesh.new()
+	spout.top_radius = 0.4
+	spout.bottom_radius = 0.8
+	spout.height = 2.6
+	_mesh_instance(spout, Transform3D(Basis(), Vector3(c.x, 1.3, c.y)), _concrete_mat)
+	add_cylinder_collision(Vector3(c.x, 0.4, c.y), 4.2, 0.8)
+	_interactable("Toss a coin in the fountain", Vector3(c.x, 0.5, c.y - 5.0), "fountain")
+	for k in 4:
+		var ang := k * PI * 0.5 + PI * 0.25
+		var bp := Vector3(c.x + cos(ang) * 11.0, 0.45, c.y + sin(ang) * 11.0)
+		add_box(bp, Vector3(2.2, 0.5, 0.7), _trunk_mat, true, -ang + PI * 0.5)
+		_tree(Vector3(c.x + cos(ang) * 20.0, 0, c.y + sin(ang) * 20.0))
+	_food_cart(Vector3(c.x + 14.0, 0, c.y - 4.0))
+
+
+## A surface car park full of parked cars.
+func _build_parking(rect: Rect2) -> void:
+	var c := rect.get_center()
+	add_box(Vector3(c.x, 0.18, c.y), Vector3(rect.size.x - 2.0, 0.05, rect.size.y - 2.0), _plain(Color("#3a3c40"), 0.95), false)
+	var line := _plain(Color("#e8e8e0"), 0.8)
+	for row in 2:
+		var z := c.y - 12.0 + row * 24.0
+		for k in 10:
+			var x := c.x - 24.0 + k * 5.2
+			add_box(Vector3(x - 2.6, 0.22, z), Vector3(0.12, 0.02, 5.0), line, false)
+			if rng.randf() < 0.55:
+				parked.append({"kind": "car", "xform": Transform3D(Basis(Vector3.UP, 0.0 if row == 0 else PI), Vector3(x, 0.6, z))})
+	_vending(Vector3(c.x + 26.0, 0, c.y))
+
+
+## A building site: a steel frame going up, a tower crane, girders and a
+## site office. Climb the frame, or the crane.
+func _build_construction(rect: Rect2, index: int) -> void:
+	var c := rect.get_center()
+	add_box(Vector3(c.x, 0.18, c.y), Vector3(rect.size.x - 2.0, 0.05, rect.size.y - 2.0), _plain(Color("#8a7a5a"), 0.95), false)
+	var steel := _plain(Color("#c86a1e"), 0.6)
+	var floors := rng.randi_range(4, 8)
+	var fr := Rect2(c.x - 14, c.y - 12, 28, 24)
+	for f in floors:
+		var y := f * 4.0
+		add_box(Vector3(fr.get_center().x, y + 4.0, fr.get_center().y), Vector3(fr.size.x, 0.35, fr.size.y), _concrete_mat, true)
+		for px in 4:
+			for pz in 3:
+				var p := Vector3(fr.position.x + px * fr.size.x / 3.0, y + 2.0, fr.position.y + pz * fr.size.y / 2.0)
+				add_box(p, Vector3(0.4, 4.0, 0.4), steel, true)
+	buildings.append({"rect": fr, "h": floors * 4.0 + 4.0})
+	# Tower crane
+	var cp := Vector3(rect.end.x - 8.0, 0, rect.position.y + 8.0)
+	var ch := floors * 4.0 + 30.0
+	add_box(cp + Vector3.UP * ch * 0.5, Vector3(1.6, ch, 1.6), _plain(Color("#e8c018"), 0.6), true)
+	add_box(cp + Vector3(-18.0, ch + 1.0, 0), Vector3(44.0, 1.2, 1.2), _plain(Color("#e8c018"), 0.6), true)
+	add_box(cp + Vector3(6.0, ch + 1.0, 0), Vector3(6.0, 2.4, 2.0), _concrete_mat, true)
+	add_box(cp + Vector3(-32.0, ch - 8.0, 0), Vector3(0.08, 18.0, 0.08), _dark_mat, false)
+	add_box(cp + Vector3(-32.0, ch - 17.5, 0), Vector3(3.0, 1.0, 1.0), steel, false)
+	# Girders and the site office
+	for k in 4:
+		add_box(Vector3(rect.position.x + 10.0, 0.4 + k * 0.4, rect.end.y - 8.0), Vector3(12.0, 0.35, 0.5), steel, true)
+	add_box(Vector3(rect.position.x + 8.0, 1.4, rect.position.y + 8.0), Vector3(8.0, 2.8, 3.0), _plain(Color("#d8d0b8"), 0.8), true)
+	# Hoarding round the site
+	for side in [-1.0, 1.0]:
+		add_box(Vector3(c.x, 1.2, c.y + side * (rect.size.y * 0.5 - 1.0)), Vector3(rect.size.x - 12.0, 2.4, 0.2), _plain(Color("#2a5a8a"), 0.8), true)
+
+
+## A pair of basketball courts with hoops you can shoot at.
+func _build_hoops(rect: Rect2) -> void:
+	var c := rect.get_center()
+	add_box(Vector3(c.x, 0.19, c.y), Vector3(rect.size.x - 4.0, 0.06, rect.size.y - 4.0), _plain(Color("#3a6a8a"), 0.8), false)
+	for half in [-1.0, 1.0]:
+		var cc := Vector3(c.x, 0, c.y + half * 13.0)
+		add_box(cc + Vector3(0, 0.24, 0), Vector3(26, 0.02, 0.15), _plain(Color("#f0f0f0")), false)
+		for side in [-1.0, 1.0]:
+			add_box(cc + Vector3(side * 13.0, 2.0, 0), Vector3(0.3, 4.0, 0.3), _dark_mat)
+			add_box(cc + Vector3(side * 12.5, 3.6, 0), Vector3(0.2, 1.2, 1.8), _plain(Color("#f0f0f0")), false)
+			_hoop(cc + Vector3(side * 12.2, 3.1, 0), side)
+	_vending(Vector3(c.x - rect.size.x * 0.5 + 4.0, 0, c.y))
+
+
+func _hoop(p: Vector3, side: float) -> void:
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.22
+	ring.outer_radius = 0.26
+	_mesh_instance(ring, Transform3D(Basis(), p - Vector3(side * 0.3, 0, 0)), _plain(Color("#e8601a"), 0.5))
+	_interactable("Shoot a hoop", p - Vector3(side * 4.0, 2.6, 0), "hoop")
+
+
+## A gas station: canopy, pumps and the shop.
+func _build_gas_station(rect: Rect2) -> void:
+	var c := rect.get_center()
+	add_box(Vector3(c.x, 0.18, c.y), Vector3(rect.size.x - 2.0, 0.05, rect.size.y - 2.0), _plain(Color("#4a4c50"), 0.9), false)
+	add_box(Vector3(c.x, 5.6, c.y - 8.0), Vector3(30.0, 0.8, 16.0), _plain(Color("#e8e8e8"), 0.6), true)
+	add_box(Vector3(c.x, 5.2, c.y - 8.0), Vector3(30.2, 0.2, 16.2), _plain(Color("#d8201a"), 0.5, 1.2), false)
+	for k in 4:
+		var x := c.x - 10.0 + (k % 2) * 20.0
+		var z := c.y - 12.0 + (k / 2) * 8.0
+		add_box(Vector3(x, 2.8, z), Vector3(0.6, 5.6, 0.6), _concrete_mat, true)
+	for k in 3:
+		var pp := Vector3(c.x - 8.0 + k * 8.0, 0.9, c.y - 8.0)
+		add_box(pp, Vector3(1.0, 1.8, 0.7), _plain(Color("#d8201a"), 0.5), true)
+		add_box(pp + Vector3(0, 0.4, -0.36), Vector3(0.6, 0.4, 0.02), _plain(Color("#bfe8ff"), 0.3, 1.0), false)
+	var shop := Rect2(c.x - 12.0, c.y + 8.0, 24.0, 12.0)
+	_add_building(shop, 5.0, facade_mats[3][0] if facade_mats.size() > 3 else _concrete_mat)
+	_label("GAS", Vector3(c.x, 7.4, c.y - 16.2), 2.0, Color("#ffffff"))
+	_vending(Vector3(c.x + 14.0, 0, c.y + 6.0))
+
+
+# --- Street interactables ------------------------------------------------------
+
+## Each street block gets a few: a subway entrance on some corners, food
+## carts, vending machines, ATMs and phone booths along the sidewalks.
+func _street_props(rect: Rect2, index: int) -> void:
+	if kind != "metro" or spec.get("ruined", false):
+		return
+	var corner := Vector3(rect.position.x - 4.5, 0, rect.position.y - 4.5)
+	var r := rng.randf()
+	if r < 0.035:
+		_subway(Vector3(rect.position.x + 3.0, 0, rect.position.y + 1.2), index)
+	elif r < 0.08:
+		_food_cart(Vector3(rect.position.x + rng.randf_range(8, rect.size.x - 8), 0, rect.position.y - 1.0))
+	elif r < 0.13:
+		_atm(Vector3(rect.position.x + rng.randf_range(6, rect.size.x - 6), 0, rect.end.y + 0.4))
+	elif r < 0.17:
+		_phone_booth(Vector3(rect.end.x + 0.8, 0, rect.position.y + rng.randf_range(6, rect.size.y - 6)))
+	elif r < 0.21:
+		_vending(Vector3(rect.position.x - 0.8, 0, rect.position.y + rng.randf_range(6, rect.size.y - 6)))
+
+
+func _subway(p: Vector3, index: int) -> void:
+	var name := "%s Subway (%d)" % [DISTRICTS[index], subways.filter(func(s) -> bool: return s["island"] == index).size() + 1]
+	add_box(p + Vector3(0, 1.4, 0), Vector3(4.2, 0.2, 3.0), _plain(Color("#2a6a3a"), 0.6), false)
+	for sx in [-1.0, 1.0]:
+		add_box(p + Vector3(sx * 2.0, 0.7, 0), Vector3(0.12, 1.4, 3.0), _steel_mat, false)
+	add_box(p + Vector3(0, 0.12, 0.2), Vector3(3.6, 0.12, 2.4), _dark_mat, false)
+	add_box(p + Vector3(0, 2.6, 0), Vector3(0.3, 2.4, 0.3), _dark_mat, false)
+	add_box(p + Vector3(0, 3.9, 0), Vector3(0.8, 0.8, 0.12), _plain(Color("#3aff6a"), 0.4, 1.5), false)
+	_label("SUBWAY", p + Vector3(0, 2.0, -1.6), 0.6, Color("#d8ffe0"))
+	subways.append({"name": name, "pos": p + Vector3(0, 0.5, -2.2), "island": index})
+	_interactable("Take the subway", p + Vector3(0, 0.5, -2.2), "subway", name)
+
+
+func _food_cart(p: Vector3) -> void:
+	add_box(p + Vector3(0, 0.9, 0), Vector3(2.4, 1.2, 1.2), _plain(Color("#c8c8cc"), 0.4), true)
+	add_box(p + Vector3(0, 2.4, 0), Vector3(2.8, 0.1, 1.8), _awning_mat(), false)
+	for sx in [-1.0, 1.0]:
+		add_box(p + Vector3(sx * 1.2, 1.6, 0), Vector3(0.06, 1.6, 0.06), _steel_mat, false)
+	_label("HOT DOGS", p + Vector3(0, 2.8, 0), 0.5, Color("#ffe8a0"))
+	_interactable("Grab a hot dog", p + Vector3(0, 0.5, -1.4), "food_cart")
+
+
+func _vending(p: Vector3) -> void:
+	add_box(p + Vector3(0, 1.0, 0), Vector3(1.0, 2.0, 0.8), _plain(Color("#c8201a"), 0.4), true)
+	add_box(p + Vector3(0, 1.2, -0.41), Vector3(0.7, 1.2, 0.02), _plain(Color("#bfe8ff"), 0.2, 1.2), false)
+	_interactable("Vending machine: an energy drink", p + Vector3(0, 0.5, -1.2), "vending")
+
+
+func _atm(p: Vector3) -> void:
+	add_box(p + Vector3(0, 0.8, 0), Vector3(0.9, 1.6, 0.6), _plain(Color("#3a4a5a"), 0.4), true)
+	add_box(p + Vector3(0, 1.3, 0.31), Vector3(0.5, 0.35, 0.02), _plain(Color("#6ad0ff"), 0.2, 1.2), false)
+	_interactable("ATM", p + Vector3(0, 0.5, 1.1), "atm")
+
+
+func _phone_booth(p: Vector3) -> void:
+	add_box(p + Vector3(0, 1.3, 0), Vector3(1.2, 2.6, 1.2), _plain(Color("#1d3fa8"), 0.4), true)
+	add_box(p + Vector3(0, 2.75, 0), Vector3(1.3, 0.3, 1.3), _plain(Color("#e8e8e8"), 0.4, 0.8), false)
+	_interactable("Phone booth: call a teammate", p + Vector3(-1.2, 0.5, 0), "phone_booth")
+
+
+func _awning_mat() -> Material:
+	_init_detail_mats()
+	return _awning_mats[rng.randi() % _awning_mats.size()]
+
+
 # --- Sea, islands and bridges ----------------------------------------------
 
 func _build_sea() -> void:
@@ -691,6 +895,24 @@ func _build_block(index: int, i: int, j: int) -> void:
 	if not edge and rng.randf() < 0.05:
 		_build_park(rect, false, st.get("palms", false))
 		return
+	if not st.get("rural", false) and not spec.get("ruined", false) and kind == "metro":
+		var roll := rng.randf()
+		if roll < 0.035 and not edge:
+			_build_plaza(rect)
+			return
+		elif roll < 0.06:
+			_build_parking(rect)
+			return
+		elif roll < 0.08:
+			_build_construction(rect, index)
+			return
+		elif roll < 0.095:
+			_build_hoops(rect)
+			return
+		elif roll < 0.11 and edge:
+			_build_gas_station(rect)
+			return
+	_street_props(rect, index)
 	var inner := rect.grow(-3.0)
 	var mats: Array = _glades_mats if glades else facade_mats[index]
 	# Downtown sits at the island centre; heights fall off toward the shore.
@@ -912,6 +1134,7 @@ func _build_court(rect: Rect2) -> void:
 	for side in [-1.0, 1.0]:
 		add_box(Vector3(c.x + side * 14.0, 2.0, c.y), Vector3(0.3, 4.0, 0.3), _dark_mat)
 		add_box(Vector3(c.x + side * 13.5, 3.6, c.y), Vector3(0.2, 1.2, 1.8), _plain(Color("#f0f0f0")), false)
+		_hoop(Vector3(c.x + side * 13.2, 3.1, c.y), side)
 	_label("FREELAND COURTS", Vector3(c.x, 6, c.y), 1.8, Color("#ffd27a"))
 
 

@@ -337,8 +337,11 @@ func setup_input() -> void:
 	_bind("block", [_key(KEY_B), _button(JOY_BUTTON_DPAD_RIGHT)])
 	_bind("map", [_key(KEY_M)])
 	_bind("swap", [_key(KEY_Y)])
+	for k in 3:
+		_bind("power_%d" % (k + 1), [_key([KEY_1, KEY_2, KEY_3][k])])
 	for k in 4:
-		_bind("emote_%d" % (k + 1), [_key([KEY_1, KEY_2, KEY_3, KEY_4][k])])
+		_bind("emote_%d" % (k + 1), [_key([KEY_5, KEY_6, KEY_7, KEY_8][k])])
+	_bind("wheel", [_key(KEY_H)])
 	_bind("scan", [_key(KEY_X)])
 	_bind("photo", [_key(KEY_P)])
 	_bind("lock_on", [_key(KEY_Z), _mouse(MOUSE_BUTTON_MIDDLE), _button(JOY_BUTTON_DPAD_LEFT)])

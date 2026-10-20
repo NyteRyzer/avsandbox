@@ -33,6 +33,13 @@ func update(a: Actor, delta: float) -> void:
 	a.in_secondary = false
 	if not enabled or cam_rig == null:
 		return
+	if a.world and a.world.weapon_wheel and a.world.weapon_wheel.visible:
+		a.in_move = Vector3.ZERO
+		a.in_special = false
+		a.in_ability = false
+		a.in_jump = false
+		a.in_power = [false, false, false]
+		return
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var yaw_basis := Basis(Vector3.UP, cam_rig.yaw)
 	var fwd := -yaw_basis.z
@@ -51,6 +58,8 @@ func update(a: Actor, delta: float) -> void:
 	a.in_primary = Input.is_action_pressed("attack")
 	a.in_secondary = Input.is_action_pressed("secondary")
 	a.in_special = Input.is_action_just_pressed("special")
+	for k in 3:
+		a.in_power[k] = Input.is_action_just_pressed("power_%d" % (k + 1))
 	a.in_ability = Input.is_action_just_pressed("ability")
 	a.in_dodge = Input.is_action_just_pressed("dodge")
 	a.in_ultimate = Input.is_action_just_pressed("ultimate")

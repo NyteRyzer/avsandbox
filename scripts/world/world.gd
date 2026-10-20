@@ -13,6 +13,7 @@ var events: Events
 var missions: Missions
 var char_missions: CharMissions
 var loadout_panel: LoadoutPanel
+var weapon_wheel: WeaponWheel
 var pickups: Pickups
 var street_crime: StreetCrime
 var race: Race
@@ -91,6 +92,9 @@ func _ready() -> void:
 	street_crime = StreetCrime.new()
 	street_crime.world = self
 	add_child(street_crime)
+	weapon_wheel = WeaponWheel.new()
+	weapon_wheel.world = self
+	add_child(weapon_wheel)
 	loadout_panel = LoadoutPanel.new()
 	add_child(loadout_panel)
 	loadout_panel.closed.connect(func(changed: bool) -> void:
@@ -286,6 +290,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("photo"):
 		photo.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("wheel"):
+		weapon_wheel.open()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_released("wheel"):
+		weapon_wheel.close(true)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("emote_1") or event.is_action_pressed("emote_2") or event.is_action_pressed("emote_3") or event.is_action_pressed("emote_4"):
 		for k in 4:
@@ -531,6 +541,8 @@ func use_door(d: Dictionary) -> void:
 				notify("The elevator opens onto the roof.", Color("#ffe8a0"))
 			else:
 				notify("The elevator's out of order on this Earth.", Color("#ffe8a0"))
+		"subway", "food_cart", "vending", "atm", "phone_booth", "hoop", "fountain":
+			_street_interact(d)
 		"armory":
 			capture_mouse(false)
 			loadout_panel.open(str(player.def["id"]))
@@ -603,6 +615,79 @@ func _tick_power_weather(delta: float) -> void:
 	_power_weather_t -= delta
 	if _power_weather_t <= 0.0:
 		day_night.set_weather(_weather_before if _weather_before != "" else "clear")
+
+
+# --- Street interactables -----------------------------------------------------
+
+var _phone_t := 0.0
+var _coin_t := 0.0
+
+
+func _street_interact(d: Dictionary) -> void:
+	var p := player
+	match str(d["interior"]):
+		"subway":
+			world_map.open_subway(str(d.get("data", "")))
+		"food_cart":
+			p.heal(p.max_hp * 0.4)
+			FX.sparks(self, p.chest(), Color("#ffd27a"), 8, 2.0, 0.4)
+			notify("A Central City hot dog. +40% health.", Color("#ffd27a"))
+			Game.record("hot_dogs")
+		"vending":
+			p.energy = p.max_energy
+			notify("An energy drink. Energy full.", Color("#6ad0ff"))
+		"atm":
+			if Game.player_side() == -1 and not p.civilian:
+				Game.add_score(100)
+				Game.add_heat(1.0)
+				FX.sparks(self, p.chest() + p.forward(), Color("#6ad0ff"), 14, 4.0, 0.5)
+				notify("You crack the ATM.  +100  (the police are on their way)", Color("#ff9a6a"))
+				for k in 2:
+					var cop: Actor = population.spawn_police(city.random_road_point(p.global_position, 25.0, 45.0))
+					cop.grudges[p.get_instance_id()] = 40.0
+				Game.record("atms_cracked")
+			else:
+				notify("Balance: one hero's salary. Not much.", Color("#bcd4ff"))
+		"phone_booth":
+			if _phone_t > Time.get_ticks_msec() / 1000.0:
+				notify("Nobody's picking up. Try again in a bit.", Color("#bcd4ff"))
+				return
+			var team := Teams.main_team(str(p.def.get("id", "")))
+			var ids: Array = Teams.members(team).filter(func(id) -> bool: return id != str(p.def.get("id", "")))
+			if ids.is_empty():
+				notify("You call... but you work alone.", Color("#bcd4ff"))
+				return
+			var who: String = ids[randi() % ids.size()]
+			var a: Actor = population.spawn_character(Game.get_character(who), p.team, p.global_position + Vector3(2, 0.3, 2), p)
+			a.set_meta("pinned", true)
+			FX.breach(self, a.chest(), Teams.color(team), 0.8, 1.2)
+			notify("%s answers the call and joins you." % a.display_name, Teams.color(team))
+			_phone_t = Time.get_ticks_msec() / 1000.0 + 60.0
+		"hoop":
+			p.model.play("throw", 0.4)
+			if randf() < 0.5 + (0.3 if p.movement == "speed" else 0.0):
+				Game.add_score(10)
+				notify("Swish!  +10", Color("#ffb070"))
+				Game.record("hoops")
+			else:
+				notify("Off the rim.", Color("#c8c8c8"))
+		"fountain":
+			if _coin_t > Time.get_ticks_msec() / 1000.0:
+				notify("Your pockets are empty for now.", Color("#c8e8ff"))
+				return
+			_coin_t = Time.get_ticks_msec() / 1000.0 + 90.0
+			var luck := randi() % 3
+			match luck:
+				0:
+					p.rage_t = maxf(p.rage_t, 20.0)
+					notify("Lucky coin: your hits land harder for a while.", Color("#ffd23a"))
+				1:
+					p.add_ult(40.0)
+					notify("Lucky coin: ultimate +40.", Color("#ffd23a"))
+				_:
+					Game.add_score(25)
+					notify("You make a wish.  +25", Color("#ffd23a"))
+			FX.sparks(self, p.chest() + p.forward() * 2.0, Color("#ffd23a"), 6, 3.0, 0.4)
 
 
 ## The JSA brownstone's round table: three members of the Justice Society

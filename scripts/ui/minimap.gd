@@ -92,6 +92,16 @@ func _draw() -> void:
 		var clamped := center + (s - center).limit_length(size.x * 0.5 - 10.0)
 		draw_circle(clamped, 8.0, Color("#ff6a4a"))
 		draw_circle(clamped, 3.5, Color("#ffffff"))
+	for st in world.city.subways:
+		var sp: Vector3 = st["pos"]
+		var q: Vector2 = to_screen.call(sp.x, sp.z)
+		if q.distance_to(center) < size.x * 0.5 - 6.0:
+			draw_rect(Rect2(q - Vector2(3.5, 3.5), Vector2(7, 7)), Color("#3aff6a"))
+	for pt in world.city.points:
+		var pp: Vector3 = pt["pos"]
+		var q2: Vector2 = to_screen.call(pp.x, pp.z)
+		if q2.distance_to(center) < size.x * 0.5 - 6.0 and pt["kind"] != "subway":
+			draw_circle(q2, 2.0, Color("#ffd27a"))
 	var mg: Vector3 = world.street_crime.target_pos()
 	if mg != Vector3.INF:
 		var s4: Vector2 = to_screen.call(mg.x, mg.z)

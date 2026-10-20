@@ -362,6 +362,11 @@ func _process(delta: float) -> void:
 		e_text += ("  ·  " if e_text != "" else "[E]  ") + ("Telekinetic throw (LMB)" if p.tk_hold or p.tk_actor else "Telekinesis: lift what you aim at")
 	elif p.strength:
 		e_text += ("  ·  " if e_text != "" else "[E]  ") + "Lift / throw"
+	if not p.civilian and not p.powers.is_empty():
+		var pw := PackedStringArray()
+		for i in p.powers.size():
+			pw.append("[%d] %s%s" % [i + 1, p.powers[i].get("name", p.powers[i]["kind"]), _cd(p, "power%d" % (i + 1))])
+		e_text += ("\n" if e_text != "" else "") + "  ".join(pw) + "   ·  [H] Wheel"
 	ability_labels[3].text = e_text
 	var move_text := ""
 	match p.movement:

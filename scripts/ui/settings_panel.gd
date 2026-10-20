@@ -14,7 +14,8 @@ DODGE         V / X                    BLOCK (tap to parry)   B / D-pad right
 LOCK-ON       Z or middle mouse        INTERACT / TAKEDOWN    G / D-pad up
 COSTUME       T / D-pad down           SWITCH TO ALLY         Y
 SCAN          hold X                   MAP & FAST TRAVEL      M
-PHOTO MODE    P                        EMOTES                 1 2 3 4
+PHOTO MODE    P                        EMOTES                 5 6 7 8
+EXTRA POWERS  1 2 3                    WEAPON WHEEL           hold H
 GLIDE (capes) hold Space while falling   TELEKINESIS  E (aim), LMB throws
 LOADOUT       character select, or any HQ armory
 SANDBOX TOOLS Tab / Back               PAUSE  Esc / Start      HIDE HUD  F1"""

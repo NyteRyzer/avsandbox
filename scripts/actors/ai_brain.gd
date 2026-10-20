@@ -28,6 +28,7 @@ var _fan_t := 0.0
 func update(a: Actor, delta: float) -> void:
 	a.in_primary = false
 	a.in_secondary = false
+	a.in_power = [false, false, false]
 	a.in_sprint = false
 	a.in_up = false
 	a.in_down = false
@@ -167,6 +168,8 @@ func _fight(a: Actor, delta: float) -> void:
 		_press(a, atk_slot)
 	if dist < 14.0 and a.energy > 70.0 and randf() < delta * 0.12:
 		a.in_special = true
+	elif dist < 18.0 and a.energy > 60.0 and not a.powers.is_empty() and randf() < delta * 0.08:
+		a.in_power[randi() % a.powers.size()] = true
 	# Utility powers: speedsters blitz crowds, others breach, flip or phase.
 	if a.def.has("utility") and a.energy > 50.0 and randf() < delta * 0.15:
 		var u: String = a.def["utility"]["kind"]

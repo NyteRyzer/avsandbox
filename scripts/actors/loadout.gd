@@ -232,6 +232,43 @@ static func apply(def: Dictionary) -> Dictionary:
 	return c
 
 
+## Three more powers for keys 1, 2 and 3: the character's alternate special
+## and utility first, then specials that fit their archetype, then a few that
+## suit anyone. Never repeats what's already on Q or E.
+const FALLBACK_POWERS := [{"kind": "rage", "name": "Adrenaline Rush"}, {"kind": "smoke_bomb", "name": "Smoke Pellet"},
+	{"kind": "flashbang", "name": "Flashbang"}, {"kind": "frag_grenade", "name": "Grenade"}, {"kind": "invulnerable", "name": "Brace"}]
+
+
+static func extra_powers(def: Dictionary) -> Array:
+	var used := {}
+	for slot in ["special", "utility"]:
+		if def.has(slot):
+			used[str(def[slot].get("kind", ""))] = true
+	var out := []
+	var take := func(o: Dictionary) -> void:
+		var k := str(o.get("kind", ""))
+		if out.size() >= 3 or used.has(k) or k == "" or k in ["grapple", "blitz", "dodge_flip", "phase", "ice_wall"]:
+			return
+		if not (k in Game.SPECIAL_KINDS or k in Game.UTILITY_KINDS):
+			return
+		used[k] = true
+		var c: Dictionary = o.duplicate(true)
+		c.erase("_source")
+		if not c.has("color") and def.has("look"):
+			c["color"] = str(def["look"].get("trail", def["look"].get("glow", def["look"].get("accent", "#ffffff"))))
+		out.append(c)
+	var alt: Dictionary = def.get("alt_kit", {})
+	for slot in ["special", "utility"]:
+		if alt.has(slot):
+			take.call(alt[slot])
+	for arch in archetypes(def):
+		for o in ARCHETYPES[arch].get("special", []) + ARCHETYPES[arch].get("utility", []):
+			take.call(o)
+	for o in FALLBACK_POWERS:
+		take.call(o)
+	return out
+
+
 ## A one-line summary for the HUD and menus.
 static func describe(def: Dictionary) -> String:
 	var parts := []

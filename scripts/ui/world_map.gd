@@ -34,6 +34,7 @@ func _ready() -> void:
 	_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_map.draw.connect(_draw_map)
 	_map.clip_contents = true
+	_map.gui_input.connect(_map_input)
 	row.add_child(_map)
 	var side := VBoxContainer.new()
 	side.custom_minimum_size = Vector2(340, 0)
@@ -53,6 +54,7 @@ func _ready() -> void:
 		world.waypoint = Vector3.INF
 		_refresh(), 320))
 	side.add_child(UITheme.button("Close  [M]", close, 320))
+	side.add_child(UITheme.label("Wheel: zoom  ·  drag: pan\n● gold landmark  ■ blue entrance  ■ green subway\n· orange food  · cyan vending/ATM  · blue phone\n● pink fragment  ● red mission  ● blue personal", 13, UITheme.DIM))
 
 
 func toggle() -> void:
@@ -69,7 +71,16 @@ func open() -> void:
 	_refresh()
 
 
+func _ride(st: Dictionary) -> void:
+	subway_from = ""
+	close()
+	world.teleport_player(st["pos"] + Vector3.UP * 0.3)
+	world.notify("Next stop: " + str(st["name"]), Color("#d8ffe0"))
+	Game.record("subway_rides")
+
+
 func close() -> void:
+	subway_from = ""
 	visible = false
 	get_tree().paused = false
 	world.capture_mouse(true)
@@ -81,9 +92,30 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## Subway mode: the list is every station; pick one to ride there.
+var subway_from := ""
+
+
+func open_subway(from: String) -> void:
+	subway_from = from
+	open()
+
+
 func _refresh() -> void:
 	for c in _list.get_children():
 		c.queue_free()
+	if subway_from != "":
+		_info.text = "SUBWAY: pick a station to ride to."
+		for st in world.city.subways:
+			if st["name"] == subway_from:
+				continue
+			var stop: Dictionary = st
+			var b := UITheme.button(str(st["name"]), func() -> void: _ride(stop), 320)
+			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			_list.add_child(b)
+		_travel.disabled = true
+		_map.queue_redraw()
+		return
 	var found: Array = Game.progress.get("discovered", [])
 	for l in world.city.landmarks:
 		if l.get("interior", false):
@@ -119,6 +151,35 @@ func _fast_travel() -> void:
 	world.notify("Fast travel: " + str(_selected["name"]), Color("#a0d0ff"))
 
 
+var _zoom := 1.0
+var _pan := Vector2.ZERO
+var _dragging := false
+
+
+func _map_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+			_zoom_at(event.position, 1.25)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+			_zoom_at(event.position, 0.8)
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			_dragging = event.pressed
+	elif event is InputEventMouseMotion and _dragging:
+		_pan += event.relative
+		_map.queue_redraw()
+
+
+func _zoom_at(at: Vector2, f: float) -> void:
+	var nz := clampf(_zoom * f, 1.0, 12.0)
+	var k := nz / _zoom
+	# Keep the point under the cursor still.
+	_pan = (_pan - (at - _map.size * 0.5)) * k + (at - _map.size * 0.5)
+	_zoom = nz
+	if _zoom <= 1.0:
+		_pan = Vector2.ZERO
+	_map.queue_redraw()
+
+
 ## World -> map coordinates: fit the whole play area into the panel.
 func _to_map(x: float, z: float) -> Vector2:
 	var bounds := Rect2(-850, -850, 1700, 1700)
@@ -129,8 +190,8 @@ func _to_map(x: float, z: float) -> Vector2:
 		bounds = bounds.grow(250.0)
 	var span := maxf(bounds.size.x, bounds.size.y)
 	var center := bounds.get_center()
-	var s := minf(_map.size.x, _map.size.y) / span
-	return _map.size * 0.5 + (Vector2(x, z) - center) * s
+	var s := minf(_map.size.x, _map.size.y) / span * _zoom
+	return _map.size * 0.5 + _pan + (Vector2(x, z) - center) * s
 
 
 func _rect(r: Rect2, color: Color) -> void:
@@ -153,6 +214,33 @@ func _draw_map() -> void:
 		_rect(e["rect"], Color(0.24, 0.26, 0.22))
 	for b in city.bridges:
 		_rect(b, Color(0.4, 0.4, 0.42))
+	# Building footprints, lighter the taller they are.
+	for b in city.buildings:
+		var h: float = b["h"]
+		_rect(b["rect"], Color(0.42, 0.44, 0.48).lerp(Color(0.75, 0.78, 0.84), clampf(h / 160.0, 0.0, 1.0)))
+	# Entrances, subways and street stops
+	for room in Interiors.placed:
+		if not Interiors.is_remote(room):
+			var op := Interiors.outside_point(room)
+			var q := _to_map(op.x, op.z)
+			_map.draw_rect(Rect2(q - Vector2(4, 4), Vector2(8, 8)), Color("#3aa0ff"))
+	for st in city.subways:
+		var sp: Vector3 = st["pos"]
+		var q := _to_map(sp.x, sp.z)
+		_map.draw_rect(Rect2(q - Vector2(4, 4), Vector2(8, 8)), Color("#3aff6a"))
+		_map.draw_rect(Rect2(q - Vector2(4, 4), Vector2(8, 8)), Color.WHITE, false, 1.0)
+	if _zoom >= 2.5:
+		var cols := {"food_cart": Color("#ffb070"), "vending": Color("#6ad0ff"), "atm": Color("#6ad0ff"), "phone_booth": Color("#3a6aff"),
+			"hoop": Color("#e8601a"), "fountain": Color("#bfe8ff")}
+		for pt in city.points:
+			if cols.has(pt["kind"]):
+				var pp: Vector3 = pt["pos"]
+				_map.draw_circle(_to_map(pp.x, pp.z), 2.5, cols[pt["kind"]])
+	if world.collectibles:
+		for s2 in world.collectibles.remaining():
+			var fp: Vector3 = s2["pos"]
+			if Game.progress["discovered"].size() > 6:
+				_map.draw_circle(_to_map(fp.x, fp.z), 3.0, Color("#ff4fd8"))
 	for l in city.landmarks:
 		if l.get("interior", false):
 			continue

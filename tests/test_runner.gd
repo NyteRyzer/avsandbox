@@ -45,6 +45,8 @@ func _ready() -> void:
 	await test_space_glide_missions()
 	_current = "test_loadouts_and_buildings"
 	await test_loadouts_and_buildings()
+	_current = "test_wheel_powers_streets"
+	await test_wheel_powers_streets()
 	_current = "test_campaign"
 	await test_campaign()
 	_current = "test_ui_smoke"
@@ -920,7 +922,7 @@ func test_space_glide_missions() -> void:
 	world.population.enabled = false
 	world.events.enabled = false
 	# Bigger cities, further apart.
-	check(City.N == 12 and world.city.islands.size() == 6, "islands are 12 blocks across")
+	check(City.N == 14 and world.city.islands.size() == 6, "islands are 14 blocks across")
 	var c0: Vector2 = City.ISLAND_CENTERS[0]
 	var c1: Vector2 = City.ISLAND_CENTERS[1]
 	check(c0.distance_to(c1) >= 2000.0, "the cities are 2 km apart")
@@ -1154,6 +1156,95 @@ func test_loadouts_and_buildings() -> void:
 	world._tick_power_weather(2.0)
 	check(world.day_night.weather != "storm", "and it clears up again")
 	world.clear_npcs()
+	world.events.enabled = true
+
+
+func test_wheel_powers_streets() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.events.enabled = false
+	# Every character has three extra powers.
+	var short := []
+	for c in Game.roster:
+		var pw := Loadout.extra_powers(c)
+		if pw.size() < 3:
+			short.append(c["id"])
+		for o in pw:
+			if o["kind"] == c["special"]["kind"]:
+				short.append(c["id"] + " repeats Q")
+	check(short.is_empty(), "every character has three extra powers (%s)" % str(short))
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	var p: Actor = world.player
+	var foe: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0.3, -6))
+	await _frames(3)
+	p.aim_point = foe.chest()
+	for i in 3:
+		p.energy = p.max_energy
+		p.in_power = [i == 0, i == 1, i == 2]
+		p._abilities(0.016)
+		p.in_power = [false, false, false]
+		check(p.cooldowns["power%d" % (i + 1)] > 0.0, "power %d (%s) fires" % [i + 1, p.powers[i]["name"]])
+		await _frames(10)
+	world.clear_npcs()
+	# Weapon wheel
+	world.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	p = world.player
+	world.weapon_wheel.open()
+	check(world.weapon_wheel.visible and Engine.time_scale < 0.5, "the weapon wheel opens and slows time")
+	check(world.weapon_wheel.options.size() >= 6, "it offers a ring of weapons")
+	var target := world.weapon_wheel.options.size() / 2
+	var ang := float(target) * TAU / world.weapon_wheel.options.size()
+	world.weapon_wheel._aim = Vector2(sin(ang), -cos(ang)) * 120.0
+	world.weapon_wheel._pick()
+	var want: String = world.weapon_wheel.options[target]["name"]
+	world.weapon_wheel.close(true)
+	check(not world.weapon_wheel.visible and Engine.time_scale > 0.9, "letting go closes it")
+	check(p.def["primary"]["name"] == want, "and equips what you pointed at (%s)" % want)
+	world.weapon_wheel.ring = 2
+	world.weapon_wheel.open()
+	world.weapon_wheel.ring = 2
+	world.weapon_wheel._load_ring()
+	world.weapon_wheel._aim = Vector2(0, -120)
+	world.weapon_wheel._pick()
+	world.weapon_wheel.close(true)
+	Loadout.reset("green_arrow")
+	world.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	# Streets: subways, food carts, ATMs, phone booths, hoops, fountains
+	var kinds := {}
+	for pt in world.city.points:
+		kinds[pt["kind"]] = true
+	check(world.city.subways.size() >= 6, "there are subway stations (%d)" % world.city.subways.size())
+	for k in ["food_cart", "vending", "atm", "phone_booth"]:
+		check(kinds.has(k), "the streets have a %s" % k)
+	var st: Dictionary = world.city.subways[0]
+	var other: Dictionary = world.city.subways[world.city.subways.size() - 1]
+	world.use_door({"interior": "subway", "data": st["name"]})
+	check(world.world_map.visible and world.world_map.subway_from == st["name"], "the subway opens a list of stations")
+	world.world_map._ride(other)
+	check(world.player.global_position.distance_to(other["pos"]) < 3.0, "and rides you across the map")
+	p = world.player
+	p.hp = 10.0
+	world.use_door({"interior": "food_cart"})
+	check(p.hp > 10.0, "a hot dog heals")
+	p.energy = 0.0
+	world.use_door({"interior": "vending"})
+	check(p.energy == p.max_energy, "an energy drink refills energy")
+	world.use_door({"interior": "phone_booth"})
+	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.follow_target == p)
+	check(allies.size() == 1, "a phone booth calls a teammate")
+	world.use_door({"interior": "hoop"})
+	world.use_door({"interior": "fountain"})
+	world.spawn_player("captain_cold", Vector3(560, 0.5, -440))
+	var heat := Game.heat
+	world.use_door({"interior": "atm"})
+	check(Game.heat > heat, "a villain can crack an ATM (and the police come)")
+	Game.clear_heat()
+	world.clear_npcs()
+	# The map
+	world.world_map.open()
+	world.world_map._zoom_at(Vector2(100, 100), 2.0)
+	check(world.world_map._zoom > 1.5, "the map zooms")
+	world.world_map.close()
 	world.events.enabled = true
 
 
