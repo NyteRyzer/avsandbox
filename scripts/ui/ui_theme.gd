@@ -28,11 +28,17 @@ static func get_theme() -> Theme:
 		return _theme
 	var t := Theme.new()
 	t.default_font_size = 18
-	t.set_stylebox("panel", "PanelContainer", box(PANEL, 10, Color(1, 1, 1, 0.08)))
-	t.set_stylebox("panel", "Panel", box(PANEL, 10, Color(1, 1, 1, 0.08)))
-	t.set_stylebox("normal", "Button", box(Color(0.14, 0.17, 0.25), 6, Color(1, 1, 1, 0.1)))
-	t.set_stylebox("hover", "Button", box(Color(0.2, 0.25, 0.37), 6, ACCENT * Color(1, 1, 1, 0.6)))
-	t.set_stylebox("pressed", "Button", box(Color(0.3, 0.26, 0.1), 6, ACCENT))
+	var glass := box(PANEL, 12, Color(1, 1, 1, 0.1))
+	glass.shadow_color = Color(0, 0, 0, 0.35)
+	glass.shadow_size = 8
+	t.set_stylebox("panel", "PanelContainer", glass)
+	t.set_stylebox("panel", "Panel", glass)
+	t.set_stylebox("normal", "Button", box(Color(0.12, 0.15, 0.23), 8, Color(1, 1, 1, 0.1)))
+	var hover := box(Color(0.18, 0.23, 0.35), 8, ACCENT * Color(1, 1, 1, 0.5))
+	hover.border_width_left = 4
+	hover.border_color = ACCENT
+	t.set_stylebox("hover", "Button", hover)
+	t.set_stylebox("pressed", "Button", box(Color(0.3, 0.26, 0.1), 8, ACCENT))
 	t.set_stylebox("focus", "Button", box(Color(0, 0, 0, 0), 6, ACCENT))
 	t.set_stylebox("disabled", "Button", box(Color(0.1, 0.11, 0.15), 6, Color(1, 1, 1, 0.04)))
 	t.set_color("font_color", "Button", TEXT)

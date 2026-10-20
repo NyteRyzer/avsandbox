@@ -34,6 +34,12 @@ var boss_name: Label
 var boss_bar: ProgressBar
 var overlay: Control      # lock-on marker and other world-space markers
 var ticker: Label
+var card: PanelContainer
+var portrait: Control
+var hp_text: Label
+var ability_bar: AbilityBar
+var move_hint: Label
+var tracker_panel: PanelContainer
 
 
 func _ready() -> void:
@@ -45,29 +51,66 @@ func _ready() -> void:
 	add_child(root)
 
 	# Top-left: identity, health, energy.
-	var panel := PanelContainer.new()
-	panel.position = Vector2(20, 20)
-	panel.custom_minimum_size = Vector2(340, 0)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(panel)
+	card = PanelContainer.new()
+	card.position = Vector2(20, 20)
+	card.custom_minimum_size = Vector2(360, 0)
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(card)
+	var card_row := HBoxContainer.new()
+	card_row.add_theme_constant_override("separation", 12)
+	card.add_child(card_row)
+	portrait = Control.new()
+	portrait.custom_minimum_size = Vector2(64, 64)
+	portrait.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	portrait.draw.connect(_draw_portrait)
+	card_row.add_child(portrait)
 	var v := VBoxContainer.new()
-	panel.add_child(v)
-	name_label = UITheme.label("", 24, Color.WHITE)
-	alias_label = UITheme.label("", 15, UITheme.DIM)
+	v.add_theme_constant_override("separation", 3)
+	card_row.add_child(v)
+	name_label = UITheme.label("", 22, Color.WHITE)
+	alias_label = UITheme.label("", 13, UITheme.DIM)
 	v.add_child(name_label)
 	v.add_child(alias_label)
+	var hp_row := HBoxContainer.new()
 	hp_bar = _bar(Color("#e04848"))
+	hp_bar.custom_minimum_size = Vector2(200, 14)
+	hp_row.add_child(hp_bar)
+	hp_text = UITheme.label("", 12, Color("#ffd0d0"))
+	hp_row.add_child(hp_text)
+	v.add_child(hp_row)
 	energy_bar = _bar(Color("#48a8e0"))
-	v.add_child(hp_bar)
+	energy_bar.custom_minimum_size = Vector2(200, 8)
 	v.add_child(energy_bar)
 	ult_bar = _bar(Color("#ffd23a"))
-	ult_bar.custom_minimum_size = Vector2(300, 8)
+	ult_bar.custom_minimum_size = Vector2(200, 6)
 	v.add_child(ult_bar)
 	status_label = UITheme.label("", 15, UITheme.ACCENT)
 	v.add_child(status_label)
 
-	# Bottom-left: abilities.
+	# Bottom-centre: the ability bar (the old text list stays, hidden, for tools).
+	ability_bar = AbilityBar.new()
+	ability_bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	ability_bar.anchor_left = 0.5
+	ability_bar.anchor_right = 0.5
+	ability_bar.anchor_top = 1.0
+	ability_bar.anchor_bottom = 1.0
+	ability_bar.offset_top = -132
+	ability_bar.offset_bottom = -54
+	root.add_child(ability_bar)
+	move_hint = UITheme.label("", 13, Color(1, 1, 1, 0.75))
+	move_hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	move_hint.anchor_left = 0.5
+	move_hint.anchor_right = 0.5
+	move_hint.anchor_top = 1.0
+	move_hint.anchor_bottom = 1.0
+	move_hint.offset_left = -500
+	move_hint.offset_right = 500
+	move_hint.offset_top = -154
+	move_hint.offset_bottom = -134
+	move_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(move_hint)
 	var ab := PanelContainer.new()
+	ab.visible = false
 	ab.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ab.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	ab.position = Vector2(20, -200)
@@ -89,7 +132,7 @@ func _ready() -> void:
 	right.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	right.anchor_left = 1.0
 	right.anchor_right = 1.0
-	right.offset_left = -250
+	right.offset_left = -256
 	right.offset_right = -20
 	right.offset_top = 20
 	right.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -110,13 +153,18 @@ func _ready() -> void:
 	score_label = UITheme.label("", 16, UITheme.ACCENT)
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(score_label)
-	mission_label = UITheme.label("", 15, Color("#ffb08a"))
-	mission_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var tracker := PanelContainer.new()
+	tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tracker.add_theme_stylebox_override("panel", _accent_box(Color("#ff9a6a")))
+	right.add_child(tracker)
+	var tv := VBoxContainer.new()
+	tracker.add_child(tv)
+	tv.add_child(UITheme.label("OBJECTIVES", 13, Color("#ff9a6a")))
+	mission_label = UITheme.label("", 14, Color("#ffd8c8"))
 	mission_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	mission_label.custom_minimum_size = Vector2(230, 0)
-	mission_label.add_theme_constant_override("outline_size", 6)
-	mission_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
-	right.add_child(mission_label)
+	mission_label.custom_minimum_size = Vector2(206, 0)
+	tv.add_child(mission_label)
+	tracker_panel = tracker
 
 	# Top-centre: event tracker.
 	event_label = UITheme.label("", 20, Color("#ffe080"))
@@ -145,8 +193,9 @@ func _ready() -> void:
 
 	# Left-middle: notification feed.
 	notes = VBoxContainer.new()
-	notes.position = Vector2(20, 230)
-	notes.custom_minimum_size = Vector2(520, 0)
+	notes.position = Vector2(20, 150)
+	notes.custom_minimum_size = Vector2(470, 0)
+	notes.add_theme_constant_override("separation", 4)
 	notes.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(notes)
 
@@ -264,17 +313,58 @@ func on_player_changed() -> void:
 
 
 func notify(text: String, color := Color.WHITE) -> void:
-	var l := UITheme.label(text, 17, color)
-	l.add_theme_constant_override("outline_size", 6)
-	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	notes.add_child(l)
-	while notes.get_child_count() > 6:
-		notes.get_child(0).queue_free()
-		notes.remove_child(notes.get_child(0))
-	var t := l.create_tween()
+	# A toast: dark glass with a coloured edge, sliding in from the left.
+	var toast := PanelContainer.new()
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	toast.add_theme_stylebox_override("panel", _accent_box(color))
+	var l := UITheme.label(text, 15, color.lerp(Color.WHITE, 0.35))
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(440, 0)
+	toast.add_child(l)
+	notes.add_child(toast)
+	while notes.get_child_count() > 5:
+		var old := notes.get_child(0)
+		notes.remove_child(old)
+		old.queue_free()
+	toast.modulate.a = 0.0
+	var t := toast.create_tween()
+	t.tween_property(toast, "modulate:a", 1.0, 0.18)
 	t.tween_interval(4.5)
-	t.tween_property(l, "modulate:a", 0.0, 1.0)
-	t.tween_callback(l.queue_free)
+	t.tween_property(toast, "modulate:a", 0.0, 0.8)
+	t.tween_callback(toast.queue_free)
+
+
+## Dark glass with a coloured stripe down the left edge.
+func _accent_box(color: Color) -> StyleBoxFlat:
+	var sb := UITheme.box(Color(0.03, 0.04, 0.07, 0.72), 6)
+	sb.border_width_left = 4
+	sb.border_color = color
+	sb.content_margin_left = 12
+	sb.content_margin_top = 5
+	sb.content_margin_bottom = 5
+	return sb
+
+
+## The player's badge: a ring in their colours with their initials.
+func _draw_portrait() -> void:
+	if world == null or world.player == null or not is_instance_valid(world.player):
+		return
+	var p: Actor = world.player
+	var look: Dictionary = p.def.get("look", {})
+	var c := portrait.size * 0.5
+	var main := Color(str(look.get("suit", "#444444")))
+	var acc := Color(str(look.get("trail", look.get("accent", "#ffffff"))))
+	portrait.draw_circle(c, 31.0, UITheme.side_color(str(p.def.get("side", "hero"))))
+	portrait.draw_circle(c, 28.0, main.darkened(0.2))
+	portrait.draw_arc(c, 24.0, 0, TAU, 32, acc, 3.0)
+	# Ultimate charge around the edge
+	portrait.draw_arc(c, 31.5, -PI * 0.5, -PI * 0.5 + TAU * clampf(p.ult / 100.0, 0.0, 1.0), 40, UITheme.ACCENT, 3.0)
+	var words := str(p.def.get("alias", "?")).replace("The ", "").split(" ")
+	var ini := ""
+	for w in words:
+		if w != "" and ini.length() < 2:
+			ini += w.substr(0, 1).to_upper()
+	portrait.draw_string(ThemeDB.fallback_font, c + Vector2(-30, 8), ini, HORIZONTAL_ALIGNMENT_CENTER, 60, 22, Color.WHITE)
 
 
 ## A big centred title, e.g. an ultimate's name or a mission update.
@@ -321,6 +411,8 @@ func _process(delta: float) -> void:
 	var p: Actor = world.player
 	hp_bar.max_value = p.max_hp
 	hp_bar.value = p.hp
+	hp_text.text = "  %d / %d" % [int(round(minf(p.hp, p.max_hp))), int(round(p.max_hp))]
+	portrait.queue_redraw()
 	energy_bar.max_value = p.max_energy
 	energy_bar.value = p.energy
 	var status := PackedStringArray()
@@ -404,6 +496,8 @@ func _process(delta: float) -> void:
 	elif Suitup.can_change(p):
 		ability_labels[4].text += "   ·   [T] Civilian clothes"
 	ability_labels[2].add_theme_color_override("font_color", UITheme.ACCENT if p.cooldowns["special"] <= 0.0 and p.energy >= Abilities.special_cost(d["special"]) else UITheme.DIM)
+	_update_ability_bar(p, d)
+	move_hint.text = ability_labels[4].text
 
 	district_label.text = world.place_name(p.global_position)
 	hint_label.text = world.interact_prompt()
@@ -452,6 +546,42 @@ func _process(delta: float) -> void:
 		status_label.text += "  LOCKED ON"
 	if world.team_bonus != "":
 		status_label.text += "  TEAM-UP: " + str(world.team_bonus).to_upper()
+
+
+func _update_ability_bar(p: Actor, d: Dictionary) -> void:
+	var col := Color(str(d["look"].get("trail", d["look"].get("glow", "#ffcc22"))))
+	if col.get_luminance() < 0.2:
+		col = UITheme.ACCENT
+	var tiles := []
+	if p.civilian:
+		tiles.append({"key": "LMB", "name": "Punch", "color": Color("#c8c8c8")})
+		tiles.append({"key": "T", "name": "Suit up", "color": UITheme.ACCENT, "extra": "!"})
+		ability_bar.set_slots(tiles)
+		return
+	var add := func(key: String, slot: String, spec: Dictionary, is_special: bool) -> void:
+		var cd: float = p.cooldowns.get(slot, 0.0)
+		var cmax: float = Abilities.special_cooldown(spec) if is_special else maxf(0.2, Abilities.cooldown(spec))
+		var cost: float = Abilities.special_cost(spec) if is_special else Abilities.energy_cost(spec)
+		var extra := ""
+		if slot == "primary" and p.pickup_ammo > 0:
+			extra = "x%d" % p.pickup_ammo
+		tiles.append({"key": key, "name": str(spec.get("name", spec["kind"])), "cd": cd, "cd_max": cmax,
+			"ready": p.energy >= cost, "color": col, "extra": extra})
+	add.call("LMB", "primary", d["primary"], false)
+	add.call("RMB", "secondary", d["secondary"], false)
+	add.call("Q", "special", d["special"], true)
+	if d.has("utility"):
+		add.call("E", "utility", d["utility"], true)
+	elif p.movement == "grapple":
+		tiles.append({"key": "E", "name": "Grappling line", "color": col})
+	for i in p.powers.size():
+		add.call(str(i + 1), "power%d" % (i + 1), p.powers[i], true)
+	var u := Ultimate.for_character(d)
+	tiles.append({"key": "R", "name": str(u.get("name", "Ultimate")), "cd": 0.0, "ready": p.ult >= 100.0 or p.ult_active,
+		"color": UITheme.ACCENT, "extra": "READY" if p.ult >= 100.0 and not p.ult_active else ("%d%%" % int(p.ult) if not p.ult_active else "ON")})
+	ability_bar.set_slots(tiles)
+	ability_bar.offset_left = -ability_bar.custom_minimum_size.x * 0.5
+	ability_bar.offset_right = ability_bar.custom_minimum_size.x * 0.5
 
 
 func _cd(p: Actor, slot: String) -> String:

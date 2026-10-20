@@ -103,8 +103,8 @@ func test_city_is_deterministic() -> void:
 	check(a.landmarks.size() >= 12, "expected landmarks, got %d" % a.landmarks.size())
 	for name in ["S.T.A.R. Labs", "Queen Consolidated", "CatCo Worldwide", "Iron Heights", "The Waverider", "Jitters"]:
 		check(not a.landmark(name).is_empty(), "missing landmark " + name)
-	check(a.is_water(Vector3(City.LAND + 10, 0, 0)), "beyond the land is water")
-	check(a.is_water(Vector3(0, 0, 0)), "the bay between the cities is open water")
+	check(a.is_water(Vector3(560 + City.LAND + 10, 0, -300)), "beyond the land is water")
+	check(a.is_water(Vector3(0, 0, 440)), "the bay between the cities is open water")
 	check(not a.is_water(Vector3(560, 0, -560)), "Central City is land")
 	check(not a.is_water(Vector3(0, 0, -560)), "the bridge between Star City and Central City is walkable")
 	check(a.district_at(Vector3(-2900, 0, -1900)) == "Lian Yu", "Lian Yu is its own island")

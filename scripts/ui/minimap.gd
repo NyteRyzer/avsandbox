@@ -118,4 +118,12 @@ func _draw() -> void:
 	var l := Vector2(-6, 6).rotated(facing)
 	var rr := Vector2(6, 6).rotated(facing)
 	draw_colored_polygon(PackedVector2Array([center + tip, center + rr, center + l]), Color.WHITE)
+	# Frame and compass
+	draw_rect(Rect2(Vector2.ZERO, size), Color(1, 1, 1, 0.18), false, 2.0)
+	draw_rect(Rect2(Vector2(1, 1), size - Vector2(2, 2)), Color(0, 0, 0, 0.5), false, 1.0)
+	var north: Vector2 = (to_screen.call(p.x, p.z - 100.0) - center).normalized()
+	var np := center + north * (size.x * 0.5 - 12.0)
+	np = np.clamp(Vector2(10, 12), size - Vector2(10, 4))
+	draw_circle(np, 9.0, Color(0.05, 0.06, 0.1, 0.9))
+	draw_string(ThemeDB.fallback_font, np + Vector2(-5, 5), "N", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, UITheme.ACCENT)
 	draw_rect(rect, Color(1, 1, 1, 0.15), false, 2.0)

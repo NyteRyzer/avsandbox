@@ -145,6 +145,16 @@ while falling to sail forward, and hold descend to dive.
 - Ultimates open with the character powering up in a pillar of light.
 - Combo finishers burst with impact lines.
 
+**A new HUD.**
+- A player badge in your colours, ringed with your ultimate charge.
+- Health shown in numbers.
+- An ability bar along the bottom with a tile for every power. Each tile shows its key, a
+  cooldown sweep and a glow when it's ready, and dims when you can't afford it.
+- Notifications slide in as toasts with a coloured edge.
+- Objectives sit in their own panel.
+- The minimap has a frame and a compass.
+- Menus have glassier panels, and buttons get an accent edge on hover.
+
 **Weapon wheel and extra powers.**
 - Hold **H** for the weapon wheel and point at a weapon or power. Let go to equip it.
 - Time slows while the wheel is open. The mouse wheel (or Q / E) flips between rings: primary,
