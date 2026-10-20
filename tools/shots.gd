@@ -25,6 +25,10 @@ func _ready() -> void:
 		await _new_places()
 		get_tree().quit()
 		return
+	if only == "wheel":
+		await _wheel_shots()
+		get_tree().quit()
+		return
 	if only == "street":
 		await _street_shots()
 		get_tree().quit()
@@ -556,3 +560,38 @@ func _street_shots() -> void:
 	for i in 60:
 		await get_tree().physics_frame
 	await _snap("cars_lineup", 6)
+
+
+func _wheel_shots() -> void:
+	var w := World.new()
+	add_child(w)
+	w.population.enabled = true
+	w.events.cooldown = 9999.0
+	w.char_missions.enabled = false
+	w.street_crime.enabled = false
+	w.day_night.frozen = true
+	w.day_night.hour = 15.0
+	w.spawn_player("green_arrow", Vector3(560, 0.5, -440))
+	for i in 60:
+		await get_tree().physics_frame
+	w.weapon_wheel.open()
+	w.weapon_wheel._aim = Vector2(80, -80)
+	w.weapon_wheel._pick()
+	await _snap("weapon_wheel", 4)
+	w.weapon_wheel.close(false)
+	for pt in w.city.points:
+		if pt["kind"] == "fountain":
+			w.player.global_position = pt["pos"] + Vector3(0, 30, 30)
+			w.player.flying = false
+			break
+	w.cam.yaw = 0.0
+	w.cam.pitch = -0.6
+	w.cam.zoom = 30.0
+	for i in 40:
+		await get_tree().physics_frame
+	await _snap("plaza_aerial", 4)
+	w.world_map.open()
+	await _snap("world_map", 6)
+	w.world_map._zoom_at(w.world_map._map.size * 0.5, 3.0)
+	await _snap("world_map_zoom", 6)
+	w.world_map.close()

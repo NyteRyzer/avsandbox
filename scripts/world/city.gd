@@ -622,9 +622,9 @@ func _interactable(name: String, pos: Vector3, what: String, data := "") -> void
 ## and a food cart.
 func _build_plaza(rect: Rect2) -> void:
 	var c := rect.get_center()
-	add_box(Vector3(c.x, 0.19, c.y), Vector3(rect.size.x - 2.0, 0.06, rect.size.y - 2.0), _plain(Color("#b8ac98"), 0.85), false)
+	add_box(Vector3(c.x, 0.19, c.y), Vector3(rect.size.x - 2.0, 0.06, rect.size.y - 2.0), _plain(Color("#857b6c"), 0.9), false)
 	for k in 8:
-		add_box(Vector3(c.x - rect.size.x * 0.4 + k * rect.size.x * 0.114, 0.23, c.y), Vector3(0.3, 0.02, rect.size.y - 6.0), _plain(Color("#a09480"), 0.85), false)
+		add_box(Vector3(c.x - rect.size.x * 0.4 + k * rect.size.x * 0.114, 0.23, c.y), Vector3(0.3, 0.02, rect.size.y - 6.0), _plain(Color("#6e6558"), 0.9), false)
 	var bowl := CylinderMesh.new()
 	bowl.top_radius = 4.0
 	bowl.bottom_radius = 4.3
