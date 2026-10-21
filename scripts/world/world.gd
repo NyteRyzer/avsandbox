@@ -53,6 +53,7 @@ var place_id := "earth1"         # which Earth / era (a Multiverse id)
 var inside := ""                 # which interior the player is in ("" outside)
 var door: Dictionary = {}        # the door or console the player is next to
 var _returns: Dictionary = {}    # interior id -> where to come back out
+var breach_portal: BreachPortal  # an open breach waiting for the player to step through
 
 
 func _ready() -> void:
@@ -999,6 +1000,44 @@ func _move_player(pos: Vector3) -> void:
 			a.velocity = Vector3.ZERO
 
 
+## Tears a breach open a few steps ahead of the player; walking into it
+## travels to `id`. Opening another replaces it.
+func open_breach(id: String) -> void:
+	if not Multiverse.DESTS.has(id) or player == null or not is_instance_valid(player):
+		return
+	if is_instance_valid(breach_portal):
+		breach_portal.close()
+	# Open it where the player is looking.
+	var fwd := player.forward()
+	var view := get_viewport().get_camera_3d()
+	if view:
+		fwd = -view.global_basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length() > 0.1 else Vector3.FORWARD
+	var base := player.global_position + fwd * 4.0
+	var portal := BreachPortal.new().setup(self, id, BREACH_COLOR, str(Multiverse.dest(id)["name"]))
+	add_child(portal)
+	portal.global_position = Vector3(base.x, player.global_position.y + 2.0, base.z)
+	portal.look_at(Vector3(player.global_position.x, portal.global_position.y, player.global_position.z), Vector3.UP)
+	portal.entered.connect(func() -> void: _step_through_breach(id))
+	breach_portal = portal
+	Sfx.play("teleport", portal.global_position, 0.0, 0.0)
+	FX.flash(self, portal.global_position, BREACH_COLOR, 2.5, 0.4, 0.5)
+	if player.model:
+		player.model.play("palm_push", 0.6)
+	notify("A breach tears open to %s. Step through it." % Multiverse.dest(id)["name"], BREACH_COLOR)
+
+
+const BREACH_COLOR := Color("#4fa8ff")
+
+
+func _step_through_breach(id: String) -> void:
+	if player == null or not is_instance_valid(player) or player.dead:
+		return
+	FX.flash(self, player.chest(), BREACH_COLOR, 2.2, 0.35, 0.45)
+	travel_to(id, "breach")
+
+
 ## Rebuilds the world as another Earth, era or the Speed Force. `how` is the
 ## way you got there (breach, speed, time) and picks the effect.
 func travel_to(id: String, how := "breach") -> void:
@@ -1072,8 +1111,19 @@ func travel_to(id: String, how := "breach") -> void:
 	collectibles.build()
 	waypoint = Vector3.INF
 	day_night.set_weather(str(d["spec"].get("weather", "clear")))
-	var color := Color("#ffd23a") if how == "speed" else (Color("#a58aff") if how == "time" else Color("#4fa8ff"))
-	FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
+	var color := Color("#ffd23a") if how == "speed" else (Color("#a58aff") if how == "time" else BREACH_COLOR)
+	if how == "breach" and not ship.piloted:
+		# Step out of a breach that seals behind you.
+		var fwd := player.forward()
+		fwd.y = 0.0
+		fwd = fwd.normalized() if fwd.length() > 0.1 else Vector3.FORWARD
+		var exit := BreachPortal.new().setup(self, id, BREACH_COLOR, "", true)
+		add_child(exit)
+		exit.global_position = player.global_position - fwd * 1.0 + Vector3.UP * 2.0
+		exit.look_at(exit.global_position + fwd, Vector3.UP)
+		player.velocity = fwd * 6.0 + Vector3.UP * 1.5
+	else:
+		FX.breach(self, player.chest() + Vector3.UP * 0.5, color, 1.2, 2.2)
 	FX.flash(self, player.chest(), color, 3.0, 0.5, 0.6)
 	Sfx.play("teleport", null, 0.0)
 	if how == "space":

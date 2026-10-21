@@ -72,7 +72,10 @@ func close() -> void:
 
 func _pick(id: String) -> void:
 	close()
-	world.travel_to(id, mode)
+	if mode == "breach":
+		world.open_breach(id)
+	else:
+		world.travel_to(id, mode)
 
 
 func _input(event: InputEvent) -> void:

@@ -27,6 +27,35 @@ func _ready() -> void:
 			cs.queue_free()
 		get_tree().quit()
 		return
+	if only == "breach":
+		var w := World.new()
+		add_child(w)
+		w.population.enabled = false
+		w.events.cooldown = 9999.0
+		w.char_missions.enabled = false
+		w.day_night.frozen = true
+		w.day_night.hour = 19.5
+		w.spawn_player("vibe", Vector3(560, 0.5, -440))
+		for i in 20:
+			await get_tree().physics_frame
+		w.cam.yaw = w.player.model.global_rotation.y + PI + 0.4
+		w.cam.pitch = -0.08
+		w.cam.zoom = 7.0
+		for i in 10:
+			await get_tree().physics_frame
+		w.open_breach("earth2")
+		for i in 12:
+			await get_tree().physics_frame
+		await _snap("breach_opening", 2)
+		for i in 50:
+			await get_tree().physics_frame
+		await _snap("breach_open", 2)
+		w.player.global_position = w.breach_portal.global_position - Vector3.UP * 2.0
+		for i in 8:
+			await get_tree().physics_frame
+		await _snap("breach_arrive", 2)
+		get_tree().quit()
+		return
 	if only == "doors":
 		await _doors()
 		get_tree().quit()

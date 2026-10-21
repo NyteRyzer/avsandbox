@@ -338,5 +338,8 @@ func _multiverse_tab() -> Control:
 func _travel_button(id: String, how: String) -> Button:
 	var go := func() -> void:
 		close()
-		world.travel_to(id, how)
+		if how == "breach":
+			world.open_breach(id)
+		else:
+			world.travel_to(id, how)
 	return UITheme.button(Multiverse.dest(id)["name"], go, 250)
