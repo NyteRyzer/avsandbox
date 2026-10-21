@@ -14,6 +14,19 @@ var colors := PackedColorArray()
 var indices := PackedInt32Array()
 
 static var _materials: Dictionary = {}
+static var _detail_materials: Dictionary = {}
+static var _sculpt_cache: Dictionary = {}
+
+## Surface tags for detail materials, carried in the vertex colour's alpha
+## as k / 15 (15, an opaque colour, means "no detail").
+const TAGS := {"skin": 0, "hair": 1, "leather": 2, "quilt": 3, "scales": 4, "weave": 5, "knit": 6,
+	"tactical": 7, "denim": 8, "rubber": 9, "wet": 10, "brushed": 11, "chain": 12, "mesh": 13, "suede": 14}
+
+
+static func tagged(c: Color, tag: String) -> Color:
+	if not TAGS.has(tag):
+		return Color(c, 1.0)
+	return Color(c, float(TAGS[tag]) / 15.0)
 
 
 func is_empty() -> bool:
@@ -150,6 +163,29 @@ func _smooth_normals(from_vertex: int) -> void:
 		normals[v] = nv.normalized() if nv.length_squared() > 1e-12 else Vector3.UP
 
 
+## Moves every vertex added since `from_vertex` by fn(local_pos) -> offset
+## (in the builder's space) and re-smooths their normals. Used to sculpt
+## faces into a lofted head.
+## With a cache_key, the offsets are computed once per key (the same loft
+## always gets the same sculpt), which keeps crowds cheap to build.
+func sculpt(from_vertex: int, fn: Callable, cache_key := "") -> void:
+	var count := verts.size() - from_vertex
+	var offs: PackedVector3Array
+	if cache_key != "" and _sculpt_cache.has(cache_key) and (_sculpt_cache[cache_key] as PackedVector3Array).size() == count:
+		offs = _sculpt_cache[cache_key]
+	else:
+		offs = PackedVector3Array()
+		offs.resize(count)
+		for i in count:
+			offs[i] = fn.call(verts[from_vertex + i])
+		if cache_key != "":
+			_sculpt_cache[cache_key] = offs
+	for i in count:
+		verts[from_vertex + i] += offs[i]
+		normals[from_vertex + i] = Vector3.ZERO
+	_smooth_normals(from_vertex)
+
+
 ## Ellipsoid centred at `center` with radii `radii` (before xform).
 func ellipsoid(center: Vector3, radii: Vector3, xform: Transform3D, color, segments := 14, stacks := 9) -> void:
 	var rings := []
@@ -233,7 +269,7 @@ func prism(outline: PackedVector2Array, depth: float, xform: Transform3D, color:
 		indices.append_array([base, base + 2, base + 1, base, base + 3, base + 2])
 
 
-func commit(material_kind := "skin") -> ArrayMesh:
+func commit(material_kind := "skin", detailed := false) -> ArrayMesh:
 	if verts.is_empty():
 		return null
 	var arr := []
@@ -244,8 +280,32 @@ func commit(material_kind := "skin") -> ArrayMesh:
 	arr[Mesh.ARRAY_INDEX] = indices
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
-	mesh.surface_set_material(0, material(material_kind))
+	mesh.surface_set_material(0, detail_material(material_kind) if detailed else material(material_kind))
 	return mesh
+
+
+## Character materials: the same kinds as `material`, but with procedural
+## micro-detail chosen per vertex by its surface tag (glow stays unshaded).
+static func detail_material(kind: String) -> Material:
+	if kind == "glow":
+		return material(kind)
+	if _detail_materials.has(kind):
+		return _detail_materials[kind]
+	var m := ShaderMaterial.new()
+	m.shader = load("res://shaders/character_cloth.gdshader" if kind == "cloth" else "res://shaders/character_surface.gdshader")
+	match kind:
+		"metal":
+			m.set_shader_parameter("base_rough", 0.32)
+			m.set_shader_parameter("base_metal", 0.75)
+		"gloss":
+			m.set_shader_parameter("base_rough", 0.34)
+			m.set_shader_parameter("base_metal", 0.08)
+		"cloth":
+			m.set_shader_parameter("base_rough", 0.82)
+		_:
+			m.set_shader_parameter("base_rough", 0.68)
+	_detail_materials[kind] = m
+	return m
 
 
 ## Shared vertex-colour materials: "skin" (matte cloth and skin), "metal"
@@ -275,8 +335,8 @@ static func material(kind: String) -> Material:
 	return m
 
 
-func make_instance(parent: Node3D, material_kind := "skin") -> MeshInstance3D:
-	var mesh := commit(material_kind)
+func make_instance(parent: Node3D, material_kind := "skin", detailed := false) -> MeshInstance3D:
+	var mesh := commit(material_kind, detailed)
 	if mesh == null:
 		return null
 	var mi := MeshInstance3D.new()

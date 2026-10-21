@@ -1661,6 +1661,71 @@ for c in heroes + villains:
     if c["id"] in ULTS:
         c["ultimate"] = ULTS[c["id"]]
 
+
+# Costume corrections from the reference character cards: deeper, more
+# realistic colours and the right costume pieces. "+extras"/"-extras" add or
+# remove extras; a value of None removes that key.
+REF_LOOKS = {
+    "stargirl": {"skirt_stripes": True},
+    "green_arrow": {"suit": "#1f3626", "coat_color": "#22402b", "pants": "#1c2c20", "accent": "#132219", "coat_tex": "quilt"},
+    "flash": {"suit": "#6c1016", "boots": "#6c1016", "gloves": "#6c1016", "trim": "#b8901e", "belt": "#b8901e"},
+    "supergirl": {"suit": "#1c2c66", "gloves": "#1c2c66", "cape": "#8a1a20", "boots": "#8a1a20", "belt": "#c9a227",
+                  "skirt_color": "#8a1a20", "tex": "mesh", "+extras": ["skirt"]},
+    "superman": {"suit": "#16224a", "gloves": "#16224a", "cape": "#7a1418", "boots": "#16224a", "belt": "#16224a", "tex": "mesh"},
+    "martian_manhunter": {"suit": "#1d4222", "skin": "#1d4222", "hair": "#1d4222", "tex": "skin", "sleeve": 0.0, "pants": "#1a2654", "pants_tex": "weave",
+                          "boots": "#1a2654", "cape": "#1a2654", "cape_lining": "#0e1638", "accent": "#a01a20", "belt": "#a01a20"},
+    "brainiac_5": {"skin": "#4a78c8", "hair": "#c8ccd2", "suit": "#4a2e6e", "accent": "#a8adb5", "trim": "#a8adb5",
+                   "emblem": {"kind": "circle", "c1": "#a8adb5", "c2": "#4a2e6e", "size": 0.07}, "tex": "weave", "-extras": ["leather"]},
+    "dreamer": {"suit": "#22376a", "trim": "#c8ccd4", "accent": "#c8ccd4", "belt": "#c8ccd4", "-extras": ["cape"], "hair": "#3a2416"},
+    "guardian": {"suit": "#2b3550", "accent": "#9aa2ae"},
+    "sentinel": {"suit": "#1c2438", "accent": "#555c66", "trim": "#2c3650", "tex": "tactical", "emblem": None},
+    "mon_el": {"suit": "#8e1c24", "trim": "#1f2f66", "accent": "#1f2f66", "belt": "#c9a227", "-extras": ["cape"], "tex": "mesh"},
+    "white_canary": {"-extras": ["mask_dark"], "suit": "#e4e2de", "coat_color": "#eceae6", "boots": "#d8d6d2"},
+    "black_lightning": {"suit": "#0e1830", "tex": "scales", "gloves": "#0e1830"},
+    "spartan": {"suit": "#1a1c20", "accent": "#9aa2ae", "tex": "tactical"},
+    "steel": {"suit": "#5c6168", "accent": "#8a9098", "emblem": {"kind": "s_shield", "c1": "#8a2a2a", "c2": "#5c6168", "size": 0.14}},
+    "vibe": {"coat_color": "#6a181c", "coat_tex": "quilt", "suit": "#161618", "pants": "#141416", "trim": "#141416"},
+    "jordan_kent": {"suit": "#1a1a1c", "coat_color": "#1c1c1e", "coat_tex": "knit", "pants": "#22242a", "+extras": ["hood"],
+                    "emblem": {"kind": "s_shield", "c1": "#b81820", "c2": "#1a1a1c", "size": 0.13}},
+    "thunder": {"suit": "#c29a1e", "trim": "#141414", "accent": "#141414", "tex": "scales", "-extras": ["jacket", "mask_dark", "leather"],
+                "emblem": None, "gloves": "#141414", "boots": "#141414"},
+    "killer_frost": {"coat_color": "#25324e", "-extras": ["coat_short"], "+extras": ["coat"], "coat_tex": "weave"},
+    "kid_flash": {"suit": "#c8961a"},
+    "elongated_man": {"suit": "#b4bac2", "trim": "#2a4a9a", "accent": "#2a4a9a", "-extras": ["mask_dark"], "emblem": None, "tex": "mesh"},
+    "xs": {"belt": "#c9a227", "emblem": {"kind": "bolt", "c1": "#efe9ff", "c2": "#c9a227", "size": 0.13}},
+    "reverse_flash": {"suit": "#b8901a", "gloves": "#b8901a"},
+    "speedy": {"suit": "#701a1e", "coat_color": "#701a1e", "pants": "#1a1414"},
+    "arsenal": {"suit": "#701a1e", "coat_color": "#701a1e"},
+    "wild_dog": {"suit": "#4e5864", "coat_color": "#262a2e", "coat_tex": "tactical"},
+    "mr_terrific": {"trim": "#c02020"},
+    "black_siren": {"-extras": ["jacket"], "+extras": ["coat"]},
+    "ragman": {"suit": "#6a6a66", "coat_color": "#5e5e5a", "pants": "#4e4e4a", "boots": "#3a3a38", "gloves": "#5a5a56",
+               "tex": "suede", "coat_tex": "suede"},
+    "heat_wave_hero": {"-extras": ["goggles"], "coat_color": "#6a5236", "coat_tex": "weave"},
+    "atom": {"suit": "#2a3f7a", "accent": "#a01a20", "trim": "#a01a20"},
+    "firestorm": {"suit": "#a8261a", "trim": "#d6a51a", "accent": "#d6a51a", "gloves": "#a8261a", "boots": "#a8261a"},
+    "citizen_steel": {"suit": "#8e1c24", "trim": "#e8e6e0", "pants": "#22346a", "accent": "#22346a", "tex": "weave",
+                      "emblem": {"kind": "star", "c1": "#f0eee8", "c2": "#f0eee8", "size": 0.12}, "gloves": "#8e1c24"},
+    "constantine": {"coat_color": "#a8885a", "+extras": ["tie"], "tie_color": "#5a1418"},
+    "zari": {"coat_color": "#6a1e22"},
+    "behrad": {"coat_color": "#6a4a2a", "suit": "#4a4a44"},
+    "astra_logue": {"coat_color": "#1e1418", "coat_tex": "leather"},
+}
+for c in heroes + villains:
+    ref = REF_LOOKS.get(c["id"])
+    if not ref:
+        continue
+    look = c["look"]
+    for k, v in ref.items():
+        if k == "+extras":
+            look["extras"] = look.get("extras", []) + [e for e in v if e not in look.get("extras", [])]
+        elif k == "-extras":
+            look["extras"] = [e for e in look.get("extras", []) if e not in v]
+        elif v is None:
+            look.pop(k, None)
+        else:
+            look[k] = v
+
 for c in heroes + villains:
     civ = CIVVIES.get(c["id"])
     tr = TRANSFORM.get(c["id"])

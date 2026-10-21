@@ -14,6 +14,9 @@ var _grid: GridContainer
 var _preview_root: Node3D
 var _model: CharacterModel
 var _name: Label
+## Name plate on the preview's holo frame, like a character card.
+var _plate: Label
+var _turn_t := 0.0
 var _alias: Label
 var _show: Label
 var _bio: Label
@@ -106,6 +109,7 @@ func _ready() -> void:
 	sv.msaa_3d = Viewport.MSAA_4X
 	svc.add_child(sv)
 	_build_preview(sv)
+	svc.add_child(_card_frame())
 	_name = UITheme.label("", 30, Color.WHITE)
 	_alias = UITheme.label("", 17, UITheme.DIM)
 	_show = UITheme.label("", 15, UITheme.ACCENT)
@@ -150,41 +154,120 @@ func open(swap: bool) -> void:
 
 
 func _build_preview(sv: SubViewport) -> void:
+	# Lit like a character card: a dark blue-teal void, a warm key light, two
+	# cool rim lights behind that outline the silhouette, and a faint glow
+	# behind the figure.
 	_preview_root = Node3D.new()
 	sv.add_child(_preview_root)
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.07, 0.09, 0.15)
+	env.background_color = Color(0.035, 0.06, 0.08)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.55, 0.6, 0.75)
-	env.ambient_light_energy = 0.6
+	env.ambient_light_color = Color(0.45, 0.55, 0.7)
+	env.ambient_light_energy = 0.32
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	var we := WorldEnvironment.new()
 	we.environment = env
 	_preview_root.add_child(we)
-	var light := DirectionalLight3D.new()
-	light.rotation = Vector3(-0.7, 0.6, 0)
-	light.light_energy = 1.3
-	_preview_root.add_child(light)
-	var rim := DirectionalLight3D.new()
-	rim.rotation = Vector3(-0.3, PI + 0.4, 0)
-	rim.light_energy = 0.7
-	rim.light_color = Color(0.6, 0.75, 1.0)
-	_preview_root.add_child(rim)
+	var key := DirectionalLight3D.new()
+	key.rotation = Vector3(-0.42, 0.55, 0)
+	key.light_energy = 1.35
+	key.light_color = Color(1.0, 0.95, 0.88)
+	key.shadow_enabled = true
+	_preview_root.add_child(key)
+	var fill := DirectionalLight3D.new()
+	fill.rotation = Vector3(-0.2, -0.7, 0)
+	fill.light_energy = 0.3
+	fill.light_color = Color(0.7, 0.8, 1.0)
+	_preview_root.add_child(fill)
+	for side in [-1.0, 1.0]:
+		var rim := DirectionalLight3D.new()
+		rim.rotation = Vector3(-0.2, PI + side * 0.95, 0)
+		rim.light_energy = 1.5
+		rim.light_color = Color(0.55, 0.8, 1.0)
+		_preview_root.add_child(rim)
+	# Glow behind the figure.
+	var grad := Gradient.new()
+	grad.set_color(0, Color(0.16, 0.3, 0.38, 1.0))
+	grad.set_color(1, Color(0.035, 0.06, 0.08, 1.0))
+	var gtex := GradientTexture2D.new()
+	gtex.gradient = grad
+	gtex.fill = GradientTexture2D.FILL_RADIAL
+	gtex.fill_from = Vector2(0.5, 0.45)
+	gtex.fill_to = Vector2(0.5, 0.0)
+	var back := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(9, 6)
+	back.mesh = quad
+	var bm := StandardMaterial3D.new()
+	bm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	bm.albedo_texture = gtex
+	back.material_override = bm
+	back.position = Vector3(0, 1.4, -3.0)
+	_preview_root.add_child(back)
 	var floor_mesh := CylinderMesh.new()
-	floor_mesh.top_radius = 1.4
-	floor_mesh.bottom_radius = 1.5
-	floor_mesh.height = 0.1
+	floor_mesh.top_radius = 0.68
+	floor_mesh.bottom_radius = 0.71
+	floor_mesh.height = 0.04
 	var floor_mi := MeshInstance3D.new()
 	floor_mi.mesh = floor_mesh
-	floor_mi.material_override = CharacterModel.mat(Color(0.15, 0.17, 0.24))
-	floor_mi.position = Vector3(0, -0.05, 0)
+	var fm := StandardMaterial3D.new()
+	fm.albedo_color = Color(0.05, 0.08, 0.1)
+	fm.roughness = 0.25
+	fm.metallic = 0.4
+	floor_mi.material_override = fm
+	floor_mi.position = Vector3(0, -0.02, 0)
 	_preview_root.add_child(floor_mi)
 	var cam := Camera3D.new()
-	cam.position = Vector3(0, 1.25, 4.2)
-	cam.rotation.x = -0.08
-	cam.fov = 40
+	cam.position = Vector3(0, 1.0, 3.2)
+	cam.rotation.x = -0.02
+	cam.fov = 38
 	cam.current = true
 	_preview_root.add_child(cam)
+
+
+## The holographic card frame drawn over the preview: a thin border with
+## corner brackets, tick marks down the sides and a name plate.
+func _card_frame() -> Control:
+	var frame := Control.new()
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var cyan := Color(0.45, 0.78, 0.92)
+	frame.draw.connect(func() -> void:
+		var r := Rect2(Vector2(6, 6), frame.size - Vector2(12, 12))
+		frame.draw_rect(r, Color(cyan, 0.35), false, 1.5)
+		var arm := 22.0
+		for c in [r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)]:
+			var sx := 1.0 if c.x < r.get_center().x else -1.0
+			var sy := 1.0 if c.y < r.get_center().y else -1.0
+			frame.draw_line(c, c + Vector2(arm * sx, 0), cyan, 3.0)
+			frame.draw_line(c, c + Vector2(0, arm * sy), cyan, 3.0)
+		for i in 6:
+			var y := r.position.y + r.size.y * (0.2 + i * 0.1)
+			frame.draw_line(Vector2(r.position.x + 6, y), Vector2(r.position.x + 12, y), Color(cyan, 0.4), 1.0)
+			frame.draw_line(Vector2(r.end.x - 6, y), Vector2(r.end.x - 12, y), Color(cyan, 0.4), 1.0))
+	frame.resized.connect(frame.queue_redraw)
+	var plate := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.03, 0.07, 0.1, 0.82)
+	sb.border_color = Color(cyan, 0.8)
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(3)
+	sb.content_margin_left = 22
+	sb.content_margin_right = 22
+	sb.content_margin_top = 4
+	sb.content_margin_bottom = 4
+	plate.add_theme_stylebox_override("panel", sb)
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plate.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	plate.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	plate.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	plate.position.y -= 18
+	_plate = UITheme.label("", 22, Color(0.88, 0.95, 1.0))
+	_plate.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	plate.add_child(_plate)
+	frame.add_child(plate)
+	return frame
 
 
 func _set_filter(f: String) -> void:
@@ -266,8 +349,9 @@ func _select(id: String) -> void:
 	_model.build(c["look"])
 	var s := float(c["look"].get("scale", 1.0))
 	_model.scale = Vector3.ONE * (1.0 / maxf(1.0, s * 0.85))
-	_model.rotation.y = PI
+	_model.rotation.y = PI + 0.2
 	_name.text = c["alias"]
+	_plate.text = str(c["alias"]).to_upper()
 	_name.add_theme_color_override("font_color", UITheme.side_color(c["side"]).lightened(0.35))
 	_alias.text = "%s  ·  %s" % [c["name"], "Hero" if c["side"] == "hero" else "Villain"]
 	var teams := Teams.of(id)
@@ -327,5 +411,7 @@ func _confirm() -> void:
 
 func _process(delta: float) -> void:
 	if _model and visible:
-		_model.rotation.y += delta * 0.8
+		# Sway around a three-quarter front view, as on a character card.
+		_turn_t += delta
+		_model.rotation.y = PI + 0.2 + sin(_turn_t * 0.5) * 0.5
 		_model.animate(delta, 0.0, true, false, 0.0, false)

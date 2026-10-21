@@ -17,6 +17,16 @@ func _ready() -> void:
 		await _closeups(args[2].split(","), args[3] if args.size() > 3 else "")
 		get_tree().quit()
 		return
+	if only == "select":
+		# One select-screen shot per listed character.
+		for id in (args[2].split(",") if args.size() > 2 else ["flash"]):
+			var cs := CharacterSelect.new()
+			add_child(cs)
+			cs._select(id)
+			await _snap("select_" + id, 30)
+			cs.queue_free()
+		get_tree().quit()
+		return
 	if only == "doors":
 		await _doors()
 		get_tree().quit()
@@ -143,9 +153,16 @@ func _closeups(ids: Array, pose: String) -> void:
 	cam.fov = 38
 	cam.current = true
 	root.add_child(cam)
+	var spacing := 0.5
 	if pose == "face":
 		cam.position = Vector3(2.4, 1.62, 1.9)
 		cam.fov = 26
+		pose = ""
+	elif pose == "torso":
+		# Chest-up, straight on: for judging shoulders and torsos.
+		spacing = 0.8
+		cam.position = Vector3(1.65 + 1.5 * spacing, 1.38, 3.2)
+		cam.fov = 28
 		pose = ""
 	var batch := 0
 	while batch * 4 < ids.size():
@@ -171,8 +188,10 @@ func _closeups(ids: Array, pose: String) -> void:
 			m.build(c["look"])
 			var s := float(c["look"].get("scale", 1.0))
 			m.scale = Vector3.ONE * minf(1.0, 1.25 / s)
-			m.position = Vector3(i * 1.6, 0, 0) if cam.fov > 30 else Vector3(1.65 + i * 0.5, 0, 0)
+			m.position = Vector3(i * 1.6, 0, 0) if cam.fov > 30 else Vector3(1.65 + i * spacing, 0, 0)
 			m.rotation.y = PI + 0.5 if not pose in ["run", "sprint", "fly", "cruise"] else PI * 0.5 + 0.35
+			if spacing > 0.5:
+				m.rotation.y = PI + 0.15
 			if pose in ["fly", "cruise"]:
 				m.position.y = 0.6
 			models.append(m)

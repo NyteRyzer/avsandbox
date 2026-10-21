@@ -31,8 +31,8 @@
     "name": "Arrow Volley"
    },
    "look": {
-    "suit": "#2c5a2e",
-    "accent": "#16301a",
+    "suit": "#1f3626",
+    "accent": "#132219",
     "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
@@ -41,8 +41,8 @@
      "leather",
      "jacket"
     ],
-    "coat_color": "#2f5f31",
-    "pants": "#24452a",
+    "coat_color": "#22402b",
+    "pants": "#1c2c20",
     "boots": "#1a1a1a",
     "gloves": "#1a1a1a",
     "belt": "#1a1a1a",
@@ -59,7 +59,8 @@
      "run": "sprinter",
      "lean": 0.08,
      "arms": 0.7
-    }
+    },
+    "coat_tex": "quilt"
    },
    "utility": {
     "kind": "grapple",
@@ -151,7 +152,7 @@
     "name": "Speed Force Slow-Mo"
    },
    "look": {
-    "suit": "#8e0f16",
+    "suit": "#6c1016",
     "accent": "#e6b422",
     "skin": "#d8a882",
     "hair": "#4a3020",
@@ -160,10 +161,10 @@
      "bolt_wings",
      "leather"
     ],
-    "trim": "#e6b422",
-    "belt": "#e6b422",
-    "boots": "#8e0f16",
-    "gloves": "#8e0f16",
+    "trim": "#b8901e",
+    "belt": "#b8901e",
+    "boots": "#6c1016",
+    "gloves": "#6c1016",
     "emblem": {
      "kind": "bolt",
      "c1": "#f4f0e4",
@@ -272,18 +273,19 @@
     "element": "ice"
    },
    "look": {
-    "suit": "#1d3c9a",
+    "suit": "#1c2c66",
     "accent": "#b81820",
     "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
-     "cape"
+     "cape",
+     "skirt"
     ],
     "build": "female",
     "hair_style": "long",
-    "boots": "#b81820",
-    "belt": "#e6b422",
-    "gloves": "#1d3c9a",
+    "boots": "#8a1a20",
+    "belt": "#c9a227",
+    "gloves": "#1c2c66",
     "glove_length": 0.0,
     "emblem": {
      "kind": "s_shield",
@@ -291,13 +293,15 @@
      "c2": "#f2c21b",
      "size": 0.17
     },
-    "cape": "#b81820",
+    "cape": "#8a1a20",
     "boot_height": 0.62,
     "anim": {
      "idle": "hands_hips",
      "run": "strut",
      "fly": "supergirl"
-    }
+    },
+    "skirt_color": "#8a1a20",
+    "tex": "mesh"
    },
    "fly_speed": 1.5,
    "alt_kit": {
@@ -389,7 +393,7 @@
     "color": "#bfe0ff"
    },
    "look": {
-    "suit": "#1b3a94",
+    "suit": "#16224a",
     "accent": "#b81820",
     "skin": "#d8a882",
     "hair": "#16110e",
@@ -398,9 +402,9 @@
     ],
     "build": "bulky",
     "hair_style": "slick",
-    "boots": "#b81820",
-    "belt": "#b81820",
-    "gloves": "#1b3a94",
+    "boots": "#16224a",
+    "belt": "#16224a",
+    "gloves": "#16224a",
     "glove_length": 0.0,
     "emblem": {
      "kind": "s_shield",
@@ -408,7 +412,7 @@
      "c2": "#f2c21b",
      "size": 0.19
     },
-    "cape": "#b81820",
+    "cape": "#7a1418",
     "boot_height": 0.6,
     "anim": {
      "idle": "hands_hips",
@@ -416,7 +420,8 @@
      "fly": "superman",
      "stride": 1.05,
      "tempo": 0.8
-    }
+    },
+    "tex": "mesh"
    },
    "utility": {
     "kind": "breath",
@@ -515,8 +520,8 @@
     "name": "Shrink"
    },
    "look": {
-    "suit": "#9aa2ad",
-    "accent": "#2d6bd6",
+    "suit": "#2a3f7a",
+    "accent": "#a01a20",
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
@@ -524,7 +529,7 @@
      "armor"
     ],
     "build": "armored",
-    "trim": "#2d6bd6",
+    "trim": "#a01a20",
     "emblem": {
      "kind": "circle",
      "c1": "#7fd8ff",
@@ -627,19 +632,18 @@
     "color": "#e8eef4"
    },
    "look": {
-    "suit": "#ececec",
+    "suit": "#e4e2de",
     "accent": "#cfcfcf",
     "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
-     "mask_dark",
      "leather",
      "jacket"
     ],
     "build": "female",
     "hair_style": "long",
-    "coat_color": "#f2f2f2",
-    "boots": "#e6e6e6",
+    "coat_color": "#eceae6",
+    "boots": "#d8d6d2",
     "gloves": "#dcdcdc",
     "gear": {
      "right": "staff"
@@ -843,8 +847,8 @@
     "name": "Frag Grenade"
    },
    "look": {
-    "suit": "#2b2f35",
-    "accent": "#555c66",
+    "suit": "#1a1c20",
+    "accent": "#9aa2ae",
     "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
@@ -864,7 +868,8 @@
      "run": "marching",
      "stride": 0.95,
      "arms": 0.6
-    }
+    },
+    "tex": "tactical"
    },
    "alt_kit": {
     "primary": {
@@ -948,7 +953,7 @@
     "name": "Smoke Arrow"
    },
    "look": {
-    "suit": "#8b1a1a",
+    "suit": "#701a1e",
     "accent": "#3a0c0c",
     "skin": "#d8a882",
     "hair": "#4a3020",
@@ -960,8 +965,8 @@
     ],
     "build": "female",
     "hair_style": "long",
-    "coat_color": "#8b1a1a",
-    "pants": "#2a1414",
+    "coat_color": "#701a1e",
+    "pants": "#1a1414",
     "boots": "#1a1010",
     "gloves": "#1a1010",
     "gear": {
@@ -1064,7 +1069,7 @@
     "color": "#ffd23a"
    },
    "look": {
-    "suit": "#d4a017",
+    "suit": "#c8961a",
     "accent": "#a3111a",
     "skin": "#5a3724",
     "hair": "#16110e",
@@ -1187,7 +1192,7 @@
     "color": "#4fa8ff"
    },
    "look": {
-    "suit": "#1e1e21",
+    "suit": "#161618",
     "accent": "#55555c",
     "skin": "#c0906a",
     "hair": "#16110e",
@@ -1197,11 +1202,11 @@
      "jacket"
     ],
     "hair_style": "long",
-    "coat_color": "#2b2725",
-    "pants": "#1c1c1f",
+    "coat_color": "#6a181c",
+    "pants": "#141416",
     "boots": "#141414",
     "gloves": "#2a2a2d",
-    "trim": "#46464d",
+    "trim": "#141416",
     "goggle_glow": "#4fa8ff",
     "gear": {
      "right": "gauntlet",
@@ -1214,7 +1219,8 @@
      "cadence": 1.05,
      "arms": 1.2,
      "lean": -0.05
-    }
+    },
+    "coat_tex": "quilt"
    },
    "utility": {
     "kind": "teleport",
@@ -1317,11 +1323,11 @@
     "extras": [
      "glow_eyes",
      "leather",
-     "coat_short"
+     "coat"
     ],
     "build": "female",
     "hair_style": "long",
-    "coat_color": "#1e2c4c",
+    "coat_color": "#25324e",
     "eye_glow": "#9fe6ff",
     "gloves": "#1a2440",
     "glove_length": 0.0,
@@ -1332,7 +1338,8 @@
      "stride": 1.4,
      "cadence": 0.9,
      "arms": 1.5
-    }
+    },
+    "coat_tex": "weave"
    },
    "utility": {
     "kind": "ice_wall",
@@ -1433,17 +1440,17 @@
     "element": "fire"
    },
    "look": {
-    "suit": "#b33c12",
-    "accent": "#e8e0d0",
+    "suit": "#a8261a",
+    "accent": "#d6a51a",
     "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
      "flame_head",
      "leather"
     ],
-    "trim": "#ffcf3a",
-    "gloves": "#e8e0d0",
-    "boots": "#e8e0d0",
+    "trim": "#d6a51a",
+    "gloves": "#a8261a",
+    "boots": "#a8261a",
     "emblem": {
      "kind": "atom",
      "c1": "#ffcf3a",
@@ -1542,22 +1549,22 @@
     "name": "Shapeshift"
    },
    "look": {
-    "suit": "#1b2a63",
-    "accent": "#b01c22",
-    "skin": "#2f7a3a",
-    "hair": "#2f7a3a",
+    "suit": "#1d4222",
+    "accent": "#a01a20",
+    "skin": "#1d4222",
+    "hair": "#1d4222",
     "extras": [
      "cape",
      "emblem_x"
     ],
     "build": "bulky",
     "hair_style": "bald",
-    "cape": "#1b2f73",
-    "cape_lining": "#0e1840",
-    "boots": "#b01c22",
+    "cape": "#1a2654",
+    "cape_lining": "#0e1638",
+    "boots": "#1a2654",
     "gloves": "#1b2a63",
     "glove_length": 0.0,
-    "belt": "#b01c22",
+    "belt": "#a01a20",
     "eye_color": "#c01818",
     "scale": 1.06,
     "anim": {
@@ -1565,7 +1572,11 @@
      "run": "stomp",
      "fly": "martian",
      "tempo": 0.6
-    }
+    },
+    "tex": "skin",
+    "sleeve": 0.0,
+    "pants": "#1a2654",
+    "pants_tex": "weave"
    },
    "utility": {
     "kind": "phase",
@@ -1598,13 +1609,13 @@
    "civilian": {
     "look": {
      "skin": "#5e3a26",
-     "hair": "#2f7a3a",
+     "hair": "#1d4222",
      "hair_style": "bald",
      "build": "bulky",
      "scale": 1.06,
      "eye_color": "#c01818",
      "accent": "#2a2a2a",
-     "gloves": "#2f7a3a",
+     "gloves": "#1d4222",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -1791,7 +1802,7 @@
     "color": "#9fd0ff"
    },
    "look": {
-    "suit": "#121212",
+    "suit": "#0e1830",
     "accent": "#3aa0ff",
     "skin": "#5a3724",
     "hair": "#16110e",
@@ -1809,13 +1820,14 @@
      "c2": "#5ab8ff",
      "size": 0.16
     },
-    "gloves": "#141414",
+    "gloves": "#0e1830",
     "anim": {
      "idle": "casting",
      "run": "strut",
      "fly": "lightning_rider",
      "tempo": 0.9
-    }
+    },
+    "tex": "scales"
    },
    "fly_speed": 0.8,
    "alt_kit": {
@@ -1903,32 +1915,24 @@
     "name": "Density Quake"
    },
    "look": {
-    "suit": "#3a3a3a",
-    "accent": "#5a5a62",
+    "suit": "#c29a1e",
+    "accent": "#141414",
     "skin": "#875536",
     "hair": "#16110e",
-    "extras": [
-     "mask_dark",
-     "leather",
-     "jacket"
-    ],
+    "extras": [],
     "build": "female",
     "hair_style": "curly",
-    "gloves": "#1a1a1a",
-    "boots": "#1a1a1a",
+    "gloves": "#141414",
+    "boots": "#141414",
     "coat_color": "#2a2a2a",
-    "emblem": {
-     "kind": "diamond_l",
-     "c1": "#c9b34a",
-     "c2": "#2a2a2a",
-     "size": 0.13
-    },
     "anim": {
      "idle": "heavy",
      "run": "stomp",
      "stride": 1.1,
      "cadence": 0.9
-    }
+    },
+    "trim": "#141414",
+    "tex": "scales"
    },
    "utility": {
     "kind": "invulnerable",
@@ -2150,7 +2154,8 @@
      "lean": 0.05,
      "arms": 0.8,
      "tempo": 1.1
-    }
+    },
+    "trim": "#c02020"
    },
    "utility": {
     "kind": "emp",
@@ -2454,8 +2459,8 @@
     "name": "Living Steel"
    },
    "look": {
-    "suit": "#8a929c",
-    "accent": "#c0c8d2",
+    "suit": "#8e1c24",
+    "accent": "#22346a",
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
@@ -2463,13 +2468,21 @@
     ],
     "build": "bulky",
     "hair_style": "short",
-    "trim": "#c0c8d2",
-    "gloves": "#8a929c",
+    "trim": "#e8e6e0",
+    "gloves": "#8e1c24",
     "anim": {
      "idle": "heavy",
      "run": "stomp",
      "bounce": 1.3,
      "tempo": 0.7
+    },
+    "pants": "#22346a",
+    "tex": "weave",
+    "emblem": {
+     "kind": "star",
+     "c1": "#f0eee8",
+     "c2": "#f0eee8",
+     "size": 0.12
     }
    },
    "alt_kit": {
@@ -2585,7 +2598,8 @@
      "fly": "staff_ride",
      "bounce": 1.2,
      "tempo": 1.3
-    }
+    },
+    "skirt_stripes": true
    },
    "alt_kit": {
     "primary": {
@@ -2933,7 +2947,7 @@
     "emblem": {
      "kind": "bolt",
      "c1": "#efe9ff",
-     "c2": "#b46cff",
+     "c2": "#c9a227",
      "size": 0.13
     },
     "trail": "#c48bff",
@@ -2943,7 +2957,8 @@
      "sprint": "bouncy",
      "tempo": 1.4,
      "bounce": 1.3
-    }
+    },
+    "belt": "#c9a227"
    },
    "utility": {
     "kind": "blitz",
@@ -3042,21 +3057,14 @@
     "color": "#c83030"
    },
    "look": {
-    "suit": "#9a1a28",
-    "accent": "#1d1d1d",
+    "suit": "#b4bac2",
+    "accent": "#2a4a9a",
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
-     "mask_dark",
      "leather"
     ],
-    "trim": "#1d1d1d",
-    "emblem": {
-     "kind": "circle",
-     "c1": "#1d1d1d",
-     "c2": "#e6c040",
-     "size": 0.1
-    },
+    "trim": "#2a4a9a",
     "anim": {
      "idle": "relaxed",
      "run": "skip",
@@ -3064,7 +3072,8 @@
      "cadence": 0.8,
      "arms": 1.8,
      "bounce": 1.4
-    }
+    },
+    "tex": "mesh"
    },
    "alt_kit": {
     "primary": {
@@ -3151,8 +3160,8 @@
     "name": "Shield Wall"
    },
    "look": {
-    "suit": "#a6adb5",
-    "accent": "#4a5058",
+    "suit": "#2b3550",
+    "accent": "#9aa2ae",
     "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
@@ -3252,12 +3261,11 @@
     "element": "push"
    },
    "look": {
-    "suit": "#1b2440",
-    "accent": "#c8102e",
+    "suit": "#8e1c24",
+    "accent": "#1f2f66",
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
-     "cape",
      "leather"
     ],
     "build": "bulky",
@@ -3275,7 +3283,10 @@
      "run": "swagger",
      "fly": "fists_forward",
      "sway": 0.05
-    }
+    },
+    "trim": "#1f2f66",
+    "belt": "#c9a227",
+    "tex": "mesh"
    },
    "fly_speed": 1.3,
    "alt_kit": {
@@ -3366,13 +3377,12 @@
     "color": "#8fd8ff"
    },
    "look": {
-    "suit": "#1f3a6e",
-    "accent": "#e0c068",
+    "suit": "#22376a",
+    "accent": "#c8ccd4",
     "skin": "#c0906a",
-    "hair": "#16110e",
+    "hair": "#3a2416",
     "extras": [
-     "mask_star",
-     "cape"
+     "mask_star"
     ],
     "build": "female",
     "hair_style": "long",
@@ -3383,14 +3393,15 @@
      "c2": "#1f3a6e",
      "size": 0.13
     },
-    "belt": "#e0c068",
+    "belt": "#c8ccd4",
     "anim": {
      "idle": "float",
      "run": "glide",
      "fly": "dreamer",
      "stride": 1.2,
      "cadence": 0.95
-    }
+    },
+    "trim": "#c8ccd4"
    },
    "utility": {
     "kind": "foresight",
@@ -3424,7 +3435,7 @@
    "civilian": {
     "look": {
      "skin": "#c0906a",
-     "hair": "#16110e",
+     "hair": "#3a2416",
      "hair_style": "long",
      "build": "female",
      "accent": "#2a2a2a",
@@ -3487,20 +3498,18 @@
     "name": "Force Field"
    },
    "look": {
-    "suit": "#3a1f5c",
-    "accent": "#5ce07a",
-    "skin": "#7ad16a",
-    "hair": "#d9b468",
-    "extras": [
-     "leather"
-    ],
+    "suit": "#4a2e6e",
+    "accent": "#a8adb5",
+    "skin": "#4a78c8",
+    "hair": "#c8ccd2",
+    "extras": [],
     "hair_style": "slick",
-    "trim": "#5ce07a",
+    "trim": "#a8adb5",
     "emblem": {
      "kind": "circle",
-     "c1": "#5ce07a",
-     "c2": "#2a1240",
-     "size": 0.09
+     "c1": "#a8adb5",
+     "c2": "#4a2e6e",
+     "size": 0.07
     },
     "eye_color": "#2a6a2a",
     "anim": {
@@ -3509,7 +3518,8 @@
      "fly": "ring",
      "stride": 1.1,
      "cadence": 1.05
-    }
+    },
+    "tex": "weave"
    },
    "utility": {
     "kind": "teleport",
@@ -3541,11 +3551,11 @@
    "civilian": {
     "look": {
      "skin": "#e0b896",
-     "hair": "#d9b468",
+     "hair": "#c8ccd2",
      "hair_style": "slick",
      "eye_color": "#2a6a2a",
      "accent": "#2a2a2a",
-     "gloves": "#7ad16a",
+     "gloves": "#4a78c8",
      "glove_length": 0.0,
      "boot_height": 0.12,
      "no_belt": true,
@@ -3603,7 +3613,7 @@
     "name": "Flashbang"
    },
    "look": {
-    "suit": "#8b1a1a",
+    "suit": "#701a1e",
     "accent": "#3a0a0a",
     "skin": "#d8a882",
     "hair": "#4a3020",
@@ -3613,7 +3623,7 @@
      "leather",
      "jacket"
     ],
-    "coat_color": "#8b1a1a",
+    "coat_color": "#701a1e",
     "pants": "#2a1a1a",
     "gear": {
      "left": "bow"
@@ -3713,7 +3723,7 @@
     "name": "Flashbang"
    },
    "look": {
-    "suit": "#2c2f33",
+    "suit": "#4e5864",
     "accent": "#e8e8e8",
     "skin": "#a8724e",
     "hair": "#16110e",
@@ -3722,7 +3732,7 @@
      "leather",
      "jacket"
     ],
-    "coat_color": "#26282b",
+    "coat_color": "#262a2e",
     "gloves": "#2a2a2a",
     "boots": "#2a2a2a",
     "gear": {
@@ -3735,7 +3745,8 @@
      "stride": 0.9,
      "cadence": 1.0,
      "sway": -0.1
-    }
+    },
+    "coat_tex": "tactical"
    },
    "alt_kit": {
     "primary": {
@@ -3821,14 +3832,13 @@
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
-     "goggles",
      "coat",
      "leather"
     ],
     "build": "bulky",
     "hair_style": "buzz",
     "facial": "stubble",
-    "coat_color": "#5a3a22",
+    "coat_color": "#6a5236",
     "gear": {
      "right": "heat_gun"
     },
@@ -3838,7 +3848,8 @@
      "run": "heavy",
      "cadence": 0.85,
      "sway": 0.1
-    }
+    },
+    "coat_tex": "weave"
    },
    "alt_kit": {
     "primary": {
@@ -3934,11 +3945,12 @@
     "skin": "#d8a882",
     "hair": "#d9b468",
     "extras": [
-     "coat"
+     "coat",
+     "tie"
     ],
     "hair_style": "short",
     "facial": "stubble",
-    "coat_color": "#b8a070",
+    "coat_color": "#a8885a",
     "pants": "#2a2a2e",
     "collar": "#7a1a1a",
     "boots": "#2a1e14",
@@ -3949,7 +3961,8 @@
      "run": "swagger",
      "sway": -0.1,
      "tempo": 0.7
-    }
+    },
+    "tie_color": "#5a1418"
    },
    "utility": {
     "kind": "teleport",
@@ -4055,7 +4068,7 @@
     ],
     "build": "female",
     "hair_style": "long",
-    "coat_color": "#6a3a2a",
+    "coat_color": "#6a1e22",
     "boots": "#2a1a12",
     "gloves": "#a8724e",
     "glove_length": 0.0,
@@ -4639,16 +4652,17 @@
     "element": "fire"
    },
    "look": {
-    "suit": "#3a4a6a",
+    "suit": "#1a1a1c",
     "accent": "#b81820",
     "skin": "#d8a882",
     "hair": "#4a3020",
     "extras": [
-     "jacket"
+     "jacket",
+     "hood"
     ],
     "hair_style": "short",
-    "coat_color": "#2a3448",
-    "pants": "#2a3040",
+    "coat_color": "#1c1c1e",
+    "pants": "#22242a",
     "boots": "#3a3a3a",
     "gloves": "#d8a882",
     "glove_length": 0.0,
@@ -4659,6 +4673,13 @@
      "cadence": 1.08,
      "arms": 1.2,
      "tempo": 1.2
+    },
+    "coat_tex": "knit",
+    "emblem": {
+     "kind": "s_shield",
+     "c1": "#b81820",
+     "c2": "#1a1a1c",
+     "size": 0.13
     }
    },
    "fly_speed": 1.2,
@@ -5231,7 +5252,7 @@
     "color": "#c8e8ff"
    },
    "look": {
-    "suit": "#3a5a6a",
+    "suit": "#4a4a44",
     "accent": "#c8e8ff",
     "skin": "#a8724e",
     "hair": "#16110e",
@@ -5239,7 +5260,7 @@
      "jacket"
     ],
     "hair_style": "curly",
-    "coat_color": "#3a5a6a",
+    "coat_color": "#6a4a2a",
     "facial": "stubble",
     "pants": "#2a2a30",
     "emblem": {
@@ -5338,7 +5359,7 @@
     ],
     "build": "female",
     "hair_style": "long",
-    "coat_color": "#221a1e",
+    "coat_color": "#1e1418",
     "pants": "#1a1418",
     "boots": "#141414",
     "trail": "#ff4a3a",
@@ -5347,7 +5368,8 @@
      "run": "glide",
      "fly": "conductor",
      "tempo": 0.9
-    }
+    },
+    "coat_tex": "leather"
    },
    "utility": {
     "kind": "teleport",
@@ -6715,7 +6737,7 @@
     "name": "Rag Cocoon"
    },
    "look": {
-    "suit": "#8a7a5a",
+    "suit": "#6a6a66",
     "accent": "#4a3a2a",
     "skin": "#d8a882",
     "hair": "#16110e",
@@ -6724,15 +6746,17 @@
      "mask_dark",
      "coat"
     ],
-    "coat_color": "#7a6a4a",
-    "pants": "#5a4a3a",
-    "boots": "#4a3a2a",
-    "gloves": "#6a5a3a",
+    "coat_color": "#5e5e5a",
+    "pants": "#4e4e4a",
+    "boots": "#3a3a38",
+    "gloves": "#5a5a56",
     "anim": {
      "idle": "menace",
      "run": "stalk",
      "arms": 1.2
-    }
+    },
+    "tex": "suede",
+    "coat_tex": "suede"
    },
    "utility": {
     "kind": "grapple",
@@ -6803,8 +6827,8 @@
     "name": "Micro-Missile Pods"
    },
    "look": {
-    "suit": "#1a1a24",
-    "accent": "#c8102e",
+    "suit": "#1c2438",
+    "accent": "#555c66",
     "skin": "#d8a882",
     "hair": "#7a3a22",
     "extras": [
@@ -6813,13 +6837,7 @@
     ],
     "build": "female",
     "hair_style": "short",
-    "trim": "#c8102e",
-    "emblem": {
-     "kind": "s_shield",
-     "c1": "#c8102e",
-     "c2": "#1a1a24",
-     "size": 0.12
-    },
+    "trim": "#2c3650",
     "gear": {
      "right": "gauntlet"
     },
@@ -6828,7 +6846,8 @@
      "idle": "fists",
      "run": "athlete",
      "fly": "jet"
-    }
+    },
+    "tex": "tactical"
    },
    "fly_speed": 1.2,
    "ultimate": {
@@ -6903,8 +6922,8 @@
     "name": "Hammer Drop"
    },
    "look": {
-    "suit": "#8a929c",
-    "accent": "#c8102e",
+    "suit": "#5c6168",
+    "accent": "#8a9098",
     "skin": "#5a3724",
     "hair": "#16110e",
     "extras": [
@@ -6917,8 +6936,8 @@
     "cape": "#c8102e",
     "emblem": {
      "kind": "s_shield",
-     "c1": "#c8102e",
-     "c2": "#8a929c",
+     "c1": "#8a2a2a",
+     "c2": "#5c6168",
      "size": 0.14
     },
     "gear": {
@@ -7958,7 +7977,7 @@
     "name": "Negative Speed Force"
    },
    "look": {
-    "suit": "#d8a514",
+    "suit": "#b8901a",
     "accent": "#a3111a",
     "skin": "#d8a882",
     "hair": "#d9b468",
@@ -7971,7 +7990,7 @@
     "trim": "#a3111a",
     "belt": "#a3111a",
     "boots": "#a3111a",
-    "gloves": "#d8a514",
+    "gloves": "#b8901a",
     "emblem": {
      "kind": "bolt",
      "c1": "#141414",
@@ -9294,7 +9313,7 @@
     "hair": "#d9b468",
     "extras": [
      "leather",
-     "jacket"
+     "coat"
     ],
     "build": "female",
     "hair_style": "long",

@@ -1147,8 +1147,10 @@ func test_loadouts_and_buildings() -> void:
 	world.street_crime.enabled = true
 	world.street_crime.start()
 	check(is_instance_valid(world.street_crime.mugger), "a mugging can break out")
+	world.street_crime.mugger.blocking = false   # a fresh block would parry the hit
 	world.street_crime.mugger.take_damage(99999.0, world.player)
-	await _frames(2)
+	for i in 3:
+		await get_tree().process_frame
 	check(world.street_crime.mugger == null, "stopping the mugger ends it")
 	world.street_crime.enabled = false
 	world.power_weather("storm", 1.0)
