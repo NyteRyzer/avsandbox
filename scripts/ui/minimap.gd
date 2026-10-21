@@ -102,6 +102,12 @@ func _draw() -> void:
 		var q2: Vector2 = to_screen.call(pp.x, pp.z)
 		if q2.distance_to(center) < size.x * 0.5 - 6.0 and pt["kind"] != "subway":
 			draw_circle(q2, 2.0, Color("#ffd27a"))
+	# Most Wanted (magenta diamond) and supply drops (green square).
+	for pair in [[world.side_jobs.bounty_pos(), Color("#ff5ad0")], [world.side_jobs.drop_pos(), Color("#7aff7a")]]:
+		var wp: Vector3 = pair[0]
+		if wp != Vector3.INF:
+			var q3: Vector2 = center + (to_screen.call(wp.x, wp.z) - center).limit_length(size.x * 0.5 - 10.0)
+			draw_colored_polygon(PackedVector2Array([q3 + Vector2(0, -7), q3 + Vector2(7, 0), q3 + Vector2(0, 7), q3 + Vector2(-7, 0)]), pair[1])
 	var mg: Vector3 = world.street_crime.target_pos()
 	if mg != Vector3.INF:
 		var s4: Vector2 = to_screen.call(mg.x, mg.z)

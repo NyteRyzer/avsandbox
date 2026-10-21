@@ -575,6 +575,8 @@ static func _beam(a: Actor, atk: Dictionary, delta: float, slot: String) -> void
 			col.take_damage(dmg, a, element if randf() < 0.2 else "", dir * 0.6)
 		elif col is Prop:
 			col.hit(dmg, dir * 2.0, a)
+		elif col is HitTarget:
+			col.hit(dmg, dir, a)
 		if randf() < 0.6:
 			FX.sparks(w, end, color, 3, 5.0, 0.3)
 		if style == "cold" and randf() < 0.3:
@@ -729,6 +731,10 @@ static func _hit_props(a: Actor, center: Vector3, radius: float, dmg: float, dir
 		var push := (to.normalized() if dir == Vector3.ZERO else dir.lerp(to.normalized(), 0.5).normalized())
 		prop.hit(dmg, push * dmg * (2.0 if a.strength else 0.8) + Vector3.UP * dmg * 0.3, a)
 		any = true
+	for t in a.get_tree().get_nodes_in_group("hit_targets"):
+		if (t.global_position - center).length() < radius + t.radius:
+			t.hit(dmg, dir, a)
+			any = true
 	return any
 
 
@@ -750,6 +756,9 @@ static func explode(world, pos: Vector3, radius: float, dmg: float, source: Acto
 		var to: Vector3 = prop.global_position - pos
 		if to.length() < radius * 1.4:
 			prop.hit(dmg * 0.8, to.normalized() * dmg * 3.0 + Vector3.UP * dmg * 2.0, source)
+	for t in tree.get_nodes_in_group("hit_targets"):
+		if t.global_position.distance_to(pos) < radius + t.radius:
+			t.hit(dmg, Vector3.ZERO, source)
 	FX.flash(world, pos, color, radius, 0.45, 0.8)
 	FX.flash(world, pos, Color("#fff4c0"), radius * 0.5, 0.25, 0.9)
 	FX.sparks(world, pos, color, 30, 14.0, 0.8)

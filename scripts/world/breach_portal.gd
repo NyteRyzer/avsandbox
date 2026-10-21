@@ -15,6 +15,8 @@ const RADIUS := 1.5
 var world
 var dest_id := ""
 var exit_only := false
+var walkable := true             # false for hostile breaches you can't use
+var lifetime := LIFETIME
 var color := Color("#4fa8ff")
 var state := "opening"
 var t := 0.0
@@ -111,9 +113,9 @@ func _process(delta: float) -> void:
 				t = 0.0
 		"open":
 			scale = Vector3.ONE * (1.0 + sin(t * 3.0) * 0.015)
-			if t > (2.2 if exit_only else LIFETIME):
+			if t > (2.2 if exit_only else lifetime):
 				close()
-			elif not exit_only:
+			elif not exit_only and walkable:
 				_check_enter()
 		"closing":
 			var k := clampf(t / 0.5, 0.0, 1.0)

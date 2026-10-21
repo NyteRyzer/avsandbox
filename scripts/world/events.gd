@@ -7,8 +7,17 @@ extends Node
 signal changed
 
 const HERO_EVENTS := ["robbery", "villain_attack", "breach", "gang_war", "dominators", "jailbreak", "fire", "chase",
-	"team_attack", "nemesis"]
-const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators", "team_patrol", "nemesis"]
+	"team_attack", "nemesis", "incursion", "falling", "meteors", "runaway"]
+const VILLAIN_EVENTS := ["police_raid", "hero_patrol", "heist", "breach", "dominators", "team_patrol", "nemesis",
+	"incursion", "meteors"]
+const ACTIVITY_INFO := {
+	"fire": ["Building fire! Rescue the people trapped inside", "#ff8a2a"],
+	"chase": ["Getaway car! Stop the robbers", "#ffd23a"],
+	"incursion": ["Breach incursion! Smash the breach shut", "#ff4a6a"],
+	"falling": ["People are falling from a rooftop! Catch them", "#ffd23a"],
+	"meteors": ["Meteor shower! Smash them before they land", "#ff8a3a"],
+	"runaway": ["Runaway car! Get in front of it and stop it", "#ffd23a"],
+}
 
 var world
 var active: Dictionary = {}
@@ -38,6 +47,7 @@ func _process(delta: float) -> void:
 			_finish()
 			return
 		active["remaining"] = act.remaining()
+		active["total"] = maxi(int(active["total"]), act.total)
 		active["pos"] = act.marker_pos()
 		if _marker:
 			_marker.global_position = act.marker_pos()
@@ -67,9 +77,9 @@ func start_random(kind := "") -> void:
 	if kind == "":
 		var pool: Array = HERO_EVENTS if hero else VILLAIN_EVENTS
 		kind = pool[rng.randi() % pool.size()]
-	if kind in ["jailbreak", "fire", "chase"] and world.city.kind != "metro":
+	if kind in ["jailbreak", "fire", "chase", "falling", "runaway"] and world.city.kind != "metro":
 		kind = "robbery"
-	if kind in ["fire", "chase"]:
+	if ACTIVITY_INFO.has(kind):
 		_start_activity(kind)
 		return
 	var p: Vector3 = world.player.global_position
@@ -296,19 +306,25 @@ func reset() -> void:
 	changed.emit()
 
 
-## Fire rescues and getaway chases run as their own Activity node.
+## Fire rescues, getaway chases and the incidents (breach incursions,
+## falling people, meteor showers, runaway cars) run as their own Activity.
 func _start_activity(kind: String) -> void:
-	var act := Activity.new()
+	var act: Activity = Incident.new() if kind in Incident.KINDS else Activity.new()
 	world.fx_root.add_child(act)
-	var ok := act.start_fire(world, world.player.global_position) if kind == "fire" else act.start_chase(world, world.player.global_position)
+	var ok := false
+	var near: Vector3 = world.player.global_position
+	if act is Incident:
+		ok = (act as Incident).start(world, kind, near)
+	else:
+		ok = act.start_fire(world, near) if kind == "fire" else act.start_chase(world, near)
 	if not ok:
 		act.queue_free()
 		start_random("robbery")
 		return
-	var title := "Building fire! Rescue the people trapped inside" if kind == "fire" else "Getaway car! Stop the robbers"
-	var color := Color("#ff8a2a") if kind == "fire" else Color("#ffd23a")
+	var title: String = ACTIVITY_INFO[kind][0]
+	var color := Color(str(ACTIVITY_INFO[kind][1]))
 	active = {"kind": kind, "title": title, "pos": act.marker_pos(), "actors": [], "time": 0.0, "custom": act,
-		"remaining": act.remaining(), "total": act.remaining(), "district": world.city.district_at(act.center)}
+		"remaining": act.remaining(), "total": maxi(act.remaining(), act.total), "district": world.city.district_at(act.center)}
 	_spawn_marker(act.marker_pos(), color, title)
 	world.notify("NEW EVENT: " + title, color)
 	Sfx.play("event", null, -2.0)

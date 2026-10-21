@@ -11,6 +11,17 @@ var _current := ""
 
 
 func _ready() -> void:
+	# `-- only=test_name` runs just that (async) test, for quick iteration.
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("only="):
+			_current = "test_world_smoke"
+			await test_world_smoke()
+			_current = arg.trim_prefix("only=")
+			if _current != "test_world_smoke":
+				await call(_current)
+			print("\n%d checks passed, %d failed." % [_passed, _failed])
+			get_tree().quit(1 if _failed > 0 else 0)
+			return
 	for test in ["test_roster_is_valid", "test_roster_has_both_sides", "test_ability_defaults_cover_roster",
 			"test_factions", "test_city_is_deterministic"]:
 		_current = test
@@ -49,6 +60,8 @@ func _ready() -> void:
 	await test_wheel_powers_streets()
 	_current = "test_campaign"
 	await test_campaign()
+	_current = "test_breach_and_new_features"
+	await test_breach_and_new_features()
 	_current = "test_ui_smoke"
 	await test_ui_smoke()
 	print("\n%d checks passed, %d failed." % [_passed, _failed])
@@ -127,6 +140,7 @@ func test_world_smoke() -> void:
 	add_child(world)
 	world.char_missions.enabled = false   # only the personal-mission test turns them on
 	world.street_crime.enabled = false
+	world.side_jobs.enabled = false     # only the side-job test turns them on
 	world.spawn_player("flash")
 	check(world.player != null and world.player.is_player, "player spawned")
 	check(world.city.parked.size() > 50, "props were placed")
@@ -404,6 +418,12 @@ func test_ultimates() -> void:
 	t.take_damage(30.0, world.player)
 	check(world.player.ult > 20.0, "dealing damage charges the ultimate")
 	world.clear_npcs()
+
+
+## Waits for whole rendered frames (process, not just physics, has run).
+func _idle(n: int) -> void:
+	for i in n:
+		await get_tree().process_frame
 
 
 func _frames(n: int) -> void:
@@ -1291,6 +1311,151 @@ func test_campaign() -> void:
 	check(zooms.size() >= 1, "Earth-2's Zoom is waiting even outside the campaign")
 	world.travel_to("earth1", "breach")
 	world.clear_npcs()
+
+
+func test_breach_and_new_features() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.events.enabled = true
+	world.events.cooldown = 99999.0
+	world.side_jobs.enabled = false
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "speed")
+	# Breaching opens a portal; nothing happens until you walk into it.
+	world.spawn_player("vibe", Vector3(560, 0.5, -440))
+	await _idle(3)
+	world.open_breach("earth2")
+	check(is_instance_valid(world.breach_portal), "breaching opens a portal")
+	await _idle(70)
+	check(world.place_id == "earth1", "the breach doesn't teleport you on its own")
+	world.player.global_position = world.breach_portal.global_position - Vector3.UP * 2.0
+	await _idle(4)
+	check(world.place_id == "earth2", "walking into the breach takes you through")
+	var exits := 0
+	for c in world.get_children():
+		if c is BreachPortal and c.exit_only:
+			exits += 1
+	check(exits == 1, "you step out of an exit breach on the other side")
+	world.travel_to("earth1", "speed")
+	world.spawn_player("superman", Vector3(560, 0.5, -440))
+	var p: Actor = world.player
+	await _idle(3)
+	# Breach incursion: the breach keeps sending people until you smash it.
+	world.events.start_random("incursion")
+	var inc: Incident = world.events.active.get("custom")
+	check(inc != null and is_instance_valid(inc.breach_body), "a breach incursion opens a hostile breach")
+	inc._spawn_t = 0.0
+	await _idle(3)
+	check(inc.invaders.size() == 1, "doppelgangers come through the breach")
+	inc.breach_body.hit(99999.0, Vector3.ZERO, p)
+	for a in inc.invaders:
+		a.take_damage(99999.0, p)
+	await _idle(4)
+	check(world.events.active.is_empty() and Game.stat("breaches_closed") >= 1.0, "smashing the breach and its invaders ends the incursion")
+	# Meteors: anything that hits them breaks them.
+	world.events.start_random("meteors")
+	var met: Incident = world.events.active.get("custom")
+	await _idle(3)
+	check(met.meteors.size() == 1, "a meteor shower starts dropping meteors")
+	var rock: HitTarget = met.meteors[0]["body"]
+	Abilities.explode(world, rock.global_position, 3.0, 200.0, p)
+	await _idle(2)
+	check(met.smashed == 1, "an explosion smashes a meteor")
+	var thug: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0.5, 8))
+	met._spawn_meteor()
+	var rock2: HitTarget = met.meteors[-1]["body"]
+	rock2.hit(500.0, Vector3.ZERO, thug)
+	check(not rock2.dead, "enemies can't break meteors for you")
+	thug.queue_free()
+	world.events.reset()
+	# Falling civilians: catch them.
+	world.events.start_random("falling")
+	var fall: Incident = world.events.active.get("custom")
+	if fall != null and fall.kind == "falling":
+		fall._next_fall = 0.0
+		await _idle(2)
+		var who: Actor = fall.fallers[0]["actor"]
+		p.global_position = who.global_position - Vector3.UP * 1.2
+		await _idle(2)
+		check(fall.caught == 1, "flying into a falling civilian catches them")
+	else:
+		check(false, "a falling-civilian event starts in the city")
+	world.events.reset()
+	# Runaway car: stand in front of it and it grinds to a halt.
+	world.events.start_random("runaway")
+	var run: Incident = world.events.active.get("custom")
+	check(run != null and is_instance_valid(run.runaway_car), "a runaway car event starts")
+	var stopped0 := Game.stat("runaways_stopped")
+	for k in 300:
+		if not is_instance_valid(run) or run.done or run.failed:
+			break
+		p.global_position = run.runaway_car.global_position + run.runaway_car.heading * 3.0
+		await _idle(1)
+	check(Game.stat("runaways_stopped") > stopped0, "a strong hero stops the runaway car")
+	world.events.reset()
+	# Most Wanted.
+	var b: Actor = world.side_jobs.start_bounty()
+	check(world.side_jobs.bounty_pos() != Vector3.INF, "a Most Wanted bounty appears on the map")
+	var before_score := Game.score
+	b.take_damage(999999.0, p)
+	await _idle(2)
+	check(world.side_jobs.bounty == null and Game.score > before_score, "taking down the bounty pays out")
+	# Supply drop.
+	var crate: Node3D = world.side_jobs.start_drop()
+	crate.global_position.y = 0.6
+	await _idle(2)
+	p.hp = 10.0
+	p.global_position = crate.global_position
+	await _idle(2)
+	check(world.side_jobs.drop == null and p.hp == p.max_hp, "opening a supply drop heals you")
+	world.clear_npcs()
+	# Help request: fetch the cat from the roof.
+	var owner_npc: Actor = world.side_jobs.start_help()
+	p.global_position = owner_npc.global_position + Vector3(1, 0, 0)
+	await _idle(2)
+	check(world._nearest_door().get("interior", "") == "help", "you can talk to someone asking for help")
+	world.side_jobs.accept_help(owner_npc)
+	check(is_instance_valid(world.side_jobs.cat), "their cat is stuck on a roof")
+	p.global_position = world.side_jobs.cat.global_position - Vector3.UP * 1.2
+	await _idle(2)
+	check(world.side_jobs.cat_carried, "you can grab the cat")
+	p.global_position = owner_npc.global_position + Vector3(1, 0, 0)
+	await _idle(2)
+	check(world.side_jobs.owner_npc == null and Game.stat("cats_rescued") >= 1.0, "bringing the cat back finishes the job")
+	# Fans and selfies.
+	var fan: Actor = world.population.spawn_civilian(p.global_position + Vector3(6, 0.5, 0))
+	world.side_jobs.enabled = true
+	world.side_jobs._fan_t = 0.0
+	await _idle(2)
+	world.side_jobs.enabled = false
+	check(fan.has_meta("fan"), "civilians recognise a hero and ask for a selfie")
+	world.side_jobs.selfie(fan)
+	check(not fan.has_meta("fan") and Game.stat("selfies") >= 1.0, "taking the selfie")
+	# Krypto.
+	world.side_jobs.toggle_krypto()
+	check(is_instance_valid(world.side_jobs.krypto), "Superman can whistle for Krypto")
+	var foe: Actor = world.population.spawn_thug(p.global_position + Vector3(4, 0.5, 0))
+	var hp0 := foe.hp
+	for k in 90:
+		await _idle(1)
+		if foe.hp < hp0:
+			break
+	check(foe.hp < hp0, "Krypto bites the bad guys")
+	world.spawn_player("flash", p.global_position)
+	await _idle(2)
+	check(world.side_jobs.krypto == null, "Krypto leaves when you aren't a Kryptonian")
+	world.clear_npcs()
+	# Target drill.
+	world.side_jobs.start_drill()
+	check(world.side_jobs.drones.size() == 4, "the target drill puts up drones")
+	var d0: HitTarget = world.side_jobs.drones[0]
+	d0.hit(5.0, Vector3.ZERO, world.player)
+	check(world.side_jobs.drill_score == 1 and world.side_jobs.drones.size() == 4, "smashing a drone scores and another appears")
+	world.side_jobs.drill_time = 0.01
+	await _idle(2)
+	check(world.side_jobs.drones.is_empty() and Game.stat("drill_best_flash") >= 1.0, "the drill ends and records your best")
+	world.side_jobs.enabled = true
+	world.events.enabled = true
 
 
 func test_ui_smoke() -> void:

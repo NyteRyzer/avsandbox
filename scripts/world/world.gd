@@ -16,6 +16,7 @@ var loadout_panel: LoadoutPanel
 var weapon_wheel: WeaponWheel
 var pickups: Pickups
 var street_crime: StreetCrime
+var side_jobs: SideJobs
 var race: Race
 var style := StyleMeter.new()
 var news: News
@@ -93,6 +94,9 @@ func _ready() -> void:
 	street_crime = StreetCrime.new()
 	street_crime.world = self
 	add_child(street_crime)
+	side_jobs = SideJobs.new()
+	side_jobs.world = self
+	add_child(side_jobs)
 	weapon_wheel = WeaponWheel.new()
 	weapon_wheel.world = self
 	add_child(weapon_wheel)
@@ -303,6 +307,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if event.is_action_pressed("emote_%d" % (k + 1)) and player and is_instance_valid(player):
 				Emotes.play(player, k + 1)
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("companion"):
+		if player and is_instance_valid(player):
+			side_jobs.toggle_krypto()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("swap"):
 		swap_to_next_ally()
 		get_viewport().set_input_as_handled()
@@ -419,6 +427,12 @@ func _nearest_door() -> Dictionary:
 			if o.has_meta("trapped"):
 				best = {"name": "Carry %s to safety" % o.display_name, "pos": o.global_position, "interior": "rescue", "actor": o}
 				break
+			if o.has_meta("help_request"):
+				best = {"name": "Ask what's wrong", "pos": o.global_position, "interior": "help", "actor": o}
+				break
+			if o.has_meta("fan") and not player.civilian:
+				best = {"name": "Take a selfie with your fan", "pos": o.global_position, "interior": "selfie", "actor": o}
+				break
 			if not player.civilian and o.follow_target == null and not o.is_hostile_to(player) and not player.is_hostile_to(o) \
 					and o.side() == player.side() and o.def.get("id", "") not in ["civilian", "police", "thug"] and not o.has_meta("summon"):
 				best = {"name": "Recruit %s" % o.display_name, "pos": o.global_position, "interior": "recruit", "actor": o}
@@ -522,6 +536,12 @@ func use_door(d: Dictionary) -> void:
 			notify("Carry them to the ambulance. [G] puts them down.", Color("#60ff90"))
 		"recruit":
 			recruit(d["actor"])
+		"help":
+			side_jobs.accept_help(d["actor"])
+		"selfie":
+			side_jobs.selfie(d["actor"])
+		"drill":
+			side_jobs.start_drill()
 		"training":
 			survival.start()
 		"jsa_rollcall":
@@ -1106,6 +1126,7 @@ func travel_to(id: String, how := "breach") -> void:
 	char_missions._cleanup()
 	pickups.clear()
 	street_crime.stop()
+	side_jobs.reset()
 	inmates.clear()
 	missions.on_arrive(id)
 	collectibles.build()

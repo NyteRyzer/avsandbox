@@ -308,6 +308,8 @@ func _damage(pos: Vector3, col) -> void:
 		Sfx.play("hit", pos, -4.0)
 	elif col is Prop:
 		col.hit(damage, velocity.normalized() * damage * 0.6, src)
+	elif col is HitTarget:
+		col.hit(damage, velocity.normalized(), src)
 
 
 func _finish(pos: Vector3, col, normal := Vector3.UP) -> void:

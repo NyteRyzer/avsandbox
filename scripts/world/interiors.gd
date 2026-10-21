@@ -247,6 +247,9 @@ func stations(armory := true, medbay := true) -> void:
 		box(Vector3(-x + 0.4, 2.9, z), Vector3(0.1, 0.25, 3.0), "#3affd0", false, 2.0)
 		label("ARMORY", Vector3(-x + 0.5, 3.3, z), 0.45, Color("#3affd0"), PI * 0.5)
 		interactable("Armory: change your loadout", Vector3(-x + 1.6, 0.5, z), "armory")
+		box(Vector3(-x + 0.4, 1.6, z - 3.2), Vector3(0.1, 1.2, 1.6), "#3affd0", false, 1.4)
+		label("TARGET DRILL", Vector3(-x + 0.5, 2.6, z - 3.2), 0.35, Color("#3affd0"), PI * 0.5)
+		interactable("Target drill: smash drones for 45 seconds", Vector3(-x + 1.6, 0.5, z - 3.2), "drill")
 	if medbay:
 		box(Vector3(x - 0.6, 0.45, z), Vector3(1.2, 0.9, 2.6), "#e8e8ec")
 		box(Vector3(x - 0.6, 0.95, z - 0.9), Vector3(1.0, 0.15, 0.6), "#ffffff")
