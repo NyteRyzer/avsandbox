@@ -502,7 +502,8 @@ func _process(delta: float) -> void:
 	district_label.text = world.place_name(p.global_position)
 	hint_label.text = world.interact_prompt()
 	if world.ship.piloted:
-		hint_label.text = "WAVERIDER  ·  [Shift] boost  ·  [LMB] cannons  ·  [Q] time jump  ·  [G] leave the helm"
+		hint_label.text = "WAVERIDER  %d km/h  ·  alt %d m  ·  [A/D] turn  ·  [Shift] boost  ·  [LMB] cannons  ·  [Q] time jump  ·  [G] bridge  ·  [U] bail out" % [
+			int(world.ship.velocity.length() * 3.6), int(world.ship.global_position.y)]
 	var h: float = world.day_night.hour
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 

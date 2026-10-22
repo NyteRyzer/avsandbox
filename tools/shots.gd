@@ -72,6 +72,49 @@ func _ready() -> void:
 		await _snap("feature_krypto_drop", 2)
 		get_tree().quit()
 		return
+	if only == "ship":
+		# The Waverider outside (free camera), at the helm, and its rooms.
+		var w := World.new()
+		add_child(w)
+		w.population.enabled = false
+		w.events.cooldown = 9999.0
+		w.char_missions.enabled = false
+		w.day_night.frozen = true
+		w.day_night.hour = 16.0
+		w.spawn_player("white_canary", Vector3(560, 0.5, -440))
+		for i in 10:
+			await get_tree().physics_frame
+		var c := Camera3D.new()
+		w.add_child(c)
+		var sp: Vector3 = w.ship.global_position
+		for view in [["ship_quarter", Vector3(48, 18, -40)], ["ship_side", Vector3(70, 6, 4)], ["ship_rear", Vector3(-30, 14, 70)]]:
+			c.global_position = sp + view[1]
+			c.look_at(sp + Vector3(0, 1, 0), Vector3.UP)
+			c.current = true
+			for i in 6:
+				await get_tree().physics_frame
+			await _snap(str(view[0]), 3)
+		w.cam.camera.current = true
+		w.enter_interior("waverider")
+		for spot in [["ship_bridge", Vector3(0, 0.5, -6), 0.0], ["ship_bridge_back", Vector3(0, 0.5, -30), PI],
+				["ship_corridor", Vector3(0, 0.5, 8), 0.0], ["ship_library", Vector3(-9, 0.5, -3), PI * 0.5],
+				["ship_medbay", Vector3(-9, 0.5, 6), PI * 0.5], ["ship_fab", Vector3(9, 0.5, -3), -PI * 0.5],
+				["ship_cargo", Vector3(0, 0.5, 33), 0.0]]:
+			w.player.global_position = Interiors.to_world("waverider", spot[1])
+			w.cam.yaw = spot[2]
+			w.cam.pitch = -0.1
+			w.cam.zoom = 4.0
+			for i in 12:
+				await get_tree().physics_frame
+			await _snap(str(spot[0]), 3)
+		w.call_waverider()
+		w.cam.yaw = -0.4
+		w.cam.pitch = -0.2
+		for i in 90:
+			await get_tree().physics_frame
+		await _snap("ship_helm_flight", 3)
+		get_tree().quit()
+		return
 	if only == "breach":
 		var w := World.new()
 		add_child(w)

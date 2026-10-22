@@ -27,51 +27,18 @@ var _bob := 0.0
 func _ready() -> void:
 	_visual = Node3D.new()
 	add_child(_visual)
-	var hull := _mat("#8e969e", 0.25, 0.45)
-	var dark := _mat("#2a3038", 0.4, 0.5)
-	var trim := _mat("#c8a050", 0.7, 0.3)
-	var glass := _mat("#1a3a5a", 0.2, 0.1)
-	glass.emission_enabled = true
-	glass.emission = Color("#3a8aff")
-	glass.emission_energy_multiplier = 0.4
 	_glow_mat = _mat("#6ad0ff", 0.0, 0.2)
 	_glow_mat.emission_enabled = true
 	_glow_mat.emission = Color("#6ad0ff")
 	_glow_mat.emission_energy_multiplier = 2.0
-	# Hull: a long flattened capsule with a pointed nose.
-	_part(_capsule(5.0, 44.0), Vector3(0, 0, 0), Vector3(PI * 0.5, 0, 0), Vector3(1.35, 1, 0.55), hull)
-	_part(_capsule(3.6, 20.0), Vector3(0, 2.2, 4), Vector3(PI * 0.5, 0, 0), Vector3(1.2, 1, 0.5), dark)
-	_part(_cone(3.4, 0.4, 12.0), Vector3(0, -0.2, -26), Vector3(-PI * 0.5, 0, 0), Vector3(1.3, 1, 0.5), hull)
-	# Cockpit canopy
-	_part(_sphere(3.0), Vector3(0, 2.4, -13), Vector3.ZERO, Vector3(1.0, 0.5, 1.9), glass)
-	# Swept wings with gold trim
-	for side in [-1.0, 1.0]:
-		var wing := BoxMesh.new()
-		wing.size = Vector3(16, 0.8, 11)
-		_part(wing, Vector3(side * 12.0, -0.6, 7), Vector3(0, side * -0.35, side * 0.06), Vector3.ONE, hull)
-		var edge := BoxMesh.new()
-		edge.size = Vector3(16.4, 0.3, 0.8)
-		_part(edge, Vector3(side * 12.3, -0.2, 1.8 + absf(side) * 0.3), Vector3(0, side * -0.35, side * 0.06), Vector3.ONE, trim)
-		# Engine nacelles
-		_part(_cylinder(1.9, 1.6, 12.0), Vector3(side * 6.0, -0.4, 17), Vector3(PI * 0.5, 0, 0), Vector3.ONE, dark)
-		var g := _part(_cylinder(1.5, 1.5, 0.3), Vector3(side * 6.0, -0.4, 23.2), Vector3(PI * 0.5, 0, 0), Vector3.ONE, _glow_mat)
-		_glows.append(g)
-	# Tail fins
-	for side in [-1.0, 1.0]:
-		var fin := BoxMesh.new()
-		fin.size = Vector3(0.6, 6.0, 8.0)
-		_part(fin, Vector3(side * 3.0, 4.2, 16), Vector3(0.3, 0, side * 0.3), Vector3.ONE, hull)
-	var stripe := BoxMesh.new()
-	stripe.size = Vector3(0.2, 0.6, 30.0)
-	for side in [-1.0, 1.0]:
-		_part(stripe, Vector3(side * 6.7, 0.4, -2), Vector3.ZERO, Vector3.ONE, trim)
+	_build_hull()
 	var name_label := Label3D.new()
 	name_label.text = "WAVERIDER"
 	name_label.font_size = 160
 	name_label.pixel_size = 0.02
 	name_label.modulate = Color("#e8f4ff")
 	name_label.outline_size = 16
-	name_label.position = Vector3(6.85, 0.0, -2)
+	name_label.position = Vector3(5.75, 1.9, -2)
 	name_label.rotation.y = PI * 0.5
 	_visual.add_child(name_label)
 	# Boarding ramp light at the stern
@@ -87,10 +54,99 @@ func _ready() -> void:
 	body.collision_mask = 0
 	var cs := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = Vector3(13, 5, 50)
+	box.size = Vector3(11, 7, 58)
 	cs.shape = box
 	body.add_child(cs)
 	add_child(body)
+
+
+## The ship as the show has it: a long, tapering silver fuselage with a raised
+## bridge (its windows glowing), broad swept wings, two huge engines at the
+## stern burning blue-white, canted tail fins, dark panelling and gold trim.
+## Built from smooth lofts with the brushed-metal surface detail.
+func _build_hull() -> void:
+	var mb := MeshBuilder.new()
+	# Painted hull plating (not mirror-bright metal), as on the show.
+	var silver := Color("#9ea4ab")
+	var panel := Color("#5c636c")
+	var dark := Color("#2c3138")
+	var gold := Color("#c9a24e")
+	# Loft y runs from the stern (-) to the nose (+); turned so +y points -Z.
+	var along := Transform3D(Basis(Vector3.RIGHT, -PI * 0.5), Vector3.ZERO)
+	var hull_col := func(t: float, theta: float, _r: Dictionary) -> Color:
+		# Panel bands along the hull, a dark belly, a gold line down each side.
+		if absf(absf(theta) - PI * 0.5) < 0.05:
+			return gold
+		if absf(theta) < 0.9:
+			return dark
+		if int(floor(t * 14.0)) % 3 == 0 and absf(theta) > 2.2:
+			return panel
+		return silver
+	mb.loft([
+		{"y": -27.0, "rx": 2.4, "rz": 2.2, "cz": 0.6},
+		{"y": -24.0, "rx": 4.2, "rz": 3.2, "cz": 0.5},
+		{"y": -14.0, "rx": 5.2, "rz": 3.9, "cz": 0.4},
+		{"y": -2.0, "rx": 5.0, "rz": 3.7, "cz": 0.4},
+		{"y": 10.0, "rx": 4.2, "rz": 3.1, "cz": 0.2},
+		{"y": 19.0, "rx": 3.0, "rz": 2.3, "cz": -0.1},
+		{"y": 25.0, "rx": 1.8, "rz": 1.5, "cz": -0.3},
+		{"y": 29.0, "rx": 0.6, "rz": 0.6, "cz": -0.4},
+		{"y": 30.5, "rx": 0.05, "rz": 0.05, "cz": -0.4},
+	], along, hull_col, 28, true, false, 1.0, [], 2)
+	# The raised bridge section along the spine, with its long window band.
+	var hump_col := func(t: float, theta: float, _r: Dictionary) -> Color:
+		if t > 0.62 and t < 0.93 and absf(theta) > 2.1:
+			return MeshBuilder.tagged(Color("#1c3550"), "wet")
+		return silver if absf(theta) > 1.6 else panel
+	mb.loft([
+		{"y": -18.0, "rx": 1.0, "rz": 0.6, "cz": 3.0},
+		{"y": -14.0, "rx": 2.9, "rz": 1.6, "cz": 3.2},
+		{"y": 4.0, "rx": 3.2, "rz": 1.9, "cz": 3.0},
+		{"y": 13.0, "rx": 2.6, "rz": 1.6, "cz": 2.5},
+		{"y": 19.0, "rx": 1.6, "rz": 1.0, "cz": 1.9},
+		{"y": 21.5, "rx": 0.2, "rz": 0.2, "cz": 1.5},
+	], along, hump_col, 24, true, true, 1.0, [], 2)
+	for side in [-1.0, 1.0]:
+		# Broad wings swept back from mid-ship, with gold leading edges.
+		# (Outline y becomes +Z, aft: the tips sweep back behind the roots.)
+		var wing := PackedVector2Array([Vector2(side * 4.4, -6.0), Vector2(side * 17.5, 9.0), Vector2(side * 19.0, 14.5),
+			Vector2(side * 15.0, 15.5), Vector2(side * 4.4, 10.0)])
+		if side < 0.0:
+			wing.reverse()
+		var flat := Transform3D(Basis(Vector3.RIGHT, PI * 0.5), Vector3(0, -0.8, 0)) * Transform3D(Basis(Vector3.FORWARD, side * 0.05), Vector3.ZERO)
+		mb.prism(wing, 0.7, flat, silver)
+		mb.tube(Vector3(side * 4.4, -0.75, -6.0), Vector3(side * 17.5, -0.75, 9.0), 0.36, 0.2, Transform3D(), gold, 8)
+		mb.box(Vector3(side * 16.0, -0.75, 13.0), Vector3(3.0, 0.75, 4.0), Transform3D(), panel)
+		# The two big engines at the stern.
+		var ex: float = side * 6.8
+		mb.loft([
+			{"y": -29.0, "rx": 2.3, "rz": 2.3, "cx": ex, "cz": 0.2},
+			{"y": -27.0, "rx": 2.6, "rz": 2.6, "cx": ex, "cz": 0.2},
+			{"y": -14.0, "rx": 2.4, "rz": 2.4, "cx": ex, "cz": 0.2},
+			{"y": -6.0, "rx": 1.6, "rz": 1.6, "cx": ex * 0.9, "cz": 0.2},
+			{"y": -2.0, "rx": 0.4, "rz": 0.4, "cx": ex * 0.85, "cz": 0.2},
+		], along, func(t: float, theta: float, _r: Dictionary) -> Color:
+			return gold if t > 0.04 and t < 0.1 else (dark if absf(theta) < 1.0 else silver), 22, false, true)
+		# Engine pylons joining them to the hull.
+		mb.box(Vector3(side * 4.8, 0.2, 18.0), Vector3(3.4, 1.0, 10.0), Transform3D(), panel)
+		# Canted tail fins.
+		var fin := PackedVector2Array([Vector2(0, 0), Vector2(0, 5.5), Vector2(-3.5, 7.0), Vector2(-7.5, 0)])
+		var fin_xf := Transform3D(Basis(Vector3.UP, PI * 0.5) * Basis(Vector3.FORWARD, side * 0.35), Vector3(side * 2.2, 2.6, 18.5))
+		mb.prism(fin, 0.4, fin_xf, silver)
+	# Running lights and the boarding hatch at the stern.
+	mb.box(Vector3(0, -2.6, 24.0), Vector3(3.6, 0.3, 4.0), Transform3D(), dark)
+	mb.make_instance(_visual, "gloss", true)
+	var lights := MeshBuilder.new()
+	for side in [-1.0, 1.0]:
+		lights.ellipsoid(Vector3(side * 18.6, -0.75, 14.5), Vector3(0.25, 0.25, 0.25), Transform3D(), Color("#ff4a3a") if side < 0 else Color("#4aff7a"), 8, 4)
+		lights.box(Vector3(side * 3.3, 3.3, -6.0), Vector3(0.12, 0.25, 20.0), Transform3D(), Color("#ffb04a"))
+	lights.make_instance(_visual, "glow")
+	# Exhaust: discs that swell with thrust.
+	for side in [-1.0, 1.0]:
+		var g := _part(_cylinder(2.1, 2.1, 0.3), Vector3(side * 6.8, 0.2, 29.2), Vector3(PI * 0.5, 0, 0), Vector3.ONE, _glow_mat)
+		_glows.append(g)
+		var halo := _part(_cylinder(2.7, 2.7, 0.1), Vector3(side * 6.8, 0.2, 29.5), Vector3(PI * 0.5, 0, 0), Vector3.ONE, FX.glow_mat(Color("#9ad8ff"), 0.35))
+		_glows.append(halo)
 
 
 func _mat(color: String, metallic: float, roughness: float) -> StandardMaterial3D:
@@ -178,11 +234,33 @@ func take_helm() -> void:
 	world.cam.zoom_max = 60.0
 	world.cam.spring.add_excluded_object(body.get_rid())
 	_carry_player()
-	world.notify("You have the helm.  WASD fly · Space/Ctrl up/down · Shift boost · LMB cannons · Q time jump · G leave the helm", Color("#bfe8ff"))
+	world.notify("You have the helm.  W/S thrust · A/D turn · mouse steer · Space/Ctrl up/down · Shift boost · LMB cannons · Q time jump · G walk to the bridge · U bail out", Color("#bfe8ff"))
 	Sfx.play("teleport", global_position, 0.0)
 
 
 func leave_helm() -> void:
+	_release_pilot()
+	world.enter_interior("waverider", false)
+	# Stand up from the helm on the bridge, not back in the cargo bay.
+	world._move_player(Interiors.to_world("waverider", Vector3(0, 0.6, -24.5)))
+
+
+## Jump out of the ship where it hovers (fliers keep flying); it waits there.
+func bail_out() -> void:
+	_release_pilot()
+	var p: Actor = world.player
+	if p == null or not is_instance_valid(p):
+		return
+	var below := global_position + Vector3(0, -6.0, 0) - forward() * 2.0
+	world._move_player(below)
+	p.velocity = velocity * 0.5
+	if p.movement == "flight":
+		p.flying = true
+	world.notify("You drop out of the Waverider. [U] calls it back.", Color("#bfe8ff"))
+	FX.flash(world, p.chest(), Color("#bfe8ff"), 1.5, 0.3, 0.5)
+
+
+func _release_pilot() -> void:
 	piloted = false
 	velocity = Vector3.ZERO
 	var p: Actor = world.player
@@ -192,7 +270,6 @@ func leave_helm() -> void:
 		p.collision_layer = _saved_layer
 	world.cam.zoom = _saved_zoom
 	world.cam.zoom_max = 18.0
-	world.enter_interior("waverider", false)
 
 
 func _carry_player() -> void:
@@ -233,7 +310,9 @@ func _fly(delta: float) -> float:
 		up += 22.0
 	if Input.is_action_pressed("descend"):
 		up -= 22.0
-	var desired := fwd * fwd_in * speed + right * mv.x * speed * 0.5 + Vector3.UP * (up + climb)
+	# A/D bank and turn the ship (the camera swings round with it).
+	cam.yaw -= mv.x * 1.3 * delta
+	var desired := fwd * fwd_in * speed + right * mv.x * speed * 0.12 + Vector3.UP * (up + climb)
 	velocity = velocity.lerp(desired, clampf(delta * 1.4, 0.0, 1.0))
 	# Don't fly through buildings or the ground.
 	var space := get_world_3d().direct_space_state

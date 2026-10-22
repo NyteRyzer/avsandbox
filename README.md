@@ -79,6 +79,7 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Lock on to the nearest enemy | Z or middle mouse | D-pad left |
 | Switch to a recruited ally | Y | |
 | Whistle for Krypto (Kryptonians) | K | |
+| Call the Waverider and take the helm / bail out of it | U | |
 | Scan (hold) | X | |
 | Map and fast travel | M | |
 | Photo mode | P | |
@@ -90,6 +91,21 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Hide HUD | F1 | |
 
 ## What's in the game
+
+**The Waverider, rebuilt.**
+- **Outside**, it looks like the show's ship: a long, tapering silver fuselage with a raised
+  bridge and its window band, broad swept wings with gold leading edges, two huge engines burning
+  blue-white at the stern, and canted tail fins.
+- **Inside**, it's much bigger (40 x 72 m):
+  - The bridge: the captain's chair, the crew's harness seats, the curved helm console and
+    Gideon's holo table under a great window onto the Temporal Zone.
+  - A corridor aft past Rip's study, the med bay, the Fabricator and galley, and a training room
+    with the target drill.
+  - The cargo bay, with the Jump Ship and the brig.
+- **Flying it is easy:** press **U** anywhere outdoors and Gideon jumps the ship in overhead with
+  you at the helm. W/S thrust, A/D turn, the mouse steers, Space/Ctrl climb and descend, Shift
+  boosts, click fires the cannons and Q jumps through time. U again drops you out under the
+  ship; G walks you back to the bridge. The HUD shows your speed and altitude.
 
 **Breaches you can see.** Opening a breach (Vibe pressing G, the S.T.A.R. Labs Breach Room or
 the sandbox) no longer teleports you on the spot. A swirling breach tears open a few steps ahead

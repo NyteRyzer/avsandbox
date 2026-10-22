@@ -310,6 +310,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if event.is_action_pressed("emote_%d" % (k + 1)) and player and is_instance_valid(player):
 				Emotes.play(player, k + 1)
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("waverider"):
+		if player and is_instance_valid(player):
+			call_waverider()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("companion"):
 		if player and is_instance_valid(player):
 			side_jobs.toggle_krypto()
@@ -476,6 +480,10 @@ func interact_prompt() -> String:
 		return "%d km/h   ·   W/S drive  ·  A/D steer  ·  Space handbrake  ·  Shift nitro  ·  G get out" % int(vehicle.speed_kmh())
 	if not door.is_empty():
 		var what: String = door["interior"]
+		if what == "waverider":
+			return "[G]  Board the Waverider   ·   [U]  Take off in it"
+		if what == "helm":
+			return "[G]  Take the helm   ·   [U]  works from anywhere"
 		if what in Interiors.ORDER:
 			return "[G]  Enter " + str(door["name"])
 		return "[G]  " + str(door["name"])
@@ -1030,6 +1038,35 @@ func _move_player(pos: Vector3) -> void:
 		if a != player and a.is_ally_of_player():
 			a.global_position = pos + Vector3(randf_range(-3, 3), 0.3, randf_range(-3, 3))
 			a.velocity = Vector3.ZERO
+
+
+## [U]: Gideon flies the Waverider to you and puts you at the helm (or, if
+## you're already flying it, drops you out underneath). Inside the ship it
+## just takes you to the helm.
+func call_waverider() -> void:
+	if ship.piloted:
+		ship.bail_out()
+		return
+	if player.dead or vehicle or player.changing or carrying:
+		return
+	if inside == "waverider":
+		ship.take_helm()
+		return
+	if inside != "":
+		notify("Gideon can't bring the ship indoors. Step outside first.", Color("#ffd27a"))
+		return
+	# It jumps in through time, right overhead, facing where you're looking.
+	var above := player.global_position + Vector3(0, 28.0, 0)
+	above.y = maxf(above.y, 30.0)
+	ship.yaw = cam.yaw
+	ship.global_position = above
+	ship.rotation = Vector3(0, ship.yaw, 0)
+	FX.breach(self, above, Color("#a58aff"), 1.4, 9.0)
+	FX.flash(self, above, Color("#d8c8ff"), 14.0, 0.5, 0.7)
+	Sfx.play("teleport", above, 2.0)
+	ship.take_helm()
+	notify("Gideon brings the Waverider to you.  [U] bail out  ·  [G] walk to the bridge", Color("#bfe8ff"))
+	Game.record("waverider_calls")
 
 
 ## Tears a breach open a few steps ahead of the player; walking into it

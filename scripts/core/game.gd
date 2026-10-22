@@ -338,6 +338,7 @@ func setup_input() -> void:
 	_bind("map", [_key(KEY_M)])
 	_bind("swap", [_key(KEY_Y)])
 	_bind("companion", [_key(KEY_K)])
+	_bind("waverider", [_key(KEY_U)])
 	for k in 3:
 		_bind("power_%d" % (k + 1), [_key([KEY_1, KEY_2, KEY_3][k])])
 	for k in 4:

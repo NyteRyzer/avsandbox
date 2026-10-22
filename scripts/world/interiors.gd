@@ -25,7 +25,7 @@ const NAMES := {"star_labs": "S.T.A.R. Labs", "bunker": "The Arrow Bunker", "jit
 ## Room footprints (width, height, depth). The doorway is in the middle of
 ## the +Z wall, which faces the street when a room sits in its building.
 const SIZES := {"star_labs": Vector3(34, 6, 28), "bunker": Vector3(30, 5, 22), "jitters": Vector3(20, 4.2, 16),
-	"catco": Vector3(36, 4.6, 26), "deo": Vector3(34, 7, 30), "waverider": Vector3(22, 5, 20),
+	"catco": Vector3(36, 4.6, 26), "deo": Vector3(34, 7, 30), "waverider": Vector3(40, 7, 72),
 	"batcave": Vector3(30, 9, 26), "kent_barn": Vector3(20, 8, 28), "jsa_hq": Vector3(30, 6, 24),
 	"queen_consolidated": Vector3(30, 7, 26), "ccpd": Vector3(32, 6, 26), "l_corp": Vector3(30, 7, 26),
 	"iron_heights": Vector3(40, 6, 30), "arkham": Vector3(34, 6, 28), "garfield": Vector3(32, 5, 24)}
@@ -386,37 +386,189 @@ func _deo() -> void:
 	exit_door(Vector3(0, 0, 14.7), "The D.E.O.")
 
 
+## The Waverider, laid out like the show's ship: the bridge at the bow (the
+## captain's chair, the crew's harness seats, the helm and Gideon's holo
+## table under a great window onto the Temporal Zone), a corridor aft past
+## Rip's study, the med bay, the Fabricator and galley and the training room,
+## and the cargo bay at the stern with the Jump Ship and the brig.
 func _waverider() -> void:
-	room(SIZES[id], "#3a4048", "#5a626c", "#2a3038")
-	light(Vector3(0, 4.5, 0), Color(0.75, 0.9, 1.0), 1.8, 18.0)
-	light(Vector3(0, 2.0, -8), Color(0.5, 0.8, 1.0), 1.4, 10.0)
-	# Front viewport onto the Temporal Zone
-	box(Vector3(0, 2.6, -9.6), Vector3(14, 3.4, 0.2), "#7a5aff", false, 1.6)
-	label("THE TEMPORAL ZONE", Vector3(0, 4.0, -9.4), 0.5, Color("#e0d8ff"))
-	# Captain's chair and the helm
-	box(Vector3(0, 0.5, -2), Vector3(1.2, 1.0, 1.2), "#202428")
-	box(Vector3(0, 1.4, -1.5), Vector3(1.2, 1.6, 0.25), "#202428")
-	box(Vector3(0, 0.95, -5), Vector3(5, 0.12, 1.4), "#a8b0b8")
-	box(Vector3(0, 1.02, -5), Vector3(4.4, 0.02, 1.0), "#4fd0ff", false, 1.6)
-	interactable("Take the helm (fly the Waverider)", Vector3(0, 0.5, -3), "helm")
-	# Gideon
-	box(Vector3(-7, 1.2, -5), Vector3(0.6, 2.4, 0.6), "#5a626c")
-	var gideon := SphereMesh.new()
-	gideon.radius = 0.6
-	gideon.height = 1.2
-	var mi := MeshInstance3D.new()
-	mi.mesh = gideon
-	mi.material_override = _m("#ffb84a", 2.5)
-	mi.position = _w(Vector3(-7, 2.9, -5))
-	city.add_child(mi)
-	label("GIDEON", Vector3(-7, 3.9, -5), 0.4, Color("#ffd27a"))
-	interactable("Ask Gideon to plot a course through time", Vector3(-7, 0.5, -3.5), "time_console")
+	var size: Vector3 = SIZES[id]
+	var h := size.y
+	room(size, "#1e2228", "#3a4048", "#1a1d22")
+	var wall := "#363c44"
+	var amber := "#ffb04a"
+	var blue := "#4fb8ff"
+	# Bulkheads: bridge | corridor and side rooms | cargo bay.
+	box(Vector3(-11.5, h * 0.5, -12), Vector3(17, h, 0.5), wall)
+	box(Vector3(11.5, h * 0.5, -12), Vector3(17, h, 0.5), wall)
+	box(Vector3(0, h - 0.6, -12), Vector3(6, 1.2, 0.5), wall)
+	box(Vector3(-12, h * 0.5, 12), Vector3(16, h, 0.5), wall)
+	box(Vector3(12, h * 0.5, 12), Vector3(16, h, 0.5), wall)
+	box(Vector3(0, h - 0.6, 12), Vector3(8, 1.2, 0.5), wall)
 	for side in [-1.0, 1.0]:
-		for k in 3:
-			box(Vector3(side * 9.5, 1.0, -3 + k * 3.0), Vector3(1.4, 1.2, 2.2), "#4a525c")
-	stations()
-	spawn(Vector3(0, 0.5, 6))
-	exit_door(Vector3(0, 0, 9.7), "The Waverider")
+		# Corridor walls with a doorway into each side room.
+		for seg in [[-9.75, 4.5], [0.0, 9.0], [9.75, 4.5]]:
+			box(Vector3(side * 3.0, h * 0.5, seg[0]), Vector3(0.4, h, seg[1]), wall)
+		for dz in [-6.0, 6.0]:
+			box(Vector3(side * 3.0, h - 1.4, dz), Vector3(0.4, 2.8, 3.0), wall)
+			box(Vector3(side * 3.25, 4.4, dz), Vector3(0.1, 0.12, 3.0), amber, false, 2.0)
+		box(Vector3(side * 11.5, h * 0.5, 0), Vector3(17, h, 0.4), wall)
+		# Light strips along the corridor floor and ceiling.
+		box(Vector3(side * 2.6, 0.03, 0), Vector3(0.12, 0.04, 24.0), amber, false, 2.0)
+		box(Vector3(side * 2.0, h - 0.05, 0), Vector3(0.2, 0.05, 24.0), blue, false, 1.6)
+	# Hull ribs overhead all the way along.
+	for k in 13:
+		var z := -33.0 + k * 5.5
+		box(Vector3(0, h - 0.25, z), Vector3(size.x - 1.0, 0.5, 0.45), "#2a2f36", false)
+
+	# --- The bridge ---
+	light(Vector3(0, 5.5, -24), Color(0.85, 0.9, 1.0), 2.0, 22.0)
+	light(Vector3(-12, 4.0, -28), Color(1.0, 0.75, 0.45), 1.2, 14.0)
+	light(Vector3(12, 4.0, -28), Color(1.0, 0.75, 0.45), 1.2, 14.0)
+	light(Vector3(0, 4.0, -32), Color(0.6, 0.5, 1.0), 0.9, 10.0)
+	# Angled bow walls and the great window onto the Temporal Zone.
+	for side in [-1.0, 1.0]:
+		box(Vector3(side * 16.5, h * 0.5, -31.5), Vector3(0.5, h, 10.0), wall, true, 0.0, side * 0.62)
+	box(Vector3(0, 3.6, -35.6), Vector3(22, 4.6, 0.2), "#5a3cff", false, 1.5)
+	box(Vector3(0, 3.6, -35.45), Vector3(10, 2.2, 0.1), "#c8a8ff", false, 2.2)
+	for k in 7:
+		box(Vector3(-10.5 + k * 3.5, 3.6, -35.3), Vector3(0.3, 4.8, 0.3), "#1a1d22", false)
+	box(Vector3(0, 1.2, -35.3), Vector3(22.4, 0.3, 0.3), "#1a1d22", false)
+	box(Vector3(0, 6.0, -35.3), Vector3(22.4, 0.3, 0.3), "#1a1d22", false)
+	label("THE TEMPORAL ZONE", Vector3(0, 6.5, -35.2), 0.5, Color("#e0d8ff"))
+	# A raised deck for the helm.
+	box(Vector3(0, 0.15, -29), Vector3(18, 0.3, 10), "#2a2f36")
+	box(Vector3(0, 0.31, -24.1), Vector3(18, 0.02, 0.15), amber, false, 2.0)
+	# The helm: a curved console of screens with the time drive in the middle.
+	for k in 5:
+		var a := (k - 2) * 0.32
+		var cp := Vector3(sin(a) * 6.0, 0.9, -27.0 - cos(a) * 6.0)
+		box(cp, Vector3(2.6, 1.2, 0.9), "#2a2f36", true, 0.0, -a)
+		box(cp + Vector3(0, 0.62, 0), Vector3(2.3, 0.04, 0.7), blue, false, 1.8, -a)
+	box(Vector3(0, 1.3, -32.6), Vector3(0.5, 1.6, 0.5), "#c9a24e", false, 0.6)
+	interactable("Take the helm (fly the Waverider)", Vector3(0, 0.5, -29.5), "helm")
+	# The captain's chair, and the crew's harness seats around it.
+	_ship_chair(Vector3(0, 0.3, -27.5), "#2a1e18", 1.25)
+	for k in 6:
+		var a := (k - 2.5) * 0.48
+		_ship_chair(Vector3(sin(a) * 7.5, 0.3, -27.5 + cos(a) * 4.0 - 4.0), "#3a3f46", 1.0)
+	# Gideon's holo table: rings of the timeline turning over it.
+	box(Vector3(0, 0.5, -17), Vector3(3.6, 1.0, 3.6), "#2a2f36")
+	box(Vector3(0, 1.02, -17), Vector3(3.2, 0.04, 3.2), amber, false, 1.6)
+	for k in 3:
+		box(Vector3(0, 1.6 + k * 0.45, -17), Vector3(2.6 - k * 0.7, 0.04, 0.04), amber, false, 2.4, k * 1.05)
+		box(Vector3(0, 1.6 + k * 0.45, -17), Vector3(0.04, 0.04, 2.6 - k * 0.7), amber, false, 2.4, k * 1.05)
+	interactable("Ask Gideon to plot a course through time", Vector3(0, 0.5, -14.8), "time_console")
+	# Gideon herself: an amber interface on the port bulkhead.
+	box(Vector3(-19.6, 3.4, -22), Vector3(0.15, 3.0, 3.0), "#2a1a08")
+	var gideon := SphereMesh.new()
+	gideon.radius = 0.9
+	gideon.height = 1.8
+	var gmi := MeshInstance3D.new()
+	gmi.mesh = gideon
+	gmi.material_override = _m("#ffb84a", 2.5)
+	gmi.position = _w(Vector3(-19.2, 3.4, -22))
+	gmi.scale = Vector3(0.3, 1, 1)
+	city.add_child(gmi)
+	label("GIDEON", Vector3(-19.4, 5.3, -22), 0.45, Color("#ffd27a"), PI * 0.5)
+	for side in [-1.0, 1.0]:
+		screen(Vector3(side * 19.6, 2.6, -16), Vector2(3.0, 1.8), "#2a6aff", -side * PI * 0.5)
+		screen(Vector3(side * 19.6, 2.6, -28), Vector2(3.0, 1.8), "#3a8aff", -side * PI * 0.5)
+
+	# --- Rip's study (port, forward) ---
+	light(Vector3(-11.5, 4.5, -6), Color(1.0, 0.8, 0.55), 1.4, 12.0)
+	for k in 6:
+		box(Vector3(-19.4, 1.5 + (k % 3) * 1.2, -10.5 + (k / 3) * 4.5), Vector3(0.6, 0.12, 4.0), "#4a3020")
+		for b in 10:
+			box(Vector3(-19.2, 1.85 + (k % 3) * 1.2, -12.2 + (k / 3) * 4.5 + b * 0.38), Vector3(0.3, 0.55, 0.22),
+				["#6a2a1a", "#2a3a5a", "#5a4a1a", "#1a4a2a"][(b + k) % 4], false)
+	box(Vector3(-11.5, 0.02, -6), Vector3(6.0, 0.04, 4.0), "#6a1e1e", false)
+	box(Vector3(-12, 0.75, -7.5), Vector3(3.0, 0.1, 1.4), "#5a3a20")
+	box(Vector3(-12, 0.37, -7.5), Vector3(2.8, 0.74, 1.2), "#3a2614")
+	_ship_chair(Vector3(-12, 0.0, -9.0), "#5a2a1a", 1.0, PI)
+	var globe := SphereMesh.new()
+	globe.radius = 0.35
+	globe.height = 0.7
+	var gl := MeshInstance3D.new()
+	gl.mesh = globe
+	gl.material_override = _m("#3a6a8a", 0.2)
+	gl.position = _w(Vector3(-13.0, 1.2, -7.5))
+	city.add_child(gl)
+	label("RIP'S STUDY", Vector3(-11.5, 5.4, -11.6), 0.5, Color("#ffd8a0"))
+
+	# --- Med bay (port, aft) ---
+	light(Vector3(-11.5, 4.5, 6), Color(0.75, 1.0, 0.85), 1.6, 12.0)
+	for k in 2:
+		var mz := 3.5 + k * 5.0
+		box(Vector3(-15.5, 0.6, mz), Vector3(1.2, 0.3, 2.6), "#e8e8ec", true, 0.0, 0.0)
+		box(Vector3(-15.5, 1.3, mz - 1.2), Vector3(1.2, 1.2, 0.3), "#e8e8ec", false)
+		box(Vector3(-15.5, 3.1, mz), Vector3(1.6, 0.15, 2.2), "#4fd0ff", false, 2.0)
+		box(Vector3(-16.6, 2.0, mz), Vector3(0.12, 2.2, 0.12), "#8a929c", false)
+	box(Vector3(-19.6, 2.4, 6), Vector3(0.1, 0.9, 0.3), "#60ff90", false, 2.0)
+	box(Vector3(-19.6, 2.4, 6), Vector3(0.1, 0.3, 0.9), "#60ff90", false, 2.0)
+	label("MED BAY", Vector3(-11.5, 5.4, 11.6), 0.5, Color("#9affb0"), PI)
+	interactable("Med bay: patch up", Vector3(-12.0, 0.5, 6.0), "medbay")
+
+	# --- Fabricator and galley (starboard, forward) ---
+	light(Vector3(11.5, 4.5, -6), Color(0.8, 0.9, 1.0), 1.5, 12.0)
+	box(Vector3(18.6, 2.2, -8), Vector3(1.6, 4.4, 3.0), "#2a2f36")
+	box(Vector3(17.75, 2.0, -8), Vector3(0.1, 1.6, 1.8), "#3affd0", false, 2.0)
+	label("FABRICATOR", Vector3(17.6, 4.8, -8), 0.45, Color("#a0fff0"), -PI * 0.5)
+	interactable("Fabricator: make a new loadout", Vector3(16.0, 0.5, -8), "armory")
+	box(Vector3(14, 0.5, -2.0), Vector3(8.0, 1.0, 1.0), "#5a626c")
+	box(Vector3(14, 1.02, -2.0), Vector3(8.0, 0.04, 1.0), "#c8ccd2")
+	for k in 4:
+		box(Vector3(11.0 + k * 1.9, 1.15, -2.0), Vector3(0.14, 0.22, 0.14), ["#f0f0f0", "#c83a2a", "#2a5aa8", "#e8c84a"][k], false)
+	label("GALLEY", Vector3(14, 3.0, -1.6), 0.4, Color("#ffe0b0"), PI)
+
+	# --- Training room (starboard, aft) ---
+	light(Vector3(11.5, 4.5, 6), Color(0.7, 0.95, 1.0), 1.4, 12.0)
+	for k in 4:
+		box(Vector3(18.8, 1.2 + k * 0.6, 6), Vector3(0.3, 0.08, 4.0), "#8a929c", false)
+	box(Vector3(19.4, 1.8, 6), Vector3(0.4, 3.6, 4.4), "#2a2c30")
+	box(Vector3(18.9, 4.0, 6), Vector3(0.1, 0.25, 4.0), "#3affd0", false, 2.0)
+	interactable("Armory: change your loadout", Vector3(17.0, 0.5, 4.5), "armory")
+	box(Vector3(11.5, 0.02, 6), Vector3(7.0, 0.04, 7.0), "#2a3a4a", false)
+	box(Vector3(11.5, 0.05, 6), Vector3(6.6, 0.02, 0.1), "#3affd0", false, 1.6)
+	box(Vector3(11.5, 0.05, 6), Vector3(0.1, 0.02, 6.6), "#3affd0", false, 1.6)
+	label("TRAINING", Vector3(11.5, 5.4, 11.6), 0.5, Color("#a0fff0"), PI)
+	interactable("Target drill: smash drones for 45 seconds", Vector3(11.5, 0.5, 6.0), "drill")
+
+	# --- Cargo bay, the Jump Ship and the brig ---
+	light(Vector3(0, 5.5, 22), Color(0.85, 0.9, 1.0), 1.8, 22.0)
+	light(Vector3(-10, 4.0, 26), Color(0.6, 0.8, 1.0), 1.2, 14.0)
+	light(Vector3(13, 3.0, 24), Color(0.4, 0.7, 1.0), 1.4, 12.0)
+	# The Jump Ship on its pad.
+	box(Vector3(-10, 0.05, 25), Vector3(10, 0.1, 12), "#2a2f36")
+	box(Vector3(-10, 0.07, 25), Vector3(9.4, 0.04, 0.12), amber, false, 1.6)
+	box(Vector3(-10, 1.6, 25), Vector3(3.2, 2.2, 7.0), "#a7aeb6")
+	box(Vector3(-10, 2.1, 21.2), Vector3(2.4, 1.2, 1.4), "#a7aeb6")
+	box(Vector3(-10, 2.3, 20.6), Vector3(2.0, 0.7, 0.3), "#1c3550", false, 0.6)
+	for side in [-1.0, 1.0]:
+		box(Vector3(-10 + side * 3.0, 1.2, 26), Vector3(3.0, 0.3, 3.4), "#a7aeb6", true, 0.0, side * 0.25)
+		box(Vector3(-10 + side * 1.0, 1.4, 28.7), Vector3(0.9, 0.9, 0.3), "#6ad0ff", false, 2.0)
+	label("JUMP SHIP", Vector3(-10, 4.0, 25), 0.6, Color("#d8e8ff"))
+	# The brig: two cells with glowing force fields.
+	for k in 2:
+		var cz := 18.0 + k * 6.0
+		box(Vector3(18.0, h * 0.5, cz - 2.6), Vector3(4.0, h, 0.3), wall)
+		box(Vector3(16.0, 1.6, cz), Vector3(0.1, 3.2, 4.8), "#4fb8ff", false, 1.4)
+	box(Vector3(18.0, h * 0.5, 29.4), Vector3(4.0, h, 0.3), wall)
+	label("BRIG", Vector3(15.8, 4.2, 21), 0.6, Color("#9fd0ff"), -PI * 0.5)
+	# Cargo.
+	for k in 6:
+		box(Vector3(6.0 + (k % 3) * 1.6, 0.7 + (k / 3) * 1.4, 32.5), Vector3(1.4, 1.4, 1.4), ["#5a4a32", "#3a4a3a", "#4a4a52"][k % 3])
+	spawn(Vector3(0, 0.5, 31))
+	exit_door(Vector3(0, 0, size.z * 0.5 - 0.25), "The Waverider")
+
+
+## A seat for the bridge: a padded seat and back with the crew's harness.
+func _ship_chair(p: Vector3, color: String, k := 1.0, rot := 0.0) -> void:
+	var back := Vector3(0, 0.95, 0.5).rotated(Vector3.UP, rot) * k
+	box(p + Vector3(0, 0.25, 0), Vector3(0.9, 0.5, 0.9) * k, "#2a2f36", true, 0.0, rot)
+	box(p + Vector3(0, 0.6, 0), Vector3(1.0, 0.2, 1.0) * k, color, false, 0.0, rot)
+	box(p + back, Vector3(1.0, 1.5, 0.22) * k, color, false, 0.0, rot)
+	box(p + back + Vector3(0, 0.0, -0.13).rotated(Vector3.UP, rot), Vector3(0.12, 1.2, 0.04) * k, "#ffb04a", false, 1.2, rot)
 
 
 func _batcave() -> void:

@@ -506,6 +506,26 @@ func test_places() -> void:
 	world.interact()
 	await _frames(3)
 	check(not world.ship.piloted and world.inside == "waverider", "leaving the helm returns to the bridge")
+	var bridge_z := (world.player.global_position - Interiors.origin("waverider")).z
+	check(bridge_z < -15.0, "you stand up on the bridge, not back in the cargo bay")
+	check(Interiors.SIZES["waverider"].x >= 40.0 and Interiors.SIZES["waverider"].z >= 70.0, "the ship has a bridge, corridor, side rooms and a cargo bay")
+	var helm_found := 0
+	for dr in world.city.doors:
+		if dr["interior"] in ["helm", "time_console", "medbay", "armory", "drill"] and Interiors.room_at(dr["pos"]) == "waverider":
+			helm_found += 1
+	check(helm_found >= 6, "the helm, Gideon, the med bay, Fabricator, armory and drill are all aboard")
+	# [U] from the street: the ship comes to you and you're at the helm.
+	world.leave_interior("waverider")
+	await _frames(3)
+	world.teleport_player(Vector3(560, 0.5, -440))
+	await _frames(2)
+	world.call_waverider()
+	check(world.ship.piloted and world.ship.global_position.distance_to(Vector3(560, 28.5, -440)) < 8.0, "U brings the Waverider to you and puts you at the helm")
+	world.call_waverider()
+	await _frames(3)
+	check(not world.ship.piloted and world.inside == "" and world.player.visible, "U again bails you out under the ship")
+	world.enter_interior("waverider")
+	await _frames(2)
 	# Time travel from the bridge keeps you aboard.
 	world.travel_to("2046", "time")
 	await _frames(5)
