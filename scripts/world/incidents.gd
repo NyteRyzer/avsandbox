@@ -394,6 +394,13 @@ func _tick_runaway(delta: float) -> void:
 		failed = true
 		world.notify("The runaway car was wrecked.", Color("#ff8a6a"))
 		return
+	if runaway_car.player_driven and not stopped:
+		# Jumped in and hit the handbrake: that counts.
+		stopped = true
+		done = true
+		Game.record("runaways_stopped")
+		world.notify("You got behind the wheel and stopped the runaway car!", Color("#60ff90"))
+		return
 	if not runaway_car.driving:
 		# Knocked off its wheels: that's a wreck, not a rescue.
 		if not stopped:

@@ -249,10 +249,11 @@ static func special(a: Actor, sp: Dictionary) -> bool:
 					c.follow_target = null
 					c.grudges = a.grudges.duplicate()
 				FX.lightning(w, a.chest(), c.chest(), color, 0.25, 0.4, 5, 0)
+				c.set_meta("temporary", true)
 				var wr: WeakRef = weakref(c)
 				var vanish := func() -> void:
 					var ref = wr.get_ref()
-					if ref and is_instance_valid(ref):
+					if ref and is_instance_valid(ref) and not ref.is_player:
 						FX.flash(ref.world, ref.chest(), color, 1.5, 0.3)
 						ref.queue_free()
 				w.get_tree().create_timer(float(sp.get("life", 14.0)), false).timeout.connect(vanish)
@@ -349,10 +350,11 @@ static func special(a: Actor, sp: Dictionary) -> bool:
 				g.set_meta("pinned", true)
 				if not a.is_player:
 					g.grudges = a.grudges.duplicate()
+				g.set_meta("temporary", true)
 				var wr: WeakRef = weakref(g)
 				var leave := func() -> void:
 					var ref = wr.get_ref()
-					if ref and is_instance_valid(ref):
+					if ref and is_instance_valid(ref) and not ref.is_player:
 						ref.queue_free()
 				w.get_tree().create_timer(30.0, false).timeout.connect(leave)
 				FX.smoke(w, pos + Vector3.UP, 1.5, 1.0)
@@ -534,8 +536,11 @@ static func special(a: Actor, sp: Dictionary) -> bool:
 ## seconds, then drop them back in, hurt and dazed.
 static func trap(a: Actor, o: Actor, color: Color, seconds: float, dmg: float) -> void:
 	var w = a.world
+	if o.has_meta("trapped_away") or o.dead:
+		return   # already out of the world (or down): don't trap twice
 	FX.breach(w, o.chest(), color, 0.6, 1.3)
 	FX.sparks(w, o.chest(), color, 30, 8.0, 0.6)
+	o.set_meta("trapped_away", true)
 	var pos := o.global_position
 	var layer := o.collision_layer
 	o.visible = false
@@ -547,10 +552,13 @@ static func trap(a: Actor, o: Actor, color: Color, seconds: float, dmg: float) -
 		var ref = wr.get_ref()
 		if ref == null or not is_instance_valid(ref):
 			return
+		ref.remove_meta("trapped_away")
 		ref.process_mode = Node.PROCESS_MODE_INHERIT
 		ref.visible = true
-		ref.collision_layer = layer
 		ref.global_position = pos + Vector3.UP * 0.5
+		if ref.dead:
+			return   # knocked out while away: stays a corpse, not a wall
+		ref.collision_layer = layer
 		FX.breach(ref.world, ref.chest(), color, 0.6, 1.3)
 		var s = src.get_ref()
 		ref.take_damage(dmg, s if s and is_instance_valid(s) else null, "", Vector3.UP * 6.0)

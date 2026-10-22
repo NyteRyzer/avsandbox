@@ -15,7 +15,14 @@ var frozen := false
 var weather := "clear"
 var city: City
 var follow: Node3D
-var indoors := false
+var indoors := false:
+	set(v):
+		if v == indoors:
+			return
+		indoors = v
+		# Rain and snow start (or stop) when you step outside (or in).
+		if rain and snow:
+			_update_precip()
 
 var sun: DirectionalLight3D
 var env: Environment

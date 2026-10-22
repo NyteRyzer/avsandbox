@@ -76,7 +76,7 @@ func _traffic(p: Vector3) -> void:
 	var count := 0
 	for car in get_tree().get_nodes_in_group("traffic"):
 		var d: float = car.global_position.distance_to(p)
-		if d > DESPAWN:
+		if d > DESPAWN and not car.getaway:   # event cars (getaways, runaways) stay
 			car.queue_free()
 		elif d < RADIUS:
 			count += 1

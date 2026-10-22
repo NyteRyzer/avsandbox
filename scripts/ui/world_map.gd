@@ -8,6 +8,7 @@ var world
 var _map: Control
 var _list: VBoxContainer
 var _selected: Dictionary = {}
+var _selected_place := ""   # which Earth _selected belongs to
 var _travel: Button
 var _info: Label
 
@@ -65,6 +66,8 @@ func toggle() -> void:
 
 
 func open() -> void:
+	if world.place_id != _selected_place:
+		_selected = {}   # a landmark picked on another Earth isn't here
 	visible = true
 	get_tree().paused = true
 	world.capture_mouse(false)
@@ -138,6 +141,7 @@ func _known(l: Dictionary) -> bool:
 
 func _pick(l: Dictionary) -> void:
 	_selected = l
+	_selected_place = world.place_id
 	world.waypoint = l["pos"]
 	_refresh()
 

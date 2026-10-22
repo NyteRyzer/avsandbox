@@ -254,9 +254,11 @@ func _spawn_marker(pos: Vector3, color: Color, title: String) -> void:
 	_marker.add_child(beam)
 	var label := Label3D.new()
 	label.text = title
-	label.font_size = 96
-	label.pixel_size = 0.03
-	label.outline_size = 16
+	label.font_size = 64
+	label.outline_size = 12
+	# Same size on screen near or far, so it never fills the view up close.
+	label.fixed_size = true
+	label.pixel_size = 0.0009
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.modulate = color.lightened(0.4)
 	label.position = Vector3(0, 14, 0)

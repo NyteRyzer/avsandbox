@@ -38,6 +38,9 @@ func update(a: Actor, delta: float) -> void:
 		a.in_special = false
 		a.in_ability = false
 		a.in_jump = false
+		a.in_up = false
+		a.in_down = false
+		a.in_sprint = false
 		a.in_power = [false, false, false]
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")

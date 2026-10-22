@@ -45,6 +45,7 @@ var world
 var chapter := 0
 var foes: Array = []
 var _spawned_for := -1
+var _beaten: Dictionary = {}   # instance ids of this chapter's foes seen knocked out
 var _marker: Node3D
 
 
@@ -110,8 +111,20 @@ func _process(_delta: float) -> void:
 			if world.place_id == str(c["place"]) and world.inside == "":
 				if _spawned_for != chapter:
 					_spawn_foes(c)
-				elif foes.all(func(a) -> bool: return not is_instance_valid(a) or a.dead):
-					_advance()
+				else:
+					# Only foes actually beaten count: if they were cleared away
+					# (Survival, the sandbox), bring them back instead.
+					var standing := 0
+					for a in foes:
+						if is_instance_valid(a) and not a.dead:
+							standing += 1
+						elif is_instance_valid(a) and a.dead:
+							_beaten[a.get_instance_id()] = true
+					if standing == 0:
+						if _beaten.is_empty():
+							_spawned_for = -1
+						else:
+							_advance()
 		"return":
 			if world.place_id == "earth1":
 				_advance()
@@ -139,6 +152,7 @@ func _advance() -> void:
 
 
 func _spawn_foes(c: Dictionary) -> void:
+	_beaten.clear()
 	_spawned_for = chapter
 	foes.clear()
 	var p: Vector3 = world.player.global_position

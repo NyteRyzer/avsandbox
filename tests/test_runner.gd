@@ -1455,6 +1455,35 @@ func test_breach_and_new_features() -> void:
 	await _idle(2)
 	check(world.side_jobs.drones.is_empty() and Game.stat("drill_best_flash") >= 1.0, "the drill ends and records your best")
 	world.side_jobs.enabled = true
+	# Regressions from the bug sweep.
+	world.spawn_player("supergirl", Vector3(560, 0.5, -440))
+	p = world.player
+	await _idle(2)
+	p.ult = 100.0
+	Ultimate.start(p)
+	p.beams.append(FX.make_line(world, Color.RED, 0.9))
+	world.travel_to("earth2", "speed")
+	await _idle(2)
+	check(not p.ult_active and p.beams.is_empty(), "travelling mid-ultimate doesn't leave the ultimate stuck or beams dangling")
+	p.take_damage(999999.0, null)
+	await _idle(2)
+	check(p.dead, "you can still be knocked out after travelling with a beam")
+	p.revive()
+	p.poison_t = 5.0
+	p.die(null)
+	p.revive()
+	check(p.poison_t == 0.0, "reviving clears poison and other lingering effects")
+	world.travel_to("earth1", "speed")
+	var clone: Actor = world.population.spawn_character(Game.get_character("flash"), "hero", p.global_position + Vector3(2, 0.5, 0), p)
+	clone.set_meta("temporary", true)
+	world.swap_to_next_ally()
+	check(world.player == p, "you can't switch into a temporary clone or summon")
+	clone.queue_free()
+	Game.start_slowmo(0.05)
+	world.weapon_wheel.open()
+	Game.slowmo_left = 0.0
+	world.weapon_wheel.close(false)
+	check(Engine.time_scale > 0.9, "closing the weapon wheel after slow-mo ends restores normal speed")
 	world.events.enabled = true
 
 

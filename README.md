@@ -78,6 +78,7 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Block (tap just before a hit to parry) | B | D-pad right |
 | Lock on to the nearest enemy | Z or middle mouse | D-pad left |
 | Switch to a recruited ally | Y | |
+| Whistle for Krypto (Kryptonians) | K | |
 | Scan (hold) | X | |
 | Map and fast travel | M | |
 | Photo mode | P | |
@@ -89,6 +90,32 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Hide HUD | F1 | |
 
 ## What's in the game
+
+**Breaches you can see.** Opening a breach (Vibe pressing G, the S.T.A.R. Labs Breach Room or
+the sandbox) no longer teleports you on the spot. A swirling breach tears open a few steps ahead
+of you, crackling at the edges and labelled with the Earth on the other side, and you walk
+through it. On the far side you step out of a breach that seals behind you. If you don't use it,
+it closes after 25 seconds.
+
+**Ten new things to do.**
+1. **Breach incursions:** a hostile breach opens in the street and keeps sending doppelgangers
+   from other Earths through until you smash it shut.
+2. **Falling civilians:** people tumble off a rooftop one after another. Catch them in mid-air,
+   or be standing where they land.
+3. **Meteor showers:** glowing rocks streak down with a warning ring where each will land.
+   Smash them in the air before they hit the street.
+4. **Runaway cars:** a car with no brakes ploughs through traffic. Get in front of it and dig
+   in until it stops (strong heroes, fliers and speedsters stop it fastest), or jump in and drive.
+5. **Most Wanted:** a named villain (or, for villains, a hero) roams the city with a price on
+   their head. They show as a pink diamond on the minimap.
+6. **A.R.G.U.S. supply drops:** crates parachute in under a green flare. Get there before the
+   scavengers for full health and energy, ultimate charge and a rare weapon.
+7. **Help requests:** someone shouts for help. Their cat is stuck up on a roof; fetch it down.
+8. **Fans:** people recognise heroes in the street. Walk over and press G for a selfie.
+9. **Krypto the Superdog:** Kryptonians press K to whistle for him. He flies at your side and
+   bites the bad guys.
+10. **Target drill:** every HQ armory has a drone drill. Smash as many as you can in 45 seconds
+    and beat your best score.
 
 **Characters.** 70 heroes and 60 villains, each with their own costume, stats, two attacks, a
 special power, often a utility power (E), and a signature **ultimate** (R):

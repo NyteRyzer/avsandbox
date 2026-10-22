@@ -700,6 +700,8 @@ func _tk_tick(delta: float) -> void:
 
 ## Swap powers and weapons on the spot (the weapon wheel).
 func set_kit(d: Dictionary) -> void:
+	if disguise_t > 0.0:
+		_end_disguise()
 	if pickup_ammo > 0:
 		pickup_ammo = 0
 		_saved_primary = {}
@@ -863,7 +865,8 @@ func _abilities(delta: float) -> void:
 						drop_pickup()
 	if not any_beam:
 		for b in beams:
-			b.visible = false
+			if is_instance_valid(b):
+				b.visible = false
 	if in_ultimate and (ult >= 100.0 or is_player and Game.cheats["infinite_energy"]) and dampened_t <= 0.0:
 		if Ultimate.start(self):
 			ult = 0.0
@@ -910,6 +913,8 @@ func _civilian_abilities() -> void:
 func set_civilian(on: bool) -> void:
 	if on == civilian:
 		return
+	if disguise_t > 0.0:
+		_end_disguise()   # drop the Martian's borrowed shape first
 	if on:
 		suit_def = def
 		var civ: Dictionary = def["civilian"]
@@ -932,7 +937,8 @@ func set_civilian(on: bool) -> void:
 		if held_prop:
 			Abilities.drop_prop(self)
 		for b in beams:
-			b.visible = false
+			if is_instance_valid(b):
+				b.visible = false
 	else:
 		def = suit_def
 		suit_def = {}
@@ -1282,8 +1288,12 @@ func die(source: Actor) -> void:
 	_release_grapple()
 	if held_prop and is_instance_valid(held_prop):
 		Abilities.drop_prop(self)
+	if tk_hold or (tk_actor and is_instance_valid(tk_actor)):
+		tk_release(false)
+	tk_hold = false
 	for b in beams:
-		b.visible = false
+		if is_instance_valid(b):
+			b.visible = false
 	if stream:
 		stream.emitting = false
 	collision_layer = 0
@@ -1303,6 +1313,19 @@ func revive() -> void:
 	frozen_t = 0.0
 	burn_t = 0.0
 	stun_t = 0.0
+	# Nothing from before the knockout carries over: being lifted, poison,
+	# roots, dampening, a queued blitz or slam...
+	lift_t = 0.0
+	lifter = null
+	poison_t = 0.0
+	root_t = 0.0
+	dampened_t = 0.0
+	whirl_t = 0.0
+	breath_t = 0.0
+	dash_t = 0.0
+	slam_pending = false
+	blitz_queue.clear()
+	tk_hold = false
 	invuln_t = 2.0
 	collision_layer = Game.LAYER_ACTORS
 	collision_mask = Game.LAYER_WORLD | Game.LAYER_PROPS | Game.LAYER_ACTORS
@@ -1352,6 +1375,20 @@ func set_shrunk(value: bool) -> void:
 	var s := _cur_scale()
 	_apply_size(s)
 	model.scale = Vector3.ONE * s
+
+
+## Lets go of effect nodes that live in the world's fx root (beams, a flame
+## stream, a grappling line), which is cleared when changing worlds.
+func drop_fx_refs() -> void:
+	for b in beams:
+		if is_instance_valid(b):
+			b.queue_free()
+	beams.clear()
+	beam_slot = ""
+	if stream and is_instance_valid(stream):
+		stream.queue_free()
+	stream = null
+	_release_grapple()
 
 
 func _exit_tree() -> void:

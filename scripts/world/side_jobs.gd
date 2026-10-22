@@ -512,7 +512,7 @@ func _tick_krypto(delta: float) -> void:
 		krypto = null
 		return
 	var p: Actor = world.player
-	if not can_have_krypto() or world.inside != "" and world.city.kind != "metro":
+	if not can_have_krypto():
 		dismiss_krypto()
 		return
 	var body := krypto.get_node("Body") as Node3D

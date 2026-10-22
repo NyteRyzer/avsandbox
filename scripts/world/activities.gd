@@ -142,6 +142,16 @@ func carried_drop(c: Actor) -> bool:
 
 
 func _tick_fire(delta: float) -> void:
+	# Someone trapped was knocked out (or removed): they can't be carried out
+	# any more, so they no longer count towards finishing the rescue.
+	for c in trapped.duplicate():
+		if not is_instance_valid(c) or c.dead:
+			trapped.erase(c)
+			total -= 1
+			world.notify("One of the trapped people didn't make it out.", Color("#ff8a6a"))
+	if total <= 0:
+		failed = true
+		return
 	_fire_tick -= delta
 	if _fire_tick > 0.0:
 		return
@@ -220,7 +230,7 @@ func _process(delta: float) -> void:
 	match kind:
 		"fire":
 			_tick_fire(delta)
-			if rescued >= total:
+			if rescued >= total and rescued > 0:
 				done = true
 			elif time > 300.0:
 				failed = true

@@ -394,10 +394,16 @@ func load_settings() -> void:
 		var value = cfg.get_value("settings", key, settings[key])
 		if typeof(value) == typeof(settings[key]) or (typeof(settings[key]) == TYPE_FLOAT and typeof(value) == TYPE_INT):
 			settings[key] = value
-	for key in ["stats", "achievements", "collected", "suits", "discovered"]:
-		var v = cfg.get_value("progress", key, progress[key])
-		if typeof(v) == typeof(progress[key]):
-			progress[key] = v
+	# Every progress key that was saved (mastery, personal missions and
+	# loadouts too), as long as it has the right type.
+	if cfg.has_section("progress"):
+		for key in cfg.get_section_keys("progress"):
+			var v = cfg.get_value("progress", key)
+			if not progress.has(key) or typeof(v) == typeof(progress[key]):
+				progress[key] = v
+	var suits = cfg.get_value("game", "suit_choice", {})
+	if typeof(suits) == TYPE_DICTIONARY:
+		suit_choice = suits
 	var last = cfg.get_value("game", "selected_id", selected_id)
 	if typeof(last) == TYPE_STRING and by_id.has(last):
 		selected_id = last
@@ -408,6 +414,7 @@ func save_settings() -> void:
 	for key in settings.keys():
 		cfg.set_value("settings", key, settings[key])
 	cfg.set_value("game", "selected_id", selected_id)
+	cfg.set_value("game", "suit_choice", suit_choice)
 	for key in progress.keys():
 		cfg.set_value("progress", key, progress[key])
 	cfg.save(SETTINGS_PATH)

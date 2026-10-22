@@ -210,6 +210,9 @@ func _exit_tree() -> void:
 
 ## Spawns (or replaces) the player as the given roster character.
 func spawn_player(id: String, at = null) -> void:
+	if ship and ship.piloted:
+		# Changing character at the helm: step back onto the bridge first.
+		ship.leave_helm()
 	var c := Loadout.apply(Costumes.apply(Game.get_character(id), str(Game.suit_choice.get(id, ""))))
 	var pos: Vector3
 	var yaw := cam.yaw
@@ -355,7 +358,11 @@ func _process(delta: float) -> void:
 			Game.clear_heat()
 			hud.show_ko(false)
 	if player and is_instance_valid(player):
+		var was_in := inside
 		inside = Interiors.room_at(player.global_position)
+		if inside != was_in and inside != "":
+			# Walk-in rooms (Iron Heights, Arkham) have no door to do this.
+			_on_enter_room(inside)
 		day_night.indoors = inside != ""
 		population.enabled = inside == "" and not ship.piloted
 		events.enabled = inside == "" and city.kind in ["metro", "western"]
@@ -767,6 +774,9 @@ func enter_vehicle(car: Prop) -> void:
 	elif car.driving:
 		Game.add_heat(0.3)
 		Game.add_score(5)
+	if car.getaway:
+		# Hijacking a getaway car ends the getaway: the robbers bail out.
+		car.getaway = false
 	vehicle = car
 	car.take_wheel(player)
 	Game.record("drives")
@@ -837,9 +847,11 @@ func recruit(o: Actor) -> void:
 
 ## Tag team: take control of one of your allies; you become their backup.
 func swap_to_next_ally() -> void:
-	if player == null or not is_instance_valid(player) or vehicle or ship.piloted or player.changing or carrying:
+	if player == null or not is_instance_valid(player) or player.dead or vehicle or ship.piloted or player.changing or carrying:
 		return
-	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.follow_target == player and not a.dead)
+	# Clones and summons vanish after a while, so you can't take them over.
+	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool:
+		return a.follow_target == player and not a.dead and not a.has_meta("temporary"))
 	if allies.is_empty():
 		notify("No allies to switch to. Recruit heroes with [G], or spawn some from the Tab menu.", Color("#ffd27a"))
 		return
@@ -1058,6 +1070,30 @@ func _step_through_breach(id: String) -> void:
 	travel_to(id, "breach")
 
 
+## Before the fx root is cleared on travel: finish ultimates and costume
+## changes in progress (they live there) and make actors drop their effect
+## nodes, so nobody is left holding a freed beam or a half-done ultimate.
+func _detach_fx() -> void:
+	for f in fx_root.get_children():
+		if f is Ultimate:
+			f._end()
+		elif f is Suitup:
+			var su: Suitup = f
+			if is_instance_valid(su.actor):
+				if not su._swapped:
+					su.actor.set_civilian(su.to_civilian)
+				su.actor.changing = false
+				if is_instance_valid(su.actor.model):
+					su.actor.model.rotation = Vector3.ZERO
+					su.actor.model.scale = Vector3.ONE * su.actor._cur_scale()
+	for a in get_tree().get_nodes_in_group("actors"):
+		a.drop_fx_refs()
+	_power_weather_t = 0.0
+	_weather_before = ""
+	if survival.active:
+		survival.stop(" (you left this Earth)")
+
+
 ## Rebuilds the world as another Earth, era or the Speed Force. `how` is the
 ## way you got there (breach, speed, time) and picks the effect.
 func travel_to(id: String, how := "breach") -> void:
@@ -1077,6 +1113,7 @@ func travel_to(id: String, how := "breach") -> void:
 			a.queue_free()
 	for p in props_root.get_children():
 		p.queue_free()
+	_detach_fx()
 	for f in fx_root.get_children():
 		f.queue_free()
 	remove_child(city)
@@ -1257,7 +1294,8 @@ func _space_check() -> void:
 			_space_from = place_id
 			_space_hint = false
 			travel_to("argo", "space")
-	elif city.kind == "argo":
+	elif city.kind == "argo" and inside == "":
+		# (Rooms like the Waverider's bridge sit far away from the city.)
 		if p.y < -140.0 or Vector2(p.x, p.z).length() > 1700.0:
 			travel_to(_space_from if Multiverse.DESTS.has(_space_from) else "earth1", "reentry")
 

@@ -27,6 +27,51 @@ func _ready() -> void:
 			cs.queue_free()
 		get_tree().quit()
 		return
+	if only == "features":
+		var w := World.new()
+		add_child(w)
+		w.population.enabled = false
+		w.char_missions.enabled = false
+		w.side_jobs.enabled = false
+		w.day_night.frozen = true
+		w.day_night.hour = 18.5
+		w.events.cooldown = 99999.0
+		w.spawn_player("superman", Vector3(560, 0.5, -440))
+		for i in 20:
+			await get_tree().physics_frame
+		w.cam.pitch = -0.12
+		w.cam.zoom = 9.0
+		w.events.start_random("incursion")
+		var inc: Incident = w.events.active["custom"]
+		w.player.global_position = inc.center + Vector3(0, 0.5, 12)
+		inc._spawn_t = 0.0
+		for i in 10:
+			await get_tree().physics_frame
+		w.cam.yaw = atan2(w.player.global_position.x - inc.center.x, w.player.global_position.z - inc.center.z)
+		for i in 50:
+			await get_tree().physics_frame
+		await _snap("feature_incursion", 2)
+		w.events.reset()
+		w.clear_npcs()
+		w.events.start_random("meteors")
+		var met: Incident = w.events.active["custom"]
+		w.player.global_position = met.center + Vector3(0, 0.5, 20)
+		w.cam.pitch = 0.25
+		for i in 200:
+			await get_tree().physics_frame
+		await _snap("feature_meteors", 2)
+		w.events.reset()
+		w.cam.pitch = -0.1
+		w.cam.zoom = 5.0
+		w.side_jobs.toggle_krypto()
+		w.side_jobs.krypto.global_position = w.player.global_position + Vector3(1.5, 0.3, 1)
+		var crate := w.side_jobs.start_drop()
+		crate.global_position = w.player.global_position + Vector3(-3, 6, -6)
+		for i in 40:
+			await get_tree().physics_frame
+		await _snap("feature_krypto_drop", 2)
+		get_tree().quit()
+		return
 	if only == "breach":
 		var w := World.new()
 		add_child(w)
@@ -622,6 +667,7 @@ func _wheel_shots() -> void:
 	w.spawn_player("green_arrow", Vector3(560, 0.5, -440))
 	for i in 60:
 		await get_tree().physics_frame
+	w.weapon_wheel.auto_close = false
 	w.weapon_wheel.open()
 	w.weapon_wheel._aim = Vector2(80, -80)
 	w.weapon_wheel._pick()

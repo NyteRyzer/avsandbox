@@ -47,6 +47,8 @@ func open() -> void:
 	visible = true
 	_main.visible = true
 	_settings.visible = false
+	if _progress:
+		_progress.visible = false
 	get_tree().paused = true
 	world.capture_mouse(false)
 
@@ -61,6 +63,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("pause"):
 		if _settings.visible:
 			_close_settings()
+		elif _progress and _progress.visible:
+			_progress.visible = false
+			_main.visible = true
 		else:
 			close()
 		get_viewport().set_input_as_handled()
@@ -97,7 +102,8 @@ func _open_progress() -> void:
 	var s: Dictionary = Game.progress["stats"]
 	var stats := PackedStringArray()
 	for k in ["kos", "supers_defeated", "bosses", "takedowns", "parries", "events", "ultimates", "fragments", "discovered",
-			"races", "rescues", "chases", "waves_best", "drives", "travels", "changes", "photos"]:
+			"races", "rescues", "chases", "waves_best", "drives", "travels", "changes", "photos",
+			"bounties", "breaches_closed", "catches", "runaways_stopped", "supply_drops", "cats_rescued", "selfies", "drills"]:
 		stats.append("%s: %d" % [k.replace("_", " ").capitalize(), int(s.get(k, 0))])
 	stats.append("Distance on foot: %.1f km" % (float(s.get("distance", 0)) / 1000.0))
 	stats.append("Rank %d (%s), %d lifetime points" % [Game.rank(), Game.rank_title(Game.player_side()), int(Game.settings["xp"])])

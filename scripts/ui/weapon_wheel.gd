@@ -16,6 +16,7 @@ var selected := -1
 var _aim := Vector2.ZERO
 var _canvas: Control
 var _saved_scale := 1.0
+var auto_close := true   # close when H isn't held (screenshots turn this off)
 
 
 func _ready() -> void:
@@ -45,7 +46,9 @@ func close(apply := true) -> void:
 	if not visible:
 		return
 	visible = false
-	Engine.time_scale = _saved_scale if _saved_scale < 0.99 else 1.0
+	# Back to whatever speed the game should be running at now (a hit-stop
+	# or slow-mo that was on when the wheel opened has probably ended).
+	Engine.time_scale = 0.25 if Game.slowmo_left > 0.0 else 1.0
 	if apply and selected >= 0 and selected < options.size():
 		_apply(selected)
 
@@ -68,15 +71,25 @@ func _load_ring() -> void:
 func _apply(i: int) -> void:
 	var slot: String = RINGS[ring]
 	var p: Actor = world.player
+	if p == null or not is_instance_valid(p):
+		return
 	if slot == "emotes":
 		Emotes.play(p, i + 1)
 		return
+	if p.civilian or p.changing:
+		return   # out of costume (or changing): no kit to swap
 	var id := str(p.def.get("id", ""))
 	Loadout.choose(id, slot, i)
 	p.set_kit(Loadout.apply(_base_def()))
 	world.notify("%s: %s" % [RING_NAMES[slot], options[i].get("name", "")], Color("#c8e8ff"))
 	FX.flash(world, p.model.hand_point(1.0), Color("#c8e8ff"), 0.6, 0.2, 0.6)
 	Game.record("wheel_swaps")
+
+
+func _process(_delta: float) -> void:
+	# The release of H can be missed while a menu had the game paused.
+	if visible and auto_close and not get_tree().paused and not Input.is_action_pressed("wheel"):
+		close(false)
 
 
 func _input(event: InputEvent) -> void:

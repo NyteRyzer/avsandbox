@@ -592,7 +592,8 @@ func _cd(p: Actor, slot: String) -> String:
 func _update_target(p: Actor) -> void:
 	target_label.text = ""
 	target_bar.visible = false
-	hint_label.text = ""
+	# hint_label already holds this frame's [G] prompt; lift/throw hints only
+	# show when there's nothing to interact with.
 	var cam: Camera3D = world.cam.camera
 	var from := cam.global_position
 	var to := from - cam.global_basis.z * 120.0
@@ -611,6 +612,8 @@ func _update_target(p: Actor) -> void:
 		target_bar.visible = true
 		target_bar.max_value = a.max_hp
 		target_bar.value = a.hp
+	if hint_label.text != "":
+		return
 	if p.strength and p.held_prop == null:
 		for prop in world.get_tree().get_nodes_in_group("props"):
 			if prop.global_position.distance_to(p.global_position) < 5.0 * p.size:

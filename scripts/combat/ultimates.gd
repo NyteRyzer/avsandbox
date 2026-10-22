@@ -355,10 +355,11 @@ func _summon() -> void:
 	for a in spawned:
 		FX.portal(world, a.chest(), _color())
 		a.set_meta("pinned", true)
+		a.set_meta("temporary", true)
 		var wr: WeakRef = weakref(a)
 		var expire := func() -> void:
 			var ref = wr.get_ref()
-			if ref and is_instance_valid(ref):
+			if ref and is_instance_valid(ref) and not ref.is_player:
 				FX.portal(ref.world, ref.chest(), Color.WHITE)
 				ref.queue_free()
 		world.get_tree().create_timer(40.0, false).timeout.connect(expire)
