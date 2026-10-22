@@ -208,6 +208,20 @@ func forward() -> Vector3:
 	return Vector3(0, 0, -1).rotated(Vector3.UP, yaw)
 
 
+## Is `p` within `reach` metres of the hull (anywhere along it, parked or
+## hovering overhead)?
+func near(p: Vector3, reach: float) -> bool:
+	if piloted:
+		return false
+	var a := global_position + forward() * 30.0
+	var b := global_position - forward() * 30.0
+	var ab := b - a
+	var t := clampf((p - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+	var closest := a + ab * t
+	var flat := Vector2(p.x - closest.x, p.z - closest.z).length()
+	return flat < reach and absf(p.y - closest.y) < 45.0
+
+
 ## Where people stand to board, or step off: the ground under the stern ramp.
 func boarding_point() -> Vector3:
 	var stern := global_position + Vector3(0, 0, 32).rotated(Vector3.UP, yaw)

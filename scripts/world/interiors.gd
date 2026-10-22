@@ -548,6 +548,7 @@ func _waverider() -> void:
 		box(Vector3(-10 + side * 3.0, 1.2, 26), Vector3(3.0, 0.3, 3.4), "#a7aeb6", true, 0.0, side * 0.25)
 		box(Vector3(-10 + side * 1.0, 1.4, 28.7), Vector3(0.9, 0.9, 0.3), "#6ad0ff", false, 2.0)
 	label("JUMP SHIP", Vector3(-10, 4.0, 25), 0.6, Color("#d8e8ff"))
+	interactable("Take the Jump Ship back down to the city", Vector3(-6.0, 0.5, 25.0), "jump_ship_out")
 	# The brig: two cells with glowing force fields.
 	for k in 2:
 		var cz := 18.0 + k * 6.0

@@ -55,6 +55,7 @@ var inside := ""                 # which interior the player is in ("" outside)
 var door: Dictionary = {}        # the door or console the player is next to
 var _returns: Dictionary = {}    # interior id -> where to come back out
 var breach_portal: BreachPortal  # an open breach waiting for the player to step through
+var jump_ship: JumpShip           # the Legends' shuttle, when it's out of the Waverider
 
 
 func _ready() -> void:
@@ -314,6 +315,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if player and is_instance_valid(player):
 			call_waverider()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("jump_ship"):
+		if player and is_instance_valid(player):
+			call_jump_ship()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("companion"):
 		if player and is_instance_valid(player):
 			side_jobs.toggle_krypto()
@@ -421,10 +426,11 @@ func _nearest_door() -> Dictionary:
 		if dd < best_d and absf(dp.y - p.y) < 3.0:
 			best_d = dd
 			best = dr
-	if inside == "" and best.is_empty():
-		var bp := ship.boarding_point()
-		if Vector2(bp.x - p.x, bp.z - p.z).length() < 6.0 and absf(bp.y - p.y) < 4.0:
-			best = {"name": "The Waverider", "pos": bp, "interior": "waverider"}
+	if inside == "" and best.is_empty() and is_instance_valid(jump_ship) and jump_ship.state == "landed" \
+			and jump_ship.global_position.distance_to(p) < 8.0:
+		best = {"name": "Board the Jump Ship (fly to the Waverider)", "pos": jump_ship.global_position, "interior": "jump_ship"}
+	if inside == "" and best.is_empty() and ship.near(p, 25.0):
+		best = {"name": "The Waverider", "pos": ship.global_position, "interior": "waverider"}
 	# People trapped in a fire, and heroes who might join you.
 	if best.is_empty() and carrying == null:
 		for o in get_tree().get_nodes_in_group("actors"):
@@ -524,6 +530,11 @@ func interact() -> void:
 
 func use_door(d: Dictionary) -> void:
 	var what: String = d["interior"]
+	if what == "waverider" and not ship.piloted:
+		# Gideon beams you aboard: a column of light, and you're in the cargo bay.
+		FX.flash(self, player.chest(), Color("#bfe8ff"), 2.0, 0.4, 0.6)
+		FX.lightning(self, player.chest(), ship.global_position, Color("#9ad8ff"), 0.6, 0.5, 6, 0)
+		Sfx.play("teleport", player.global_position, -2.0)
 	match what:
 		"exit":
 			leave_interior(str(d.get("outside", inside)))
@@ -551,6 +562,10 @@ func use_door(d: Dictionary) -> void:
 			notify("Carry them to the ambulance. [G] puts them down.", Color("#60ff90"))
 		"recruit":
 			recruit(d["actor"])
+		"jump_ship":
+			_jump_ship_up()
+		"jump_ship_out":
+			_jump_ship_down()
 		"help":
 			side_jobs.accept_help(d["actor"])
 		"selfie":
@@ -1069,6 +1084,72 @@ func call_waverider() -> void:
 	Game.record("waverider_calls")
 
 
+## The Legends' Jump Ship ------------------------------------------------------
+
+static func is_legend(id: String) -> bool:
+	return Teams.TEAMS.get("Legends", {}).get("members", []).has(id)
+
+
+## [J] for a Legend: the Jump Ship flies down from the Waverider and lands
+## in front of you. Board it (G) to fly up to the ship.
+func call_jump_ship() -> void:
+	if not is_legend(str(player.def.get("id", ""))):
+		notify("Only the Legends have a Jump Ship. (Anyone can call the Waverider with U.)", Color("#a0a0a0"))
+		return
+	if inside != "" or ship.piloted or vehicle or player.dead:
+		notify("Step outside to call the Jump Ship.", Color("#ffd27a"))
+		return
+	if is_instance_valid(jump_ship):
+		jump_ship.queue_free()
+	var fwd := player.forward()
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length() > 0.1 else Vector3.FORWARD
+	var spot := player.global_position + fwd * 9.0
+	var ground := spot.y - 0.5
+	var q := PhysicsRayQueryParameters3D.create(spot + Vector3.UP * 30.0, spot + Vector3.DOWN * 60.0, Game.LAYER_WORLD)
+	var hit := get_world_3d().direct_space_state.intersect_ray(q)
+	if not hit.is_empty():
+		ground = float(hit["position"].y)
+	jump_ship = JumpShip.new().setup(self)
+	add_child(jump_ship)
+	jump_ship.arrive(Vector3(spot.x, ground + 1.65, spot.z))
+	notify("Gideon sends the Jump Ship down for you. [G] to board it.", Color("#ffb04a"))
+	Game.record("jump_ship_calls")
+
+
+func _jump_ship_up() -> void:
+	if not is_instance_valid(jump_ship):
+		return
+	_returns["waverider"] = player.global_position
+	var dock := ship.global_position - ship.forward() * 26.0 + Vector3.UP * 2.0
+	jump_ship.carry_player_to(dock, func() -> void:
+		jump_ship.release_player(Interiors.to_world("waverider", Vector3(-6.5, 0.6, 25.0)))
+		inside = "waverider"
+		notify("The Jump Ship docks in the Waverider's cargo bay.", Color("#ffb04a"))
+		jump_ship.queue_free()
+		jump_ship = null)
+	notify("Flying to the Waverider...", Color("#ffb04a"))
+
+
+## From the cargo bay: the Jump Ship takes you back down to where you were.
+func _jump_ship_down() -> void:
+	var dest: Vector3 = _returns.get("waverider", ship.boarding_point())
+	if is_instance_valid(jump_ship):
+		jump_ship.queue_free()
+	jump_ship = JumpShip.new().setup(self)
+	add_child(jump_ship)
+	var start := ship.global_position - ship.forward() * 26.0 + Vector3.UP * 2.0
+	jump_ship.global_position = start
+	_move_player(start)
+	inside = ""
+	var land := Vector3(dest.x + 4.0, dest.y + 1.1, dest.z)
+	jump_ship.carry_player_to(land, func() -> void:
+		jump_ship.release_player(Vector3(dest.x, dest.y + 0.3, dest.z))
+		notify("The Jump Ship sets you down. [J] calls it again.", Color("#ffb04a"))
+		jump_ship.leave())
+	notify("The Jump Ship drops out of the cargo bay...", Color("#ffb04a"))
+
+
 ## Tears a breach open a few steps ahead of the player; walking into it
 ## travels to `id`. Opening another replaces it.
 func open_breach(id: String) -> void:
@@ -1201,6 +1282,11 @@ func travel_to(id: String, how := "breach") -> void:
 	pickups.clear()
 	street_crime.stop()
 	side_jobs.reset()
+	if is_instance_valid(jump_ship):
+		if jump_ship.carrying:
+			jump_ship.release_player(player.global_position)
+		jump_ship.queue_free()
+	jump_ship = null
 	inmates.clear()
 	missions.on_arrive(id)
 	collectibles.build()

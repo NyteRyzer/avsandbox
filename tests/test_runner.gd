@@ -63,6 +63,8 @@ func _ready() -> void:
 	await test_campaign()
 	_current = "test_breach_and_new_features"
 	await test_breach_and_new_features()
+	_current = "test_jump_ship_and_boarding"
+	await test_jump_ship_and_boarding()
 	_current = "test_custom_models"
 	test_custom_models()
 	_current = "test_ui_smoke"
@@ -1578,3 +1580,66 @@ func test_ui_smoke() -> void:
 	world.queue_free()
 	await get_tree().process_frame
 	check(true, "world freed cleanly")
+
+
+func test_jump_ship_and_boarding() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "breach")
+		await _idle(5)
+	if world.inside != "":
+		world.leave_interior(world.inside)
+		await _idle(3)
+	# Anyone standing near the hovering Waverider can beam aboard.
+	world.spawn_player("flash", Vector3(560, 0.5, -440))
+	await _idle(2)
+	var under := world.ship.global_position
+	world.teleport_player(Vector3(under.x + 12.0, 0.5, under.z + 6.0))
+	await _idle(3)
+	check(world.ship.near(world.player.global_position, 25.0), "standing under the Waverider counts as near it")
+	check(world.door.get("interior", "") == "waverider", "a boarding prompt appears near the ship (%s)" % str(world.door))
+	world.interact()
+	await _idle(3)
+	check(world.inside == "waverider", "G near the ship beams you aboard")
+	world.leave_interior("waverider")
+	await _idle(3)
+	# Non-Legends can't call the Jump Ship.
+	world.teleport_player(Vector3(560, 0.5, -440))
+	await _idle(2)
+	world.call_jump_ship()
+	check(not is_instance_valid(world.jump_ship), "only Legends get a Jump Ship")
+	# A Legend whistles it down, boards it and flies up to the Waverider.
+	world.spawn_player("white_canary", Vector3(560, 0.5, -440))
+	await _idle(2)
+	world.call_jump_ship()
+	check(is_instance_valid(world.jump_ship), "J calls the Jump Ship for a Legend")
+	for i in 3000:
+		await get_tree().process_frame
+		if world.jump_ship.state == "landed":
+			break
+	check(world.jump_ship.state == "landed", "the Jump Ship lands (%s t=%.2f at %s)" % [world.jump_ship.state, world.jump_ship._t, world.jump_ship.global_position])
+	check(world.jump_ship.global_position.distance_to(world.player.global_position) < 14.0, "it lands next to you")
+	world.teleport_player(world.jump_ship.global_position + Vector3(2.5, -1.0, 0))
+	await _idle(3)
+	check(world.door.get("interior", "") == "jump_ship", "a prompt to board the Jump Ship (%s)" % str(world.door))
+	world.interact()
+	for i in 4000:
+		await get_tree().process_frame
+		if world.inside == "waverider":
+			break
+	check(world.inside == "waverider", "the Jump Ship flies you into the Waverider")
+	check(world.player.visible and world.player.process_mode == Node.PROCESS_MODE_INHERIT, "you step out in the cargo bay")
+	# And back down again.
+	var out: Dictionary = {}
+	for d in world.city.doors:
+		if d["interior"] == "jump_ship_out":
+			out = d
+	check(not out.is_empty(), "the cargo bay has a Jump Ship launch")
+	world.use_door(out)
+	for i in 4000:
+		await get_tree().process_frame
+		if world.player.visible and world.inside == "" and not (is_instance_valid(world.jump_ship) and world.jump_ship.carrying):
+			break
+	check(world.inside == "" and world.player.visible, "the Jump Ship sets you back down")
+	check(world.player.global_position.distance_to(Vector3(560, 0.5, -440)) < 20.0, "where you left from (%s)" % world.player.global_position)
