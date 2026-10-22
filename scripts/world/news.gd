@@ -5,7 +5,8 @@ extends Node
 
 const OUTLETS := {"Star City": "STAR CITY STAR", "The Glades": "STAR CITY STAR", "Central City": "PICTURE NEWS",
 	"National City": "CATCO WORLDWIDE MEDIA", "Freeland": "FREELAND DAILY", "Gotham City": "GOTHAM GAZETTE",
-	"Smallville": "SMALLVILLE LEDGER"}
+	"Smallville": "SMALLVILLE LEDGER", "Keystone City": "KEYSTONE CHRONICLE", "Metropolis": "THE DAILY PLANET",
+	"Blue Valley": "BLUE VALLEY BUGLE"}
 const QUIET := ["Traffic is light across the bay bridges this evening.", "S.T.A.R. Labs denies rumours of a second particle accelerator.",
 	"Jitters launches a new seasonal latte: the Flash-uccino.", "Mayor promises more streetlights for the Glades.",
 	"CatCo's Kara Danvers wins a journalism award.", "Ivy Town professor claims to have shrunk a car. Again.",

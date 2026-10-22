@@ -453,6 +453,14 @@ func test_places() -> void:
 	check(not world.city.is_water(Vector3(-1440, 0, 2440)), "a bridge reaches Gotham")
 	check(not world.city.is_water(Vector3(1560, 0, 1440)), "a bridge reaches Smallville")
 	check(not world.city.landmark("Wayne Tower").is_empty() and not world.city.landmark("Kent Farm").is_empty(), "Wayne Tower and Kent Farm")
+	check(world.city.islands.size() >= 9, "nine city islands (%d)" % world.city.islands.size())
+	check(world.city.district_at(Vector3(560, 1, 3440)) == "Keystone City", "Keystone City is south of Freeland")
+	check(world.city.district_at(Vector3(2560, 1, 3440)) == "Metropolis", "Metropolis is south of Smallville")
+	check(world.city.district_at(Vector3(-3440, 1, 1440)) == "Blue Valley", "Blue Valley is west of National City")
+	for pt in [Vector3(560, 0, 2440), Vector3(-440, 0, 3440), Vector3(1560, 0, 3440), Vector3(2560, 0, 2440), Vector3(-2440, 0, 1440)]:
+		check(not world.city.is_water(pt), "a bridge crosses at %s" % pt)
+	for lm in ["The Daily Planet", "LexCorp Tower", "Flash Museum", "Blue Valley High", "KCPD"]:
+		check(not world.city.landmark(lm).is_empty(), lm + " is built")
 	# Walk in through the front doors of S.T.A.R. Labs, Jitters and Verdant.
 	for room in ["star_labs", "jitters", "bunker"]:
 		var start: Vector3 = Interiors.origin(room) + Vector3(0, 0.5, -(Interiors.SIZES[room].z * 0.5 + (14.0 if room == "star_labs" else 4.0)))

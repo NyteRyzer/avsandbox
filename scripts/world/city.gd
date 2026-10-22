@@ -26,11 +26,12 @@ const SHORE := 50.0                       # land beyond the outer roads
 const LAND := HALF + SHORE                # half-size of an island
 const SEA := 9000.0
 const FACADE_SHADER := preload("res://shaders/facade.gdshader")
-const DISTRICTS := ["Star City", "Central City", "National City", "Freeland", "Gotham City", "Smallville"]
+const DISTRICTS := ["Star City", "Central City", "National City", "Freeland", "Gotham City", "Smallville",
+	"Keystone City", "Metropolis", "Blue Valley"]
 const ISLAND_CENTERS := [Vector2(-1440, -560), Vector2(560, -560), Vector2(-1440, 1440), Vector2(560, 1440),
-	Vector2(-1440, 3440), Vector2(2560, 1440)]
+	Vector2(-1440, 3440), Vector2(2560, 1440), Vector2(560, 3440), Vector2(2560, 3440), Vector2(-3440, 1440)]
 ## Bridges between islands (index pairs), along their central avenues.
-const BRIDGE_PAIRS := [[0, 1], [2, 3], [0, 2], [1, 3], [2, 4], [3, 5]]
+const BRIDGE_PAIRS := [[0, 1], [2, 3], [0, 2], [1, 3], [2, 4], [3, 5], [3, 6], [4, 6], [6, 7], [5, 7], [2, 8]]
 const BAY_X := -440.0                     # middle of the Star City - Central City channel
 const REALM_NAMES := {"western": "Old West", "speedforce": "The Speed Force", "antimatter": "The Anti-Matter Universe",
 	"vanishing_point": "Vanishing Point", "argo": "Argo City"}
@@ -54,6 +55,16 @@ const STYLES := [
 	# Smallville: farmland around a small Main Street.
 	{"facades": ["#c8b89a", "#a8402a", "#e8e0d0"], "glass": "#5a6a78", "min_h": 5.0, "max_h": 12.0, "towers": 0.0,
 		"lights": 0.9, "trees": true, "fog": 0.0, "rural": true, "sky": ["#4a9aff", "#ffe8c0", 0.3]},
+	# Keystone City: Central City's blue-collar twin across the river: brick
+	# warehouses, smokestacks and steel.
+	{"facades": ["#6a4a3a", "#55504a", "#7a6248"], "glass": "#46505a", "min_h": 8.0, "max_h": 70.0, "towers": 0.15,
+		"lights": 0.85, "trees": true, "fog": 0.0, "sky": ["#8aa0b8", "#e8d8c0", 0.4], "haze": 1.5},
+	# Metropolis: gleaming art-deco skyscrapers, the City of Tomorrow.
+	{"facades": ["#e2dccc", "#c8c0aa", "#b0b8c4"], "glass": "#6a9ac8", "min_h": 20.0, "max_h": 240.0, "towers": 0.6,
+		"lights": 1.1, "trees": true, "fog": 0.0, "sky": ["#3a8aff", "#fff0d0", 0.3]},
+	# Blue Valley: Stargirl's small Nebraska town: houses, lawns and a high school.
+	{"facades": ["#e8e0cc", "#b8c8d0", "#c89a6a"], "glass": "#5a6a78", "min_h": 5.0, "max_h": 14.0, "towers": 0.0,
+		"lights": 0.9, "trees": true, "fog": 0.0, "sky": ["#5aa0ff", "#ffe0b0", 0.3]},
 ]
 
 var spec: Dictionary = {}
@@ -869,6 +880,9 @@ const LANDMARK_BLOCKS := {
 	4: {Vector2i(3, 3): "wayne_tower", Vector2i(5, 2): "gcpd", Vector2i(1, 6): "arkham", Vector2i(4, 5): "park", Vector2i(6, 4): "crows"},
 	5: {Vector2i(2, 5): "kent_farm", Vector2i(4, 3): "water_tower", Vector2i(5, 4): "smallville_high", Vector2i(3, 3): "main_street",
 		Vector2i(4, 1): "jsa_hq"},
+	6: {Vector2i(3, 3): "kcpd", Vector2i(5, 3): "steel_mill", Vector2i(4, 5): "park", Vector2i(2, 5): "flash_museum"},
+	7: {Vector2i(3, 3): "daily_planet", Vector2i(5, 2): "lexcorp", Vector2i(4, 4): "park", Vector2i(2, 5): "superman_statue"},
+	8: {Vector2i(3, 3): "blue_valley_high", Vector2i(4, 4): "park", Vector2i(5, 3): "pit_stop", Vector2i(2, 5): "whitmore_house"},
 }
 
 
@@ -1373,6 +1387,73 @@ func _build_island_landmarks(index: int, c: Vector2) -> void:
 					_add_building(sr, rng.randf_range(6.0, 9.0), facade_mats[5][k % 3])
 				_label("MAIN STREET", Vector3(bc.x, 12, rect.position.y), 1.8, Color("#ffffff"))
 				_add_landmark("Smallville Main Street", front, district)
+			"kcpd":
+				_add_building(rect.grow(-8.0), 28.0, facade_mats[6][0])
+				_label("KCPD", base + Vector3(0, 32, 0), 4.0, Color("#bcd4ff"))
+				_add_landmark("KCPD", front, district)
+			"steel_mill":
+				var mill := rect.grow(-6.0)
+				_add_building(Rect2(mill.position, Vector2(mill.size.x, mill.size.y * 0.6)), 22.0, facade_mats[6][1])
+				for k in 3:
+					var stack := CylinderMesh.new()
+					stack.top_radius = 1.6
+					stack.bottom_radius = 2.2
+					stack.height = 50.0
+					var sp := Vector3(mill.position.x + 12.0 + k * 18.0, 25.0, mill.end.y - 10.0)
+					_mesh_instance(stack, Transform3D(Basis(), sp), facade_mats[6][0])
+					add_cylinder_collision(sp, 2.2, 50.0)
+					add_box(sp + Vector3(0, 23.0, 0), Vector3(3.6, 1.0, 3.6), _plain(Color("#ff7a2a"), 0.4, 2.5), false)
+				_label("KEYSTONE STEEL", base + Vector3(0, 26, -8), 3.0, Color("#ffb070"))
+				_add_landmark("Keystone Steel Mill", front, district)
+			"flash_museum":
+				_add_building(rect.grow(-10.0), 16.0, _plain(Color("#d8ccb0")))
+				for k in 6:
+					add_box(Vector3(rect.position.x + 14.0 + k * 7.2, 7.0, rect.position.y + 9.0), Vector3(1.4, 14.0, 1.4), _plain(Color("#f0ead8")))
+				add_box(Vector3(bc.x, 18.0, rect.position.y + 10.0), Vector3(8.0, 4.0, 0.4), _plain(Color("#ffd23a"), 0.3, 2.5), false)
+				_label("FLASH MUSEUM", base + Vector3(0, 21, -12), 3.0, Color("#ffd23a"))
+				_add_landmark("Flash Museum", front, district)
+			"daily_planet":
+				var dp := rect.grow(-14.0)
+				var dh := 190.0 * float(spec.get("height", 1.0))
+				_add_building(dp, dh, facade_mats[7][0])
+				_gothic_crown(dp, dh, facade_mats[7][1])
+				var globe := SphereMesh.new()
+				globe.radius = 11.0
+				globe.height = 22.0
+				_mesh_instance(globe, Transform3D(Basis(), base + Vector3(0, dh + 20.0, 0)), _plain(Color("#d8b040"), 0.35, 0.6))
+				var ring := TorusMesh.new()
+				ring.inner_radius = 12.0
+				ring.outer_radius = 13.0
+				_mesh_instance(ring, Transform3D(Basis(Vector3.FORWARD, 0.4), base + Vector3(0, dh + 20.0, 0)), _plain(Color("#f0d070"), 0.3, 1.2))
+				_label("DAILY PLANET", base + Vector3(0, dh + 5.0, -(dp.size.y * 0.5) - 1.0), 6.0, Color("#ffe090"))
+				_add_landmark("The Daily Planet", front, district)
+			"lexcorp":
+				_tower(rect.grow(-14.0), 220.0 * float(spec.get("height", 1.0)), _glass_mats[7], Color("#7aff7a"))
+				_label("LEXCORP", base + Vector3(0, 226 * float(spec.get("height", 1.0)), 0), 6.0, Color("#b0ffb0"))
+				_add_landmark("LexCorp Tower", front, district)
+			"superman_statue":
+				add_box(Vector3(bc.x, 0.2, bc.y), Vector3(BLOCK - 2.0, 0.2, BLOCK - 2.0), _grass_mat, false)
+				add_box(Vector3(bc.x, 3.0, bc.y), Vector3(10.0, 6.0, 10.0), _concrete_mat)
+				var bronze := _plain(Color("#7a6a4a"), 0.5)
+				add_box(Vector3(bc.x, 11.0, bc.y), Vector3(4.0, 10.0, 2.2), bronze)
+				add_box(Vector3(bc.x, 17.5, bc.y), Vector3(2.0, 2.4, 2.0), bronze, false)
+				add_box(Vector3(bc.x, 13.0, bc.y + 1.6), Vector3(6.0, 9.0, 0.3), _plain(Color("#9a2020"), 0.6), false)
+				_label("SUPERMAN - CENTENNIAL PARK", Vector3(bc.x, 7.0, rect.position.y + 26.0), 1.6, Color("#ffffff"))
+				_add_landmark("Centennial Park", Vector3(bc.x, 0.5, rect.position.y + 20.0), district)
+			"blue_valley_high":
+				_add_building(rect.grow(-6.0), 11.0, facade_mats[8][2])
+				_label("BLUE VALLEY HIGH - HOME OF THE WILDCATS", base + Vector3(0, 14, 0), 2.0, Color("#ffd23a"))
+				_add_landmark("Blue Valley High", front, district)
+			"pit_stop":
+				_add_building(Rect2(rect.position + Vector2(14, 12), Vector2(34, 18)), 6.0, _plain(Color("#c83a2a")))
+				add_box(Vector3(bc.x, 8.5, rect.position.y + 11.5), Vector3(16.0, 2.0, 0.3), _plain(Color("#ffe060"), 0.4, 2.5), false)
+				_label("THE PIT STOP DINER", Vector3(bc.x, 11.0, rect.position.y + 11.0), 1.6, Color("#ffe060"))
+				_add_landmark("The Pit Stop", Vector3(bc.x, 0.5, rect.position.y + 6.0), district)
+			"whitmore_house":
+				_farmhouse(Rect2(rect.position + Vector2(18, 14), Vector2(24, 18)), _plain(Color("#e8e0cc")))
+				add_box(Vector3(bc.x, 0.18, bc.y), Vector3(BLOCK - 2.0, 0.1, BLOCK - 2.0), _grass_mat, false)
+				_label("WHITMORE-DUGAN HOUSE", Vector3(bc.x, 4.0, rect.position.y + 2.0), 1.2, Color("#ffffff"))
+				_add_landmark("Courtney's House", Vector3(bc.x, 0.5, rect.position.y + 8.0), district)
 			"clinic":
 				_add_building(rect.grow(-10.0), 14.0, _plain(Color("#d8d0c4")))
 				add_box(Vector3(bc.x, 9.0, rect.position.y + 9.7), Vector3(3.0, 3.0, 0.3), _plain(Color("#e03030"), 0.4, 2.0), false)

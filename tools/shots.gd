@@ -115,6 +115,49 @@ func _ready() -> void:
 		await _snap("ship_helm_flight", 3)
 		get_tree().quit()
 		return
+	if only == "bigmap":
+		# The new cities, the world map and a Legend's Jump Ship.
+		var w := World.new()
+		add_child(w)
+		w.population.enabled = false
+		w.events.cooldown = 9999.0
+		w.char_missions.enabled = false
+		w.day_night.frozen = true
+		w.day_night.hour = 15.0
+		w.spawn_player("white_canary", Vector3(560, 0.5, -440))
+		for i in 10:
+			await get_tree().physics_frame
+		w.world_map.open()
+		await _snap("bigmap_world", 6)
+		w.world_map.close()
+		var c := Camera3D.new()
+		c.far = 4000.0
+		w.add_child(c)
+		for view in [["bigmap_metropolis", "The Daily Planet", Vector3(-160, 120, -260)], ["bigmap_keystone", "Keystone Steel Mill", Vector3(-90, 40, -120)],
+				["bigmap_bluevalley", "Blue Valley High", Vector3(-50, 25, -70)]]:
+			var lm: Dictionary = w.city.landmark(str(view[1]))
+			var at: Vector3 = lm["pos"]
+			w.teleport_player(at)
+			c.global_position = at + view[2]
+			c.look_at(at + Vector3(0, 30, 40), Vector3.UP)
+			c.current = true
+			for i in 20:
+				await get_tree().physics_frame
+			await _snap(str(view[0]), 3)
+		w.cam.camera.current = true
+		w.teleport_player(Vector3(560, 0.5, -440))
+		w.cam.yaw = 0.0
+		w.call_jump_ship()
+		for i in 300:
+			await get_tree().process_frame
+			if w.jump_ship.state == "landed":
+				break
+		w.cam.yaw = PI * 0.85
+		w.cam.pitch = -0.25
+		w.cam.zoom = 9.0
+		await _snap("bigmap_jumpship", 6)
+		get_tree().quit()
+		return
 	if only == "breach":
 		var w := World.new()
 		add_child(w)
