@@ -180,7 +180,7 @@ func setup(character: Dictionary, team_name: String) -> void:
 
 	model = CharacterModel.new()
 	add_child(model)
-	model.build(character.get("look", {}))
+	model.build(character.get("look", {}), str(character.get("id", "")))
 	if not is_player:
 		for m in model.meshes:
 			m.visibility_range_end = 180.0
@@ -1364,7 +1364,9 @@ func _rebuild_model(look: Dictionary) -> void:
 	var old := model
 	model = CharacterModel.new()
 	add_child(model)
-	model.build(look)
+	# The character's own look gets their drop-in model, if there is one;
+	# disguises and civilian clothes use the built-in body.
+	model.build(look, str(def.get("id", "")) if look == def.get("look") else "")
 	model.scale = old.scale
 	if old:
 		old.queue_free()

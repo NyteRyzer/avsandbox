@@ -63,6 +63,8 @@ func _ready() -> void:
 	await test_campaign()
 	_current = "test_breach_and_new_features"
 	await test_breach_and_new_features()
+	_current = "test_custom_models"
+	test_custom_models()
 	_current = "test_ui_smoke"
 	await test_ui_smoke()
 	print("\n%d checks passed, %d failed." % [_passed, _failed])
@@ -1503,6 +1505,51 @@ func test_breach_and_new_features() -> void:
 	world.weapon_wheel.close(false)
 	check(Engine.time_scale > 0.9, "closing the weapon wheel after slow-mo ends restores normal speed")
 	world.events.enabled = true
+
+
+func test_custom_models() -> void:
+	# A tiny "rigged model": a 2 m box with Idle and Run animations.
+	var root := Node3D.new()
+	root.name = "Dummy"
+	var mi := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = Vector3(0.5, 2.0, 0.5)
+	mi.mesh = bm
+	mi.position.y = 1.0
+	root.add_child(mi)
+	mi.owner = root
+	var ap := AnimationPlayer.new()
+	root.add_child(ap)
+	ap.owner = root
+	var lib := AnimationLibrary.new()
+	for n in ["Idle", "Run"]:
+		var a := Animation.new()
+		a.length = 1.0
+		lib.add_animation(n, a)
+	ap.add_animation_library("", lib)
+	var packed := PackedScene.new()
+	packed.pack(root)
+	var path := "res://models/characters/zz_test_dummy.tscn"
+	check(ResourceSaver.save(packed, path) == OK, "a test model can be saved")
+	var m := CharacterModel.new()
+	add_child(m)
+	m.build(Game.get_character("flash")["look"], "zz_test_dummy")
+	check(m.custom != null, "a model in models/characters replaces the built-in body")
+	var box := m._custom_bounds()
+	check(absf(box.size.y - 1.85) < 0.1 and absf(box.position.y) < 0.05, "it's scaled to about 1.85 m with its feet on the ground (%s)" % str(box))
+	check(not m.head.find_children("*", "MeshInstance3D", true, false).any(func(x) -> bool: return x.visible), "the built-in body is hidden")
+	m.animate(0.016, 0.0, true, false, 0.0, false)
+	check(m._custom_anim.current_animation == "Idle", "standing still plays Idle")
+	m.animate(0.016, 7.0, true, false, 0.0, false)
+	check(m._custom_anim.current_animation == "Run", "moving plays Run")
+	m.queue_free()
+	root.free()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	var plain := CharacterModel.new()
+	add_child(plain)
+	plain.build(Game.get_character("flash")["look"], "flash")
+	check(plain.custom == null, "characters without a model keep the built-in body")
+	plain.queue_free()
 
 
 func test_ui_smoke() -> void:

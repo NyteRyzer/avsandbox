@@ -346,7 +346,7 @@ func _select(id: String) -> void:
 		_model.queue_free()
 	_model = CharacterModel.new()
 	_preview_root.add_child(_model)
-	_model.build(c["look"])
+	_model.build(c["look"], str(c.get("id", "")))
 	var s := float(c["look"].get("scale", 1.0))
 	_model.scale = Vector3.ONE * (1.0 / maxf(1.0, s * 0.85))
 	_model.rotation.y = PI + 0.2

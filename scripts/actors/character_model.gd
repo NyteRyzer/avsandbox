@@ -237,8 +237,10 @@ func _normalize() -> void:
 
 # --- Build --------------------------------------------------------------------
 
-func build(look_def: Dictionary) -> void:
+func build(look_def: Dictionary, char_id := "") -> void:
 	look = look_def.duplicate(true)
+	custom = null
+	_custom_anim = null
 	_normalize()
 	for c in get_children():
 		c.queue_free()
@@ -280,8 +282,128 @@ func build(look_def: Dictionary) -> void:
 	_build_gear()
 	_commit()
 
+	if char_id != "":
+		_attach_custom(char_id)
 	scale = Vector3.ONE * float(look.get("scale", 1.0)) * (0.96 if build_type == "female" else 1.0)
 	_flash_mat = mat(Color(1.0, 0.45, 0.4), 0.6)
+
+
+# --- Drop-in 3D models ----------------------------------------------------------
+# Put a rigged model at models/characters/<character id>.glb (or .gltf/.tscn)
+# and it replaces the built-in body for that character. The built-in rig stays
+# underneath, hidden, for hit points, hands and eyes. Animations are picked by
+# name from the model's AnimationPlayer (idle, walk, run, fly, fall, jump,
+# punch/attack, death...), so a Mixamo export works as it is.
+
+const CUSTOM_DIR := "res://models/characters/"
+const ANIM_NAMES := {
+	"idle": ["idle", "stand", "breath"],
+	"walk": ["walk"],
+	"run": ["run", "jog", "sprint"],
+	"sprint": ["sprint", "run"],
+	"fly": ["fly", "flying", "hover", "float"],
+	"fall": ["fall", "jump", "air"],
+	"attack": ["punch", "attack", "hit", "kick", "strike", "cast", "shoot"],
+	"death": ["death", "die", "dying", "knock"],
+}
+
+var custom: Node3D = null
+var _custom_anim: AnimationPlayer = null
+var _custom_state := ""
+
+
+static func custom_path(id: String) -> String:
+	for ext in [".glb", ".gltf", ".tscn", ".scn"]:
+		var path: String = CUSTOM_DIR + id + ext
+		if ResourceLoader.exists(path):
+			return path
+	return ""
+
+
+func _attach_custom(id: String) -> void:
+	var path := custom_path(id)
+	if path == "":
+		return
+	var scene = load(path)
+	if not (scene is PackedScene):
+		return
+	custom = (scene as PackedScene).instantiate() as Node3D
+	if custom == null:
+		return
+	add_child(custom)
+	# Feet on the ground, about as tall as the built-in body, facing -Z
+	# (glTF and Mixamo characters face +Z; a look can override "model_yaw").
+	custom.rotation.y = float(look.get("model_yaw", PI))
+	var box := _custom_bounds()
+	if box.size.y > 0.01:
+		var k := float(look.get("model_height", 1.85)) / box.size.y
+		custom.scale = Vector3.ONE * k
+		custom.position.y = -box.position.y * k
+	for n in hips.find_children("*", "MeshInstance3D", true, false):
+		(n as MeshInstance3D).visible = false
+	meshes.clear()
+	for n in custom.find_children("*", "MeshInstance3D", true, false):
+		meshes.append(n)
+	var players := custom.find_children("*", "AnimationPlayer", true, false)
+	if not players.is_empty():
+		_custom_anim = players[0]
+
+
+func _custom_bounds() -> AABB:
+	var out := AABB()
+	var first := true
+	var inv := global_transform.affine_inverse() if is_inside_tree() else Transform3D()
+	for n in custom.find_children("*", "MeshInstance3D", true, false):
+		var mi := n as MeshInstance3D
+		var xf: Transform3D = (inv * mi.global_transform) if is_inside_tree() else mi.transform
+		var b: AABB = xf * mi.get_aabb()
+		out = b if first else out.merge(b)
+		first = false
+	return out
+
+
+## Plays the model's own animation for what the character is doing.
+func _animate_custom(hspeed: float, grounded: bool, flying: bool, dead: bool) -> void:
+	if _custom_anim == null:
+		return
+	var state := "idle"
+	if dead:
+		state = "death"
+	elif _action != "":
+		state = "attack"
+	elif flying:
+		state = "fly"
+	elif not grounded:
+		state = "fall"
+	elif hspeed > 9.0:
+		state = "sprint"
+	elif hspeed > 3.5:
+		state = "run"
+	elif hspeed > 0.4:
+		state = "walk"
+	if state == _custom_state:
+		return
+	var anim := _find_anim(state)
+	if anim == "" and state in ["sprint", "walk"]:
+		anim = _find_anim("run")
+	if anim == "" and state in ["fly", "fall", "attack"]:
+		anim = _find_anim("idle")
+	if anim == "":
+		return
+	_custom_state = state
+	var a := _custom_anim.get_animation(anim)
+	if a and state != "death" and state != "attack":
+		a.loop_mode = Animation.LOOP_LINEAR
+	_custom_anim.play(anim, 0.2)
+
+
+func _find_anim(state: String) -> String:
+	var names := _custom_anim.get_animation_list()
+	for want in ANIM_NAMES.get(state, [state]):
+		for n in names:
+			if str(n).to_lower().contains(want):
+				return str(n)
+	return ""
 
 
 func _commit() -> void:
@@ -1435,6 +1557,8 @@ func animate(delta: float, hspeed: float, grounded: bool, flying: bool, vspeed: 
 		p["spine_x"] = p.get("spine_x", 0.0) + _recoil * 0.45
 		p["head_x"] = p.get("head_x", 0.0) + _recoil * 0.3
 	_apply_pose(p, delta, dead)
+	if custom:
+		_animate_custom(hspeed, grounded, flying, dead)
 
 
 func _anim(key: String, fallback):

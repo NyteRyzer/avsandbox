@@ -51,7 +51,9 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	env.tonemap_exposure = 1.0
+	env.tonemap_white = 6.0
 	env.glow_enabled = true
 	env.glow_intensity = 0.6
 	env.glow_bloom = 0.05
@@ -99,11 +101,54 @@ func _ready() -> void:
 	snow.emitting = false
 	add_child(snow)
 	add_to_group("settings_listeners")
+	apply_quality()
 	_apply()
 
 
 func on_settings_changed() -> void:
 	sun.shadow_enabled = Game.settings["shadows"]
+	apply_quality()
+
+
+## The high-end renderer's effects, by the Graphics setting. (They're simply
+## ignored if the game falls back to the Compatibility renderer.)
+##   low:    glow, two shadow splits
+##   medium: + ambient occlusion, four soft shadow splits
+##   high:   + indirect light bounce (SSIL), light fog shafts
+##   ultra:  + full global illumination (SDFGI) and screen-space reflections
+func apply_quality() -> void:
+	var q := int(Game.settings.get("graphics", 2.0))
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS if q >= 1 else DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.directional_shadow_max_distance = [120.0, 180.0, 240.0, 320.0][q]
+	sun.shadow_blur = 1.2 if q >= 1 else 0.6
+	sun.light_angular_distance = 0.6 if q >= 2 else 0.0
+	env.ssao_enabled = q >= 1
+	env.ssao_radius = 1.4
+	env.ssao_intensity = 1.6
+	env.ssao_power = 1.4
+	env.ssao_detail = 0.6
+	env.ssil_enabled = q >= 2
+	env.ssil_radius = 4.0
+	env.ssil_intensity = 0.7
+	env.volumetric_fog_enabled = q >= 2 and not indoors
+	env.volumetric_fog_density = 0.004
+	env.volumetric_fog_anisotropy = 0.6
+	env.volumetric_fog_length = 180.0
+	env.volumetric_fog_sky_affect = 0.0
+	env.sdfgi_enabled = q >= 3
+	env.sdfgi_use_occlusion = true
+	env.sdfgi_cascades = 4
+	env.sdfgi_min_cell_size = 0.4
+	env.sdfgi_energy = 0.9
+	env.ssr_enabled = q >= 3
+	env.ssr_max_steps = 48
+	env.glow_enabled = true
+	env.glow_intensity = 0.7
+	env.glow_bloom = 0.08
+	env.glow_hdr_threshold = 1.1
+	env.adjustment_enabled = true
+	env.adjustment_contrast = 1.06
+	env.adjustment_saturation = 1.05
 
 
 func set_weather(w: String) -> void:
@@ -217,6 +262,7 @@ func _apply() -> void:
 	var view: float = Game.settings["view_distance"]
 	env.fog_density = (0.006 if _effective() == "fog" else (0.003 if overcast else 0.0007)) * (1200.0 / maxf(300.0, view)) * float(spec.get("haze", island_look.get("haze", 1.0))) * (1.0 - space_t * 0.85)
 	env.fog_enabled = not indoors
+	env.volumetric_fog_enabled = int(Game.settings.get("graphics", 2.0)) >= 2 and not indoors
 	if indoors:
 		sun.light_energy = 0.0
 		env.ambient_light_color = Color(0.55, 0.57, 0.62)

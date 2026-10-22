@@ -37,6 +37,7 @@ var settings := {
 	"invert_y": false,
 	"fullscreen": false,
 	"shadows": true,
+	"graphics": 2.0,        # 0 low, 1 medium, 2 high, 3 ultra
 	"fov": 75.0,
 	"volume": 0.8,
 	"view_distance": 1200.0,

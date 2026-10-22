@@ -8,6 +8,7 @@
 uniform float base_rough = 0.72;
 uniform float base_metal = 0.0;
 uniform float base_rim = 0.18;
+uniform bool srgb_lighting = false;   // set when running on the Compatibility renderer
 
 varying vec3 opos;
 varying vec3 onrm;
@@ -71,12 +72,17 @@ void vertex() {
 	opos = VERTEX;
 	onrm = NORMAL;
 	tagv = COLOR.a;
-	// The Compatibility renderer lights in sRGB space, which washed costume
-	// colours out to toy brights; deepen them (skin only slightly).
-	if (int(round(COLOR.a * 15.0)) == 0) {
-		COLOR.rgb *= 0.96;
+	if (srgb_lighting) {
+		// The Compatibility renderer lights in sRGB space, which washed
+		// costume colours out to toy brights; deepen them (skin only slightly).
+		if (int(round(COLOR.a * 15.0)) == 0) {
+			COLOR.rgb *= 0.96;
+		} else {
+			COLOR.rgb = pow(COLOR.rgb, vec3(1.5));
+		}
 	} else {
-		COLOR.rgb = pow(COLOR.rgb, vec3(1.5));
+		// Forward+ / Mobile light in linear space: convert the sRGB colours.
+		COLOR.rgb = mix(pow((COLOR.rgb + vec3(0.055)) * (1.0 / 1.055), vec3(2.4)), COLOR.rgb * (1.0 / 12.92), lessThan(COLOR.rgb, vec3(0.04045)));
 	}
 }
 

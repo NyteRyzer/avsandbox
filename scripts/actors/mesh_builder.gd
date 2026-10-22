@@ -293,6 +293,8 @@ static func detail_material(kind: String) -> Material:
 		return _detail_materials[kind]
 	var m := ShaderMaterial.new()
 	m.shader = load("res://shaders/character_cloth.gdshader" if kind == "cloth" else "res://shaders/character_surface.gdshader")
+	# The Compatibility (OpenGL) renderer has no RenderingDevice.
+	m.set_shader_parameter("srgb_lighting", RenderingServer.get_rendering_device() == null)
 	match kind:
 		"metal":
 			m.set_shader_parameter("base_rough", 0.32)

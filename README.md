@@ -92,6 +92,18 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 
 ## What's in the game
 
+**Better graphics.** The game now runs on Godot's high-end Forward+ renderer (Vulkan). On High
+it gets ambient occlusion, light bouncing between surfaces (SSIL), volumetric fog with light
+shafts, bloom and soft four-cascade shadows. Ultra adds full real-time global illumination
+(SDFGI) and screen-space reflections. Pick Low, Medium, High or Ultra under **Settings →
+Graphics**. Machines without Vulkan fall back to the Compatibility (OpenGL) renderer
+automatically.
+
+**Use your own 3D models.** Drop a rigged `.glb` / `.gltf` model named after a character's id
+into `models/characters/` (for example `flash.glb`), and it replaces that character's built-in
+body. It's scaled and grounded automatically, and its idle, walk, run, fly, attack and death
+animations play by name, so Mixamo exports work as they are. See `models/characters/README.md`.
+
 **The Waverider, rebuilt.**
 - **Outside**, it looks like the show's ship: a long, tapering silver fuselage with a raised
   bridge and its window band, broad swept wings with gold leading edges, two huge engines burning

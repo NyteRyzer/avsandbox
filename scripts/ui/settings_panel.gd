@@ -31,6 +31,7 @@ func _ready() -> void:
 	_slider("View distance", "view_distance", 300.0, 2000.0, 50.0)
 	_slider("Difficulty (0 easy, 1 normal, 2 hard)", "difficulty", 0.0, 2.0, 1.0)
 	_check("Invert look Y", "invert_y")
+	_slider("Graphics (0 low, 1 medium, 2 high, 3 ultra)", "graphics", 0.0, 3.0, 1.0)
 	_check("Shadows", "shadows")
 	_check("Fullscreen", "fullscreen")
 	add_child(HSeparator.new())
