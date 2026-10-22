@@ -16,9 +16,10 @@ func _ready() -> void:
 		if arg.begins_with("only="):
 			_current = "test_world_smoke"
 			await test_world_smoke()
-			_current = arg.trim_prefix("only=")
-			if _current != "test_world_smoke":
-				await call(_current)
+			for name in arg.trim_prefix("only=").split(","):
+				_current = name
+				if _current != "test_world_smoke":
+					await call(_current)
 			print("\n%d checks passed, %d failed." % [_passed, _failed])
 			get_tree().quit(1 if _failed > 0 else 0)
 			return
@@ -1279,7 +1280,7 @@ func test_campaign() -> void:
 	check(world.missions.target_pos() != Vector3.INF, "the minimap marks the objective")
 	world.enter_interior("star_labs")
 	await _frames(4)
-	await get_tree().process_frame
+	await _idle(3)
 	check(world.missions.chapter == 1, "entering S.T.A.R. Labs completes chapter 1")
 	world.leave_interior("star_labs")
 	var guard := 0
@@ -1290,8 +1291,7 @@ func test_campaign() -> void:
 		if world.place_id != place:
 			world.travel_to(place, "breach")
 		await _frames(3)
-		await get_tree().process_frame
-		await get_tree().process_frame
+		await _idle(3)
 		if str(c["kind"]) == "defeat":
 			check(world.missions.foes.size() == c["foes"].size(), "chapter %d spawns its foes" % (world.missions.chapter + 1))
 			if c.get("boss", false):
@@ -1328,14 +1328,12 @@ func test_breach_and_new_features() -> void:
 	check(is_instance_valid(world.breach_portal), "breaching opens a portal")
 	await _idle(70)
 	check(world.place_id == "earth1", "the breach doesn't teleport you on its own")
+	var old_exits := world.get_children().filter(func(c) -> bool: return c is BreachPortal)
 	world.player.global_position = world.breach_portal.global_position - Vector3.UP * 2.0
 	await _idle(4)
 	check(world.place_id == "earth2", "walking into the breach takes you through")
-	var exits := 0
-	for c in world.get_children():
-		if c is BreachPortal and c.exit_only:
-			exits += 1
-	check(exits == 1, "you step out of an exit breach on the other side")
+	var new_exits := world.get_children().filter(func(c) -> bool: return c is BreachPortal and c.exit_only and not old_exits.has(c))
+	check(new_exits.size() == 1, "you step out of an exit breach on the other side")
 	world.travel_to("earth1", "speed")
 	world.spawn_player("superman", Vector3(560, 0.5, -440))
 	var p: Actor = world.player
