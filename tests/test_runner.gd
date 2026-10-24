@@ -981,7 +981,7 @@ func test_space_glide_missions() -> void:
 	world.population.enabled = false
 	world.events.enabled = false
 	# Bigger cities, further apart.
-	check(City.N == 14 and world.city.islands.size() == 6, "islands are 14 blocks across")
+	check(City.N == 14 and world.city.islands.size() == 9, "islands are 14 blocks across")
 	var c0: Vector2 = City.ISLAND_CENTERS[0]
 	var c1: Vector2 = City.ISLAND_CENTERS[1]
 	check(c0.distance_to(c1) >= 2000.0, "the cities are 2 km apart")
