@@ -550,6 +550,9 @@ func _process(delta: float) -> void:
 	clock_label.text = "%02d:%02d  ·  %s" % [int(h), int(fmod(h, 1.0) * 60.0), world.day_night.weather.capitalize()]
 
 	mission_label.text = world.missions.tracker()
+	var crisis_text: String = world.crisis.tracker() if world.crisis else ""
+	if crisis_text != "":
+		mission_label.text = crisis_text + ("\n\n" + mission_label.text if mission_label.text != "" else "")
 	if world.street_crime.mugger:
 		mission_label.text = "MUGGING: stop him! %ds\n\n" % int(world.street_crime.time_left) + mission_label.text
 	var personal: String = world.char_missions.tracker()

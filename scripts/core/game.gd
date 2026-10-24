@@ -197,7 +197,28 @@ signal stat_changed(key: String, value: float)
 ## Lifetime progress, saved with the settings: stats (KOs, distance...),
 ## unlocked achievements, collectibles found and alternate suits unlocked.
 var suit_choice: Dictionary = {}   # character id -> alternate suit name
-var progress := {"stats": {}, "achievements": [], "collected": [], "suits": [], "discovered": [], "mastery": {}}
+var progress := {"stats": {}, "achievements": [], "collected": [], "suits": [], "discovered": [], "mastery": {},
+	"unlocked": ["green_arrow"], "story": {}}
+## "story": characters unlock as the campaign goes on; "sandbox": everyone's free.
+var mode := "sandbox"
+
+
+## Can this character be played right now?
+func is_unlocked(id: String) -> bool:
+	return mode != "story" or (progress["unlocked"] as Array).has(id)
+
+
+## Unlocks a character for Story Mode. Returns true if they were locked.
+func unlock(id: String) -> bool:
+	var list: Array = progress["unlocked"]
+	if list.has(id) or not by_id.has(id):
+		return false
+	list.append(id)
+	return true
+
+
+func unlocked_count() -> int:
+	return roster.filter(func(c) -> bool: return (progress["unlocked"] as Array).has(c["id"])).size()
 
 
 func record(key: String, amount := 1.0) -> void:

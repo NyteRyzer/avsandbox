@@ -12,6 +12,8 @@ extends CanvasLayer
 ##   speaker      - who's talking ("" for none), color - their name colour
 ##   line         - the subtitle
 ##   action       - optional [Actor, animation] played as the shot starts
+##   black        - true for a black screen (voice-over)
+##   title, sub   - a title card in the middle of the screen
 
 signal finished(skipped: bool)
 
@@ -29,6 +31,9 @@ var _bottom: ColorRect
 var _speaker: Label
 var _line: Label
 var _skip: Label
+var _black: ColorRect
+var _title: Label
+var _sub: Label
 var _shown_chars := 0.0
 var _hud_was := true
 var _age := 0.0
@@ -37,6 +42,24 @@ var _age := 0.0
 func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_black = ColorRect.new()
+	_black.color = Color.BLACK
+	_black.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_black)
+	_title = _label(84)
+	_title.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_title.anchor_top = 0.36
+	_title.anchor_bottom = 0.5
+	_title.add_theme_constant_override("outline_size", 16)
+	_title.add_theme_color_override("font_outline_color", Color("#a3111a"))
+	add_child(_title)
+	_sub = _label(22)
+	_sub.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_sub.anchor_top = 0.52
+	_sub.anchor_bottom = 0.62
+	_sub.add_theme_color_override("font_color", Color("#ffd27a"))
+	add_child(_sub)
 	_top = _bar(true)
 	_bottom = _bar(false)
 	var box := VBoxContainer.new()
@@ -90,6 +113,10 @@ func _label(size: int) -> Label:
 func _set_visible(on: bool) -> void:
 	for n in [_top, _bottom, _speaker, _line, _skip]:
 		n.visible = on
+	if not on:
+		_black.visible = false
+		_title.visible = false
+		_sub.visible = false
 
 
 ## Are cutscenes switched on? (Settings, and off for the automated tests.)
@@ -141,6 +168,15 @@ func _next() -> void:
 		act[0].model.play(str(act[1]), 0.8)
 	if s.has("sfx"):
 		Sfx.play(str(s["sfx"]), null, 0.0)
+	_black.visible = bool(s.get("black", false))
+	_title.text = str(s.get("title", ""))
+	_title.visible = _title.text != ""
+	_sub.text = str(s.get("sub", ""))
+	_sub.visible = _sub.text != ""
+	if not s.has("from") and world.player and is_instance_valid(world.player):
+		# Black screens and title cards: park the camera looking at the sky.
+		s["from"] = world.player.global_position + Vector3(0, 30, 20)
+		s["look"] = world.player.global_position + Vector3(0, 60, -40)
 	_frame(0.0)
 
 

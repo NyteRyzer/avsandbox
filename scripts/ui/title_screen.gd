@@ -2,7 +2,7 @@ class_name TitleScreen
 extends CanvasLayer
 ## Animated title screen with a speed-force lightning backdrop.
 
-signal play
+signal play(mode: String)
 signal quit
 
 var _bolts: Control
@@ -46,10 +46,24 @@ func _ready() -> void:
 	_menu.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_menu.custom_minimum_size = Vector2(340, 0)
 	v.add_child(_menu)
-	var play_b := UITheme.button("PLAY", func() -> void: play.emit())
-	play_b.custom_minimum_size = Vector2(0, 56)
-	play_b.add_theme_font_size_override("font_size", 26)
-	_menu.add_child(play_b)
+	var story: Dictionary = Game.progress.get("story", {}) if typeof(Game.progress.get("story")) == TYPE_DICTIONARY else {}
+	var started := int(story.get("mission", 0)) > 0 or int(story.get("step", 0)) > 0
+	var story_b := UITheme.button("CONTINUE STORY" if started else "STORY MODE", func() -> void: play.emit("story"))
+	story_b.custom_minimum_size = Vector2(0, 56)
+	story_b.add_theme_font_size_override("font_size", 26)
+	story_b.tooltip_text = "The Crisis City campaign. Start as Green Arrow and unlock heroes and villains as you go."
+	_menu.add_child(story_b)
+	if started:
+		_menu.add_child(UITheme.button("New Story (restart the campaign)", func() -> void:
+			Game.progress["story"] = {}
+			Game.save_settings()
+			play.emit("story")))
+	var sandbox_b := UITheme.button("SANDBOX (everyone unlocked)", func() -> void: play.emit("sandbox"))
+	sandbox_b.custom_minimum_size = Vector2(0, 48)
+	_menu.add_child(sandbox_b)
+	var count := UITheme.label("Story Mode: %d / %d characters unlocked" % [Game.unlocked_count(), Game.roster.size()], 14, UITheme.DIM)
+	count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_menu.add_child(count)
 	_menu.add_child(UITheme.button("Settings & Controls", _open_settings))
 	_menu.add_child(UITheme.button("Quit", func() -> void: quit.emit()))
 	_settings = SettingsPanel.new()

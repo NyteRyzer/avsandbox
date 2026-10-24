@@ -66,6 +66,13 @@ var _finisher_t := 0.0
 var _busy := false
 var _outro_pending := false
 var _last_boss_id := ""
+# Story missions script their own exchanges: [who, line] pairs where who is
+# "boss", "player", "two" (both in frame) or "over" (over your shoulder).
+var _intro_lines: Array = []
+var _outro_lines: Array = []
+var escapes := false             # the boss gets away at the end (Malcolm, mission 1)
+var _escaping := false
+signal boss_done(boss_id: String, escaped: bool)
 
 
 static func lines_for(id: String) -> Dictionary:
@@ -82,10 +89,16 @@ func active() -> bool:
 	return boss != null and is_instance_valid(boss) and not boss.dead
 
 
-## A mission boss enters: intro cutscene, then the fight.
-func begin(b: Actor, intro := true) -> void:
+## A mission boss enters: intro cutscene, then the fight. opts:
+##   intro_lines / outro_lines - scripted exchanges ([who, line] pairs)
+##   escape - the boss vanishes instead of going down
+func begin(b: Actor, intro := true, opts := {}) -> void:
 	if b == null or not is_instance_valid(b):
 		return
+	_intro_lines = opts.get("intro_lines", [])
+	_outro_lines = opts.get("outro_lines", [])
+	escapes = bool(opts.get("escape", false))
+	_escaping = false
 	boss = b
 	phase = 1
 	_clash_done = false
@@ -125,9 +138,31 @@ func _reply() -> String:
 	return pool[randi() % pool.size()]
 
 
+## Builds shots from [who, line] pairs.
+func scripted_shots(lines: Array) -> Array:
+	var p: Actor = world.player
+	var out: Array = []
+	for l in lines:
+		var who := str(l[0])
+		var line := str(l[1])
+		var dur := clampf(1.6 + line.length() * 0.045, 2.0, 6.0)
+		match who:
+			"player":
+				out.append(Cutscene.close_up(p, dur, line, PLAYER_COLOR))
+			"over":
+				out.append(Cutscene.over_shoulder(p, boss, dur, line, PLAYER_COLOR))
+			"two":
+				out.append(Cutscene.two_shot(p, boss, dur, "", line))
+			_:
+				out.append(Cutscene.close_up(boss, dur, line, BOSS_COLOR))
+	return out
+
+
 func _intro_shots() -> Array:
 	var p: Actor = world.player
 	var l := lines_for(_last_boss_id)
+	if not _intro_lines.is_empty():
+		return [Cutscene.two_shot(p, boss, 2.2)] + scripted_shots(_intro_lines)
 	return [
 		Cutscene.two_shot(p, boss, 2.4),
 		Cutscene.close_up(boss, 3.6, str(l["intro"]), BOSS_COLOR, "power_up"),
@@ -143,7 +178,11 @@ func _process(delta: float) -> void:
 		var was := boss
 		boss = null
 		if _outro_pending and is_instance_valid(was) and was.dead:
-			_outro(was)
+			if escapes:
+				_escape(was)
+			else:
+				_outro(was)
+				boss_done.emit(_last_boss_id, false)
 		_outro_pending = false
 		return
 	if not active() or _busy or world.cinematic or world.qte.active:
@@ -153,11 +192,18 @@ func _process(delta: float) -> void:
 		return
 	var dist := boss.global_position.distance_to(p.global_position)
 	var r := boss.hp / boss.max_hp
+	if escapes and r < 0.06:
+		# Down on one knee... and gone.
+		var b := boss
+		boss = null
+		_outro_pending = false
+		_escape(b)
+		return
 	if not _clash_done and r < 0.66 and dist < 30.0:
 		_clash()
 	elif not _combo_done and r < 0.33 and dist < 30.0:
 		_combo()
-	elif r < 0.1 and dist < 14.0:
+	elif r < 0.1 and dist < 14.0 and not escapes:
 		_finisher_t -= delta
 		if _finisher_t <= 0.0:
 			_finisher()
@@ -278,6 +324,38 @@ func _finish_them() -> void:
 		done.call(true)
 
 
+## The boss beaten but not finished: they say their piece, then a flash and
+## they're gone.
+func _escape(b: Actor) -> void:
+	if _escaping:
+		return
+	_escaping = true
+	Game.record("bosses_beaten")
+	if is_instance_valid(b):
+		b.invuln_t = 99.0
+		b.stun_t = 99.0
+		if not b.dead:
+			b.model.play("stagger", 6.0)
+	var shots: Array = []
+	if not _outro_lines.is_empty() and is_instance_valid(b) and world.player and is_instance_valid(world.player):
+		boss = b
+		shots = scripted_shots(_outro_lines)
+		boss = null
+	var vanish := func(_skipped: bool) -> void:
+		_escaping = false
+		if is_instance_valid(b):
+			FX.flash(world, b.chest(), Color("#5aff6a"), 4.0, 0.5, 0.8)
+			FX.burst_lines(world, b.chest(), Color("#5aff6a"), 3.0, 16)
+			Sfx.play("teleport", b.global_position, 2.0)
+			b.queue_free()
+		world.hud.show_banner("%s ESCAPED" % str(b.display_name if is_instance_valid(b) else "THE BOSS").replace(" (BOSS)", "").to_upper(), Color("#9aff9a"))
+		boss_done.emit(_last_boss_id, true)
+	if shots.is_empty() or not Cutscene.enabled():
+		vanish.call(true)
+	else:
+		world.cutscene.play(shots, vanish)
+
+
 func _outro(b: Actor) -> void:
 	var p: Actor = world.player
 	world.hud.show_banner("%s DEFEATED" % str(b.display_name).to_upper(), Color("#ffd23a"))
@@ -285,6 +363,12 @@ func _outro(b: Actor) -> void:
 	if p == null or not is_instance_valid(p) or p.dead:
 		return
 	var l := lines_for(_last_boss_id)
+	if not _outro_lines.is_empty():
+		boss = b
+		var scripted := scripted_shots(_outro_lines)
+		boss = null
+		world.cutscene.play(scripted)
+		return
 	var shots := [
 		Cutscene.close_up(b, 2.8, str(l["defeat"]), BOSS_COLOR),
 		Cutscene.close_up(p, 2.4, ["Who's next?", "That's how it's done.", "Stay down.", "It's over."][randi() % 4], PLAYER_COLOR, "power_up"),

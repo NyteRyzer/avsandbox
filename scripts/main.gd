@@ -27,9 +27,16 @@ func show_title() -> void:
 	title.quit.connect(func() -> void: get_tree().quit())
 
 
-func _on_play() -> void:
+func _on_play(mode: String) -> void:
 	title.queue_free()
 	title = null
+	Game.mode = mode
+	# A brand-new story starts straight away as Green Arrow, on a rooftop.
+	var story: Dictionary = Game.progress.get("story", {}) if typeof(Game.progress.get("story")) == TYPE_DICTIONARY else {}
+	if mode == "story" and int(story.get("mission", 0)) == 0 and int(story.get("step", 0)) == 0:
+		Game.unlock("green_arrow")
+		await _start_world("green_arrow")
+		return
 	_open_select(false)
 
 

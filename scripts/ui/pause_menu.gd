@@ -34,7 +34,8 @@ func _ready() -> void:
 	_main.add_child(UITheme.button("Change Character", _change_character))
 	_main.add_child(UITheme.button("Settings & Controls", _open_settings))
 	_main.add_child(UITheme.button("Achievements & Stats", _open_progress))
-	_main.add_child(UITheme.button("Restart the Crisis Campaign", _restart_campaign))
+	if Game.mode == "story":
+		_main.add_child(UITheme.button("Restart the Story (keeps unlocks)", _restart_campaign))
 	_main.add_child(UITheme.button("Quit to Title", _quit_to_title))
 	_main.add_child(UITheme.button("Quit Game", func() -> void: get_tree().quit()))
 	_settings = SettingsPanel.new()

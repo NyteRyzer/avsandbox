@@ -150,7 +150,11 @@ func _ready() -> void:
 func open(swap: bool) -> void:
 	swap_mode = swap
 	visible = true
-	_select(_selected if _selected != "" else Game.selected_id)
+	_rebuild()
+	var first := _selected if _selected != "" else Game.selected_id
+	if not Game.is_unlocked(first):
+		first = "green_arrow"
+	_select(first)
 
 
 func _build_preview(sv: SubViewport) -> void:
@@ -295,7 +299,8 @@ func _rebuild() -> void:
 func _card(c: Dictionary) -> Button:
 	var b := Button.new()
 	var id: String = c["id"]
-	b.text = c["alias"]
+	var locked := not Game.is_unlocked(id)
+	b.text = ("🔒 " if locked else "") + str(c["alias"])
 	b.custom_minimum_size = Vector2(170, 64)
 	b.clip_text = true
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -310,6 +315,9 @@ func _card(c: Dictionary) -> Button:
 	b.add_theme_stylebox_override("hover", hover)
 	b.add_theme_font_size_override("font_size", 16)
 	b.tooltip_text = "%s - %s" % [c["name"], c["show"]]
+	if locked:
+		b.modulate = Color(0.55, 0.55, 0.6)
+		b.tooltip_text += "\nLocked: unlock them in Story Mode (missions, or rescue them during a Crisis Event)."
 	b.pressed.connect(func() -> void:
 		Sfx.play("click", null, -6.0, 0.0)
 		_select(id))
@@ -379,6 +387,9 @@ func _select(id: String) -> void:
 		lines.append("Nemesis: " + str(Game.by_id[nem]["alias"]))
 	_powers.text = "\n".join(lines)
 	_play.text = ("BECOME " if swap_mode else "PLAY AS ") + str(c["alias"]).to_upper()
+	_play.disabled = not Game.is_unlocked(id)
+	if _play.disabled:
+		_play.text = "LOCKED IN STORY MODE"
 
 
 func _stat(label: String, value: float) -> void:
@@ -402,10 +413,15 @@ func _stat(label: String, value: float) -> void:
 
 func _pick_random() -> void:
 	var pool: Array = Game.roster if _filter == "all" else Game.roster.filter(func(c): return c["side"] == _filter)
+	pool = pool.filter(func(c) -> bool: return Game.is_unlocked(c["id"]))
+	if pool.is_empty():
+		return
 	_select(pool[randi() % pool.size()]["id"])
 
 
 func _confirm() -> void:
+	if not Game.is_unlocked(_selected):
+		return
 	picked.emit(_selected)
 
 

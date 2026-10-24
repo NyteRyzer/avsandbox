@@ -1314,45 +1314,128 @@ func test_wheel_powers_streets() -> void:
 	world.events.enabled = true
 
 
+func _kill_all(list: Array) -> void:
+	for f in list.duplicate():
+		if is_instance_valid(f) and not f.dead:
+			f.take_damage(999999.0, world.player)
+
+
 func test_campaign() -> void:
 	world.clear_npcs()
 	world.population.enabled = false
-	world.spawn_player("vibe", Vector3(560, 0.5, -440))
-	world.missions.restart()
-	check(world.missions.tracker().contains("S.T.A.R. Labs"), "chapter 1 points to S.T.A.R. Labs")
-	check(world.missions.target_pos() != Vector3.INF, "the minimap marks the objective")
-	world.enter_interior("star_labs")
-	await _frames(4)
-	await _idle(3)
-	check(world.missions.chapter == 1, "entering S.T.A.R. Labs completes chapter 1")
-	world.leave_interior("star_labs")
-	var guard := 0
-	while not world.missions.is_complete() and guard < 8:
-		guard += 1
-		var c := world.missions.current()
-		var place: String = c.get("place", "earth1")
-		if world.place_id != place:
-			world.travel_to(place, "breach")
-		await _frames(3)
-		await _idle(3)
-		if str(c["kind"]) == "defeat":
-			check(world.missions.foes.size() == c["foes"].size(), "chapter %d spawns its foes" % (world.missions.chapter + 1))
-			if c.get("boss", false):
-				check(world.missions.foes[0].boss, "chapter %d has a boss" % (world.missions.chapter + 1))
-			for f in world.missions.foes:
-				if is_instance_valid(f):
-					f.take_damage(999999.0, world.player)
-			await _frames(3)
-			await get_tree().process_frame
-	check(world.missions.is_complete(), "the whole Crisis campaign can be finished")
-	check(world.place_id == "earth1", "and it ends back home")
-	world.missions.restart()
-	world.travel_to("earth2", "breach")
-	world.missions._set_chapter(0)
+	world.events.enabled = false
+	Game.mode = "story"
+	Game.progress["unlocked"] = ["green_arrow"]
+	world.crisis.enabled = false
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "breach")
+		await _idle(4)
+	world.spawn_player("green_arrow", Vector3(560, 0.5, -440))
 	await _frames(3)
-	var zooms := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool: return a.def.get("id", "") == "zoom")
-	check(zooms.size() >= 1, "Earth-2's Zoom is waiting even outside the campaign")
-	world.travel_to("earth1", "breach")
+	check(not Game.is_unlocked("flash") and Game.is_unlocked("green_arrow"), "Story Mode starts with only Green Arrow")
+	world.missions.restart()
+	await _idle(3)
+	check(world.missions.chapter == 0 and str(world.missions.current()["id"]) == "prologue", "the story opens with the prologue")
+	var guard := 0
+	var saw_malcolm := false
+	var malcolm_escaped := true
+	while not world.missions.is_complete() and guard < 400:
+		guard += 1
+		var m := world.missions.current()
+		var st := world.missions.current_step()
+		var kind := str(st.get("do", ""))
+		var where := ""
+		if st.has("at"):
+			where = str(st["at"])
+		match kind:
+			"goto":
+				world.teleport_player(world.missions._where(where))
+			"interior":
+				world.enter_interior(str(st["target"]))
+			"travel":
+				world.travel_to(str(st["place"]), "breach")
+				await _idle(4)
+			"rescue":
+				world.teleport_player(world.missions._where(where))
+				await _frames(3)
+				await _idle(2)
+				for c in world.missions.trapped.duplicate():
+					if is_instance_valid(c):
+						world.teleport_player(c.global_position + Vector3(1.5, 0, 0))
+						await _frames(2)
+						await _idle(2)
+			"defeat":
+				if world.inside != "":
+					world.leave_interior(world.inside)
+					await _idle(2)
+				world.teleport_player(world.missions._where(where))
+				await _frames(3)
+				await _idle(2)
+				if str(m["id"]) == "m01" and (st["foes"] as Array).has("malcolm_merlyn"):
+					saw_malcolm = world.missions.foes.size() == 1 and world.missions.foes[0].boss
+				_kill_all(world.missions.foes)
+				await _frames(3)
+				await _idle(3)
+				if str(m["id"]) == "m01" and (st["foes"] as Array).has("malcolm_merlyn"):
+					for a in get_tree().get_nodes_in_group("actors"):
+						if str(a.def.get("id", "")) == "malcolm_merlyn" and not a.is_queued_for_deletion():
+							malcolm_escaped = false
+			"liberate":
+				var d: int = world.crisis.nearest_occupied(world.player.global_position)
+				if d >= 0:
+					world.crisis.enabled = true
+					world.teleport_player(world.city.snap_to_road(world.city.district_center(d)) + Vector3.UP * 0.5)
+					await _frames(3)
+					await _idle(3)
+					check(world.crisis._force_district == d, "an occupied district sends its occupation force (%s)" % City.DISTRICTS[d])
+					if not world.crisis._force.is_empty():
+						_kill_all([world.crisis._force[0]])
+					await _idle(3)
+					world.crisis.enabled = false
+			"choose":
+				check(world.missions._chooser != null, "the final strike: choose who ends it")
+				check(world.missions.final_choices().has("green_arrow") and world.missions.final_choices().has("flash"), "from the heroes you've unlocked")
+				world.missions.choose("flash")
+		await _frames(2)
+		await _idle(2)
+		if str(m["id"]) == "m01" and world.missions.chapter == 2:
+			check(Game.is_unlocked("spartan") and Game.is_unlocked("overwatch"), "Mission 01 unlocks Team Arrow")
+	check(saw_malcolm, "Mission 01 ends with Malcolm Merlyn as the boss")
+	check(malcolm_escaped, "and Malcolm vanishes instead of going down")
+	check(world.missions.is_complete(), "the whole Crisis City story can be finished (%d steps)" % guard)
+	check(str(world.missions._state().get("ending", "")) == "flash", "the final strike decides the ending")
+	check(Game.is_unlocked("the_architect") and Game.unlocked_count() == Game.roster.size(), "finishing the story unlocks everyone")
+	check(world.missions._state().get("beaten", []).has("reverse_flash"), "the story remembers who you beat")
+	# Crisis Events: ignore one and the district falls; answer one and you
+	# can free a hero from an erased timeline.
+	world.crisis.enabled = true
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "breach")
+		await _idle(4)
+	if world.inside != "":
+		world.leave_interior(world.inside)
+	world.teleport_player(world.city.snap_to_road(world.city.district_center(1)) + Vector3.UP * 0.5)
+	await _frames(3)
+	world.crisis.occupied().clear()
+	world.crisis.start_crisis(3)
+	check(not world.crisis.current.is_empty() and world.crisis.tracker().contains("Freeland"), "a crisis breaks out in Freeland")
+	world.crisis.current["t"] = 0.0
+	await _idle(3)
+	check(world.crisis.is_occupied(3), "ignore it and Freeland is occupied")
+	(Game.progress["unlocked"] as Array).erase("wildcat")
+	world.crisis.start_crisis(5)
+	world.crisis.current["captive"] = "wildcat"
+	world.teleport_player(world.city.snap_to_road(world.city.district_center(5)) + Vector3.UP * 0.5)
+	await _frames(3)
+	await _idle(3)
+	check(world.crisis.current.get("spawned", false), "get there in time and you catch them")
+	_kill_all(world.crisis.current.get("foes", []))
+	await _idle(3)
+	check(world.crisis.current.is_empty() and Game.is_unlocked("wildcat"), "beating them frees the captive hero, now playable")
+	world.crisis.enabled = false
+	world.crisis.occupied().clear()
+	Game.mode = "sandbox"
+	world.events.enabled = true
 	world.clear_npcs()
 
 
@@ -1996,11 +2079,17 @@ func test_cinematics() -> void:
 	world.cutscene.skip()
 	await _idle(2)
 	# Campaign chapters open with a cutscene.
-	world.missions.play_intro()
-	await _idle(2)
-	check(world.cutscene.active or world.missions.is_complete(), "campaign chapters open with a cutscene")
+	# Story Mode opens on the prologue: Oliver's voice-over on a black screen.
+	Game.mode = "story"
+	world.missions.restart()
+	await _idle(3)
+	check(world.cutscene.active and world.cutscene._black.visible, "the story opens with a black-screen voice-over")
+	check(world.cutscene._speaker.text == "OLIVER QUEEN", "spoken by Oliver Queen")
 	world.cutscene.skip()
-	await _idle(2)
+	await _idle(3)
+	check(str(world.missions.current().get("id", "")) == "m01", "then Mission 01 begins")
+	world.missions._cleanup()
+	Game.mode = "sandbox"
 	Game.no_cinematics = true
 	Game.end_slowmo()
 	world.clear_npcs()

@@ -21,6 +21,7 @@ var race: Race
 var cutscene: Cutscene
 var qte: QTE
 var boss_fight: BossFight
+var crisis: CrisisEvents
 var cinematic := false          # a cutscene is playing
 var style := StyleMeter.new()
 var news: News
@@ -145,6 +146,9 @@ func _ready() -> void:
 	boss_fight = BossFight.new()
 	boss_fight.world = self
 	add_child(boss_fight)
+	crisis = CrisisEvents.new()
+	crisis.world = self
+	add_child(crisis)
 	news = News.new()
 	news.world = self
 	add_child(news)
@@ -277,8 +281,7 @@ func spawn_player(id: String, at = null) -> void:
 		notify("Yellow marker on the minimap = an event to stop (or start)", Color("#ffe080"))
 		notify("Esc: pause, change character, settings", Color("#ffe080"))
 		notify("G: doors, consoles and travel  ·  R: your ultimate, once it's charged", Color("#ffe080"))
-		if not missions.is_complete():
-			missions._set_chapter(missions.chapter)
+		missions.call_deferred("begin_session")
 
 
 func spawn_point_for(c: Dictionary) -> Vector3:
@@ -404,6 +407,9 @@ func _process(delta: float) -> void:
 		var d := place_name(player.global_position)
 		if d != _last_district:
 			_last_district = d
+			var di: int = city.district_index(player.global_position)
+			if place_id == "earth1" and crisis.is_occupied(di) and inside == "" and not city.island_at(player.global_position).is_empty():
+				d += "  ·  OCCUPIED"
 			hud.show_district(d)
 
 
@@ -560,8 +566,11 @@ func use_door(d: Dictionary) -> void:
 		"exit":
 			leave_interior(str(d.get("outside", inside)))
 		"suit":
-			FX.flash(self, player.chest(), Color("#ffffff"), 1.4)
-			spawn_player(str(d["data"]), player.global_position)
+			if not Game.is_unlocked(str(d["data"])):
+				notify("That suit's owner isn't unlocked yet. Keep playing the story.", Color("#ffd27a"))
+			else:
+				FX.flash(self, player.chest(), Color("#ffffff"), 1.4)
+				spawn_player(str(d["data"]), player.global_position)
 		"speedforce":
 			if player.movement == "speed":
 				travel_to("speedforce", "speed")
@@ -1295,6 +1304,7 @@ func travel_to(id: String, how := "breach") -> void:
 	race.stop()
 	cutscene.skip()
 	boss_fight.cancel()
+	crisis.reset()
 	var was_inside := inside
 	# Where we stand in the room, in the room's own frame (rooms can be turned).
 	var rel := Vector3.ZERO
