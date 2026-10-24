@@ -18,6 +18,10 @@ var pickups: Pickups
 var street_crime: StreetCrime
 var side_jobs: SideJobs
 var race: Race
+var cutscene: Cutscene
+var qte: QTE
+var boss_fight: BossFight
+var cinematic := false          # a cutscene is playing
 var style := StyleMeter.new()
 var news: News
 var collectibles: Collectibles
@@ -132,6 +136,15 @@ func _ready() -> void:
 	race = Race.new()
 	race.world = self
 	add_child(race)
+	cutscene = Cutscene.new()
+	cutscene.world = self
+	add_child(cutscene)
+	qte = QTE.new()
+	qte.world = self
+	add_child(qte)
+	boss_fight = BossFight.new()
+	boss_fight.world = self
+	add_child(boss_fight)
 	news = News.new()
 	news.world = self
 	add_child(news)
@@ -287,6 +300,8 @@ func capture_mouse(on: bool) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if cinematic or (qte and qte.active):
+		return
 	if event.is_action_pressed("pause"):
 		if sandbox_menu.visible:
 			sandbox_menu.close()
@@ -1278,6 +1293,8 @@ func travel_to(id: String, how := "breach") -> void:
 	var d := Multiverse.dest(id)
 	exit_vehicle()
 	race.stop()
+	cutscene.skip()
+	boss_fight.cancel()
 	var was_inside := inside
 	# Where we stand in the room, in the room's own frame (rooms can be turned).
 	var rel := Vector3.ZERO

@@ -32,6 +32,11 @@ var style_label: Label
 var boss_panel: VBoxContainer
 var boss_name: Label
 var boss_bar: ProgressBar
+var boss_trail: ProgressBar     # the chunk you just took off, draining after a beat
+var boss_sub: Label
+var boss_tag: Label
+var _trail_hold := 0.0
+var _last_boss: Actor = null
 var overlay: Control      # lock-on marker and other world-space markers
 var ticker: Label
 var card: PanelContainer
@@ -213,20 +218,57 @@ func _ready() -> void:
 	boss_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	boss_panel.anchor_left = 0.5
 	boss_panel.anchor_right = 0.5
-	boss_panel.offset_left = -260
-	boss_panel.offset_right = 260
-	boss_panel.offset_top = 70
+	boss_panel.offset_left = -330
+	boss_panel.offset_right = 330
+	boss_panel.offset_top = 64
 	boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_panel.visible = false
 	root.add_child(boss_panel)
-	boss_name = UITheme.label("", 18, Color("#ffb0a0"))
+	boss_name = UITheme.label("", 24, Color("#ffd0c0"))
 	boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	boss_name.add_theme_constant_override("outline_size", 6)
+	boss_name.add_theme_constant_override("outline_size", 8)
 	boss_name.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	boss_panel.add_child(boss_name)
-	boss_bar = _bar(Color("#d03030"))
-	boss_bar.custom_minimum_size = Vector2(520, 14)
-	boss_panel.add_child(boss_bar)
+	boss_sub = UITheme.label("", 13, Color("#d8c0b8"))
+	boss_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_sub.add_theme_constant_override("outline_size", 5)
+	boss_sub.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	boss_panel.add_child(boss_sub)
+	# The bar: a dark frame, the pale damage trail behind, the red health in
+	# front, and notches where the fight's phases begin.
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", UITheme.box(Color(0, 0, 0, 0.7), 3))
+	frame.custom_minimum_size = Vector2(660, 22)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	boss_panel.add_child(frame)
+	var stack := Control.new()
+	stack.custom_minimum_size = Vector2(652, 16)
+	stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(stack)
+	boss_trail = _bar(Color("#f0e0c0"))
+	boss_trail.set_anchors_preset(Control.PRESET_FULL_RECT)
+	boss_trail.add_theme_stylebox_override("background", StyleBoxEmpty.new())
+	stack.add_child(boss_trail)
+	boss_bar = _bar(Color("#c82828"))
+	boss_bar.set_anchors_preset(Control.PRESET_FULL_RECT)
+	boss_bar.add_theme_stylebox_override("background", StyleBoxEmpty.new())
+	stack.add_child(boss_bar)
+	for f in [0.66, 0.33, 0.1]:
+		var notch := ColorRect.new()
+		notch.color = Color(1, 1, 1, 0.75) if f > 0.2 else Color("#ffd23a")
+		notch.anchor_left = f
+		notch.anchor_right = f
+		notch.anchor_top = 0.0
+		notch.anchor_bottom = 1.0
+		notch.offset_left = -1
+		notch.offset_right = 1
+		notch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stack.add_child(notch)
+	boss_tag = UITheme.label("", 15, Color("#ff5a4a"))
+	boss_tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_tag.add_theme_constant_override("outline_size", 5)
+	boss_tag.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	boss_panel.add_child(boss_tag)
 	ticker = UITheme.label("", 15, Color("#f0e8d0"))
 	ticker.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	ticker.anchor_left = 0.5
@@ -668,11 +710,43 @@ func _update_boss(p: Actor) -> void:
 			if d < best:
 				best = d
 				boss = a
-	boss_panel.visible = boss != null
-	if boss:
-		boss_name.text = boss.display_name.to_upper()
-		boss_bar.max_value = boss.max_hp
-		boss_bar.value = boss.hp
+	# The mission boss you're fighting takes the bar over any other.
+	if world.boss_fight and world.boss_fight.active():
+		boss = world.boss_fight.boss
+	boss_panel.visible = boss != null and not world.cinematic
+	if boss == null:
+		_last_boss = null
+		return
+	if boss != _last_boss:
+		_last_boss = boss
+		boss_trail.max_value = boss.max_hp
+		boss_trail.value = boss.hp
+	boss_name.text = str(boss.display_name).replace(" (BOSS)", "").to_upper()
+	var phase := 1
+	if world.boss_fight and world.boss_fight.boss == boss:
+		phase = world.boss_fight.phase
+	else:
+		phase = 1 if boss.hp > boss.max_hp * 0.66 else (2 if boss.hp > boss.max_hp * 0.33 else 3)
+	var show := BossFight.title_for(boss)
+	boss_sub.text = ("%s  ·  " % show if show != "" else "") + "PHASE %d / 3" % phase
+	boss_bar.max_value = boss.max_hp
+	boss_bar.value = boss.hp
+	boss_trail.max_value = boss.max_hp
+	if boss_trail.value > boss.hp:
+		_trail_hold -= get_process_delta_time() / maxf(Engine.time_scale, 0.01)
+		if _trail_hold <= 0.0:
+			boss_trail.value = maxf(boss.hp, boss_trail.value - boss.max_hp * 0.6 * get_process_delta_time() / maxf(Engine.time_scale, 0.01))
+	else:
+		boss_trail.value = boss.hp
+		_trail_hold = 0.6
+	var tags := []
+	if boss.has_meta("enraged"):
+		tags.append("ENRAGED")
+	if boss.staggered_t > 0.0:
+		tags.append("STAGGERED")
+	if boss.hp < boss.max_hp * 0.1:
+		tags.append("FINISH THEM")
+	boss_tag.text = "  ·  ".join(tags)
 
 
 func _draw_overlay() -> void:

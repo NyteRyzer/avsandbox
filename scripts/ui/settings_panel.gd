@@ -34,6 +34,8 @@ func _ready() -> void:
 	_slider("Graphics (0 low, 1 medium, 2 high, 3 ultra)", "graphics", 0.0, 3.0, 1.0)
 	_check("Shadows", "shadows")
 	_check("Fullscreen", "fullscreen")
+	_check("Mission cutscenes", "cutscenes")
+	_check("Quick-time events in boss fights", "qte")
 	add_child(HSeparator.new())
 	add_child(UITheme.label("CONTROLS", 22, UITheme.ACCENT))
 	var c := UITheme.label(CONTROLS_TEXT, 15, UITheme.TEXT)

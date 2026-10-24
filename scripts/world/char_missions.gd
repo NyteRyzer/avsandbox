@@ -323,13 +323,18 @@ func _process(_delta: float) -> void:
 				for c in trapped.duplicate():
 					if not is_instance_valid(c):
 						trapped.erase(c)
-					elif c.global_position.distance_to(p) < 3.5:
-						FX.flash(world, c.chest(), Color("#60ff90"), 1.0, 0.3)
-						world.notify("Saved! %d to go." % (trapped.size() - 1), Color("#60ff90"))
-						Game.record("rescues")
-						trapped.erase(c)
-						c.queue_free()
-						_saved += 1
+					elif c.global_position.distance_to(p) < 3.5 and not world.qte.active and Time.get_ticks_msec() > int(c.get_meta("retry_at", 0)):
+						if world.boss_fight.qte_enabled():
+							# Pinned under debris: mash G to lift it off them.
+							var who: Actor = c
+							world.qte.start("mash", {"action": "interact", "presses": 8, "time": 3.0, "title": "LIFT THE DEBRIS!"},
+								func(ok: bool) -> void:
+									if ok:
+										_rescue(who)
+									elif is_instance_valid(who):
+										who.set_meta("retry_at", Time.get_ticks_msec() + 1500))
+						else:
+							_rescue(c)
 				if trapped.is_empty():
 					if _saved > 0:
 						_advance()
@@ -361,6 +366,22 @@ func _spawn_foes(s: Dictionary) -> void:
 		a.brain.detect = 90.0
 		foes.append(a)
 	world.notify("%s: they're here!" % current()["title"], Color("#9fd8ff"))
+	if s.get("boss", false):
+		for a in foes:
+			if a.boss:
+				world.boss_fight.begin(a)
+				break
+
+
+func _rescue(c: Actor) -> void:
+	if not is_instance_valid(c) or not trapped.has(c):
+		return
+	FX.flash(world, c.chest(), Color("#60ff90"), 1.0, 0.3)
+	world.notify("Saved! %d to go." % (trapped.size() - 1), Color("#60ff90"))
+	Game.record("rescues")
+	trapped.erase(c)
+	c.queue_free()
+	_saved += 1
 
 
 func _spawn_trapped(n: int) -> void:
@@ -374,6 +395,17 @@ func _spawn_trapped(n: int) -> void:
 		c.set_meta("pinned", true)
 		c.set_meta("trapped", true)
 		trapped.append(c)
+		# The debris pinning them down.
+		var slab := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = Vector3(2.4, 0.5, 1.6)
+		slab.mesh = bm
+		var m := StandardMaterial3D.new()
+		m.albedo_color = Color("#6a6460")
+		slab.material_override = m
+		slab.position = Vector3(0, 0.9, 0)
+		slab.rotation = Vector3(0.2, randf() * TAU, 0.15)
+		c.add_child(slab)
 	world.notify("Reach them before it's too late!", Color("#60ff90"))
 
 

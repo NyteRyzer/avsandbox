@@ -28,6 +28,23 @@ const CHAPTERS := [
 		"brief": "It's over. Head home through the light (or any breach) and see what the new multiverse looks like."},
 ]
 
+## The cutscene that opens each chapter: [speaker, line, colour].
+const INTROS := [
+	[["Harbinger", "A Crisis is coming. Billions will die on every Earth. The Monitor needs you.", "#9fe0ff"],
+		["Cisco Ramon", "Dude, the sky over Central City just turned red. Get to S.T.A.R. Labs, now!", "#ffb070"]],
+	[["Cisco Ramon", "Earth-2's speedsters are going dark one by one. That's Zoom. That's always Zoom.", "#ffb070"],
+		["Harbinger", "Breach to Earth-2 and stop him before the multiverse loses its fastest defenders.", "#9fe0ff"]],
+	[["Felicity Smoak", "Earth-X is building a weapon that can punch through every Earth at once.", "#ffd27a"],
+		["The Monitor", "Their Overgirl leads it. She must not succeed.", "#9fe0ff"]],
+	[["Jay Garrick", "The Speed Force is dying, kid. Something is feeding on it.", "#ffd23a"],
+		["Harbinger", "Time Wraiths. Drive them out, or no speedster will ever run again.", "#9fe0ff"]],
+	[["The Flash of Earth-90", "I've watched a hundred Earths disappear. Earth-90 is next.", "#ff6a4a"],
+		["Harbinger", "Hold the Shadow Demons back long enough for its people to escape.", "#9fe0ff"]],
+	[["The Monitor", "The Anti-Monitor waits at the dawn of time. This is the end, or a beginning.", "#9fe0ff"],
+		["The Spectre", "We stand together. Every Earth, every hero.", "#5aff8a"]],
+	[["The Spectre", "It's done. A new multiverse. Go home and see what we made.", "#5aff8a"]],
+]
+
 ## Who you meet when you arrive somewhere: [character id, how many, boss?]
 const NATIVES := {
 	"earth2": [["zoom", 1, false]],
@@ -77,6 +94,22 @@ func _set_chapter(n: int) -> void:
 		world.notify(str(c["brief"]), Color("#ffc8a0"))
 		if c.has("hint") and world.place_id != str(c.get("place", "")):
 			world.notify(str(c["hint"]), Color("#ffe080"))
+		play_intro()
+
+
+## The chapter's opening cutscene: a sweep over the city while the
+## characters set up the mission.
+func play_intro() -> void:
+	if chapter >= INTROS.size() or world.player == null or not is_instance_valid(world.player) or world.inside != "":
+		return
+	var c := current()
+	var center: Vector3 = world.player.global_position
+	var shots: Array = []
+	var first: Dictionary = Cutscene.aerial(center, 2.6, "", "CHAPTER %d  ·  %s" % [chapter + 1, str(c["title"]).to_upper()], Color("#ff9a6a"))
+	shots.append(first)
+	for l in INTROS[chapter]:
+		shots.append(Cutscene.aerial(center, 3.8, str(l[0]), str(l[1]), Color(str(l[2]))))
+	world.cutscene.play(shots)
 
 
 ## The HUD's tracker text.
@@ -170,6 +203,8 @@ func _spawn_foes(c: Dictionary) -> void:
 		foes.append(a)
 	_spawn_marker(center)
 	world.notify("They're here. Take them down!", Color("#ff8060"))
+	if c.get("boss", false) and not foes.is_empty():
+		world.boss_fight.begin(foes[0])
 
 
 ## Spawns a hostile character by id (roster or one of the realm creatures).

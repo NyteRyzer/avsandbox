@@ -327,7 +327,9 @@ func _physics_process(delta: float) -> void:
 	in_block = false
 	if brain:
 		brain.update(self, delta)
-	if not can_act():
+	# Cutscenes and quick-time events: everyone holds still.
+	var frozen_by_story: bool = world != null and (world.cinematic or (world.qte != null and world.qte.active))
+	if not can_act() or frozen_by_story:
 		in_move = Vector3.ZERO
 		in_jump = false
 		in_primary = false
@@ -335,6 +337,17 @@ func _physics_process(delta: float) -> void:
 		in_special = false
 		in_ability = false
 		in_dodge = false
+	if frozen_by_story:
+		in_sprint = false
+		in_block = false
+		in_ultimate = false
+		in_fly_toggle = false
+		in_up = false
+		in_down = false
+		in_power = [false, false, false]
+		if not flying:
+			velocity.x *= 0.8
+			velocity.z *= 0.8
 	# Blocking: hold to soak hits from the front; time it right to parry.
 	var was_blocking := blocking
 	blocking = in_block and can_act() and not flying and not civilian and grapple_point == null

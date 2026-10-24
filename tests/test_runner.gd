@@ -11,6 +11,9 @@ var _current := ""
 
 
 func _ready() -> void:
+	# Cutscenes and QTEs would hold up the scripted tests; test_cinematics
+	# turns them back on to check them.
+	Game.no_cinematics = true
 	# `-- only=test_name` runs just that (async) test, for quick iteration.
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("only="):
@@ -71,6 +74,8 @@ func _ready() -> void:
 	await test_combat_depth()
 	_current = "test_ship_nav_and_rooftops"
 	await test_ship_nav_and_rooftops()
+	_current = "test_cinematics"
+	await test_cinematics()
 	_current = "test_custom_models"
 	test_custom_models()
 	_current = "test_ui_smoke"
@@ -1885,3 +1890,117 @@ func test_ship_nav_and_rooftops() -> void:
 			break
 	check(world.race.index >= 2, "launch pads fling you roof to roof (reached %d)" % world.race.index)
 	world.race.stop()
+
+
+func _qte_wait() -> void:
+	for i in 3000:
+		if not world.qte.active:
+			return
+		await get_tree().process_frame
+
+
+func test_cinematics() -> void:
+	Game.no_cinematics = false
+	Game.end_slowmo()
+	world.clear_npcs()
+	world.population.enabled = false
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "breach")
+		await _idle(5)
+	if world.inside != "":
+		world.leave_interior(world.inside)
+	var spot := world.city.snap_to_road(Vector3(2560, 0, 1440)) + Vector3(0, 0.5, 0)
+	world.spawn_player("flash", spot)
+	await _frames(5)
+	var p := world.player
+	# A cutscene: letterbox, its own camera, no HUD, nobody moves; skippable.
+	world.cutscene.play([Cutscene.aerial(p.global_position, 5.0, "Cisco Ramon", "Test line.")])
+	await _idle(2)
+	check(world.cutscene.active and world.cinematic, "a cutscene plays")
+	check(not world.hud.root.visible, "the HUD hides during it")
+	check(get_viewport().get_camera_3d() != world.cam.camera, "it has its own camera")
+	var before := p.global_position
+	Input.action_press("move_forward")
+	await _frames(20)
+	Input.action_release("move_forward")
+	check(Vector2(p.global_position.x - before.x, p.global_position.z - before.z).length() < 0.5, "you can't walk off mid-cutscene")
+	world.cutscene.skip()
+	await _idle(2)
+	check(not world.cutscene.active and not world.cinematic and world.hud.root.visible, "skipping ends it")
+	check(get_viewport().get_camera_3d() == world.cam.camera, "and gives the camera back")
+	# Quick-time events.
+	var res := [null]
+	world.qte.start("press", {"action": "interact"}, func(ok: bool) -> void: res[0] = ok)
+	check(world.qte.active and Engine.time_scale < 0.5, "a QTE slows time")
+	world.qte.press("interact")
+	check(res[0] == true and not world.qte.active and Engine.time_scale > 0.99, "pressing the right key succeeds and time recovers")
+	world.qte.start("press", {"action": "interact"}, func(ok: bool) -> void: res[0] = ok)
+	world.qte.press("jump")
+	check(res[0] == false, "the wrong key fails it")
+	world.qte.start("mash", {"action": "attack", "presses": 6, "time": 5.0}, func(ok: bool) -> void: res[0] = ok)
+	for k in 6:
+		world.qte.press("attack")
+	check(res[0] == true, "mashing fills the bar")
+	world.qte.start("mash", {"action": "attack", "presses": 6, "time": 0.3}, func(ok: bool) -> void: res[0] = ok)
+	await _qte_wait()
+	check(res[0] == false, "too slow and it times out")
+	world.qte.start("sequence", {"actions": ["dodge", "jump", "attack"]}, func(ok: bool) -> void: res[0] = ok)
+	for a in ["dodge", "jump", "attack"]:
+		world.qte.press(a)
+	check(res[0] == true, "a sequence in order succeeds")
+	# A boss fight in acts: intro, clash at 2/3, combo at 1/3, finisher.
+	var b: Actor = world.missions._spawn("zoom", p.global_position + Vector3(0, 0, -10))
+	b.make_boss(3.0)
+	b.display_name = b.display_name + " (BOSS)"
+	world.boss_fight.begin(b)
+	await _idle(2)
+	check(world.cutscene.active, "the boss gets an intro cutscene")
+	check(world.cutscene._shots.size() >= 3, "with the boss's line and your answer")
+	world.cutscene.skip()
+	await _idle(3)
+	check(world.hud.boss_panel.visible and world.hud.boss_sub.text.contains("PHASE 1"), "the boss bar shows phase 1 (%s)" % world.hud.boss_sub.text)
+	b.hp = b.max_hp * 0.6
+	await _idle(3)
+	check(world.qte.active and world.qte.kind == "mash", "at two-thirds health you clash")
+	var hp_clash := b.hp
+	for k in 20:
+		world.qte.press("attack")
+	await _idle(2)
+	check(b.hp < hp_clash and b.staggered_t > 0.0, "winning the clash hurts and staggers the boss")
+	check(world.boss_fight.phase == 2, "phase 2")
+	b.hp = b.max_hp * 0.3
+	b.stun_t = 0.0
+	await _idle(3)
+	check(world.qte.active and world.qte.kind == "sequence", "at one-third the boss unleashes a combo to counter")
+	check(b.has_meta("enraged"), "and is enraged")
+	var hp_combo := b.hp
+	for a in world.qte._actions.duplicate():
+		world.qte.press(a)
+	await _idle(2)
+	check(b.hp < hp_combo, "countering the combo hurts the boss")
+	await _idle(3)
+	check(world.hud.boss_tag.text.contains("ENRAGED"), "the bar says ENRAGED")
+	b.hp = b.max_hp * 0.05
+	b.global_position = p.global_position + Vector3(0, 0, -4)
+	await _idle(3)
+	check(world.qte.active and world.qte.kind == "press", "near the end: FINISH THEM")
+	var beaten := Game.stat("bosses_beaten")
+	world.qte.press("interact")
+	await _idle(2)
+	check(world.cutscene.active, "the finisher is a cutscene")
+	world.cutscene.skip()
+	await _idle(4)
+	check(b.dead, "the finisher takes the boss down")
+	check(Game.stat("bosses_beaten") > beaten, "boss defeated")
+	check(world.cutscene.active, "then an outro cutscene")
+	world.cutscene.skip()
+	await _idle(2)
+	# Campaign chapters open with a cutscene.
+	world.missions.play_intro()
+	await _idle(2)
+	check(world.cutscene.active or world.missions.is_complete(), "campaign chapters open with a cutscene")
+	world.cutscene.skip()
+	await _idle(2)
+	Game.no_cinematics = true
+	Game.end_slowmo()
+	world.clear_npcs()

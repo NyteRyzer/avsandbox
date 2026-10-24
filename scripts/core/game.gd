@@ -45,7 +45,10 @@ var settings := {
 	"xp": 0,
 	"difficulty": 1.0,
 	"music": 0.7,
+	"cutscenes": true,
+	"qte": true,
 }
+var no_cinematics := false   # the automated tests turn cutscenes and QTEs off
 var cheats := {"god_mode": false, "infinite_energy": false, "one_hit_ko": false, "no_heat": false}
 
 var heat := 0.0
