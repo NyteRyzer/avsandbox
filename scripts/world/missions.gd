@@ -156,6 +156,7 @@ const MISSIONS := [
 		{"do": "defeat", "at": "Central City Downtown", "foes": ["overgirl", "dark_arrow"], "boss": true, "label": "Shut down Overgirl and Dark Arrow"},
 	]},
 	{"id": "m09", "act": 3, "title": "Smallville Falls", "hero": "superman", "unlock": ["jordan_kent", "steel", "lois_lane", "natalie_irons"], "steps": [
+		{"do": "travel", "place": "earth1", "label": "Return to Earth-1 (breach home, or the Waverider's time console)"},
 		{"do": "radio", "lines": [["Lois Lane", "Clark, something just landed at the farm. The ground is cracking for miles."],
 			["Clark Kent", "Get the boys out, Lois. Now."]]},
 		{"do": "defeat", "at": "Kent Farm", "foes": ["doomsday"], "boss": true, "label": "Stop Doomsday at the Kent Farm"},
