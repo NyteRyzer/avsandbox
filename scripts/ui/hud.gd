@@ -565,6 +565,8 @@ func _process(delta: float) -> void:
 		mission_label.text = world.race.tracker() + "\n\n" + mission_label.text
 	if world.survival.active:
 		mission_label.text = world.survival.tracker() + "\n\n" + mission_label.text
+	if world.boss_rush.active:
+		mission_label.text = world.boss_rush.tracker() + "\n\n" + mission_label.text
 	mission_label.text += "\n\nCHALLENGES\n" + world.challenges.tracker()
 	var ev: Dictionary = world.events.active
 	if ev.is_empty():
@@ -758,6 +760,7 @@ func _draw_overlay() -> void:
 	var cam: Camera3D = world.cam.camera
 	if world.scanning:
 		_draw_scan(cam)
+	_draw_objective(cam)
 	var lt: Actor = world.player.lock_target
 	if lt and is_instance_valid(lt) and not cam.is_position_behind(lt.chest()):
 		var s := cam.unproject_position(lt.chest() + Vector3.UP * 0.2)
@@ -768,6 +771,71 @@ func _draw_overlay() -> void:
 			var d := Vector2(cos(ang), sin(ang))
 			overlay.draw_line(s + d * r, s + d * (r + 9.0), c, 3.0)
 		overlay.draw_arc(s, r, 0, TAU, 24, Color(1, 0.3, 0.3, 0.6), 2.0)
+
+
+## The current objective, most urgent first: [position, colour, label].
+func objective() -> Array:
+	if world.crisis and world.crisis.target_pos() != Vector3.INF:
+		return [world.crisis.target_pos(), Color("#ff4a3a"), "CRISIS"]
+	var t: Vector3 = world.missions.target_pos()
+	if t != Vector3.INF:
+		return [t, Color("#ff9a6a"), "STORY"]
+	t = world.char_missions.target_pos()
+	if t != Vector3.INF:
+		return [t, Color("#6ab8ff"), "MISSION"]
+	if world.waypoint != Vector3.INF:
+		return [world.waypoint, Color("#ffffff"), "WAYPOINT"]
+	return []
+
+
+## An on-screen marker for the objective, with the distance. Off-screen (or
+## behind you), it sits on the screen edge pointing the way.
+func _draw_objective(cam: Camera3D) -> void:
+	if world.cinematic or world.inside != "":
+		return
+	var o := objective()
+	if o.is_empty():
+		return
+	var target: Vector3 = o[0]
+	var col: Color = o[1]
+	var dist: float = world.player.global_position.distance_to(target)
+	if dist < 8.0:
+		return
+	var size := overlay.size
+	var center := size * 0.5
+	var margin := 56.0
+	var world_pos := target + Vector3.UP * 3.0
+	var behind := cam.is_position_behind(world_pos)
+	var sp := cam.unproject_position(world_pos)
+	var inner := Rect2(Vector2(margin, margin), size - Vector2(margin, margin) * 2.0)
+	var on_screen := not behind and inner.has_point(sp)
+	var dir := sp - center
+	if behind:
+		dir = -dir
+	if not on_screen:
+		if dir.length() < 1.0:
+			dir = Vector2(0, 1)
+		var half := center - Vector2(margin, margin)
+		var kx := half.x / absf(dir.x) if absf(dir.x) > 0.001 else INF
+		var ky := half.y / absf(dir.y) if absf(dir.y) > 0.001 else INF
+		sp = center + dir * minf(kx, ky)
+	var r := 11.0
+	var pts := PackedVector2Array([sp + Vector2(0, -r), sp + Vector2(r, 0), sp + Vector2(0, r), sp + Vector2(-r, 0)])
+	overlay.draw_colored_polygon(pts, Color(col, 0.85))
+	overlay.draw_polyline(pts + PackedVector2Array([pts[0]]), Color(0, 0, 0, 0.8), 2.0)
+	if not on_screen:
+		var n := dir.normalized()
+		var tip := sp + n * (r + 12.0)
+		var side := Vector2(-n.y, n.x) * 7.0
+		overlay.draw_colored_polygon(PackedVector2Array([tip, sp + n * (r + 2.0) + side, sp + n * (r + 2.0) - side]), col)
+	var font := ThemeDB.fallback_font
+	var text := "%s  %s" % [o[2], ("%.1f km" % (dist / 1000.0)) if dist >= 1000.0 else ("%d m" % int(dist))]
+	var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x
+	var tp := sp + Vector2(-w * 0.5, r + 20.0)
+	tp.x = clampf(tp.x, 6.0, size.x - w - 6.0)
+	tp.y = clampf(tp.y, 18.0, size.y - 6.0)
+	overlay.draw_string_outline(font, tp, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, 4, Color(0, 0, 0, 0.9))
+	overlay.draw_string(font, tp, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, col.lightened(0.3))
 
 
 func _draw_crosshair() -> void:

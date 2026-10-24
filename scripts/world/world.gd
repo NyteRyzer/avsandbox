@@ -30,6 +30,7 @@ var world_map: WorldMap
 var photo: PhotoMode
 var challenges: Challenges
 var survival: Survival
+var boss_rush: BossRush
 var music: Music
 var carrying: Actor = null       # someone you're carrying out of a fire
 var waypoint := Vector3.INF
@@ -171,6 +172,9 @@ func _ready() -> void:
 	survival = Survival.new()
 	survival.world = self
 	add_child(survival)
+	boss_rush = BossRush.new()
+	boss_rush.world = self
+	add_child(boss_rush)
 	music = Music.new()
 	music.world = self
 	add_child(music)
@@ -955,8 +959,9 @@ func swap_to_next_ally() -> void:
 	if player == null or not is_instance_valid(player) or player.dead or vehicle or ship.piloted or player.changing or carrying:
 		return
 	# Clones and summons vanish after a while, so you can't take them over.
+	# (In Story Mode you can only take over allies you've unlocked.)
 	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool:
-		return a.follow_target == player and not a.dead and not a.has_meta("temporary"))
+		return a.follow_target == player and not a.dead and not a.has_meta("temporary") and Game.is_unlocked(str(a.def.get("id", ""))))
 	if allies.is_empty():
 		quick_swap()
 		return
@@ -1292,6 +1297,8 @@ func _detach_fx() -> void:
 	_weather_before = ""
 	if survival.active:
 		survival.stop(" (you left this Earth)")
+	if boss_rush.active:
+		boss_rush.stop(" (you left this Earth)")
 
 
 ## Rebuilds the world as another Earth, era or the Speed Force. `how` is the
@@ -1530,6 +1537,8 @@ func _update_team_bonus() -> void:
 
 
 func _on_player_died(_a: Actor, source: Actor) -> void:
+	qte.cancel()
+	boss_fight._busy = false
 	Game.end_slowmo()
 	_respawn_t = 3.5
 	var by := ""

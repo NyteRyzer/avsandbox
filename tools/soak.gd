@@ -24,6 +24,19 @@ func _ready() -> void:
 			world.events.start_random()
 		if round % 7 == 3:
 			world.street_crime.start()
+		# Story Mode: jump into random missions, boss fights and crises.
+		if round % 5 == 1:
+			Game.mode = "story"
+			world.missions._set_chapter(rng.randi() % Missions.MISSIONS.size())
+		if round % 5 == 3 and world.player:
+			var villains := Game.roster.filter(func(c) -> bool: return c["side"] == "villain")
+			var b: Actor = world.missions._spawn(str(villains[rng.randi() % villains.size()]["id"]), world.player.global_position + Vector3(6, 0.5, 6))
+			b.make_boss(2.0)
+			world.boss_fight.begin(b, true, {"escape": rng.randf() < 0.3})
+		if round % 8 == 4 and world.place_id == "earth1":
+			world.crisis.start_crisis()
+		if round == 40:
+			Game.mode = "sandbox"
 		if round % 9 == 2 and world.city.kind == "metro":
 			var room: String = Interiors.ORDER[rng.randi() % Interiors.ORDER.size()]
 			world.enter_interior(room)
@@ -45,6 +58,14 @@ func _ready() -> void:
 				p.ult = 100.0
 			if rng.randf() < 0.01:
 				world.interact()
+			p.in_dodge = rng.randf() < 0.02
+			p.in_down = rng.randf() < 0.05
+			if world.qte.active and rng.randf() < 0.25:
+				world.qte.press(["attack", "interact", "jump", "dodge", "block", "ability"][rng.randi() % 6])
+			if world.cutscene.active and rng.randf() < 0.02:
+				world.cutscene.skip()
+			if world.boss_fight.active() and rng.randf() < 0.01:
+				world.boss_fight.boss.take_damage(world.boss_fight.boss.max_hp * 0.2, p)
 			if rng.randf() < 0.004 and world.city.kind == "metro":
 				world.teleport_player(world.city.random_road_point(p.global_position, 20.0, 300.0) + Vector3.UP)
 			await get_tree().physics_frame

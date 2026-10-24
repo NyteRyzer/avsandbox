@@ -126,6 +126,8 @@ func start(p_kind: String, opts: Dictionary, done := Callable()) -> void:
 	_bar.visible = kind == "mash"
 	_root.visible = true
 	_saved_scale = Engine.time_scale
+	# Hold the slow motion through any hit-stop that ends mid-QTE.
+	Game.slowmo_left = 9999.0
 	Engine.time_scale = float(opts.get("slow", 0.25))
 	_show_key()
 	Sfx.play("event", null, -6.0, 0.4)
@@ -209,9 +211,7 @@ func _finish(success: bool) -> void:
 	active = false
 	last_result = success
 	_root.visible = false
-	Engine.time_scale = _saved_scale if _saved_scale > 0.05 else 1.0
-	if Game.slowmo_left <= 0.0:
-		Engine.time_scale = 1.0
+	Game.end_slowmo()
 	Sfx.play("event" if success else "hit", null, -2.0 if success else -6.0)
 	if world and world.hud:
 		world.hud.show_banner("SUCCESS!" if success else "MISSED!", Color("#60ff90") if success else Color("#ff6a6a"))
@@ -226,5 +226,5 @@ func cancel() -> void:
 	if active:
 		active = false
 		_root.visible = false
-		Engine.time_scale = 1.0
+		Game.end_slowmo()
 		_done = Callable()

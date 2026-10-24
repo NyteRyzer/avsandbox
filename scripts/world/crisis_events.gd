@@ -255,6 +255,13 @@ func _clear_force(despawn: bool) -> void:
 	_force_district = -1
 
 
+## Where the HUD's objective marker points during a crisis.
+func target_pos() -> Vector3:
+	if current.is_empty():
+		return Vector3.INF
+	return world.city.district_center(int(current["district"]))
+
+
 func tracker() -> String:
 	if not _can_run() and occupied().is_empty():
 		return ""
@@ -306,5 +313,9 @@ func reset() -> void:
 			for a in current["foes"]:
 				if is_instance_valid(a):
 					a.queue_free()
+			var ca = current.get("captive_actor")
+			if ca != null and is_instance_valid(ca):
+				ca.queue_free()
+			current.erase("captive_actor")
 			current["spawned"] = false
 	_clear_marker()

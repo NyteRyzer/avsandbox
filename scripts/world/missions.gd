@@ -247,6 +247,7 @@ var _liberated_at_start := 0
 
 func _ready() -> void:
 	var s := _state()
+	s.erase("resume")   # a replay doesn't survive quitting
 	chapter = int(s.get("mission", 0))
 	step = int(s.get("step", 0))
 
@@ -279,8 +280,10 @@ func is_complete() -> bool:
 
 func _save() -> void:
 	var s := _state()
-	s["mission"] = chapter
-	s["step"] = step
+	if not s.has("resume"):
+		s["mission"] = chapter
+		s["step"] = step
+		s["furthest"] = maxi(int(s.get("furthest", 0)), chapter)
 	Game.save_settings()
 
 
@@ -288,11 +291,33 @@ func _save() -> void:
 func restart() -> void:
 	_cleanup()
 	var s := _state()
+	s.erase("resume")
+	s["furthest"] = 0
 	s["occupied"] = []
 	s["beaten"] = []
 	s["liberated"] = 0
 	s.erase("ending")
 	_set_chapter(0)
+
+
+## Replays a mission you've already reached. When it's done you go back
+## to where you were in the story.
+func replay(n: int) -> void:
+	var s := _state()
+	if n < 0 or n > int(s.get("furthest", chapter)) or n >= MISSIONS.size():
+		return
+	if not s.has("resume"):
+		s["resume"] = [chapter, step]
+	_cleanup()
+	chapter = n
+	step = 0
+	Game.save_settings()
+	world.notify("Replaying: %s" % str(MISSIONS[n]["title"]), Color("#ffc8a0"))
+	_begin_mission()
+
+
+func is_replaying() -> bool:
+	return _state().has("resume")
 
 
 ## Starts mission `n` from its first step.
@@ -467,6 +492,16 @@ func _complete_mission() -> void:
 	if next_act != int(m["act"]) and next_act > 0:
 		var act: Array = ACTS[next_act]
 		world.cutscene.play([{"black": true, "title": str(act[0]), "sub": str(act[1]), "dur": 3.0}])
+	if is_replaying():
+		var back: Array = _state()["resume"]
+		_state().erase("resume")
+		chapter = int(back[0])
+		step = int(back[1])
+		_save()
+		world.notify("Replay finished. Back to the story.", Color("#ffc8a0"))
+		if not is_complete():
+			_begin_mission()
+		return
 	chapter += 1
 	step = 0
 	_save()

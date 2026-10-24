@@ -37,6 +37,14 @@ func _on_play(mode: String) -> void:
 		Game.unlock("green_arrow")
 		await _start_world("green_arrow")
 		return
+	# Continuing a mission that's played as a particular hero: go straight in.
+	var m := int(story.get("mission", 0))
+	if mode == "story" and m < Missions.MISSIONS.size():
+		var hero := str(Missions.MISSIONS[m].get("hero", ""))
+		if hero != "":
+			Game.unlock(hero)
+			await _start_world(hero)
+			return
 	_open_select(false)
 
 

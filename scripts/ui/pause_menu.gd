@@ -35,6 +35,7 @@ func _ready() -> void:
 	_main.add_child(UITheme.button("Settings & Controls", _open_settings))
 	_main.add_child(UITheme.button("Achievements & Stats", _open_progress))
 	if Game.mode == "story":
+		_main.add_child(UITheme.button("Story Missions (replay)", _open_story))
 		_main.add_child(UITheme.button("Restart the Story (keeps unlocks)", _restart_campaign))
 	_main.add_child(UITheme.button("Quit to Title", _quit_to_title))
 	_main.add_child(UITheme.button("Quit Game", func() -> void: get_tree().quit()))
@@ -50,6 +51,8 @@ func open() -> void:
 	_settings.visible = false
 	if _progress:
 		_progress.visible = false
+	if _story:
+		_story.visible = false
 	get_tree().paused = true
 	world.capture_mouse(false)
 
@@ -86,6 +89,47 @@ var _progress: VBoxContainer
 var _progress_text: Label
 
 
+var _story: VBoxContainer
+var _story_list: VBoxContainer
+
+
+## Every mission you've reached; replay any of them.
+func _open_story() -> void:
+	if _story == null:
+		_story = VBoxContainer.new()
+		_story.custom_minimum_size = Vector2(620, 540)
+		_story.add_child(UITheme.label("STORY MISSIONS", 26, UITheme.ACCENT))
+		var scroll := ScrollContainer.new()
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		_story_list = VBoxContainer.new()
+		_story_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.add_child(_story_list)
+		_story.add_child(scroll)
+		_story.add_child(UITheme.button("Back", func() -> void:
+			_story.visible = false
+			_main.visible = true, 200))
+		_panel.add_child(_story)
+	for c in _story_list.get_children():
+		c.queue_free()
+	var m: Missions = world.missions
+	var furthest := int(m._state().get("furthest", m.chapter))
+	for i in Missions.MISSIONS.size():
+		var mi: Dictionary = Missions.MISSIONS[i]
+		var act: Array = Missions.ACTS.get(int(mi["act"]), ["", ""])
+		var label := "%s  ·  %s" % [act[0], mi["title"]]
+		if i > furthest:
+			_story_list.add_child(UITheme.label("🔒  " + label, 15, UITheme.DIM))
+			continue
+		var done := i < m.chapter or m.is_complete()
+		var idx := i
+		var b := UITheme.button(("✓  " if done else "▶  ") + label, func() -> void:
+			close()
+			m.replay(idx), 580)
+		_story_list.add_child(b)
+	_main.visible = false
+	_story.visible = true
+
+
 func _open_progress() -> void:
 	if _progress == null:
 		_progress = VBoxContainer.new()
@@ -104,7 +148,9 @@ func _open_progress() -> void:
 	var stats := PackedStringArray()
 	for k in ["kos", "supers_defeated", "bosses", "takedowns", "parries", "events", "ultimates", "fragments", "discovered",
 			"races", "rescues", "chases", "waves_best", "drives", "travels", "changes", "photos",
-			"bounties", "breaches_closed", "catches", "runaways_stopped", "supply_drops", "cats_rescued", "selfies", "drills"]:
+			"bounties", "breaches_closed", "catches", "runaways_stopped", "supply_drops", "cats_rescued", "selfies", "drills",
+			"crises_averted", "districts_liberated", "heroes_rescued", "boss_finishers", "boss_clashes_won", "perfect_dodges",
+			"double_jumps", "wall_kicks", "ledge_climbs", "boss_rushes"]:
 		stats.append("%s: %d" % [k.replace("_", " ").capitalize(), int(s.get(k, 0))])
 	stats.append("Distance on foot: %.1f km" % (float(s.get("distance", 0)) / 1000.0))
 	stats.append("Rank %d (%s), %d lifetime points" % [Game.rank(), Game.rank_title(Game.player_side()), int(Game.settings["xp"])])

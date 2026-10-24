@@ -76,6 +76,8 @@ func _ready() -> void:
 	await test_ship_nav_and_rooftops()
 	_current = "test_cinematics"
 	await test_cinematics()
+	_current = "test_polish_round"
+	await test_polish_round()
 	_current = "test_custom_models"
 	test_custom_models()
 	_current = "test_ui_smoke"
@@ -2094,4 +2096,72 @@ func test_cinematics() -> void:
 	Game.mode = "sandbox"
 	Game.no_cinematics = true
 	Game.end_slowmo()
+	world.clear_npcs()
+
+
+func test_polish_round() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	Game.end_slowmo()
+	if world.place_id != "earth1":
+		world.travel_to("earth1", "breach")
+		await _idle(4)
+	if world.inside != "":
+		world.leave_interior(world.inside)
+	var spot := world.city.snap_to_road(Vector3(2560, 0, 1440)) + Vector3(0, 0.5, 0)
+	world.spawn_player("green_arrow", spot)
+	await _frames(3)
+	# The HUD's objective marker follows the waypoint (and story, missions...).
+	world.waypoint = spot + Vector3(300, 0, 0)
+	var o: Array = world.hud.objective()
+	check(not o.is_empty() and str(o[2]) in ["WAYPOINT", "MISSION", "STORY", "CRISIS"], "the HUD has an objective marker")
+	world.waypoint = Vector3.INF
+	# Story Mode: you can't take over a locked ally with Y.
+	Game.mode = "story"
+	(Game.progress["unlocked"] as Array).erase("batwoman")
+	var ally: Actor = world.spawn_npc_character("batwoman", true)
+	await _frames(2)
+	world.swap_to_next_ally()
+	check(world.player.def["id"] != "batwoman", "locked allies can't be played in Story Mode")
+	Game.unlock("batwoman")
+	world.swap_to_next_ally()
+	check(world.player.def["id"] == "batwoman", "unlocked allies can")
+	world.clear_npcs()
+	# Replaying an earlier mission brings you back to the story afterwards.
+	var st := world.missions._state()
+	world.missions.chapter = 3
+	world.missions.step = 0
+	st["mission"] = 3
+	st["furthest"] = 3
+	world.missions.replay(1)
+	check(world.missions.chapter == 1 and world.missions.is_replaying(), "replay an earlier mission")
+	world.missions._complete_mission()
+	check(world.missions.chapter == 3 and not world.missions.is_replaying(), "and the story picks up where you left it")
+	world.missions._cleanup()
+	Game.mode = "sandbox"
+	# A QTE holds its slow motion even when a hit-stop ends during it.
+	world.qte.start("press", {"action": "interact"})
+	Game._end_hit_stop()
+	check(Engine.time_scale < 0.5, "a hit-stop ending mid-QTE doesn't cancel the slow motion")
+	world.qte.press("interact")
+	check(Engine.time_scale > 0.99, "time recovers after the QTE")
+	# Dying mid-QTE cancels it.
+	world.qte.start("mash", {"action": "attack", "time": 30.0})
+	world.player.take_damage(999999.0, null)
+	await _idle(2)
+	check(not world.qte.active, "getting knocked out cancels a QTE")
+	world.player.revive()
+	await _frames(3)
+	# Boss Rush: five bosses back to back.
+	world.boss_rush.start()
+	check(world.boss_rush.active and world.boss_rush.bosses.size() == 5, "Boss Rush lines up five bosses")
+	var beaten := 0
+	for i in 3000:
+		await get_tree().process_frame
+		if is_instance_valid(world.boss_rush.current) and not world.boss_rush.current.dead:
+			world.boss_rush.current.take_damage(999999.0, world.player)
+			beaten += 1
+		if not world.boss_rush.active:
+			break
+	check(not world.boss_rush.active and Game.stat("boss_rushes") >= 1, "beat them all to clear the Boss Rush (%d hits)" % beaten)
 	world.clear_npcs()
