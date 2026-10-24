@@ -2055,6 +2055,28 @@ func _action_pose(action: String, t: float, step: int) -> Dictionary:
 			p["sh_l_z"] = 0.5
 			p["el_l"] = 1.3
 			p["spine_y"] = 0.3
+		"slide":
+			p["pitch"] = 0.55
+			p["drop"] = -0.5
+			p["th_l"] = 1.35
+			p["kn_l"] = -0.15
+			p["th_r"] = 0.9
+			p["kn_r"] = -1.3
+			p["sh_l_x"] = 0.9
+			p["sh_l_z"] = 0.5
+			p["sh_r_x"] = -0.4
+			p["head_x"] = -0.35
+		"mantle":
+			var up := clampf(t * 2.2, 0.0, 1.0)
+			p["sh_l_x"] = lerpf(2.8, 0.3, up)
+			p["sh_r_x"] = lerpf(2.8, 0.3, up)
+			p["el_l"] = lerpf(0.3, 1.2, up)
+			p["el_r"] = lerpf(0.3, 1.2, up)
+			p["th_l"] = 1.2 * up
+			p["kn_l"] = -1.6 * up
+			p["th_r"] = 0.4
+			p["kn_r"] = -0.8
+			p["spine_x"] = -0.3
 		"dodge":
 			p["pitch"] = -0.4
 			p["th_l"] = 0.9

@@ -215,6 +215,10 @@ func spawn_player(id: String, at = null) -> void:
 		# Changing character at the helm: step back onto the bridge first.
 		ship.leave_helm()
 	var c := Loadout.apply(Costumes.apply(Game.get_character(id), str(Game.suit_choice.get(id, ""))))
+	recent_chars.erase(id)
+	recent_chars.push_front(id)
+	if recent_chars.size() > 6:
+		recent_chars.resize(6)
 	var pos: Vector3
 	var yaw := cam.yaw
 	if at != null:
@@ -869,6 +873,24 @@ func recruit(o: Actor) -> void:
 
 
 ## Tag team: take control of one of your allies; you become their backup.
+var recent_chars: Array[String] = []   # most recently played first
+
+
+## [Y] with no allies around: flip back to the character you played before,
+## right where you stand. Tap again to flip back.
+func quick_swap() -> void:
+	if recent_chars.size() < 2:
+		notify("No allies to switch to. Recruit heroes with [G], spawn some from the Tab menu, or pick another hero to flip between them with [Y].", Color("#ffd27a"))
+		return
+	var prev: String = recent_chars[1]
+	var at := player.global_position
+	FX.flash(self, player.chest(), Color("#ffffff"), 2.0, 0.3, 0.4)
+	spawn_player(prev, at)
+	player.velocity = Vector3.ZERO
+	notify("Swapped to %s. [Y] to swap back." % str(player.def.get("name", prev)), Color("#bfe8ff"))
+	Game.record("quick_swaps")
+
+
 func swap_to_next_ally() -> void:
 	if player == null or not is_instance_valid(player) or player.dead or vehicle or ship.piloted or player.changing or carrying:
 		return
@@ -876,7 +898,7 @@ func swap_to_next_ally() -> void:
 	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool:
 		return a.follow_target == player and not a.dead and not a.has_meta("temporary"))
 	if allies.is_empty():
-		notify("No allies to switch to. Recruit heroes with [G], or spawn some from the Tab menu.", Color("#ffd27a"))
+		quick_swap()
 		return
 	var a: Actor = allies[0]
 	var old := player

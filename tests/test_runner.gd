@@ -65,6 +65,8 @@ func _ready() -> void:
 	await test_breach_and_new_features()
 	_current = "test_jump_ship_and_boarding"
 	await test_jump_ship_and_boarding()
+	_current = "test_free_running"
+	await test_free_running()
 	_current = "test_custom_models"
 	test_custom_models()
 	_current = "test_ui_smoke"
@@ -1651,3 +1653,103 @@ func test_jump_ship_and_boarding() -> void:
 			break
 	check(world.inside == "" and world.player.visible, "the Jump Ship sets you back down")
 	check(world.player.global_position.distance_to(Vector3(560, 0.5, -440)) < 20.0, "where you left from (%s)" % world.player.global_position)
+
+
+func _wall(center: Vector3, size: Vector3) -> StaticBody3D:
+	var b := StaticBody3D.new()
+	b.collision_layer = Game.LAYER_WORLD
+	var cs := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	cs.shape = box
+	b.add_child(cs)
+	world.add_child(b)
+	b.global_position = center
+	return b
+
+
+func _peak_after_jump(second_at := -1) -> float:
+	var y0 := world.player.global_position.y
+	var top := y0
+	Input.action_press("jump")
+	for i in 70:
+		await get_tree().physics_frame
+		if i == 2:
+			Input.action_release("jump")
+		if i == second_at:
+			Input.action_press("jump")
+		if i == second_at + 2:
+			Input.action_release("jump")
+		top = maxf(top, world.player.global_position.y)
+	Input.action_release("jump")
+	return top - y0
+
+
+func test_free_running() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	if world.inside != "":
+		world.leave_interior(world.inside)
+		await _idle(3)
+	# The middle of a long Smallville road, away from everything.
+	var pad := world.city.snap_to_road(Vector3(2560, 0, 1440)) + Vector3(0, 0.5, 0)
+	world.spawn_player("green_arrow", pad)
+	world.cam.yaw = 0.0
+	await _frames(20)
+	var single := await _peak_after_jump()
+	await _frames(30)
+	var double := await _peak_after_jump(14)
+	check(double > single + 1.0, "double jump goes higher (%.1f vs %.1f m)" % [double, single])
+	await _frames(40)
+	# Ledge climb: jump at a 2.4 m wall and pull yourself up onto it.
+	world.teleport_player(pad)
+	await _frames(10)
+	var p0 := world.player.global_position
+	var ledge := _wall(Vector3(p0.x, p0.y + 0.7, p0.z - 3.0), Vector3(6, 2.4, 3))
+	Input.action_press("move_forward")
+	await _frames(8)
+	await _tap("jump")
+	await _frames(40)
+	Input.action_release("move_forward")
+	check(world.player.global_position.y > p0.y + 1.6, "climbed onto the ledge (y %.1f from %.1f)" % [world.player.global_position.y, p0.y])
+	ledge.queue_free()
+	# Wall kick off a tall wall.
+	world.teleport_player(pad)
+	await _frames(10)
+	p0 = world.player.global_position
+	var wall := _wall(Vector3(p0.x, p0.y + 8.0, p0.z - 2.0), Vector3(8, 20, 1))
+	var kicks := Game.stat("wall_kicks")
+	Input.action_press("move_forward")
+	await _tap("jump")
+	await _frames(8)
+	await _tap("jump")
+	await _frames(4)
+	Input.action_release("move_forward")
+	check(Game.stat("wall_kicks") > kicks, "kicked off the wall")
+	await _frames(40)
+	wall.queue_free()
+	# Slide: sprint, then tap crouch.
+	world.teleport_player(pad + Vector3(0, 0, -30))
+	world.cam.yaw = PI
+	await _frames(10)
+	Input.action_press("move_forward")
+	Input.action_press("sprint")
+	await _frames(40)
+	var before := Vector3(world.player.velocity.x, 0, world.player.velocity.z).length()
+	await _tap("descend")
+	var during := Vector3(world.player.velocity.x, 0, world.player.velocity.z).length()
+	check(world.player.slide_t > 0.0, "sprint + crouch slides")
+	check(during > before, "a slide is a burst of speed (%.1f -> %.1f)" % [before, during])
+	await _frames(60)
+	Input.action_release("move_forward")
+	Input.action_release("sprint")
+	# Flyers don't double jump; civilians can't free-run.
+	world.spawn_player("supergirl", pad)
+	await _frames(5)
+	check(not world.player._parkour(), "flyers fly instead of free-running")
+	# Y with no allies flips back to the character you just played.
+	world.clear_npcs()
+	world.swap_to_next_ally()
+	check(world.player.def["id"] == "green_arrow", "Y swaps back to the last character (%s)" % world.player.def["id"])
+	world.swap_to_next_ally()
+	check(world.player.def["id"] == "supergirl", "and Y again swaps back")

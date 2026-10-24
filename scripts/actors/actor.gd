@@ -102,6 +102,15 @@ var shrunk := false
 var swimming := false
 var _jump_buffer := 0.0
 var _coyote := 0.0
+# Free-running: double jumps, wall kicks, wall runs, ledge climbs and slides.
+var _air_jumps := 0
+var _wall_run_t := 0.0
+var _mantle_t := -1.0
+var _mantle_from := Vector3.ZERO
+var _mantle_to := Vector3.ZERO
+var slide_t := 0.0
+var _sprint_time := 0.0
+var _down_was := false
 
 # Combat state for the upgraded kits.
 var in_dodge := false
@@ -495,6 +504,50 @@ func _hero_landing(speed: float) -> void:
 		Game.record("hero_landings")
 
 
+## Who can free-run (double jump, wall kick, wall run, climb, slide): anyone
+## on foot in costume. Flyers fly instead; civilians and the shrunken can't.
+func _parkour() -> bool:
+	return not civilian and not shrunk and not swimming and movement in ["run", "grapple", "superjump", "ice", "speed"] \
+		and team != "civilian" and team != "police"
+
+
+## Grab the top of a wall ahead (up to `reach` above your feet) and climb
+## onto it. Returns false when there's no ledge, or no room to stand.
+func _try_mantle(reach: float) -> bool:
+	var fwd := Vector3(in_move.x, 0, in_move.z)
+	if fwd.length() < 0.3 or world == null:
+		return false
+	fwd = fwd.normalized()
+	var s := _cur_scale()
+	var space := get_world_3d().direct_space_state
+	var ex: Array[RID] = [get_rid()]
+	var from := global_position + Vector3.UP * 0.9 * s
+	var wall := space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + fwd * 1.1, Game.LAYER_WORLD, ex))
+	if wall.is_empty():
+		return false
+	var probe: Vector3 = wall["position"] + fwd * 0.45
+	var top := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(probe.x, global_position.y + reach * s + 0.4, probe.z),
+		Vector3(probe.x, global_position.y + 0.3, probe.z), Game.LAYER_WORLD, ex))
+	if top.is_empty() or top["normal"].y < 0.7:
+		return false
+	var top_pos: Vector3 = top["position"]
+	var h := top_pos.y - global_position.y
+	if h < 0.55 * s or h > reach * s:
+		return false
+	var head := space.intersect_ray(PhysicsRayQueryParameters3D.create(top_pos + Vector3.UP * 0.2, top_pos + Vector3.UP * 1.9 * s, Game.LAYER_WORLD, ex))
+	if not head.is_empty():
+		return false
+	_mantle_from = global_position
+	_mantle_to = top_pos + Vector3.UP * 0.05 + fwd * 0.35
+	_mantle_t = 0.0
+	velocity = Vector3.ZERO
+	model.play("mantle", 0.35)
+	Sfx.play("whoosh", global_position, -10.0, 0.2)
+	if is_player:
+		Game.record("ledge_climbs")
+	return true
+
+
 ## Caped characters (Batwoman...) can glide; flyers, civvies and the shrunken can't.
 func _can_glide() -> bool:
 	return bool(def.get("glide", false)) and not civilian and not shrunk and movement != "flight"
@@ -524,6 +577,12 @@ func _move_body(delta: float) -> void:
 	if rage_t > 0.0:
 		base *= 1.2
 		sprint *= 1.2
+	# Free-runners build momentum the longer they sprint.
+	if in_sprint and is_on_floor() and in_move.length() > 0.5 and movement != "speed":
+		_sprint_time += delta
+	elif is_on_floor():
+		_sprint_time = 0.0
+	sprint *= 1.0 + clampf((_sprint_time - 1.2) / 2.5, 0.0, 1.0) * 0.35
 	var target_speed := sprint if in_sprint else base
 
 	if in_dodge and dodge_t <= 0.0 and can_act() and grapple_point == null:
@@ -577,6 +636,19 @@ func _move_body(delta: float) -> void:
 			FX.sonic_boom(world, chest(), velocity.normalized())
 		if is_on_floor() and in_down and movement != "hover":
 			flying = false
+	elif _mantle_t >= 0.0:
+		# Climbing over a ledge: up first, then forward onto it.
+		_mantle_t += delta
+		var k := clampf(_mantle_t / 0.3, 0.0, 1.0)
+		var up_k := clampf(k * 1.7, 0.0, 1.0)
+		var hk := k * k
+		global_position = Vector3(lerpf(_mantle_from.x, _mantle_to.x, hk), lerpf(_mantle_from.y, _mantle_to.y, up_k), lerpf(_mantle_from.z, _mantle_to.z, hk))
+		velocity = Vector3.ZERO
+		if k >= 1.0:
+			_mantle_t = -1.0
+			velocity = (_mantle_to - _mantle_from) * Vector3(1, 0, 1)
+			velocity = velocity.normalized() * 4.0 if velocity.length() > 0.1 else Vector3.ZERO
+			_air_jumps = 1
 	elif grapple_point != null:
 		var gp: Vector3 = grapple_point
 		var to := gp - global_position
@@ -591,6 +663,35 @@ func _move_body(delta: float) -> void:
 		var accel := 10.0 if is_on_floor() else 2.5
 		if movement == "speed":
 			accel = 14.0 if is_on_floor() else 4.0
+		var parkour := _parkour()
+		if is_on_floor():
+			_air_jumps = 1 if parkour else 0
+			_wall_run_t = 0.0
+		# Slide: tap crouch while sprinting.
+		var down_pressed := in_down and not _down_was
+		_down_was = in_down
+		var flat := Vector3(velocity.x, 0, velocity.z)
+		if parkour and slide_t <= 0.0 and down_pressed and is_on_floor() and in_sprint and flat.length() > 8.0 and movement != "speed":
+			slide_t = 0.75
+			velocity.x = flat.normalized().x * maxf(flat.length() * 1.3, 16.0)
+			velocity.z = flat.normalized().z * maxf(flat.length() * 1.3, 16.0)
+			model.play("slide", 0.75)
+			Sfx.play("whoosh", global_position, -8.0, 0.4)
+			if world:
+				FX.sparks(world, global_position + Vector3.UP * 0.1, Color("#c8c0b0"), 6, 3.0, 0.4)
+			if is_player:
+				Game.record("slides")
+		if slide_t > 0.0:
+			slide_t -= delta
+			desired = Vector3(velocity.x, 0, velocity.z) * 0.97
+			accel = 1.5
+			if in_jump and is_on_floor():
+				slide_t = 0.0  # jump out of a slide keeps the speed
+		# Ledges: jump at a wall, or reach for one in mid-air.
+		if parkour and _mantle_t < 0.0 and in_move.length() > 0.5 and held_prop == null:
+			if (in_jump and is_on_floor()) or (not is_on_floor() and is_on_wall() and velocity.y < 6.0):
+				if _try_mantle(3.2 if is_on_floor() else 2.4):
+					return
 		if swimming:
 			desired *= 0.45
 			accel = 4.0
@@ -610,6 +711,42 @@ func _move_body(delta: float) -> void:
 			velocity.y = jump
 			_jump_buffer = 0.0
 			_coyote = 0.0
+		elif in_jump and parkour and not is_on_floor() and is_on_wall():
+			# Wall kick: spring off the wall, up and away.
+			var n := get_wall_normal()
+			n.y = 0.0
+			n = n.normalized()
+			velocity = n * 10.0 + Vector3(hv.x, 0, hv.z) * 0.4 + Vector3.UP * jump * 1.05
+			_air_jumps = 1
+			_wall_run_t = 0.0
+			_jump_buffer = 0.0
+			model.tumble(-12.0)
+			Sfx.play("whoosh", global_position, -6.0, 0.3)
+			if is_player:
+				Game.record("wall_kicks")
+		elif in_jump and parkour and not is_on_floor() and _air_jumps > 0 and grapple_point == null:
+			# Double jump: a flip in mid-air.
+			_air_jumps -= 1
+			velocity.y = jump * 0.95
+			if in_move.length() > 0.3:
+				var push := in_move.normalized() * maxf(Vector3(hv.x, 0, hv.z).length(), target_speed)
+				velocity.x = push.x
+				velocity.z = push.z
+			_jump_buffer = 0.0
+			model.tumble(14.0)
+			Sfx.play("whoosh", global_position, -8.0, 0.5)
+			if world:
+				FX.ring(world, global_position, Color(1, 1, 1, 0.6), 1.4, 0.25)
+			if is_player:
+				Game.record("double_jumps")
+		elif parkour and movement != "speed" and not is_on_floor() and in_sprint and is_on_wall() and Vector3(hv.x, 0, hv.z).length() > 6.0 and _wall_run_t < 1.3:
+			# Wall run: sprint along a wall and you keep your height for a moment.
+			_wall_run_t += delta
+			velocity.y = lerpf(3.5, -2.0, _wall_run_t / 1.3)
+			var n := get_wall_normal()
+			velocity -= Vector3(n.x, 0, n.z) * 2.0  # hug the wall
+			if world and randf() < 0.25:
+				FX.sparks(world, global_position + Vector3.UP * 0.2, Color("#d0d0d0"), 2, 2.0, 0.3)
 		elif not is_on_floor() and _can_glide() and in_up and velocity.y < 0.0 and _height_above_ground() > 2.5:
 			# Cape glide: hold jump while falling. Sink slowly and sail forward;
 			# hold descend (Ctrl) to dive.
