@@ -153,7 +153,7 @@ func press(action: String) -> void:
 				_fill += 1.0 / _presses
 				_pulse = 1.0
 				Sfx.play("punch", null, -12.0, 0.3)
-				if _fill >= 1.0:
+				if _fill >= 0.999:
 					_finish(true)
 		"press":
 			if action == want:
