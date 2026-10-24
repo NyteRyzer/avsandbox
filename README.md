@@ -1,10 +1,10 @@
 # Crisis City
 
-**An unofficial Arrowverse open-world sandbox.** Pick any of **72 heroes and villains** from
+**An unofficial Arrowverse open-world sandbox.** Pick any of **154 heroes and villains** from
 *Arrow*, *The Flash*, *Supergirl*, *Legends of Tomorrow*, *Batwoman*, *Black Lightning*,
 *Stargirl* and *Superman & Lois*, then go loose in a bay where Star City, Central City,
-National City, Freeland, Gotham City and Smallville each sit on their own island, joined by
-bridges. Play the Crisis on Infinite Earths campaign, unleash your character's ultimate, steal a car. Walk into
+National City, Freeland, Gotham City, Smallville, Keystone City, Metropolis and Blue Valley each
+sit on their own island, joined by bridges. Play the Crisis on Infinite Earths campaign, unleash your character's ultimate, steal a car. Walk into
 S.T.A.R. Labs, the Arrow Bunker, Jitters, CatCo and the D.E.O.; fly the Waverider and jump
 through time; run into the Speed Force or breach to other Earths. Stop crimes as a hero or cause
 them as a villain, spawn anyone as your ally or enemy, lift cars, run up walls, and fly over the
@@ -62,7 +62,8 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | --- | --- | --- |
 | Move | W A S D | Left stick |
 | Look / zoom | Mouse / mouse wheel | Right stick |
-| Jump (flyers: climb) | Space | A |
+| Jump (flyers: climb); again in mid-air to double jump; at a wall to wall-kick or climb a ledge | Space | A |
+| Slide (while sprinting) | Ctrl or C | B |
 | Sprint / super speed / flight boost | Shift | L3 |
 | Primary attack | Left mouse | RT |
 | Secondary attack (hold for beams) | Right mouse | LT |
@@ -77,9 +78,10 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Glide (caped characters, while falling) | Hold Space | Hold A |
 | Block (tap just before a hit to parry) | B | D-pad right |
 | Lock on to the nearest enemy | Z or middle mouse | D-pad left |
-| Switch to a recruited ally | Y | |
+| Switch to a recruited ally, or flip back to your last character | Y | |
 | Whistle for Krypto (Kryptonians) | K | |
 | Call the Waverider and take the helm / bail out of it | U | |
+| Call the Jump Ship (Legends) | J | |
 | Scan (hold) | X | |
 | Map and fast travel | M | |
 | Photo mode | P | |
@@ -91,6 +93,33 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 | Hide HUD | F1 | |
 
 ## What's in the game
+
+**New in this update.**
+- **Board the Waverider from anywhere near it.** Stand under or beside the ship and press G;
+  Gideon beams you aboard.
+- **The Jump Ship.** Any Legend (White Canary, the Atom, Zari, Constantine...) presses **J** and
+  the Jump Ship swoops down and lands in front of them. Board it (G) and it flies you up into the
+  Waverider's cargo bay. From the cargo bay it takes you back down to where you were.
+- **Gideon's navigation console** on the bridge flies the Waverider to any city on autopilot.
+- **A bigger world:** three new cities, Keystone City, Metropolis and Blue Valley, make the map a
+  3 x 3 grid of nine islands with eleven bridges.
+- **Free-running for everyone on foot:** double jump with a flip, kick off walls, wall-run while
+  sprinting, climb up any ledge you jump at, slide by tapping crouch while sprinting, and pick up
+  speed the longer you sprint. **Rooftop free-run** (Tab menu) is a course of launch pads that
+  fling you from roof to roof.
+- **Quick swap:** Y with no allies around flips you back to the last character you played, on
+  the spot.
+- **Deeper combat:**
+  - Long combos hit harder (up to +50% at 30 hits; the HUD shows the multiplier).
+  - Hits from behind and every seventh hit in a combo are critical hits, in big orange numbers.
+  - Enough damage at once **staggers** an enemy, leaving them open to a G **takedown** (bosses
+    lose a fifth of their health).
+  - Dodging (V) just as an attack lands is a **perfect dodge**: it misses and time slows.
+  - Hit a launched enemy in mid-air to keep them up there with you, then spike them down with
+    the finisher.
+  - Melee mobs take turns instead of all swarming you at once.
+  - Fireballs, energy blasts and big hits now cast real light on the street around them.
+- **24 new characters** (listed below).
 
 **Better graphics.** The game now runs on Godot's high-end Forward+ renderer (Vulkan). On High
 it gets ambient occlusion, light bouncing between surfaces (SSIL), volumetric fog with light
@@ -145,7 +174,7 @@ it closes after 25 seconds.
 10. **Target drill:** every HQ armory has a drone drill. Smash as many as you can in 45 seconds
     and beat your best score.
 
-**Characters.** 70 heroes and 60 villains, each with their own costume, stats, two attacks, a
+**Characters.** 82 heroes and 72 villains, each with their own costume, stats, two attacks, a
 special power, often a utility power (E), and a signature **ultimate** (R):
 
 - **Heroes:** Green Arrow, The Flash, Supergirl, Superman, The Atom, White Canary, Black Canary,
@@ -157,7 +186,9 @@ special power, often a utility power (E), and a signature **ultimate** (R):
   Charlie, Behrad Tarazi, Astra Logue, Spooner, Wildcat, Hourman, Dr. Mid-Nite, Starman,
   Doctor Fate, Green Lantern (Alan Scott), Jade, Obsidian, S.T.R.I.P.E., Johnny Thunder,
   Huntress, Mia Smoak, Ragman, Sentinel, Steel (John Henry Irons), Ryan Wilder's Batwoman,
-  Batwing, Grace Choi, the Ray, the Monitor and Harbinger.
+  Batwing, Grace Choi, the Ray, the Monitor and Harbinger. New: Joe West, Connor Hawke,
+  Overwatch (Felicity Smoak), Iris West-Allen, Chester P. Runk, Allegra Garcia, Pariah (Nash
+  Wells), Nora Darhk, Lena Luthor, Lois Lane, Natalie Irons (Steel) and Gideon.
 - **Villains:** Malcolm Merlyn, Deathstroke, Prometheus, Damien Darhk, Reverse-Flash, Zoom,
   Savitar, The Thinker, Captain Cold, Heat Wave, Weather Wizard, Reign, Lex Luthor, Ra's al Ghul,
   Cicada, Gorilla Grodd, Vandal Savage, Black Siren, Ricardo Diaz, Alice, Captain Boomerang,
@@ -166,7 +197,8 @@ special power, often a utility power (E), and a signature **ultimate** (R):
   the Shade, Sportsmaster, Tigress, Eclipso, Dragon King and Cindy Burman. Also Bronze Tiger,
   Count Vertigo, Deadshot, Talia al Ghul, Golden Glider, Pied Piper, the Trickster, the Black
   Flash, Atom Smasher, Bizarro, Doomsday, Tal-Rho, General Astra, Cyborg Superman, Poison Ivy,
-  Hush, Black Mask, Mallus, Neron and Painkiller.
+  Hush, Black Mask, Mallus, Neron and Painkiller. New: Bloodwork, Deathstorm, Abra Kadabra,
+  Chillblaine, Psi, Red Daughter, Nyxly, Mouse, Bishop, Vigilante, Plastique and Anarky.
 
 **Your own story.** Every character has a three-part personal mission line (shown in blue on the
 HUD and minimap):
@@ -372,7 +404,7 @@ slow motion, speed vortexes, ground slams, smoke bombs, ice/fire/lightning novas
 invisibility, invulnerability, breach teleports and Darhk's life drain. Fire burns, ice freezes
 and lightning stuns.
 
-**The map.** Four city islands, each about 740 m across with its own architecture, sit in a bay
+**The map.** Nine city islands, each about 1.2 km across with its own architecture, sit in a bay
 joined by suspension bridges:
 - **Star City:** steel-and-glass towers, Queen Consolidated, Verdant and SCPD, plus the rundown
   Glades and the docks.
@@ -383,6 +415,12 @@ joined by suspension bridges:
   Wayne Tower (the Batcave is beneath it), GCPD with the Bat-Signal lit, Arkham Asylum and Crows
   Security.
 - **Smallville:** farmland, Main Street, the water tower, Smallville High and the Kent Farm.
+- **Keystone City:** Central City's blue-collar twin: brick warehouses, KCPD, the Keystone Steel
+  mill with its smokestacks, and the Flash Museum.
+- **Metropolis:** gleaming art-deco skyscrapers, the Daily Planet with its golden globe, LexCorp
+  Tower and the Superman statue in Centennial Park.
+- **Blue Valley:** Stargirl's small Nebraska town: Blue Valley High, the Pit Stop diner and
+  Courtney's house.
 
 Offshore are Iron Heights prison (with its own bridge) and Lian Yu, a jungle island with a plane
 wreck. There's a day/night cycle with lit windows and streetlights, plus rain, storms and fog.

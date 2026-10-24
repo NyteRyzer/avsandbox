@@ -133,7 +133,7 @@ func test_city_is_deterministic() -> void:
 	check(not a.is_water(Vector3(0, 0, -560)), "the bridge between Star City and Central City is walkable")
 	check(a.district_at(Vector3(-2900, 0, -1900)) == "Lian Yu", "Lian Yu is its own island")
 	check(a.district_at(Vector3(-1200, 0, -320)) == "The Glades", "the Glades are part of Star City")
-	check(a.islands.size() == 6, "six separate city islands")
+	check(a.islands.size() == 9, "nine separate city islands")
 	check(not a.doors.is_empty(), "landmarks have doors into interiors")
 	var road := a.snap_to_road(Vector3(123, 0, 37))
 	check(is_zero_approx(fmod(absf(road.x), City.CELL)) or is_zero_approx(fmod(absf(road.z), City.CELL)), "snap_to_road lands on a street")

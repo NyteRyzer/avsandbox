@@ -7517,56 +7517,56 @@
    }
   },
   {
-   "id": "mia_queen",
-   "name": "Mia Smoak",
-   "alias": "Green Arrow (2040)",
+   "id": "joe_west",
+   "name": "Joe West",
+   "alias": "Joe West",
    "side": "hero",
-   "show": "Arrow",
-   "home": "star",
-   "bio": "Oliver and Felicity's daughter. In 2040 she takes up the hood and becomes the Green Arrow.",
-   "health": 100,
-   "speed": 1.1,
+   "show": "The Flash",
+   "home": "central",
+   "bio": "CCPD captain and Barry's adoptive father. No powers, just a steady aim and a big heart.",
+   "health": 120,
+   "speed": 1.0,
    "power": 1.0,
-   "movement": "grapple",
+   "movement": "run",
    "strength": false,
    "primary": {
-    "kind": "arrow",
-    "name": "Arrow"
+    "kind": "gun",
+    "name": "Service Revolver",
+    "damage": 12,
+    "cooldown": 0.3
    },
    "secondary": {
     "kind": "melee",
-    "name": "Fencing Strikes",
-    "style": "kick",
-    "damage": 14
+    "name": "Cop Brawling",
+    "style": "punch",
+    "damage": 13
    },
    "special": {
-    "kind": "arrow_storm",
-    "name": "Arrow Storm"
+    "kind": "flashbang",
+    "name": "Flashbang"
    },
    "look": {
-    "suit": "#1f3a24",
-    "accent": "#0f1f14",
-    "skin": "#d8a882",
-    "hair": "#b0703a",
+    "suit": "#3a3a44",
+    "accent": "#c8b8a0",
+    "skin": "#5a3724",
+    "hair": "#8a8a8a",
     "extras": [
-     "hood",
-     "leather",
-     "jacket"
+     "coat",
+     "tie"
     ],
-    "build": "female",
-    "hair_style": "long",
-    "coat_color": "#24452c",
-    "pants": "#1a2a1e",
-    "boots": "#141414",
-    "gloves": "#141414",
+    "hair_style": "buzz",
+    "facial": "stubble",
+    "coat_color": "#4a3e30",
+    "pants": "#2a2a30",
+    "boots": "#1a1410",
+    "tie_color": "#5a2a2a",
     "gear": {
-     "left": "bow"
-    },
-    "back": "quiver"
+     "right": "pistol"
+    }
    },
    "utility": {
-    "kind": "grapple",
-    "name": "Grappling Arrow"
+    "kind": "dodge_flip",
+    "name": "Take Cover"
    }
   },
   {

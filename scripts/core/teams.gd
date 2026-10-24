@@ -7,9 +7,9 @@ extends RefCounted
 
 const TEAMS := {
 	"Team Flash": {"color": "#ff3a3a", "side": "hero", "members": ["flash", "kid_flash", "vibe", "killer_frost", "jay_garrick",
-		"jesse_quick", "xs", "elongated_man", "flash_90", "iris_west", "chester_runk", "allegra", "pariah"]},
+		"jesse_quick", "xs", "elongated_man", "flash_90", "iris_west", "chester_runk", "allegra", "pariah", "joe_west"]},
 	"Team Arrow": {"color": "#3aaa4a", "side": "hero", "members": ["green_arrow", "spartan", "black_canary", "speedy", "arsenal",
-		"wild_dog", "mr_terrific", "huntress", "blackstar", "ragman", "nyssa", "mia_queen", "connor_hawke", "overwatch"]},
+		"wild_dog", "mr_terrific", "huntress", "blackstar", "ragman", "nyssa", "connor_hawke", "overwatch"]},
 	"Legends": {"color": "#ff9a3a", "side": "hero", "members": ["white_canary", "atom", "firestorm", "heat_wave_hero", "vixen",
 		"hawkgirl", "hawkman", "citizen_steel", "constantine", "zari", "rip_hunter", "amaya", "ava_sharpe", "mona_wu", "charlie",
 		"behrad", "astra_logue", "spooner", "nora_darhk", "gideon"]},
@@ -63,7 +63,7 @@ const NEMESIS := {
 	"dr_fate": "eclipso", "green_lantern": "solomon_grundy", "jade": "eclipso", "obsidian": "the_shade",
 	"stripe": "dragon_king", "johnny_thunder": "brainwave",
 	"the_ray": "overgirl", "the_monitor": "anti_monitor", "harbinger": "anti_monitor", "spectre": "anti_monitor",
-	"mia_queen": "vigilante", "connor_hawke": "anarky", "overwatch": "prometheus", "iris_west": "bloodwork", "chester_runk": "chillblaine",
+	"joe_west": "mirror_master", "connor_hawke": "anarky", "overwatch": "prometheus", "iris_west": "bloodwork", "chester_runk": "chillblaine",
 	"allegra": "deathstorm", "pariah": "anti_monitor", "nora_darhk": "bishop", "gideon": "bishop", "lena_luthor": "psi",
 	"lois_lane": "red_daughter", "natalie_irons": "nyxly",
 }
