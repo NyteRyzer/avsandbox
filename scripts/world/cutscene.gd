@@ -255,7 +255,7 @@ static func close_up(who: Actor, dur: float, line: String, color := Color("#ffd2
 	var head := who.head_pos()
 	var side := fwd.cross(Vector3.UP).normalized()
 	var s := {"from": head + fwd * 4.2 + side * 1.2 + Vector3.UP * 0.3, "to": head + fwd * 2.4 + side * 0.6 + Vector3.UP * 0.1,
-		"look": who, "dur": dur, "speaker": str(who.display_name), "line": line, "color": color}
+		"look": who, "dur": dur, "speaker": str(who.display_name).replace(" (BOSS)", ""), "line": line, "color": color}
 	if action != "":
 		s["action"] = [who, action]
 	return s
@@ -268,7 +268,7 @@ static func over_shoulder(a: Actor, b: Actor, dur: float, line: String, color :=
 	var dir := to.normalized() if to.length() > 0.1 else a.forward()
 	var side := dir.cross(Vector3.UP).normalized()
 	var eye := a.head_pos() - dir * 2.6 + side * 0.9 + Vector3.UP * 0.35
-	return {"from": eye, "to": eye + dir * 0.8, "look": b, "dur": dur, "speaker": str(a.display_name), "line": line, "color": color}
+	return {"from": eye, "to": eye + dir * 0.8, "look": b, "dur": dur, "speaker": str(a.display_name).replace(" (BOSS)", ""), "line": line, "color": color}
 
 
 ## Both fighters in frame, side on.

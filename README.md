@@ -94,6 +94,27 @@ The presets for `"Linux"`, `"Windows"` and `"macOS"` are in `export_presets.cfg`
 
 ## What's in the game
 
+**Story Mode: the Crisis City campaign.** *Every Earth. Every legend. Every enemy. One final
+crisis.*
+- Pick **Story Mode** on the title screen. You start with only Green Arrow and **unlock heroes,
+  and eventually villains, as the story goes on**. **Sandbox** keeps everyone unlocked.
+- The prologue, *The End of Everything*, opens on a black screen with Oliver's voice-over.
+  Mission 01, *A City Without Tomorrow*, has you rescuing civilians and fighting shadow
+  creatures, then facing a resurrected Malcolm Merlyn who vanishes in a green flash.
+- Five acts follow: The Cities Fall, The Broken Timeline, War of the Earths, The Villains'
+  Victory and One Last Tomorrow. The enemy is **The Architect**, who merges every Earth into
+  one city. In the final battle the story hands you a different hero on each front, and you
+  choose who delivers the final strike. That choice decides the ending.
+- **Cutscenes:** letterbox, a film camera and subtitled dialogue. Space skips.
+- **Boss fights in acts:** an intro exchange, a **clash** QTE at 2/3 health, a **counter-combo**
+  QTE at 1/3, and a **FINISH THEM** prompt for a cinematic finisher. A proper **boss health
+  bar** shows the boss's name, show, phase, damage trail and ENRAGED / STAGGERED tags.
+- **Crisis Events:** crises break out in other cities on a three-minute clock. Ignore one and
+  villains **occupy** that district until you liberate it. Get there in time and you may free
+  a hero from an erased timeline, unlocking them.
+- The full campaign is in [`docs/STORY.md`](docs/STORY.md). Cutscenes and QTEs can each be
+  switched off in Settings.
+
 **New in this update.**
 - **Board the Waverider from anywhere near it.** Stand under or beside the ship and press G;
   Gideon beams you aboard.

@@ -115,6 +115,53 @@ func _ready() -> void:
 		await _snap("ship_helm_flight", 3)
 		get_tree().quit()
 		return
+	if only == "cine":
+		# Story Mode: a cutscene, the boss intro, a QTE and the boss bar.
+		var w := World.new()
+		add_child(w)
+		w.population.enabled = false
+		w.events.cooldown = 9999.0
+		w.char_missions.enabled = false
+		w.day_night.frozen = true
+		w.day_night.hour = 17.0
+		w.spawn_player("green_arrow", Vector3(-1440, 0.5, -560))
+		for i in 10:
+			await get_tree().physics_frame
+		var p: Actor = w.player
+		w.cutscene.play([{"black": true, "speaker": "Oliver Queen", "line": "For years, I believed my mission was simple. Protect my city.", "color": Color("#5aff6a"), "dur": 30.0}])
+		for i in 200:
+			await get_tree().process_frame
+		await _snap("cine_voiceover", 3)
+		w.cutscene.skip()
+		w.cutscene.play([{"black": true, "title": "CRISIS CITY", "sub": "THE MULTIVERSE IS UNDER ATTACK.\nYOUR LEGACY WILL DETERMINE WHAT SURVIVES.", "dur": 30.0}])
+		await _snap("cine_title", 3)
+		w.cutscene.skip()
+		var b: Actor = w.missions._spawn("malcolm_merlyn", p.global_position + Vector3(0, 0, -9))
+		b.make_boss(3.0)
+		b.display_name += " (BOSS)"
+		for i in 5:
+			await get_tree().physics_frame
+		b.rotation.y = PI
+		b.face_dir = Vector3(0, 0, 1)
+		p.rotation.y = 0.0
+		w.cutscene.play([Cutscene.close_up(b, 30.0, "You really should stop saying that, Oliver. It keeps becoming embarrassing.", BossFight.BOSS_COLOR)])
+		for i in 60:
+			await get_tree().process_frame
+		await _snap("cine_boss_intro", 3)
+		w.cutscene.skip()
+		w.cam.yaw = PI
+		w.cam.pitch = -0.15
+		b.hp = b.max_hp * 0.72
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap("cine_boss_bar", 3)
+		w.qte.start("mash", {"action": "attack", "presses": 12, "time": 30.0, "title": "CLASH!  Overpower Malcolm Merlyn"})
+		for k in 5:
+			w.qte.press("attack")
+		await _snap("cine_qte", 3)
+		w.qte.cancel()
+		get_tree().quit()
+		return
 	if only == "bigmap":
 		# The new cities, the world map and a Legend's Jump Ship.
 		var w := World.new()
