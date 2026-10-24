@@ -7517,6 +7517,625 @@
    }
   },
   {
+   "id": "mia_queen",
+   "name": "Mia Smoak",
+   "alias": "Green Arrow (2040)",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Oliver and Felicity's daughter. In 2040 she takes up the hood and becomes the Green Arrow.",
+   "health": 100,
+   "speed": 1.1,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "arrow",
+    "name": "Arrow"
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Fencing Strikes",
+    "style": "kick",
+    "damage": 14
+   },
+   "special": {
+    "kind": "arrow_storm",
+    "name": "Arrow Storm"
+   },
+   "look": {
+    "suit": "#1f3a24",
+    "accent": "#0f1f14",
+    "skin": "#d8a882",
+    "hair": "#b0703a",
+    "extras": [
+     "hood",
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#24452c",
+    "pants": "#1a2a1e",
+    "boots": "#141414",
+    "gloves": "#141414",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "grapple",
+    "name": "Grappling Arrow"
+   }
+  },
+  {
+   "id": "connor_hawke",
+   "name": "Connor Hawke",
+   "alias": "Connor Hawke",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "John Diggle's adopted son, a martial artist who fights for the Canaries of 2040.",
+   "health": 100,
+   "speed": 1.12,
+   "power": 1.0,
+   "movement": "grapple",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Martial Arts",
+    "style": "kick",
+    "damage": 15
+   },
+   "secondary": {
+    "kind": "arrow",
+    "name": "Arrow",
+    "color": "#8a8a8a"
+   },
+   "special": {
+    "kind": "smoke_bomb",
+    "name": "Smoke Bomb"
+   },
+   "look": {
+    "suit": "#1c1e22",
+    "accent": "#3a4048",
+    "skin": "#875536",
+    "hair": "#16110e",
+    "extras": [
+     "hood",
+     "leather",
+     "jacket"
+    ],
+    "hair_style": "buzz",
+    "coat_color": "#202226",
+    "pants": "#18191c",
+    "boots": "#101010",
+    "gloves": "#101010",
+    "gear": {
+     "left": "bow"
+    },
+    "back": "quiver"
+   },
+   "utility": {
+    "kind": "dodge_flip",
+    "name": "Roll Away"
+   }
+  },
+  {
+   "id": "overwatch",
+   "name": "Felicity Smoak",
+   "alias": "Overwatch",
+   "side": "hero",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "Team Arrow's hacker. She fights with drones, hacks and a very fast keyboard.",
+   "health": 90,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Drone Laser",
+    "style": "energy",
+    "color": "#6ad0ff",
+    "origin": "hands",
+    "speed": 80,
+    "damage": 11
+   },
+   "secondary": {
+    "kind": "missiles",
+    "name": "Drone Strike"
+   },
+   "special": {
+    "kind": "emp",
+    "name": "System Crash"
+   },
+   "look": {
+    "suit": "#2a2c3c",
+    "accent": "#6ad0ff",
+    "skin": "#d8a882",
+    "hair": "#d9b468",
+    "extras": [
+     "glasses_dark",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "coat_color": "#3a2a44",
+    "pants": "#22222c",
+    "boots": "#18181c",
+    "gloves": "#2a2c3c",
+    "glove_length": 0.0,
+    "glow": "#6ad0ff",
+    "belt": "#1a1a20"
+   },
+   "utility": {
+    "kind": "foresight",
+    "name": "Overwatch Intel"
+   }
+  },
+  {
+   "id": "iris_west",
+   "name": "Iris West-Allen",
+   "alias": "Iris West-Allen",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Barry's wife, Central City Citizen editor, and the heart of Team Flash. She doesn't need powers to be brave.",
+   "health": 100,
+   "speed": 1.05,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Service Pistol",
+    "damage": 10,
+    "cooldown": 0.24
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Krav Maga",
+    "style": "kick",
+    "damage": 12
+   },
+   "special": {
+    "kind": "flashbang",
+    "name": "Flashbang"
+   },
+   "look": {
+    "suit": "#5a2a3a",
+    "accent": "#d8c0a0",
+    "skin": "#875536",
+    "hair": "#16110e",
+    "extras": [
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#6a2a3e",
+    "pants": "#22283a",
+    "boots": "#1a1414",
+    "gear": {
+     "right": "pistol"
+    }
+   },
+   "utility": {
+    "kind": "dodge_flip",
+    "name": "Duck and Roll"
+   }
+  },
+  {
+   "id": "chester_runk",
+   "name": "Chester P. Runk",
+   "alias": "Chester P. Runk",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A sci-fi geek who absorbed a black hole. Now he can pull things into one.",
+   "health": 95,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Singularity",
+    "style": "antimatter",
+    "color": "#8a4aff",
+    "origin": "hands",
+    "speed": 55,
+    "damage": 16
+   },
+   "secondary": {
+    "kind": "telekinesis",
+    "name": "Event Horizon",
+    "color": "#8a4aff"
+   },
+   "special": {
+    "kind": "gravity_well",
+    "name": "Black Hole"
+   },
+   "look": {
+    "suit": "#3a2c22",
+    "accent": "#8a4aff",
+    "skin": "#875536",
+    "hair": "#16110e",
+    "extras": [
+     "glasses_dark",
+     "jacket"
+    ],
+    "hair_style": "curly",
+    "coat_color": "#5a4632",
+    "pants": "#2a2a30",
+    "boots": "#22201c",
+    "glow": "#8a4aff",
+    "glove_length": 0.0,
+    "belt": "#2a2420"
+   }
+  },
+  {
+   "id": "allegra",
+   "name": "Allegra Garcia",
+   "alias": "Allegra Garcia",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A metahuman who controls the whole electromagnetic spectrum, from ultraviolet to X-rays.",
+   "health": 100,
+   "speed": 1.05,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "beam",
+    "name": "UV Beam",
+    "style": "hands",
+    "color": "#c86aff",
+    "element": "fire"
+   },
+   "secondary": {
+    "kind": "bolt",
+    "name": "Light Pulse",
+    "style": "energy",
+    "color": "#e0b0ff",
+    "origin": "hands"
+   },
+   "special": {
+    "kind": "flashbang",
+    "name": "Blinding Light"
+   },
+   "look": {
+    "suit": "#3a2a44",
+    "accent": "#c86aff",
+    "skin": "#c0906a",
+    "hair": "#16110e",
+    "extras": [
+     "leather",
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#2a2030",
+    "boots": "#141418",
+    "glow": "#c86aff",
+    "glove_length": 0.0,
+    "belt": "#1a1a1e"
+   }
+  },
+  {
+   "id": "pariah",
+   "name": "Nash Wells",
+   "alias": "Pariah",
+   "side": "hero",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "An explorer who saw every Earth die, and the man who warned them all of the Crisis.",
+   "health": 120,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Antimatter Bolt",
+    "style": "cosmic",
+    "color": "#ffcf6a",
+    "origin": "hands",
+    "speed": 65
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Pickaxe",
+    "style": "heavy",
+    "damage": 18
+   },
+   "special": {
+    "kind": "force_field",
+    "name": "Pariah's Shield"
+   },
+   "look": {
+    "suit": "#5a4632",
+    "accent": "#2a2a2a",
+    "skin": "#d8a882",
+    "hair": "#8a8a8a",
+    "extras": [
+     "coat",
+     "goggles"
+    ],
+    "hair_style": "short",
+    "facial": "beard",
+    "coat_color": "#4a3a28",
+    "pants": "#2e2a26",
+    "boots": "#2a2018",
+    "goggle_glow": "#ffcf6a"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Crisis Jump"
+   }
+  },
+  {
+   "id": "nora_darhk",
+   "name": "Nora Darhk",
+   "alias": "Nora Darhk",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "Damien Darhk's daughter. Once possessed by Mallus, she became a Fairy Godmother and a Legend.",
+   "health": 110,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "hover",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Dark Magic",
+    "style": "magic",
+    "color": "#b05aff",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "telekinesis",
+    "name": "Telekinetic Grip",
+    "color": "#b05aff"
+   },
+   "special": {
+    "kind": "shadows",
+    "name": "Shadow Snare"
+   },
+   "look": {
+    "suit": "#1a1420",
+    "accent": "#b05aff",
+    "skin": "#e6c0a2",
+    "hair": "#4a3020",
+    "extras": [
+     "coat"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#221a2a",
+    "boots": "#141018",
+    "eye_glow": "#b05aff",
+    "glow": "#b05aff",
+    "glove_length": 0.0,
+    "belt": "#1a1418"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Vanish"
+   }
+  },
+  {
+   "id": "lena_luthor",
+   "name": "Lena Luthor",
+   "alias": "Lena Luthor",
+   "side": "hero",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "L-Corp's CEO, a genius, a witch-in-training, and in the end Kara's best friend.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Lexosuit Blast",
+    "style": "energy",
+    "color": "#6bff8a",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "psychic",
+    "name": "Obsidian Signal",
+    "color": "#6bff8a"
+   },
+   "special": {
+    "kind": "force_field",
+    "name": "Harun-El Shield"
+   },
+   "look": {
+    "suit": "#1a1a1e",
+    "accent": "#6bff8a",
+    "skin": "#e6c0a2",
+    "hair": "#16110e",
+    "extras": [
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "coat_color": "#202024",
+    "pants": "#18181a",
+    "boots": "#101012",
+    "glow": "#6bff8a",
+    "glove_length": 0.0,
+    "belt": "#18181a"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "L-Corp Teleporter"
+   }
+  },
+  {
+   "id": "lois_lane",
+   "name": "Lois Lane",
+   "alias": "Lois Lane",
+   "side": "hero",
+   "show": "Superman & Lois",
+   "home": "metropolis",
+   "bio": "The Daily Planet's best reporter and Superman's wife. Fearless, relentless, always gets the story.",
+   "health": 100,
+   "speed": 1.05,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Street Fighting",
+    "style": "punch",
+    "damage": 12
+   },
+   "secondary": {
+    "kind": "gun",
+    "name": "Taser",
+    "damage": 6,
+    "cooldown": 0.4,
+    "element": "shock"
+   },
+   "special": {
+    "kind": "flashbang",
+    "name": "Camera Flash"
+   },
+   "look": {
+    "suit": "#5a3a2a",
+    "accent": "#c8b8a0",
+    "skin": "#d8a882",
+    "hair": "#4a3020",
+    "extras": [
+     "coat"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#7a5a3a",
+    "pants": "#22283a",
+    "boots": "#2a1c14"
+   },
+   "utility": {
+    "kind": "dodge_flip",
+    "name": "Get Out of the Way"
+   }
+  },
+  {
+   "id": "natalie_irons",
+   "name": "Natalie Irons",
+   "alias": "Steel",
+   "side": "hero",
+   "show": "Superman & Lois",
+   "home": "metropolis",
+   "bio": "John Henry Irons' daughter. She builds her own armour and flies it into battle.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Repulsor",
+    "style": "energy",
+    "color": "#6ab8ff",
+    "origin": "hands",
+    "speed": 72
+   },
+   "secondary": {
+    "kind": "missiles",
+    "name": "Shoulder Rockets"
+   },
+   "special": {
+    "kind": "missile_barrage",
+    "name": "Full Salvo"
+   },
+   "look": {
+    "suit": "#4a5058",
+    "accent": "#3a6ab8",
+    "skin": "#875536",
+    "hair": "#16110e",
+    "extras": [
+     "armor",
+     "helmet"
+    ],
+    "build": "armored",
+    "trim": "#3a6ab8",
+    "emblem": {
+     "kind": "s_shield",
+     "c1": "#3a6ab8",
+     "c2": "#4a5058",
+     "size": 0.13
+    },
+    "gear": {
+     "right": "gauntlet",
+     "left": "gauntlet"
+    },
+    "glow": "#6ab8ff"
+   }
+  },
+  {
+   "id": "gideon",
+   "name": "Gideon",
+   "alias": "Gideon",
+   "side": "hero",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "The Waverider's AI, given a human body. She knows every timeline by heart.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Hard-Light Pulse",
+    "style": "energy",
+    "color": "#ffcf6a",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "psychic",
+    "name": "Timeline Scan",
+    "color": "#ffcf6a"
+   },
+   "special": {
+    "kind": "time_slow",
+    "name": "Temporal Freeze"
+   },
+   "look": {
+    "suit": "#e8e0d0",
+    "accent": "#c9a24e",
+    "skin": "#d8a882",
+    "hair": "#5a3a22",
+    "extras": [],
+    "build": "female",
+    "hair_style": "bob",
+    "trim": "#c9a24e",
+    "boots": "#d8d0c0",
+    "emblem": {
+     "kind": "hourglass",
+     "c1": "#c9a24e",
+     "c2": "#e8e0d0",
+     "size": 0.1
+    },
+    "glow": "#ffcf6a",
+    "gloves": "#e8e0d0",
+    "glove_length": 0.0
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Waverider Beam"
+   }
+  },
+  {
    "id": "malcolm_merlyn",
    "name": "Malcolm Merlyn",
    "alias": "The Dark Archer",
@@ -13200,6 +13819,608 @@
     "style": "mask_on",
     "color": "#3a8aff",
     "text": "seals the mask. Painkiller is online."
+   }
+  },
+  {
+   "id": "bloodwork",
+   "name": "Ramsey Rosso",
+   "alias": "Bloodwork",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A doctor whose cure for death turned his blood into a living, spreading weapon.",
+   "health": 160,
+   "speed": 1.0,
+   "power": 1.1,
+   "movement": "superjump",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Blood Claws",
+    "style": "claw",
+    "damage": 16
+   },
+   "secondary": {
+    "kind": "bolt",
+    "name": "Blood Spike",
+    "style": "magic",
+    "color": "#a0101a",
+    "origin": "hands"
+   },
+   "special": {
+    "kind": "drain",
+    "name": "Bloodlust"
+   },
+   "look": {
+    "suit": "#1a0c10",
+    "accent": "#a0101a",
+    "skin": "#e6c0a2",
+    "hair": "#16110e",
+    "extras": [
+     "coat",
+     "glow_eyes_red"
+    ],
+    "hair_style": "slick",
+    "coat_color": "#240c12",
+    "boots": "#100608",
+    "eye_glow": "#ff2a2a",
+    "glow": "#a0101a",
+    "gloves": "#1a0c10",
+    "belt": "#1a0c10"
+   }
+  },
+  {
+   "id": "deathstorm",
+   "name": "Ronnie Raymond",
+   "alias": "Deathstorm",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "Firestorm's dark echo from beyond death: a burning man made of black flame.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.15,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Black Fireball",
+    "style": "fireball",
+    "color": "#4a6aff",
+    "element": "fire",
+    "origin": "hands",
+    "speed": 62
+   },
+   "secondary": {
+    "kind": "beam",
+    "name": "Death Beam",
+    "style": "hands",
+    "color": "#6a8aff",
+    "element": "fire"
+   },
+   "special": {
+    "kind": "nova",
+    "name": "Dark Nova",
+    "element": "fire"
+   },
+   "look": {
+    "suit": "#141420",
+    "accent": "#4a6aff",
+    "skin": "#e6c0a2",
+    "hair": "#16110e",
+    "extras": [
+     "flame_head",
+     "glow_eyes"
+    ],
+    "trim": "#4a6aff",
+    "gloves": "#141420",
+    "boots": "#141420",
+    "emblem": {
+     "kind": "atom",
+     "c1": "#4a6aff",
+     "c2": "#141420",
+     "size": 0.15
+    },
+    "glow": "#4a6aff",
+    "eye_glow": "#8aa8ff"
+   }
+  },
+  {
+   "id": "abra_kadabra",
+   "name": "Abra Kadabra",
+   "alias": "Abra Kadabra",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A thief from the 64th century whose 'magic' is technology too advanced to tell apart.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Nanite Burst",
+    "style": "magic",
+    "color": "#ff6ad0",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "telekinesis",
+    "name": "Levitation Field",
+    "color": "#ff6ad0"
+   },
+   "special": {
+    "kind": "teleport",
+    "name": "Now You See Me"
+   },
+   "look": {
+    "suit": "#2a1a3a",
+    "accent": "#ff6ad0",
+    "skin": "#d8a882",
+    "hair": "#16110e",
+    "extras": [
+     "coat"
+    ],
+    "hair_style": "slick",
+    "facial": "goatee",
+    "coat_color": "#3a1a4a",
+    "boots": "#141018",
+    "glow": "#ff6ad0",
+    "glove_length": 0.0,
+    "belt": "#1a1020"
+   },
+   "utility": {
+    "kind": "teleport",
+    "name": "Vanishing Act"
+   }
+  },
+  {
+   "id": "chillblaine",
+   "name": "Mark Blaine",
+   "alias": "Chillblaine",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "central",
+   "bio": "A smug ice-wielding metahuman with a frozen heart and a cold gun of his own.",
+   "health": 100,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "ice",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Cold Blast",
+    "style": "ice",
+    "color": "#a8e8ff",
+    "element": "ice",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "beam",
+    "name": "Freeze Ray",
+    "style": "hands",
+    "color": "#bff0ff",
+    "element": "ice"
+   },
+   "special": {
+    "kind": "nova",
+    "name": "Absolute Zero",
+    "element": "ice"
+   },
+   "look": {
+    "suit": "#1a2a3a",
+    "accent": "#a8e8ff",
+    "skin": "#d8a882",
+    "hair": "#d9b468",
+    "extras": [
+     "leather",
+     "jacket"
+    ],
+    "hair_style": "slick",
+    "coat_color": "#22364a",
+    "boots": "#141c24",
+    "gear": {
+     "right": "cold_gun"
+    },
+    "glow": "#a8e8ff",
+    "gloves": "#1a2a3a",
+    "belt": "#141c24"
+   },
+   "utility": {
+    "kind": "ice_wall",
+    "name": "Ice Wall"
+   }
+  },
+  {
+   "id": "psi",
+   "name": "Gayle Marsh",
+   "alias": "Psi",
+   "side": "villain",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "A psychic who makes heroes see their worst fears.",
+   "health": 115,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "hover",
+   "strength": false,
+   "primary": {
+    "kind": "psychic",
+    "name": "Fear Wave",
+    "color": "#ff4ab8"
+   },
+   "secondary": {
+    "kind": "bolt",
+    "name": "Mind Spike",
+    "style": "magic",
+    "color": "#ff4ab8",
+    "origin": "head",
+    "element": "shock"
+   },
+   "special": {
+    "kind": "mind_control",
+    "name": "Your Worst Fear"
+   },
+   "look": {
+    "suit": "#1a1a1e",
+    "accent": "#ff4ab8",
+    "skin": "#d8a882",
+    "hair": "#16110e",
+    "extras": [
+     "leather"
+    ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "boots": "#101012",
+    "eye_glow": "#ff4ab8",
+    "glow": "#ff4ab8",
+    "gloves": "#101012",
+    "belt": "#101012"
+   }
+  },
+  {
+   "id": "red_daughter",
+   "name": "Red Daughter",
+   "alias": "Red Daughter",
+   "side": "villain",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "Supergirl's double, raised in Kaznia to be the perfect soldier.",
+   "health": 180,
+   "speed": 1.0,
+   "power": 1.25,
+   "movement": "flight",
+   "strength": true,
+   "primary": {
+    "kind": "melee",
+    "name": "Kryptonian Strikes",
+    "style": "heavy_punch",
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "beam",
+    "name": "Heat Vision",
+    "style": "eyes",
+    "color": "#ff2a1a",
+    "element": "fire"
+   },
+   "special": {
+    "kind": "breath",
+    "name": "Freeze Breath",
+    "element": "ice"
+   },
+   "look": {
+    "suit": "#4a0c10",
+    "accent": "#141414",
+    "skin": "#d8a882",
+    "hair": "#d9b468",
+    "extras": [
+     "mask_dark"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "boots": "#141414",
+    "belt": "#141414",
+    "gloves": "#141414",
+    "emblem": {
+     "kind": "star",
+     "c1": "#c8102e",
+     "c2": "#141414",
+     "size": 0.15
+    },
+    "boot_height": 0.62
+   },
+   "fly_speed": 1.5
+  },
+  {
+   "id": "nyxly",
+   "name": "Nyxlygsptlnz",
+   "alias": "Nyxly",
+   "side": "villain",
+   "show": "Supergirl",
+   "home": "national",
+   "bio": "A fifth-dimensional imp princess hunting for the totems that will make her all-powerful.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.15,
+   "movement": "flight",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Imp Magic",
+    "style": "magic",
+    "color": "#ff6ad8",
+    "origin": "hands"
+   },
+   "secondary": {
+    "kind": "telekinesis",
+    "name": "Fifth-Dimensional Grip",
+    "color": "#ff6ad8"
+   },
+   "special": {
+    "kind": "shapeshift",
+    "name": "Reality Twist"
+   },
+   "look": {
+    "suit": "#3a1a4a",
+    "accent": "#ff6ad8",
+    "skin": "#e6c0a2",
+    "hair": "#3a1020",
+    "extras": [
+     "coat"
+    ],
+    "build": "female",
+    "hair_style": "long",
+    "coat_color": "#4a1a5a",
+    "boots": "#2a1030",
+    "glow": "#ff6ad8",
+    "eye_glow": "#ff6ad8",
+    "glove_length": 0.0,
+    "belt": "#2a1030"
+   }
+  },
+  {
+   "id": "mouse",
+   "name": "Jonathan Cartwright",
+   "alias": "Mouse",
+   "side": "villain",
+   "show": "Batwoman",
+   "home": "gotham",
+   "bio": "Alice's 'brother', a master of disguise who wears other people's faces.",
+   "health": 100,
+   "speed": 1.05,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Scalpel",
+    "style": "blade",
+    "damage": 14
+   },
+   "secondary": {
+    "kind": "throw",
+    "name": "Throwing Knife",
+    "model": "knife"
+   },
+   "special": {
+    "kind": "shapeshift",
+    "name": "New Face"
+   },
+   "look": {
+    "suit": "#2a2622",
+    "accent": "#5a4a3a",
+    "skin": "#e6c0a2",
+    "hair": "#4a3020",
+    "extras": [
+     "coat"
+    ],
+    "hair_style": "short",
+    "coat_color": "#3a3028",
+    "boots": "#1a1612",
+    "gear": {
+     "right": "dagger"
+    }
+   }
+  },
+  {
+   "id": "bishop",
+   "name": "Bishop",
+   "alias": "Bishop",
+   "side": "villain",
+   "show": "Legends of Tomorrow",
+   "home": "any",
+   "bio": "A futurist who clones himself and builds alien-human hybrids to 'save' humanity.",
+   "health": 110,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Blaster",
+    "damage": 10,
+    "cooldown": 0.2
+   },
+   "secondary": {
+    "kind": "bolt",
+    "name": "Hybrid Pulse",
+    "style": "energy",
+    "color": "#6affc8",
+    "origin": "hands"
+   },
+   "special": {
+    "kind": "summon_goons",
+    "name": "Bishop Clones"
+   },
+   "look": {
+    "suit": "#e8e8ec",
+    "accent": "#6affc8",
+    "skin": "#d8a882",
+    "hair": "#d9b468",
+    "extras": [
+     "coat"
+    ],
+    "hair_style": "short",
+    "coat_color": "#f0f0f4",
+    "pants": "#d8d8dc",
+    "boots": "#c8c8cc",
+    "gear": {
+     "right": "pistol_big"
+    },
+    "glove_length": 0.0,
+    "belt": "#b8b8bc"
+   }
+  },
+  {
+   "id": "vigilante",
+   "name": "Vincent Sobel",
+   "alias": "Vigilante",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A masked gunman who kills criminals in the streets of Star City.",
+   "health": 150,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "gun",
+    "name": "Twin Machine Pistols",
+    "dual": true,
+    "damage": 8,
+    "cooldown": 0.11
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Brutal Strikes",
+    "style": "heavy_punch",
+    "damage": 16
+   },
+   "special": {
+    "kind": "frag_grenade",
+    "name": "Frag Grenade"
+   },
+   "look": {
+    "suit": "#1a1a1c",
+    "accent": "#2a2a2e",
+    "skin": "#d8a882",
+    "hair": "#16110e",
+    "extras": [
+     "helmet",
+     "armor",
+     "coat"
+    ],
+    "build": "armored",
+    "coat_color": "#1e1e22",
+    "boots": "#101012",
+    "gear": {
+     "right": "pistol",
+     "left": "pistol"
+    }
+   }
+  },
+  {
+   "id": "plastique",
+   "name": "Bette Sans Souci",
+   "alias": "Plastique",
+   "side": "villain",
+   "show": "The Flash",
+   "home": "keystone",
+   "bio": "A metahuman ex-soldier who turns anything she touches into a bomb.",
+   "health": 100,
+   "speed": 1.05,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "bolt",
+    "name": "Explosive Touch",
+    "style": "fireball",
+    "color": "#ffaa3a",
+    "element": "fire",
+    "origin": "hands",
+    "speed": 50,
+    "damage": 20
+   },
+   "secondary": {
+    "kind": "melee",
+    "name": "Combat Training",
+    "style": "kick",
+    "damage": 12
+   },
+   "special": {
+    "kind": "frag_grenade",
+    "name": "Chain Reaction"
+   },
+   "look": {
+    "suit": "#4a4a3a",
+    "accent": "#ffaa3a",
+    "skin": "#d8a882",
+    "hair": "#d9b468",
+    "extras": [
+     "jacket"
+    ],
+    "build": "female",
+    "hair_style": "ponytail",
+    "coat_color": "#5a5a44",
+    "pants": "#3a3a2c",
+    "boots": "#2a2418",
+    "glow": "#ffaa3a",
+    "glove_length": 0.0,
+    "belt": "#2a2a20"
+   }
+  },
+  {
+   "id": "anarky",
+   "name": "Lonnie Machin",
+   "alias": "Anarky",
+   "side": "villain",
+   "show": "Arrow",
+   "home": "star",
+   "bio": "A burned, unhinged anarchist who just wants to watch Star City burn.",
+   "health": 130,
+   "speed": 1.0,
+   "power": 1.0,
+   "movement": "run",
+   "strength": false,
+   "primary": {
+    "kind": "melee",
+    "name": "Fire Staff",
+    "style": "staff",
+    "damage": 15,
+    "element": "fire"
+   },
+   "secondary": {
+    "kind": "flame",
+    "name": "Firebrand",
+    "color": "#ff7a1a",
+    "element": "fire"
+   },
+   "special": {
+    "kind": "nova",
+    "name": "Anarchy",
+    "element": "fire"
+   },
+   "look": {
+    "suit": "#2a1414",
+    "accent": "#c8301a",
+    "skin": "#e6c0a2",
+    "hair": "#16110e",
+    "extras": [
+     "mask_skull",
+     "coat"
+    ],
+    "coat_color": "#2e1a16",
+    "boots": "#140c0a",
+    "gear": {
+     "right": "staff"
+    },
+    "staff_color": "#3a2a1e",
+    "gloves": "#1a1010",
+    "belt": "#1a1010"
    }
   }
  ]

@@ -18,6 +18,8 @@ var _flee_t := 0.0
 var _flee_from := Vector3.ZERO
 var _strafe := 1.0
 var _strafe_t := 0.0
+var _turn_t := 0.0
+var _waiting := false
 var _beam_t := 0.0
 var _use_secondary := false
 var _stuck_t := 0.0
@@ -109,6 +111,22 @@ func _fight(a: Actor, delta: float) -> void:
 		pref = pr
 	if a.def.get("id", "") in ["thug", "police"]:
 		pref = pr
+	# Melee fighters take turns on the player: at most three press in at once,
+	# the rest circle just out of reach waiting for an opening.
+	var waiting := false
+	if target.is_player and primary["kind"] == "melee" and pref < 5.0:
+		_turn_t -= delta
+		if _turn_t <= 0.0:
+			_turn_t = randf_range(0.4, 0.8)
+			var close := 0
+			for o in a.get_tree().get_nodes_in_group("actors"):
+				if o != a and not o.dead and o.brain is AIBrain and o.brain.target == target \
+						and o.global_position.distance_to(target.global_position) < 4.0:
+					close += 1
+			_waiting = close >= 3 and dist > 3.0
+		waiting = _waiting
+		if waiting:
+			pref = 6.5
 
 	_strafe_t -= delta
 	if _strafe_t <= 0.0:
@@ -122,6 +140,8 @@ func _fight(a: Actor, delta: float) -> void:
 		move = -dir
 	elif pref > 5.0:
 		move = dir.cross(Vector3.UP) * _strafe * 0.6
+	if waiting and absf(dist - pref) < 2.0:
+		move = dir.cross(Vector3.UP) * _strafe * 0.5
 	a.in_move = move
 
 	# Leash: event guards and patrols don't chase forever.
@@ -164,7 +184,7 @@ func _fight(a: Actor, delta: float) -> void:
 		if _beam_t > 0.0:
 			_beam_t -= delta
 			_press(a, atk_slot)
-	elif in_range and randf() < delta * (6.0 if atk["kind"] == "melee" else 2.2):
+	elif in_range and not waiting and randf() < delta * (6.0 if atk["kind"] == "melee" else 2.2):
 		_press(a, atk_slot)
 	if dist < 14.0 and a.energy > 70.0 and randf() < delta * 0.12:
 		a.in_special = true

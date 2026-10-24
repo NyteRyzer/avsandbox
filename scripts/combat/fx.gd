@@ -134,6 +134,28 @@ static func sparks(world, pos: Vector3, color: Color, count := 12, speed := 6.0,
 	_free_after(p, life + 0.3)
 
 
+## A real light for a power effect, so it lights up the street and the
+## people around it. Capped, so a big brawl doesn't drown in lights.
+const MAX_FX_LIGHTS := 14
+
+
+static func light(parent: Node3D, color: Color, light_range: float, energy: float, life := -1.0) -> OmniLight3D:
+	if parent == null or not parent.is_inside_tree() or parent.get_tree().get_nodes_in_group("fx_lights").size() >= MAX_FX_LIGHTS:
+		return null
+	var l := OmniLight3D.new()
+	l.light_color = color
+	l.omni_range = light_range
+	l.light_energy = energy
+	l.shadow_enabled = false
+	l.add_to_group("fx_lights")
+	parent.add_child(l)
+	if life > 0.0:
+		var t := l.create_tween()
+		t.tween_property(l, "light_energy", 0.0, life).set_ease(Tween.EASE_IN)
+		t.tween_callback(l.queue_free)
+	return l
+
+
 static func flash(world, pos: Vector3, color: Color, radius: float, life := 0.35, alpha := 0.7) -> void:
 	var mi := MeshInstance3D.new()
 	mi.mesh = _sphere_mesh()
@@ -142,6 +164,8 @@ static func flash(world, pos: Vector3, color: Color, radius: float, life := 0.35
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_root(world).add_child(mi)
 	mi.global_position = pos
+	if radius >= 1.0:
+		light(mi, color, radius * 4.0, 2.5, life)
 	mi.scale = Vector3.ONE * radius * 0.3
 	var t := mi.create_tween().set_parallel(true)
 	t.tween_property(mi, "scale", Vector3.ONE * radius * 2.0, life).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
@@ -207,15 +231,15 @@ static func smoke(world, pos: Vector3, radius: float, life := 2.5) -> void:
 		t.chain().tween_callback(mi.queue_free)
 
 
-static func damage_number(world, pos: Vector3, amount: float, on_player: bool) -> void:
+static func damage_number(world, pos: Vector3, amount: float, on_player: bool, crit := false) -> void:
 	var l := Label3D.new()
-	l.text = str(int(round(amount)))
+	l.text = str(int(round(amount))) + ("!" if crit else "")
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	l.font_size = 64 if amount >= 20 else 48
+	l.font_size = 84 if crit else (64 if amount >= 20 else 48)
 	l.pixel_size = 0.006
 	l.outline_size = 12
 	l.no_depth_test = true
-	l.modulate = Color("#ff5050") if on_player else (Color("#ffd23a") if amount >= 20 else Color.WHITE)
+	l.modulate = Color("#ff5050") if on_player else (Color("#ff8a2a") if crit else (Color("#ffd23a") if amount >= 20 else Color.WHITE))
 	_root(world).add_child(l)
 	l.global_position = pos + Vector3(randf_range(-0.3, 0.3), 0, randf_range(-0.3, 0.3))
 	var t := l.create_tween().set_parallel(true)

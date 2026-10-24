@@ -256,6 +256,9 @@ func _events_tab() -> Control:
 	g.add_child(UITheme.button("Street race (checkpoints)", func() -> void:
 		close()
 		world.race.start(false), 380))
+	g.add_child(UITheme.button("Rooftop free-run (parkour)", func() -> void:
+		close()
+		world.race.start_rooftops(), 380))
 	g.add_child(UITheme.button("Sky race (for flyers)", func() -> void:
 		close()
 		world.race.start(true), 380))

@@ -2055,6 +2055,21 @@ func _action_pose(action: String, t: float, step: int) -> Dictionary:
 			p["sh_l_z"] = 0.5
 			p["el_l"] = 1.3
 			p["spine_y"] = 0.3
+		"stagger":
+			var sway := sin(t * TAU * 2.0) * 0.15
+			p["pitch"] = 0.25
+			p["spine_x"] = 0.35
+			p["head_x"] = 0.45
+			p["spine_y"] = sway
+			p["sh_l_x"] = -0.2
+			p["sh_r_x"] = -0.2
+			p["sh_l_z"] = -0.25
+			p["sh_r_z"] = 0.25
+			p["kn_l"] = -0.5
+			p["kn_r"] = -0.5
+			p["th_l"] = 0.3
+			p["th_r"] = 0.3
+			p["drop"] = -0.12
 		"slide":
 			p["pitch"] = 0.55
 			p["drop"] = -0.5

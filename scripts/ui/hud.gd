@@ -476,7 +476,7 @@ func _process(delta: float) -> void:
 			move_text = "[Shift]  Sprint"
 	move_text += "   ·   [V] Dodge  ·  [B] Block  ·  [Z] Lock-on"
 	if p.combo_count >= 3:
-		move_text += "   ·   %d HIT COMBO" % p.combo_count
+		move_text += "   ·   %d HIT COMBO  x%.1f" % [p.combo_count, 1.0 + minf(p.combo_count, 30) / 60.0]
 	ability_labels[4].text = move_text
 	var u := Ultimate.for_character(d)
 	ult_bar.value = p.ult

@@ -109,6 +109,7 @@ var _mantle_t := -1.0
 var _mantle_from := Vector3.ZERO
 var _mantle_to := Vector3.ZERO
 var slide_t := 0.0
+var launch_t := 0.0             # flung by a launch pad: no air control until you land
 var _sprint_time := 0.0
 var _down_was := false
 
@@ -127,6 +128,11 @@ var stream_t := 0.0
 var stretch_t := 0.0
 var eye_glow_t := 0.0
 var dodge_t := 0.0
+# Stagger: enough damage in a short time leaves an enemy reeling and open to
+# a takedown ([G] up close).
+var stagger := 0.0
+var staggered_t := 0.0
+var _stagger_label: Label3D = null
 var dampened_t := 0.0
 var shield_t := 0.0
 var field_t := 0.0
@@ -395,6 +401,12 @@ func _tick_status(delta: float) -> void:
 	field_t = maxf(0.0, field_t - delta)
 	eye_glow_t = maxf(0.0, eye_glow_t - delta)
 	dodge_t = maxf(0.0, dodge_t - delta)
+	stagger = maxf(0.0, stagger - max_hp * 0.06 * delta)
+	if staggered_t > 0.0:
+		staggered_t -= delta
+		if staggered_t <= 0.0 and _stagger_label:
+			_stagger_label.queue_free()
+			_stagger_label = null
 	combo_window = maxf(0.0, combo_window - delta)
 	if combo_window <= 0.0:
 		combo_step = 0
@@ -695,6 +707,17 @@ func _move_body(delta: float) -> void:
 		if swimming:
 			desired *= 0.45
 			accel = 4.0
+		if launch_t > 0.0:
+			# Still "on the floor" the frame you leave the pad, so only a
+			# landing on the way down ends the flight.
+			if is_on_floor() and velocity.y <= 0.0:
+				# Stick the landing.
+				launch_t = 0.0
+				velocity.x *= 0.15
+				velocity.z *= 0.15
+			else:
+				launch_t -= delta
+			desired = Vector3(velocity.x, 0, velocity.z)
 		var hv := Vector3(velocity.x, 0, velocity.z).lerp(desired, clampf(accel * delta, 0.0, 1.0))
 		velocity.x = hv.x
 		velocity.z = hv.z
@@ -1299,6 +1322,7 @@ func _update_grapple_line() -> void:
 func take_damage(amount: float, source: Actor, element := "", knock := Vector3.ZERO) -> void:
 	if dead or changing:
 		return
+	var crit := false
 	if source and is_instance_valid(source) and source != self:
 		last_attacker = source
 		if not source.ult_active:
@@ -1316,6 +1340,30 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 			amount *= 0.5 * Game.damage_to_player()
 		if source.rage_t > 0.0:
 			amount *= 1.8
+		# Combos hit harder the longer they run; hits from behind, every
+		# seventh hit of a combo and hits on a reeling enemy are critical.
+		if source.is_player and not is_player:
+			amount *= 1.0 + minf(source.combo_count, 30) / 60.0
+			var behind := source.global_position - global_position
+			behind.y = 0.0
+			if (behind.length() > 0.3 and behind.normalized().dot(forward()) < -0.5 and not blocking) or source.combo_count % 7 == 6:
+				crit = true
+				amount *= 1.6
+			if staggered_t > 0.0:
+				amount *= 1.3
+		# Perfect dodge: an attack that lands just as you dodge misses
+		# completely and slows the world down.
+		if is_player and dodge_t > 0.3 and source.is_hostile_to(self):
+			dodge_t = 0.25
+			invuln_t = maxf(invuln_t, 0.6)
+			if world:
+				FX.flash(world, chest(), Color("#bfe8ff"), 2.0, 0.25, 0.5)
+				world.notify("PERFECT DODGE", Color("#bfe8ff"))
+				if DisplayServer.get_name() != "headless":
+					Game.start_slowmo(1.0)
+			add_ult(6.0)
+			Game.record("perfect_dodges")
+			return
 	if boss and not has_meta("enraged") and hp - amount < max_hp * 0.5 and hp > max_hp * 0.5:
 		_enrage()
 	if blocking and is_instance_valid(source):
@@ -1371,8 +1419,35 @@ func take_damage(amount: float, source: Actor, element := "", knock := Vector3.Z
 	if world:
 		Game.report_combat(global_position)
 		if amount >= 1.0:
-			FX.damage_number(world, head_pos() + Vector3.UP * 0.4, amount, is_player)
+			FX.damage_number(world, head_pos() + Vector3.UP * 0.4, amount, is_player, crit)
+	if not is_player and amount > 0.0 and staggered_t <= 0.0 and hp - amount > 0.0 and team != "civilian":
+		stagger += amount * (1.5 if knock.y > 8.0 else 1.0)
+		if stagger >= max_hp * (0.3 if boss else 0.4):
+			_stagger_now()
 	_raw_damage(amount, source)
+
+
+func _stagger_now() -> void:
+	stagger = 0.0
+	staggered_t = 1.6 if boss else 2.6
+	stun_t = maxf(stun_t, staggered_t)
+	model.play("stagger", staggered_t)
+	if world:
+		FX.ring(world, global_position + Vector3.UP * 0.2, Color("#ffd23a"), 2.4 * size, 0.35)
+		Sfx.play("slam", global_position, -8.0, 0.4)
+		if world.player and is_instance_valid(world.player) and is_hostile_to(world.player):
+			if _stagger_label == null:
+				_stagger_label = Label3D.new()
+				_stagger_label.text = "STAGGERED  ·  [G] TAKEDOWN"
+				_stagger_label.font_size = 40
+				_stagger_label.pixel_size = 0.006
+				_stagger_label.outline_size = 10
+				_stagger_label.modulate = Color("#ffd23a")
+				_stagger_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+				_stagger_label.no_depth_test = true
+				_stagger_label.position = Vector3(0, 2.6 * size, 0)
+				add_child(_stagger_label)
+
 
 
 func _raw_damage(amount: float, source: Actor) -> void:

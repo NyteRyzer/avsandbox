@@ -14,6 +14,11 @@ var world
 var piloted := false
 var velocity := Vector3.ZERO
 var yaw := 0.0
+# Autopilot: Gideon flies the ship to a city while you're aboard.
+var course := Vector3.INF
+var course_yaw := 0.0
+var course_name := ""
+signal course_done(name: String)
 var body: StaticBody3D
 var _visual: Node3D
 var _glows: Array[MeshInstance3D] = []
@@ -196,8 +201,39 @@ func _part(mesh: Mesh, pos: Vector3, rot: Vector3, scl: Vector3, m: Material) ->
 	return mi
 
 
+## Gideon takes the ship to `target`: climb above the skyline, cruise, then
+## settle into a hover there, facing `face_yaw`.
+func set_course(target: Vector3, face_yaw: float, name: String) -> void:
+	course = target
+	course_yaw = face_yaw
+	course_name = name
+
+
+func _autopilot(delta: float) -> float:
+	var to := course - global_position
+	var flat := Vector3(to.x, 0, to.z)
+	var dist := flat.length()
+	var want_y := course.y if dist < 160.0 else maxf(course.y, 280.0)
+	var speed := clampf(dist * 0.9, 6.0, 190.0)
+	var v := flat.normalized() * minf(speed, dist / maxf(delta, 0.001)) if dist > 0.5 else Vector3.ZERO
+	# Don't race ahead of the climb: the skyline is tall in places.
+	if global_position.y < want_y - 40.0 and dist > 160.0:
+		v *= 0.25
+	v.y = clampf((want_y - global_position.y) * 1.2, -45.0, 60.0)
+	global_position += v * delta
+	var face := atan2(-flat.x, -flat.z) if dist > 60.0 else course_yaw
+	yaw = lerp_angle(yaw, face, clampf(delta * 1.2, 0.0, 1.0))
+	rotation = Vector3(0, yaw, 0)
+	if dist < 1.0 and absf(to.y) < 1.0:
+		global_position = course
+		course = Vector3.INF
+		course_done.emit(course_name)
+	return clampf(speed / 190.0, 0.2, 1.0)
+
+
 ## Sets the ship down at a parking spot (the landing pad).
 func park(at: Vector3) -> void:
+	course = Vector3.INF
 	global_position = at
 	yaw = 0.0
 	rotation = Vector3.ZERO
@@ -296,8 +332,11 @@ func _carry_player() -> void:
 func _physics_process(delta: float) -> void:
 	var thrust := 0.15
 	if piloted:
+		course = Vector3.INF
 		thrust = _fly(delta)
 		_carry_player()
+	elif course != Vector3.INF:
+		thrust = _autopilot(delta)
 	else:
 		_bob += delta
 		_visual.position.y = sin(_bob * 1.3) * 0.25

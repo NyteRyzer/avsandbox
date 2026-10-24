@@ -7,17 +7,17 @@ extends RefCounted
 
 const TEAMS := {
 	"Team Flash": {"color": "#ff3a3a", "side": "hero", "members": ["flash", "kid_flash", "vibe", "killer_frost", "jay_garrick",
-		"jesse_quick", "xs", "elongated_man", "flash_90"]},
+		"jesse_quick", "xs", "elongated_man", "flash_90", "iris_west", "chester_runk", "allegra", "pariah"]},
 	"Team Arrow": {"color": "#3aaa4a", "side": "hero", "members": ["green_arrow", "spartan", "black_canary", "speedy", "arsenal",
-		"wild_dog", "mr_terrific", "huntress", "blackstar", "ragman", "nyssa"]},
+		"wild_dog", "mr_terrific", "huntress", "blackstar", "ragman", "nyssa", "mia_queen", "connor_hawke", "overwatch"]},
 	"Legends": {"color": "#ff9a3a", "side": "hero", "members": ["white_canary", "atom", "firestorm", "heat_wave_hero", "vixen",
 		"hawkgirl", "hawkman", "citizen_steel", "constantine", "zari", "rip_hunter", "amaya", "ava_sharpe", "mona_wu", "charlie",
-		"behrad", "astra_logue", "spooner"]},
+		"behrad", "astra_logue", "spooner", "nora_darhk", "gideon"]},
 	"Justice Society": {"color": "#ffd23a", "side": "hero", "members": ["stargirl", "wildcat", "hourman", "dr_midnite", "starman",
 		"dr_fate", "green_lantern", "jade", "obsidian", "stripe", "johnny_thunder", "jay_garrick", "hawkman", "amaya"]},
 	"Super Friends": {"color": "#3a6aff", "side": "hero", "members": ["supergirl", "martian_manhunter", "guardian", "mon_el",
-		"dreamer", "brainiac_5", "sentinel"]},
-	"Super Family": {"color": "#c8102e", "side": "hero", "members": ["superman", "jordan_kent", "steel"]},
+		"dreamer", "brainiac_5", "sentinel", "lena_luthor"]},
+	"Super Family": {"color": "#c8102e", "side": "hero", "members": ["superman", "jordan_kent", "steel", "lois_lane", "natalie_irons"]},
 	"Team Batwoman": {"color": "#b0101a", "side": "hero", "members": ["batwoman", "ryan_wilder", "batwing"]},
 	"Pierce Family": {"color": "#9fd0ff", "side": "hero", "members": ["black_lightning", "thunder", "lightning", "grace_choi"]},
 	"Paragons": {"color": "#6ad0ff", "side": "hero", "members": ["the_monitor", "harbinger", "spectre", "the_ray", "flash", "supergirl",
@@ -32,12 +32,15 @@ const TEAMS := {
 		"black_flash"]},
 	"League of Assassins": {"color": "#7a5a2a", "side": "villain", "members": ["ras_al_ghul", "talia_al_ghul", "bronze_tiger", "deathstroke"]},
 	"Star City Underworld": {"color": "#d8761a", "side": "villain", "members": ["deathstroke", "prometheus", "diaz", "count_vertigo",
-		"deadshot", "black_siren", "dark_arrow"]},
+		"deadshot", "black_siren", "dark_arrow", "vigilante", "anarky"]},
 	"Kryptonian Threats": {"color": "#b81820", "side": "villain", "members": ["reign", "overgirl", "bizarro", "doomsday", "tal_rho",
-		"astra_inze", "cyborg_superman", "metallo", "lex_luthor", "livewire"]},
-	"Gotham Underworld": {"color": "#8aff4a", "side": "villain", "members": ["alice", "poison_ivy", "hush", "black_mask"]},
+		"astra_inze", "cyborg_superman", "metallo", "lex_luthor", "livewire", "red_daughter"]},
+	"Gotham Underworld": {"color": "#8aff4a", "side": "villain", "members": ["alice", "poison_ivy", "hush", "black_mask", "mouse"]},
 	"Freeland Syndicate": {"color": "#e8e8e8", "side": "villain", "members": ["tobias_whale", "painkiller"]},
-	"Central City Metas": {"color": "#c47aff", "side": "villain", "members": ["grodd", "king_shark", "thinker", "cicada", "atom_smasher"]},
+	"Central City Metas": {"color": "#c47aff", "side": "villain", "members": ["grodd", "king_shark", "thinker", "cicada", "atom_smasher",
+		"bloodwork", "deathstorm", "abra_kadabra", "chillblaine", "plastique"]},
+	"National City Menaces": {"color": "#ff4ab8", "side": "villain", "members": ["psi", "nyxly", "red_daughter"]},
+	"Bishop's Hybrids": {"color": "#6affc8", "side": "villain", "members": ["bishop"]},
 }
 
 ## Each hero's archenemy (and back again).
@@ -60,6 +63,9 @@ const NEMESIS := {
 	"dr_fate": "eclipso", "green_lantern": "solomon_grundy", "jade": "eclipso", "obsidian": "the_shade",
 	"stripe": "dragon_king", "johnny_thunder": "brainwave",
 	"the_ray": "overgirl", "the_monitor": "anti_monitor", "harbinger": "anti_monitor", "spectre": "anti_monitor",
+	"mia_queen": "vigilante", "connor_hawke": "anarky", "overwatch": "prometheus", "iris_west": "bloodwork", "chester_runk": "chillblaine",
+	"allegra": "deathstorm", "pariah": "anti_monitor", "nora_darhk": "bishop", "gideon": "bishop", "lena_luthor": "psi",
+	"lois_lane": "red_daughter", "natalie_irons": "nyxly",
 }
 
 

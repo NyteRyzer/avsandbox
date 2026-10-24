@@ -375,6 +375,10 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 		_:
 			anim = ["punch", "punch", "uppercut"][step]
 	a.model.play(anim, anim_len, step)
+	# Air combos: swinging in mid-air keeps you up there.
+	var in_air := not a.is_on_floor() and not a.flying and a.grapple_point == null
+	if in_air and a.is_player:
+		a.velocity.y = maxf(a.velocity.y, 1.5)
 	var fwd := a.forward()
 	var targets := a.get_tree().get_nodes_in_group("actors")
 	# Player assist: lunge at the nearest enemy in front.
@@ -410,6 +414,14 @@ static func _melee(a: Actor, atk: Dictionary, dmg: float, element: String) -> vo
 		var knock := dir * (4.0 + dmg * 0.4) + Vector3.UP * (2.0 + dmg * 0.15)
 		if finisher:
 			knock = dir * (10.0 + dmg * 0.5) + Vector3.UP * (9.0 + dmg * 0.12)
+		var juggled: bool = in_air and not o.is_on_floor() and o.size < 1.6
+		if juggled:
+			# Keep a launched enemy up with you, then spike them down.
+			knock = dir * 2.0 + Vector3.UP * 5.5 if not finisher else dir * 4.0 + Vector3.DOWN * 28.0
+			o.velocity = Vector3.ZERO
+			if finisher and a.is_player:
+				Game.record("air_spikes")
+				FX.burst_lines(a.world, o.chest(), Color("#bfe8ff"), 2.0, 8)
 		if style == "phase":
 			# Reverse-Flash: a vibrating hand passes straight through shields.
 			o.invuln_t = 0.0

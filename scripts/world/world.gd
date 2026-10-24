@@ -269,7 +269,8 @@ func spawn_player(id: String, at = null) -> void:
 
 
 func spawn_point_for(c: Dictionary) -> Vector3:
-	var idx := {"star": 0, "central": 1, "national": 2, "freeland": 3, "gotham": 4, "smallville": 5}
+	var idx := {"star": 0, "central": 1, "national": 2, "freeland": 3, "gotham": 4, "smallville": 5, "keystone": 6, "metropolis": 7,
+		"blue_valley": 8}
 	var home: String = c.get("home", "any")
 	var center := Vector3(20, 0, 20)
 	if city.kind == "metro":
@@ -463,7 +464,8 @@ func _nearest_door() -> Dictionary:
 		for o in get_tree().get_nodes_in_group("actors"):
 			if o == player or o.dead or o.team == "civilian" or not (o.is_hostile_to(player) or o.grudges.has(player.get_instance_id())):
 				continue
-			var low: bool = o.hp < o.max_hp * (0.1 if o.boss else 0.22) or (o.stun_t > 0.0 and o.hp < o.max_hp * 0.35 and not o.boss)
+			var low: bool = o.hp < o.max_hp * (0.1 if o.boss else 0.22) or (o.stun_t > 0.0 and o.hp < o.max_hp * 0.35 and not o.boss) \
+				or o.staggered_t > 0.0
 			if low and o.global_position.distance_to(p) < 3.5:
 				best = {"name": "Takedown " + o.display_name, "pos": o.global_position, "interior": "takedown", "actor": o}
 				break
@@ -554,6 +556,8 @@ func use_door(d: Dictionary) -> void:
 			travel_menu.open("breach")
 		"time_console":
 			travel_menu.open("time")
+		"nav_console":
+			set_ship_course()
 		"helm":
 			ship.take_helm()
 		"car":
@@ -768,6 +772,32 @@ func final_blow(a: Actor) -> void:
 	FX.flash(self, a.chest(), Color.WHITE, 1.4, 0.3, 0.5)
 
 
+## The bridge's navigation console: each use sets a course for the next
+## city round the map. Gideon flies there and hovers over its shore.
+func set_ship_course(index := -1) -> void:
+	if city.kind != "metro":
+		notify("Gideon: \"There's nowhere to fly to here, Captain. Try a time jump.\"", Color("#ffb04a"))
+		return
+	if index < 0:
+		var here := city.district_index(ship.global_position)
+		if ship.course != Vector3.INF:
+			here = City.DISTRICTS.find(ship.course_name)
+		index = (here + 1) % City.DISTRICTS.size()
+	var c: Vector2 = City.ISLAND_CENTERS[index]
+	# Hover above the north shore strip, lengthwise along it, so the ramp
+	# comes down on open ground.
+	var spot := Vector3(c.x, 34.0, c.y - City.HALF - City.ROAD * 0.5 - 24.0)
+	ship.set_course(spot, PI * 0.5, City.DISTRICTS[index])
+	if not ship.course_done.is_connected(_on_course_done):
+		ship.course_done.connect(_on_course_done)
+	notify("Gideon: \"Course laid in for %s.\"  (use the console again for the next city)" % City.DISTRICTS[index], Color("#ffb04a"))
+	Game.record("ship_courses")
+
+
+func _on_course_done(name: String) -> void:
+	notify("Gideon: \"We've arrived over %s.\" Step off the ramp in the cargo bay." % name, Color("#ffb04a"))
+
+
 ## A cinematic finisher on a beaten enemy.
 func takedown(o: Actor) -> void:
 	if not is_instance_valid(o) or o.dead:
@@ -778,6 +808,10 @@ func takedown(o: Actor) -> void:
 	player.global_position = o.global_position - to.normalized() * 1.4
 	player.velocity = Vector3.ZERO
 	o.stun_t = 2.0
+	o.staggered_t = 0.0
+	if o._stagger_label:
+		o._stagger_label.queue_free()
+		o._stagger_label = null
 	var moves := ["uppercut", "spin_kick", "heavy", "kick"]
 	player.model.play(moves[randi() % moves.size()], 0.5)
 	Game.start_slowmo(0.7)
@@ -785,7 +819,9 @@ func takedown(o: Actor) -> void:
 	var color := Color(str(player.def["look"].get("trail", player.def["look"].get("accent", "#ffffff"))))
 	FX.flash(self, o.chest(), color, 1.5, 0.3, 0.7)
 	FX.ring(self, o.chest(), color, 3.0, 0.4, to.normalized())
-	o.take_damage(o.hp + 50.0, player, "", to.normalized() * 14.0 + Vector3.UP * 10.0)
+	# A reeling boss loses a fifth of its health; anyone else goes down.
+	var dmg := o.max_hp * 0.2 if o.boss and o.hp > o.max_hp * 0.1 else o.hp + 50.0
+	o.take_damage(dmg, player, "", to.normalized() * 14.0 + Vector3.UP * 10.0)
 	o.model.tumble(16.0)
 	style.add(10, "takedown")
 	Game.add_score(25)

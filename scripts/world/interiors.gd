@@ -459,6 +459,10 @@ func _waverider() -> void:
 		box(Vector3(0, 1.6 + k * 0.45, -17), Vector3(2.6 - k * 0.7, 0.04, 0.04), amber, false, 2.4, k * 1.05)
 		box(Vector3(0, 1.6 + k * 0.45, -17), Vector3(0.04, 0.04, 2.6 - k * 0.7), amber, false, 2.4, k * 1.05)
 	interactable("Ask Gideon to plot a course through time", Vector3(0, 0.5, -14.8), "time_console")
+	# Navigation: Gideon flies the ship to any of the cities.
+	box(Vector3(7.5, 0.6, -17.0), Vector3(1.6, 1.2, 1.0), "#2a2f36")
+	box(Vector3(7.5, 1.22, -17.0), Vector3(1.4, 0.04, 0.8), blue, false, 2.0)
+	interactable("Navigation: ask Gideon to fly the ship to another city", Vector3(7.5, 0.5, -15.8), "nav_console")
 	# Gideon herself: an amber interface on the port bulkhead.
 	box(Vector3(-19.6, 3.4, -22), Vector3(0.15, 3.0, 3.0), "#2a1a08")
 	var gideon := SphereMesh.new()

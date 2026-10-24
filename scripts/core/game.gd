@@ -25,7 +25,7 @@ const UTILITY_KINDS := ["grapple", "blitz", "dodge_flip", "emp", "foresight", "i
 	"breath", "invulnerable", "force_field"]
 const MOVEMENTS := ["run", "speed", "flight", "grapple", "superjump", "ice", "hover"]
 const ELEMENTS := ["", "fire", "ice", "shock", "push"]
-const HOMES := ["star", "central", "national", "freeland", "gotham", "smallville", "any"]
+const HOMES := ["star", "central", "national", "freeland", "gotham", "smallville", "keystone", "metropolis", "blue_valley", "any"]
 
 var roster: Array = []
 var by_id: Dictionary = {}

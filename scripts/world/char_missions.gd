@@ -14,9 +14,11 @@ extends Node
 ##   travel   - get to another place in the multiverse
 
 const HOME_LANDMARK := {"star": "Star City Downtown", "central": "Central City Downtown", "national": "National City Downtown",
-	"freeland": "Freeland Downtown", "gotham": "Gotham City Downtown", "smallville": "Smallville Main Street", "any": "Central City Downtown"}
+	"freeland": "Freeland Downtown", "gotham": "Gotham City Downtown", "smallville": "Smallville Main Street", "keystone": "Keystone City Downtown", "metropolis": "Metropolis Downtown",
+	"blue_valley": "Blue Valley Downtown", "any": "Central City Downtown"}
 const CITY_NAME := {"star": "Star City", "central": "Central City", "national": "National City", "freeland": "Freeland",
-	"gotham": "Gotham", "smallville": "Smallville", "any": "Central City"}
+	"gotham": "Gotham", "smallville": "Smallville", "keystone": "Keystone City", "metropolis": "Metropolis",
+	"blue_valley": "Blue Valley", "any": "Central City"}
 ## Where each team meets: [kind, target, place].
 const TEAM_HQ := {
 	"Team Flash": ["interior", "star_labs", "earth1"], "Team Arrow": ["interior", "bunker", "earth1"],
@@ -29,6 +31,7 @@ const TEAM_HQ := {
 	"League of Assassins": ["goto", "Lian Yu", "earth1"], "Star City Underworld": ["goto", "Star City Docks", "earth1"],
 	"Kryptonian Threats": ["goto", "Hall of Elders", "argo"], "Gotham Underworld": ["goto", "Arkham Asylum", "earth1"],
 	"Freeland Syndicate": ["goto", "Freeland Clinic", "earth1"], "Central City Metas": ["goto", "S.T.A.R. Labs", "earth1"],
+	"National City Menaces": ["goto", "CatCo Worldwide", "earth1"], "Bishop's Hybrids": ["goto", "The Waverider", "earth1"],
 }
 
 ## Hand-written storylines.

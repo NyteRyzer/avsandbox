@@ -48,6 +48,8 @@ func setup(p_world, p_shooter: Actor, from: Vector3, vel: Vector3, p_damage: flo
 	world.fx_root.add_child(self)
 	global_position = from
 	_build()
+	if style in ["lightning", "ice", "tsphere", "cosmic", "fireball", "energy", "vibe", "magic", "dream", "antimatter", "missile", "explosive_arrow"]:
+		FX.light(self, color, 5.0, 1.6)
 
 
 func _mesh(key: String, builder: Callable) -> Mesh:

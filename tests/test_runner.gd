@@ -67,6 +67,10 @@ func _ready() -> void:
 	await test_jump_ship_and_boarding()
 	_current = "test_free_running"
 	await test_free_running()
+	_current = "test_combat_depth"
+	await test_combat_depth()
+	_current = "test_ship_nav_and_rooftops"
+	await test_ship_nav_and_rooftops()
 	_current = "test_custom_models"
 	test_custom_models()
 	_current = "test_ui_smoke"
@@ -893,7 +897,7 @@ func test_teams_and_new_heroes() -> void:
 	world.clear_npcs()
 	world.population.enabled = false
 	world.events.enabled = false
-	check(Game.roster.size() >= 130, "the roster has 130 characters (%d)" % Game.roster.size())
+	check(Game.roster.size() >= 154, "the roster has 154 characters (%d)" % Game.roster.size())
 	for id in ["rip_hunter", "wildcat", "hourman", "dr_fate", "green_lantern", "icicle", "solomon_grundy", "the_shade", "doomsday", "black_flash"]:
 		check(Game.by_id.has(id), "%s is playable" % id)
 	var bad := []
@@ -1753,3 +1757,125 @@ func test_free_running() -> void:
 	check(world.player.def["id"] == "green_arrow", "Y swaps back to the last character (%s)" % world.player.def["id"])
 	world.swap_to_next_ally()
 	check(world.player.def["id"] == "supergirl", "and Y again swaps back")
+
+
+func test_combat_depth() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	var spot := world.city.snap_to_road(Vector3(2560, 0, 1440)) + Vector3(0, 0.5, 0)
+	world.spawn_player("white_canary", spot)
+	await _frames(5)
+	var p := world.player
+	p.combo_count = 0
+	# A hit from behind is a critical hit.
+	var t: Actor = world.population.spawn_thug(spot + Vector3(0, 0, -3))
+	t.brain = null
+	t.max_hp = 400.0
+	t.hp = 400.0
+	t.rotation.y = 0.0   # facing -Z, away from the player
+	await _frames(2)
+	var before := t.hp
+	t.take_damage(10.0, p)
+	check(absf((before - t.hp) - 16.0) < 0.6, "hits from behind crit for x1.6 (%.1f)" % (before - t.hp))
+	t.rotation.y = PI    # facing the player
+	t.stagger = 0.0
+	before = t.hp
+	t.take_damage(10.0, p)
+	check(absf((before - t.hp) - 10.0) < 0.6, "a plain hit from the front (%.1f)" % (before - t.hp))
+	# Long combos hit harder.
+	p.combo_count = 30
+	t.stagger = 0.0
+	before = t.hp
+	t.take_damage(10.0, p)
+	check(before - t.hp > 14.0, "a 30-hit combo adds 50%% damage (%.1f)" % (before - t.hp))
+	p.combo_count = 0
+	# Enough damage at once staggers; G finishes them with a takedown.
+	t.stagger = 0.0
+	t.take_damage(100.0, p)
+	t.take_damage(70.0, p)
+	check(t.staggered_t > 0.0 and t.stun_t > 0.0, "heavy damage staggers an enemy")
+	await _idle(3)
+	check(world.door.get("interior", "") == "takedown" and world.door.get("actor") == t, "a staggered enemy up close can be taken down")
+	var downs := Game.stat("takedowns")
+	world.interact()
+	check(t.dead and Game.stat("takedowns") > downs, "G performs a takedown")
+	await _frames(5)
+	# Perfect dodge: an attack landing right as you dodge misses completely.
+	var t2: Actor = world.population.spawn_thug(spot + Vector3(2, 0, 0))
+	t2.brain = null
+	await _frames(2)
+	var hp0 := p.hp
+	var pd := Game.stat("perfect_dodges")
+	p.dodge_t = 0.5
+	p.take_damage(25.0, t2)
+	check(p.hp == hp0 and Game.stat("perfect_dodges") > pd, "perfect dodge avoids the hit")
+	p.dodge_t = 0.0
+	p.invuln_t = 0.0
+	p.take_damage(25.0, t2)
+	check(p.hp < hp0, "a hit outside the dodge still lands")
+	p.hp = p.max_hp
+	world.clear_npcs()
+	# Melee mobs take turns instead of all swarming at once.
+	var k := 0
+	for attempt in 60:
+		if k >= 7:
+			break
+		var m: Actor = world.population.spawn_thug(spot + Vector3(cos(k * 0.9) * 9.0, 0, sin(k * 0.9) * 9.0))
+		if m.def["primary"]["kind"] != "melee":
+			m.queue_free()
+			continue
+		k += 1
+		m.brain.target = p
+		m.max_hp = 9999.0
+		m.hp = 9999.0
+	p.invuln_t = 99.0
+	await _frames(240)
+	var waiting := 0
+	for a in get_tree().get_nodes_in_group("actors"):
+		if a != p and a.brain is AIBrain and a.brain._waiting:
+			waiting += 1
+	check(waiting >= 2, "some of the mob waits its turn (%d waiting)" % waiting)
+	p.invuln_t = 0.0
+	world.clear_npcs()
+
+
+func test_ship_nav_and_rooftops() -> void:
+	world.clear_npcs()
+	world.population.enabled = false
+	world.spawn_player("white_canary", Vector3(560, 0.5, -440))
+	await _frames(3)
+	# Gideon flies the Waverider to Metropolis while you're aboard.
+	var home := world.ship.global_position
+	world.enter_interior("waverider")
+	await _frames(2)
+	var nav: Dictionary = {}
+	for d in world.city.doors:
+		if d["interior"] == "nav_console":
+			nav = d
+	check(not nav.is_empty(), "the bridge has a navigation console")
+	world.set_ship_course(7)
+	check(world.ship.course != Vector3.INF and world.ship.course_name == "Metropolis", "course laid in for Metropolis")
+	for i in 6000:
+		await get_tree().physics_frame
+		if world.ship.course == Vector3.INF:
+			break
+	check(world.ship.course == Vector3.INF, "the Waverider arrives")
+	check(world.city.district_index(world.ship.global_position) == 7, "over Metropolis (%s)" % world.ship.global_position)
+	world.leave_interior("waverider")
+	await _frames(3)
+	check(world.city.district_at(world.player.global_position) == "Metropolis", "step off in Metropolis (%s)" % world.city.district_at(world.player.global_position))
+	check(world.player.global_position.y > -1.0 and world.player.global_position.y < 3.0, "on the ground")
+	world.ship.park(home)
+	# Rooftop free-run: you start on a roof with a chain of roofs ahead.
+	world.teleport_player(world.city.snap_to_road(Vector3(560, 0, -560)) + Vector3.UP * 0.5)
+	await _frames(3)
+	check(world.race.start_rooftops(), "a rooftop run starts downtown")
+	check(world.race.points.size() >= 3, "with several roofs to reach (%d)" % world.race.points.size())
+	await _frames(3)
+	check(world.player.global_position.y > 7.0, "you start up on a roof (y %.1f)" % world.player.global_position.y)
+	for i in 900:
+		await get_tree().physics_frame
+		if world.race.index >= 2 or not world.race.active:
+			break
+	check(world.race.index >= 2, "launch pads fling you roof to roof (reached %d)" % world.race.index)
+	world.race.stop()
