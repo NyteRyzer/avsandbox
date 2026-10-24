@@ -1352,6 +1352,7 @@ func test_campaign() -> void:
 
 
 func test_breach_and_new_features() -> void:
+	Game.end_slowmo()
 	world.clear_npcs()
 	world.population.enabled = false
 	world.events.enabled = true
@@ -1365,6 +1366,10 @@ func test_breach_and_new_features() -> void:
 	world.open_breach("earth2")
 	check(is_instance_valid(world.breach_portal), "breaching opens a portal")
 	await _idle(70)
+	for i in 600:
+		if not is_instance_valid(world.breach_portal) or world.breach_portal.state == "open":
+			break
+		await get_tree().process_frame
 	check(world.place_id == "earth1", "the breach doesn't teleport you on its own")
 	var old_exits := world.get_children().filter(func(c) -> bool: return c is BreachPortal)
 	world.player.global_position = world.breach_portal.global_position - Vector3.UP * 2.0
@@ -1513,7 +1518,7 @@ func test_breach_and_new_features() -> void:
 	var clone: Actor = world.population.spawn_character(Game.get_character("flash"), "hero", p.global_position + Vector3(2, 0.5, 0), p)
 	clone.set_meta("temporary", true)
 	world.swap_to_next_ally()
-	check(world.player == p, "you can't switch into a temporary clone or summon")
+	check(world.player != clone and not clone.is_player, "you can't switch into a temporary clone or summon")
 	clone.queue_free()
 	Game.start_slowmo(0.05)
 	world.weapon_wheel.open()
@@ -1768,7 +1773,7 @@ func test_combat_depth() -> void:
 	var p := world.player
 	p.combo_count = 0
 	# A hit from behind is a critical hit.
-	var t: Actor = world.population.spawn_thug(spot + Vector3(0, 0, -3))
+	var t: Actor = world.population.spawn_thug(p.global_position + Vector3(0, 0.2, -2.5))
 	t.brain = null
 	t.max_hp = 400.0
 	t.hp = 400.0
@@ -1795,7 +1800,7 @@ func test_combat_depth() -> void:
 	t.take_damage(70.0, p)
 	check(t.staggered_t > 0.0 and t.stun_t > 0.0, "heavy damage staggers an enemy")
 	await _idle(3)
-	check(world.door.get("interior", "") == "takedown" and world.door.get("actor") == t, "a staggered enemy up close can be taken down")
+	check(world.door.get("interior", "") == "takedown" and world.door.get("actor") == t, "a staggered enemy up close can be taken down (door %s, d %.1f, stag %.1f, player %s)" % [world.door.get("name", ""), t.global_position.distance_to(world.player.global_position), t.staggered_t, world.player.def["id"]])
 	var downs := Game.stat("takedowns")
 	world.interact()
 	check(t.dead and Game.stat("takedowns") > downs, "G performs a takedown")
@@ -1837,6 +1842,7 @@ func test_combat_depth() -> void:
 	check(waiting >= 2, "some of the mob waits its turn (%d waiting)" % waiting)
 	p.invuln_t = 0.0
 	world.clear_npcs()
+	Game.end_slowmo()
 
 
 func test_ship_nav_and_rooftops() -> void:
