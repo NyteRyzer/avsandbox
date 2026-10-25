@@ -963,6 +963,11 @@ func swap_to_next_ally() -> void:
 	var allies := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool:
 		return a.follow_target == player and not a.dead and not a.has_meta("temporary") and Game.is_unlocked(str(a.def.get("id", ""))))
 	if allies.is_empty():
+		var locked := get_tree().get_nodes_in_group("actors").filter(func(a) -> bool:
+			return a.follow_target == player and not a.dead and not a.has_meta("temporary"))
+		if not locked.is_empty():
+			notify("%s isn't unlocked yet. Keep playing the story to play as them." % locked[0].display_name, Color("#ffd27a"))
+			return
 		quick_swap()
 		return
 	var a: Actor = allies[0]
