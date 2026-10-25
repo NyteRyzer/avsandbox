@@ -95,9 +95,9 @@ func spawn_traffic(on_road: Vector3) -> Prop:
 		dir = -dir
 	var car := Prop.new()
 	car.build(world, "car", rng)
-	world.props_root.add_child(car)
-	car.global_position = road + dir.cross(Vector3.UP) * Prop.LANE + Vector3.UP * 0.1
+	car.position = road + dir.cross(Vector3.UP) * Prop.LANE + Vector3.UP * 0.1
 	car.rotation.y = atan2(-dir.x, -dir.z)
+	world.props_root.add_child(car)
 	car.start_driving(dir)
 	return car
 

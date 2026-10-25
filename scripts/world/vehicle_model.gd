@@ -18,8 +18,45 @@ const PAINTS := ["#b0201a", "#1f4fa8", "#e8e8e8", "#1a1a1a", "#8a8f99", "#2e7d32
 	"#6a0e14", "#c8c8c0", "#0e2a5a", "#4a4a4a"]
 
 
+# Built models, shared by every car of the same style and paint: a parked
+# car costs a few mesh instances instead of its own copy of every mesh.
+static var _car_cache := {}
+static var _bike_cache := {}
+
+
 ## Builds into `parent`. Returns {body: MeshInstance3D, size: Vector3, lights: Array}.
 static func build_car(parent: Node3D, style: String, paint: Color) -> Dictionary:
+	var key := style + paint.to_html()
+	if not _car_cache.has(key):
+		var holder := Node3D.new()
+		var built := _build_car(holder, style, paint)
+		_car_cache[key] = {"holder": holder, "body": holder.get_children().find(built["body"]), "size": built["size"], "lights": built["lights"]}
+	var c: Dictionary = _car_cache[key]
+	var copied := _copy_parts(c["holder"], parent, c["lights"])
+	var body: MeshInstance3D = copied["parts"][c["body"]] if int(c["body"]) >= 0 else null
+	return {"body": body, "size": c["size"], "lights": copied["lights"]}
+
+
+## Copies a cached model's parts into `parent`, sharing the meshes. Lights
+## (police flashers) get their own materials, since they're animated.
+static func _copy_parts(holder: Node3D, parent: Node3D, lights: Array) -> Dictionary:
+	var parts: Array = []
+	var own_lights: Array = []
+	for src in holder.get_children():
+		var mi := MeshInstance3D.new()
+		mi.mesh = src.mesh
+		mi.transform = src.transform
+		var m: Material = src.material_override
+		if m != null and lights.has(m):
+			m = m.duplicate()
+			own_lights.append(m)
+		mi.material_override = m
+		parent.add_child(mi)
+		parts.append(mi)
+	return {"parts": parts, "lights": own_lights}
+
+
+static func _build_car(parent: Node3D, style: String, paint: Color) -> Dictionary:
 	var s: Dictionary = STYLES.get(style if STYLES.has(style) else "sedan", STYLES["sedan"])
 	if style in ["taxi", "police"]:
 		s = STYLES["sedan"]
@@ -160,6 +197,17 @@ static func _glass_mat() -> StandardMaterial3D:
 
 ## A motorcycle: frame, tank, seat, forks, bars, wheels with spokes, exhaust.
 static func build_bike(parent: Node3D, paint: Color) -> MeshInstance3D:
+	var key := paint.to_html()
+	if not _bike_cache.has(key):
+		var holder := Node3D.new()
+		var body := _build_bike(holder, paint)
+		_bike_cache[key] = {"holder": holder, "body": holder.get_children().find(body)}
+	var c: Dictionary = _bike_cache[key]
+	var copied := _copy_parts(c["holder"], parent, [])
+	return copied["parts"][c["body"]] if int(c["body"]) >= 0 else null
+
+
+static func _build_bike(parent: Node3D, paint: Color) -> MeshInstance3D:
 	var p := MeshBuilder.new()
 	var d := MeshBuilder.new()
 	var g := MeshBuilder.new()

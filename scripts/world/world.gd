@@ -215,9 +215,12 @@ func _spawn_parked() -> void:
 	for spot in city.parked:
 		var prop := Prop.new()
 		prop.build(self, spot["kind"], r)
-		props_root.add_child(prop)
-		prop.global_transform = spot["xform"]
+		# Place it before it enters the world: thousands of cars all
+		# appearing at the origin at once made the physics engine pair every
+		# car with every other one (gigabytes of memory while loading).
+		prop.transform = spot["xform"]
 		prop.sleeping = true
+		props_root.add_child(prop)
 
 
 func _exit_tree() -> void:
@@ -1581,9 +1584,9 @@ func spawn_prop_here(kind: String) -> void:
 	forward.y = 0
 	var prop := Prop.new()
 	prop.build(self, kind)
-	props_root.add_child(prop)
-	prop.global_position = player.global_position + forward.normalized() * 7.0 + Vector3.UP * 3.0
+	prop.position = player.global_position + forward.normalized() * 7.0 + Vector3.UP * 3.0
 	prop.rotation.y = cam.yaw
+	props_root.add_child(prop)
 
 
 func clear_npcs() -> void:
