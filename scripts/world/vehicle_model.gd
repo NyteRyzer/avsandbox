@@ -30,23 +30,33 @@ static func build_car(parent: Node3D, style: String, paint: Color) -> Dictionary
 	if not _car_cache.has(key):
 		var holder := Node3D.new()
 		var built := _build_car(holder, style, paint)
-		_car_cache[key] = {"holder": holder, "body": holder.get_children().find(built["body"]), "size": built["size"], "lights": built["lights"]}
+		_car_cache[key] = {"parts": _parts_of(holder), "body": holder.get_children().find(built["body"]),
+			"size": built["size"], "lights": built["lights"]}
+		holder.free()
 	var c: Dictionary = _car_cache[key]
-	var copied := _copy_parts(c["holder"], parent, c["lights"])
+	var copied := _copy_parts(c["parts"], parent, c["lights"])
 	var body: MeshInstance3D = copied["parts"][c["body"]] if int(c["body"]) >= 0 else null
 	return {"body": body, "size": c["size"], "lights": copied["lights"]}
 
 
+## A built model as plain data: [mesh, transform, material] per part.
+static func _parts_of(holder: Node3D) -> Array:
+	var out: Array = []
+	for src in holder.get_children():
+		out.append([src.mesh, src.transform, src.material_override])
+	return out
+
+
 ## Copies a cached model's parts into `parent`, sharing the meshes. Lights
 ## (police flashers) get their own materials, since they're animated.
-static func _copy_parts(holder: Node3D, parent: Node3D, lights: Array) -> Dictionary:
+static func _copy_parts(parts_data: Array, parent: Node3D, lights: Array) -> Dictionary:
 	var parts: Array = []
 	var own_lights: Array = []
-	for src in holder.get_children():
+	for part in parts_data:
 		var mi := MeshInstance3D.new()
-		mi.mesh = src.mesh
-		mi.transform = src.transform
-		var m: Material = src.material_override
+		mi.mesh = part[0]
+		mi.transform = part[1]
+		var m: Material = part[2]
 		if m != null and lights.has(m):
 			m = m.duplicate()
 			own_lights.append(m)
@@ -201,9 +211,10 @@ static func build_bike(parent: Node3D, paint: Color) -> MeshInstance3D:
 	if not _bike_cache.has(key):
 		var holder := Node3D.new()
 		var body := _build_bike(holder, paint)
-		_bike_cache[key] = {"holder": holder, "body": holder.get_children().find(body)}
+		_bike_cache[key] = {"parts": _parts_of(holder), "body": holder.get_children().find(body)}
+		holder.free()
 	var c: Dictionary = _bike_cache[key]
-	var copied := _copy_parts(c["holder"], parent, [])
+	var copied := _copy_parts(c["parts"], parent, [])
 	return copied["parts"][c["body"]] if int(c["body"]) >= 0 else null
 
 

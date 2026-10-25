@@ -112,6 +112,13 @@ crisis.*
 - **Crisis Events:** crises break out in other cities on a three-minute clock. Ignore one and
   villains **occupy** that district until you liberate it. Get there in time and you may free
   a hero from an erased timeline, unlocking them.
+- **Objective marker:** a diamond on screen, with the distance, shows where to go next: an
+  active crisis, the story objective, your character's own mission, or your waypoint. When the
+  target is off-screen it sits on the screen edge pointing the way.
+- **Replay missions:** Pause → Story Missions lists every mission you've reached. Replay any
+  of them, and you return to where you were in the story afterwards.
+- **Boss Rush** (Tab menu): five bosses back to back with full boss fights. Your best time
+  is saved.
 - The full campaign is in [`docs/STORY.md`](docs/STORY.md). Cutscenes and QTEs can each be
   switched off in Settings.
 
