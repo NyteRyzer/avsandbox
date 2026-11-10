@@ -131,6 +131,15 @@ func _refresh() -> void:
 				travel_to_objective(to), 320)
 			ob.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			_list.add_child(ob)
+	if world.crisis and world.crisis.target_pos() != Vector3.INF and world.inside == "" and world.vehicle == null:
+		var ct: Vector3 = world.crisis.target_pos()
+		var cd: float = world.player.global_position.distance_to(ct)
+		if cd > 250.0:
+			var cb := UITheme.button("Fast travel to the crisis  (%.1f km)" % (cd / 1000.0), func() -> void:
+				close()
+				travel_to_objective(ct), 320)
+			cb.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			_list.add_child(cb)
 	for l in world.city.landmarks:
 		if l.get("interior", false):
 			continue

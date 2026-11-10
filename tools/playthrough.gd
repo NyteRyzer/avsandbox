@@ -209,9 +209,11 @@ func _play_story(until: int, limit: float) -> void:
 					world.world_map.travel_to_objective(t2)
 					await _wait(0.5)
 				elif t2 != Vector3.INF:
-					if world.player.global_position.distance_to(t2) < 4.0:
-						# At the door: walk on in, like a player would.
-						await _walk_to(Interiors.origin(str(st["target"])), 3.0, 3.0)
+					if world.player.global_position.distance_to(t2) < 3.5:
+						# At the door: G to go in, like a player would.
+						_note("at the door: %s" % world.interact_prompt())
+						await _tap("interact")
+						await _wait(0.5)
 					else:
 						await _walk_to(t2, 3.0, 2.0)
 				else:

@@ -479,6 +479,13 @@ func _nearest_door() -> Dictionary:
 		if dd < best_d and absf(dp.y - p.y) < 3.0:
 			best_d = dd
 			best = dr
+	# Walk-in buildings (S.T.A.R. Labs, Jitters...): G at the front door works too.
+	if inside == "" and best.is_empty() and city.kind == "metro":
+		for room in Interiors.placed:
+			var op: Vector3 = Interiors.outside_point(str(room))
+			if Vector2(op.x - p.x, op.z - p.z).length() < 4.0 and absf(op.y - p.y) < 3.0:
+				best = {"name": "Enter " + str(Interiors.NAMES[room]), "pos": op, "interior": str(room)}
+				break
 	if inside == "" and best.is_empty() and is_instance_valid(jump_ship) and jump_ship.state == "landed" \
 			and jump_ship.global_position.distance_to(p) < 8.0:
 		best = {"name": "Board the Jump Ship (fly to the Waverider)", "pos": jump_ship.global_position, "interior": "jump_ship"}

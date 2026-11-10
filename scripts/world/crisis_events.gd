@@ -11,9 +11,10 @@ extends Node
 ## Occupied districts are saved, show on the HUD, and the Act IV story starts
 ## by handing most of the map to the Architect's villains.
 
-const RESPONSE_TIME := 180.0
-const FIRST_DELAY := 150.0
-const BETWEEN := 300.0
+const RESPONSE_TIME := 240.0
+const FIRST_DELAY := 300.0
+const BETWEEN := 480.0
+const MAX_EARLY_OCCUPIED := 2   # before Act IV, at most this many districts can fall
 
 var world
 var enabled := true
@@ -195,6 +196,10 @@ func _resolve() -> void:
 
 func _fail() -> void:
 	var d := int(current["district"])
+	if occupied().size() >= MAX_EARLY_OCCUPIED and int(world.missions.current().get("act", 4)) < 4 and not world.missions.is_complete():
+		world.notify("The attack on %s ran its course before you got there. The villains pulled back." % City.DISTRICTS[d], Color("#ffb0a0"))
+		_end()
+		return
 	occupy(d)
 	world.hud.show_banner("%s HAS FALLEN" % City.DISTRICTS[d].to_upper(), Color("#ff3a3a"))
 	world.notify("You didn't make it. %s's forces have occupied %s. Go back and liberate it." %

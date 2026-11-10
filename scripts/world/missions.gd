@@ -500,8 +500,14 @@ func _long_way_hint(p: Vector3) -> void:
 func _next_step() -> void:
 	_clear_marker()
 	_spawned_for = -1
+	var prev := str(current_step().get("do", ""))
 	step += 1
 	_save()
+	# A briefing indoors that hands off to a fight outside: the hero heads out.
+	var nxt := str(current_step().get("do", ""))
+	if prev in ["scene", "switch", "radio"] and nxt in ["defeat", "rescue", "goto", "rooftop"] and world.inside != "":
+		world.leave_interior(world.inside)
+		world.notify("Heading out.", Color("#ffd27a"))
 	if current_step().is_empty():
 		_complete_mission()
 
