@@ -30,6 +30,9 @@ const ACTS := {
 	5: ["ACT V", "ONE LAST TOMORROW"],
 }
 
+## How hard story foes hit, by act (Act I eases you in).
+const RAMP := {0: 0.5, 1: 0.55, 2: 0.8, 3: 1.0, 4: 1.0, 5: 1.0}
+
 ## Speaker name colours in cutscenes and on the radio.
 const VOICES := {
 	"Oliver Queen": "#5aff6a", "Felicity Smoak": "#ffd27a", "The Monitor": "#9fe0ff", "John Diggle": "#ffb070",
@@ -45,7 +48,7 @@ const VOICES := {
 
 const MISSIONS := [
 	# ---------------------------------------------------------------- PROLOGUE
-	{"id": "prologue", "act": 0, "title": "The End of Everything", "hero": "green_arrow", "weather": "storm", "hour": 19.0, "steps": [
+	{"id": "prologue", "act": 0, "title": "The End of Everything", "hero": "green_arrow", "weather": "storm", "hour": 16.5, "steps": [
 		{"do": "scene", "shots": [
 			["black", "Oliver Queen", "For years, I believed my mission was simple. Protect my city. Save the innocent. Stop the monsters hiding behind money, power, and corruption."],
 			["black", "Oliver Queen", "Then I learned the truth. My city was only one piece of something much bigger."],
@@ -64,7 +67,7 @@ const MISSIONS := [
 		]},
 	]},
 	# ------------------------------------------------------------------- ACT I
-	{"id": "m01", "act": 1, "title": "A City Without Tomorrow", "hero": "green_arrow", "weather": "storm", "hour": 19.0,
+	{"id": "m01", "act": 1, "title": "A City Without Tomorrow", "hero": "green_arrow", "weather": "storm", "hour": 16.5,
 		"unlock": ["spartan", "overwatch", "black_canary", "speedy", "arsenal"],
 		"unlock_note": "UNLOCKED: Star City open world", "next": "NEW OBJECTIVE: Reach S.T.A.R. Labs.", "steps": [
 		{"do": "rooftop", "at": "Star City Downtown"},
@@ -74,7 +77,7 @@ const MISSIONS := [
 			["John Diggle", "Oliver, I've got armed hostiles moving through the evacuation zone. They aren't ordinary soldiers."],
 			["Oliver Queen", "Then what are they?"],
 			["John Diggle", "They're wearing the faces of people we've already buried."]]},
-		{"do": "defeat", "at": "Star City Downtown", "foes": ["shadow_demon", "shadow_demon", "shadow_demon", "shadow_demon"],
+		{"do": "defeat", "at": "Star City Downtown", "foes": ["shadow_demon", "shadow_demon", "shadow_demon"],
 			"label": "Fight the shadow creatures"},
 		{"do": "goto", "at": "Queen Consolidated", "label": "Locate the source of the temporal disturbance"},
 		{"do": "defeat", "at": "Queen Consolidated", "foes": ["malcolm_merlyn"], "boss": true, "escape": true, "mult": 2.0,
@@ -744,6 +747,8 @@ func _spawn_foes(s: Dictionary, at: Vector3) -> void:
 			a.make_boss(float(s.get("mult", 3.0)))
 			a.display_name = a.display_name + " (BOSS)"
 		a.add_to_group("mission_foes")
+		# The story eases you in: Act I foes hit softer, full strength from Act III.
+		a.power *= RAMP.get(int(current().get("act", 3)), 1.0)
 		foes.append(a)
 	world.notify("They're here. Take them down!", Color("#ff8060"))
 	var boss: Actor = null

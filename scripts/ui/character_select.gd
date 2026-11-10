@@ -306,7 +306,7 @@ func _card(c: Dictionary) -> Button:
 	var b := Button.new()
 	var id: String = c["id"]
 	var locked := not Game.is_unlocked(id)
-	b.text = str(c["alias"]) + ("  ·  LOCKED" if locked else "")
+	b.text = str(c["alias"]) + ("\nLOCKED" if locked else "")
 	b.custom_minimum_size = Vector2(170, 64)
 	b.clip_text = true
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL

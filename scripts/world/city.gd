@@ -595,7 +595,7 @@ func _label(text: String, pos: Vector3, size := 2.5, color := Color.WHITE) -> vo
 	l.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
 	l.position = pos
 	# Big signs fade out up close instead of filling the screen.
-	l.visibility_range_begin = 12.0 + size * 6.0
+	l.visibility_range_begin = 20.0 + size * 15.0
 	l.visibility_range_begin_margin = 6.0
 	l.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	add_child(l)
