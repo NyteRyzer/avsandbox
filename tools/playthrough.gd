@@ -223,6 +223,11 @@ func _play_story(until: int, limit: float) -> void:
 						await _wait(0.4)
 			"defeat":
 				var alive: Array = world.missions.foes.filter(func(a) -> bool: return is_instance_valid(a) and not a.dead)
+				if alive.is_empty() and Time.get_ticks_msec() - step_t > 20000 and Time.get_ticks_msec() % 5000 < 40:
+					var bf = world.boss_fight
+					_note("STUCK? foes=%d spawned_for=%d step=%d seen_dead=%d boss_gone=%s bf.boss=%s escaping=%s busy=%s cinematic=%s qte=%s cutscene=%s" % [
+						world.missions.foes.size(), world.missions._spawned_for, world.missions.step, world.missions._seen_dead.size(),
+						world.missions._boss_gone, bf.boss, bf._escaping, bf._busy, world.cinematic, world.qte.active, world.cutscene.active])
 				if alive.is_empty():
 					var t4: Vector3 = world.missions.target_pos()
 					if t4 != Vector3.INF:
