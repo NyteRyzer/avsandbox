@@ -118,7 +118,7 @@ func _ready() -> void:
 	_note("HUD tracker: " + world.hud.mission_label.text.replace("\n", " | ").left(300))
 	_note("notifications on screen: %d" % world.hud.notes.get_child_count())
 	# Play the story with real input: whatever the current step asks for.
-	await _play_story(5, 900.0)
+	await _play_story(5, 1200.0)
 	_note("after the story run: mission=%s step=%d, unlocked=%s" % [world.missions.current().get("id", ""), world.missions.step, str(Game.progress["unlocked"])])
 	_note("HUD tracker: " + world.hud.mission_label.text.replace("\n", " | ").left(300))
 	await _snap("15_after_story_run", 1)
@@ -209,7 +209,11 @@ func _play_story(until: int, limit: float) -> void:
 					world.world_map.travel_to_objective(t2)
 					await _wait(0.5)
 				elif t2 != Vector3.INF:
-					await _walk_to(t2, 3.0, 2.0)
+					if world.player.global_position.distance_to(t2) < 4.0:
+						# At the door: walk on in, like a player would.
+						await _walk_to(Interiors.origin(str(st["target"])), 3.0, 3.0)
+					else:
+						await _walk_to(t2, 3.0, 2.0)
 				else:
 					await _wait(0.5)
 			"rescue":

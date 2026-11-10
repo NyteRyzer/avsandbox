@@ -240,6 +240,7 @@ var trapped: Array = []
 var _spawned_for := -1  # the step whose foes/civilians are out (-1: none)
 var _seen_dead: Dictionary = {}
 var _boss_gone := false
+var _clear_t := 0.0     # how long a defeat step has had nobody left standing
 var _saved := 0
 var _target := Vector3.INF
 var _marker: Node3D
@@ -718,11 +719,15 @@ func _tick_defeat(s: Dictionary, p: Vector3) -> void:
 		elif is_instance_valid(a) and a.dead:
 			_seen_dead[a.get_instance_id()] = true
 	if standing == 0 and not world.cinematic:
+		_clear_t += get_process_delta_time()
 		if _seen_dead.is_empty() and not _boss_gone:
 			_spawned_for = -1   # cleared away by something else: set them up again
-		elif world.boss_fight.boss == null and not world.boss_fight._escaping:
-			# Wait for the boss's outro (or getaway) to play out first.
+		elif (world.boss_fight.boss == null and not world.boss_fight._escaping) or _clear_t > 8.0:
+			# Wait for the boss's outro (or getaway) to play out first, but
+			# never forever: the fight is won.
 			_next_step()
+	else:
+		_clear_t = 0.0
 
 
 func _spawn_foes(s: Dictionary, at: Vector3) -> void:

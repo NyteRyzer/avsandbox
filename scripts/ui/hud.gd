@@ -776,8 +776,6 @@ func _draw_overlay() -> void:
 
 ## The current objective, most urgent first: [position, colour, label].
 func objective() -> Array:
-	if world.crisis and world.crisis.target_pos() != Vector3.INF:
-		return [world.crisis.target_pos(), Color("#ff4a3a"), "CRISIS"]
 	var t: Vector3 = world.missions.target_pos()
 	if t != Vector3.INF:
 		return [t, Color("#ff9a6a"), "STORY"]
@@ -786,6 +784,8 @@ func objective() -> Array:
 		return [t, Color("#6ab8ff"), "MISSION"]
 	if world.waypoint != Vector3.INF:
 		return [world.waypoint, Color("#ffffff"), "WAYPOINT"]
+	if world.crisis and world.crisis.target_pos() != Vector3.INF:
+		return [world.crisis.target_pos(), Color("#ff4a3a"), "CRISIS"]
 	return []
 
 
@@ -797,6 +797,13 @@ func _draw_objective(cam: Camera3D) -> void:
 	var o := objective()
 	if o.is_empty():
 		return
+	_draw_marker(cam, o)
+	# A crisis gets its own red marker alongside the main objective.
+	if world.crisis and world.crisis.target_pos() != Vector3.INF and str(o[2]) != "CRISIS":
+		_draw_marker(cam, [world.crisis.target_pos(), Color("#ff4a3a"), "CRISIS"])
+
+
+func _draw_marker(cam: Camera3D, o: Array) -> void:
 	var target: Vector3 = o[0]
 	var col: Color = o[1]
 	var dist: float = world.player.global_position.distance_to(target)

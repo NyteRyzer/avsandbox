@@ -72,6 +72,7 @@ var _intro_lines: Array = []
 var _outro_lines: Array = []
 var escapes := false             # the boss gets away at the end (Malcolm, mission 1)
 var _escaping := false
+var _escape_wait := 0.0
 signal boss_done(boss_id: String, escaped: bool)
 
 
@@ -174,6 +175,13 @@ func _intro_shots() -> Array:
 func _process(delta: float) -> void:
 	if world == null:
 		return
+	# A getaway whose cutscene never finished must not hold the story up.
+	if _escaping and not world.cinematic:
+		_escape_wait += delta
+		if _escape_wait > 6.0:
+			_escaping = false
+	else:
+		_escape_wait = 0.0
 	if boss != null and (not is_instance_valid(boss) or boss.dead):
 		var was := boss
 		boss = null
