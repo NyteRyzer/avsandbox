@@ -237,7 +237,7 @@ func _play_story(until: int, limit: float) -> void:
 				if alive.is_empty():
 					var t4: Vector3 = world.missions.target_pos()
 					if t4 != Vector3.INF:
-						await _walk_to(t4, 3.0, 30.0)
+						await _walk_to(t4, 20.0, 30.0)
 					else:
 						await _wait(0.5)
 				else:

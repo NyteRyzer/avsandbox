@@ -77,7 +77,7 @@ const MISSIONS := [
 			["John Diggle", "Oliver, I've got armed hostiles moving through the evacuation zone. They aren't ordinary soldiers."],
 			["Oliver Queen", "Then what are they?"],
 			["John Diggle", "They're wearing the faces of people we've already buried."]]},
-		{"do": "defeat", "at": "Star City Downtown", "foes": ["shadow_demon", "shadow_demon", "shadow_demon"],
+		{"do": "defeat", "at": "Star City Downtown", "foes": ["shadow_demon", "shadow_demon", "shadow_demon"], "grounded": true,
 			"label": "Fight the shadow creatures"},
 		{"do": "goto", "at": "Queen Consolidated", "label": "Locate the source of the temporal disturbance"},
 		{"do": "defeat", "at": "Queen Consolidated", "foes": ["malcolm_merlyn"], "boss": true, "escape": true, "mult": 2.0,
@@ -760,6 +760,10 @@ func _spawn_foes(s: Dictionary, at: Vector3) -> void:
 		a.add_to_group("mission_foes")
 		# The story eases you in: Act I foes hit softer, full strength from Act III.
 		a.power *= RAMP.get(int(current().get("act", 3)), 1.0)
+		if s.get("grounded", false):
+			# The opening fight stays on the ground, where a new player can reach them.
+			a.movement = "run"
+			a.flying = false
 		foes.append(a)
 	world.notify("They're here. Take them down!", Color("#ff8060"))
 	var boss: Actor = null
