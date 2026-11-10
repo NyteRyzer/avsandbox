@@ -120,6 +120,17 @@ func _refresh() -> void:
 		_map.queue_redraw()
 		return
 	var found: Array = Game.progress.get("discovered", [])
+	# The current objective, wherever it is: one press gets you there.
+	var obj: Array = world.hud.objective() if world.hud else []
+	if not obj.is_empty() and world.inside == "" and world.vehicle == null and not world.ship.piloted:
+		var dist: float = world.player.global_position.distance_to(obj[0])
+		if dist > 250.0:
+			var to: Vector3 = obj[0]
+			var ob := UITheme.button("Fast travel to your %s objective  (%.1f km)" % [str(obj[2]).to_lower(), dist / 1000.0], func() -> void:
+				close()
+				travel_to_objective(to), 320)
+			ob.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			_list.add_child(ob)
 	for l in world.city.landmarks:
 		if l.get("interior", false):
 			continue
@@ -133,6 +144,19 @@ func _refresh() -> void:
 	_info.text = "Visited %d landmarks · Crisis Fragments %d / %d\nPick a landmark to set a waypoint. Fast travel works once you've been there." % [
 		found.size(), world.collectibles.found_count(), Collectibles.TOTAL]
 	_map.queue_redraw()
+
+
+## Fast travel to just short of an objective (on the nearest road).
+func travel_to_objective(to: Vector3) -> void:
+	var dir: Vector3 = world.player.global_position - to
+	dir.y = 0.0
+	var at: Vector3 = to + (dir.normalized() * 30.0 if dir.length() > 1.0 else Vector3.ZERO)
+	if world.city.kind == "metro":
+		at = world.city.snap_to_road(at)
+	FX.flash(world, world.player.chest(), Color("#a0d0ff"), 2.0, 0.3)
+	world.teleport_player(at + Vector3.UP * 0.5)
+	world.notify("Fast travel: objective", Color("#a0d0ff"))
+	Game.record("fast_travels")
 
 
 func _known(l: Dictionary) -> bool:

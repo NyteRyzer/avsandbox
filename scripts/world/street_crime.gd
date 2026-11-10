@@ -18,7 +18,8 @@ func _process(delta: float) -> void:
 	if mugger:
 		_tick(delta)
 		return
-	if world.inside != "" or world.city.kind != "metro" or Game.player_side() != 1 or not world.events.active.is_empty():
+	if world.inside != "" or world.city.kind != "metro" or Game.player_side() != 1 or not world.events.active.is_empty() \
+			or world.missions.story_busy():
 		return
 	_cooldown -= delta
 	if _cooldown <= 0.0:

@@ -555,7 +555,7 @@ func _process(delta: float) -> void:
 		mission_label.text = crisis_text + ("\n\n" + mission_label.text if mission_label.text != "" else "")
 	if world.street_crime.mugger:
 		mission_label.text = "MUGGING: stop him! %ds\n\n" % int(world.street_crime.time_left) + mission_label.text
-	var personal: String = world.char_missions.tracker()
+	var personal: String = world.char_missions.tracker() if not world.missions.story_focus() else ""
 	if personal != "":
 		mission_label.text = personal + ("\n\n" + mission_label.text if mission_label.text != "" else "")
 	if world.waypoint != Vector3.INF:
@@ -567,7 +567,8 @@ func _process(delta: float) -> void:
 		mission_label.text = world.survival.tracker() + "\n\n" + mission_label.text
 	if world.boss_rush.active:
 		mission_label.text = world.boss_rush.tracker() + "\n\n" + mission_label.text
-	mission_label.text += "\n\nCHALLENGES\n" + world.challenges.tracker()
+	if not world.missions.story_focus():
+		mission_label.text += "\n\nCHALLENGES\n" + world.challenges.tracker()
 	var ev: Dictionary = world.events.active
 	if ev.is_empty():
 		event_label.text = ""
@@ -780,7 +781,7 @@ func objective() -> Array:
 	var t: Vector3 = world.missions.target_pos()
 	if t != Vector3.INF:
 		return [t, Color("#ff9a6a"), "STORY"]
-	t = world.char_missions.target_pos()
+	t = world.char_missions.target_pos() if not world.missions.story_focus() else Vector3.INF
 	if t != Vector3.INF:
 		return [t, Color("#6ab8ff"), "MISSION"]
 	if world.waypoint != Vector3.INF:

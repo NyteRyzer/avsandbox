@@ -115,6 +115,45 @@ func _ready() -> void:
 		await _snap("ship_helm_flight", 3)
 		get_tree().quit()
 		return
+	if only == "cons":
+		# The screens the playthrough flagged, after the fixes.
+		Game.progress["story"] = {}
+		Game.progress["unlocked"] = ["green_arrow"]
+		Game.progress["tips_seen"] = false
+		Game.mode = "story"
+		Game.no_cinematics = true
+		var w := World.new()
+		add_child(w)
+		w.spawn_player("green_arrow")
+		for i in 30:
+			await get_tree().physics_frame
+		await _snap("cons_m01_start", 20)
+		w.teleport_player(w.missions._where("SCPD"))
+		for i in 40:
+			await get_tree().physics_frame
+		if not w.missions.trapped.is_empty():
+			var c: Actor = w.missions.trapped[0]
+			w.teleport_player(c.global_position + Vector3(4, 0, 4))
+			var to := c.global_position - w.player.global_position
+			w.cam.yaw = atan2(-to.x, -to.z)
+			w.cam.pitch = -0.3
+			for i in 20:
+				await get_tree().physics_frame
+			await _snap("cons_trapped", 10)
+		w.world_map.open()
+		await _snap("cons_map", 6)
+		w.world_map.close()
+		w.pause_menu.open()
+		w.pause_menu._open_story()
+		await _snap("cons_story_missions", 4)
+		w.pause_menu.close()
+		var sel := CharacterSelect.new()
+		add_child(sel)
+		sel.open(false)
+		await _snap("cons_select", 8)
+		sel.queue_free()
+		get_tree().quit()
+		return
 	if only == "cine":
 		# Story Mode: a cutscene, the boss intro, a QTE and the boss bar.
 		var w := World.new()

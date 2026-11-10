@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 	_tick_drill(delta)
 	_tick_krypto(delta)
 	# Jobs already under way always run; `enabled` only stops new ones.
-	var can_start: bool = enabled and world.city.kind == "metro" and world.inside == ""
+	var can_start: bool = enabled and world.city.kind == "metro" and world.inside == "" and not world.missions.story_busy()
 	_tick_bounty(delta, can_start)
 	_tick_drop(delta, can_start)
 	_tick_help(delta, can_start)

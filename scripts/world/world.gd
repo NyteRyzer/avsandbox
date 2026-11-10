@@ -56,6 +56,10 @@ var kos := 0
 var _respawn_t := -1.0
 var _last_district := ""
 var _tips_shown := false
+var _tip_queue: Array = []
+var _held_notes: Array = []
+var _held_t := 0.0
+var _tip_t := 2.0
 var place_id := "earth1"         # which Earth / era (a Multiverse id)
 var inside := ""                 # which interior the player is in ("" outside)
 var door: Dictionary = {}        # the door or console the player is next to
@@ -284,10 +288,14 @@ func spawn_player(id: String, at = null) -> void:
 		notify("Hold [Space] while falling to glide on your cape.", Color("#ffe080"))
 	if not _tips_shown:
 		_tips_shown = true
-		notify("Tab: sandbox tools (spawn anyone, time, weather, teleport)", Color("#ffe080"))
-		notify("Yellow marker on the minimap = an event to stop (or start)", Color("#ffe080"))
-		notify("Esc: pause, change character, settings", Color("#ffe080"))
-		notify("G: doors, consoles and travel  ·  R: your ultimate, once it's charged", Color("#ffe080"))
+		# First time playing: a few tips, one at a time, once you have control.
+		if not bool(Game.progress.get("tips_seen", false)):
+			_tip_queue = ["WASD move  ·  Space jump (again in mid-air to double jump)  ·  Shift sprint",
+				"Left/right mouse: attacks  ·  Q special  ·  E utility  ·  R ultimate once it's charged",
+				"G: doors, consoles, takedowns  ·  V dodge  ·  B block (tap just before a hit to parry)",
+				"Follow the diamond marker to your objective  ·  M: map  ·  Esc: pause",
+				"Tab: sandbox tools (spawn anyone, time, weather, teleport)"]
+			Game.progress["tips_seen"] = true
 		missions.call_deferred("begin_session")
 
 
@@ -368,6 +376,18 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	style.tick(delta / maxf(Engine.time_scale, 0.01))
+	if not _held_notes.is_empty() and not cinematic:
+		_held_t -= delta
+		if _held_t <= 0.0:
+			_held_t = 0.5
+			var n: Array = _held_notes.pop_front()
+			if hud:
+				hud.notify(str(n[0]), n[1])
+	if not _tip_queue.is_empty() and not cinematic:
+		_tip_t -= delta
+		if _tip_t <= 0.0:
+			_tip_t = 6.0
+			notify(str(_tip_queue.pop_front()), Color("#ffe080"))
 	if player and is_instance_valid(player):
 		scanning = Input.is_action_pressed("scan") and not player.civilian and not player.dead
 		_space_check()
@@ -1428,6 +1448,10 @@ func travel_to(id: String, how := "breach") -> void:
 
 
 func notify(text: String, color := Color.WHITE) -> void:
+	# The HUD is hidden during cutscenes: hold messages until it's back.
+	if cinematic:
+		_held_notes.append([text, color])
+		return
 	if hud:
 		hud.notify(text, color)
 

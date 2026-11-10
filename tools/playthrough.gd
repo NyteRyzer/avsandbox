@@ -21,6 +21,9 @@ func _note(s: String) -> void:
 func _snap(name: String, frames := 10) -> void:
 	for i in frames:
 		await get_tree().process_frame
+	if DisplayServer.get_name() == "headless":
+		_note("(moment: %s)" % name)
+		return
 	var img := get_viewport().get_texture().get_image()
 	img.save_jpg(out_dir.path_join(name + ".jpg"), 0.85)
 	_note("shot %s  (fps %d, draw calls %d)" % [name, Engine.get_frames_per_second(),
@@ -79,7 +82,8 @@ func _ready() -> void:
 	if args.size() > 0:
 		out_dir = args[0]
 	DirAccess.make_dir_recursive_absolute(out_dir)
-	get_window().size = Vector2i(1600, 900)
+	if DisplayServer.get_name() != "headless":
+		get_window().size = Vector2i(1600, 900)
 	# A brand-new player: no story progress, only Green Arrow unlocked.
 	Game.progress["story"] = {}
 	Game.progress["unlocked"] = ["green_arrow"]
@@ -113,125 +117,11 @@ func _ready() -> void:
 		world.missions.current_step().get("do", ""), world.inside, world.player.global_position])
 	_note("HUD tracker: " + world.hud.mission_label.text.replace("\n", " | ").left(300))
 	_note("notifications on screen: %d" % world.hud.notes.get_child_count())
-	# Mission 01: get down from the roof and reach the evacuation zone.
-	var target: Vector3 = world.missions.target_pos()
-	_note("objective at %s, %.0f m away" % [target, world.player.global_position.distance_to(target) if target != Vector3.INF else -1.0])
-	_face(target)
-	await _snap("05_rooftop_view", 3)
-	var got := await _walk_to(target, 40.0)
-	_note("walked to evacuation zone: %s (pos %s, y %.1f)" % [got, world.player.global_position, world.player.global_position.y])
-	await _snap("06_evac_zone", 3)
-	# Rescue: walk to each trapped civilian and mash G.
-	await _wait(1.0)
-	_note("step now: %s, trapped: %d" % [world.missions.current_step().get("do", ""), world.missions.trapped.size()])
-	for k in 6:
-		if world.missions.trapped.is_empty():
-			break
-		var c: Actor = world.missions.trapped[0]
-		if not is_instance_valid(c):
-			break
-		await _walk_to(c.global_position, 15.0, 2.5)
-		await _wait(0.4)
-		if world.qte.active:
-			await _snap("07_rescue_qte_%d" % k, 1)
-			for m in 12:
-				await _tap("interact")
-		await _wait(0.6)
-	_note("after rescue: step %s, saved %d" % [world.missions.current_step().get("do", ""), world.missions._saved])
-	await _wait(1.0)
-	await _snap("08_after_rescue", 2)
-	# Fight the shadow creatures with real attacks.
-	target = world.missions.target_pos()
-	if target != Vector3.INF:
-		await _walk_to(target, 30.0, 25.0)
-	await _wait(1.5)
-	_note("foes out: %d (step %s)" % [world.missions.foes.size(), world.missions.current_step().get("do", "")])
-	await _snap("09_shadow_fight", 2)
-	var hp0: float = world.player.hp
-	for k in 400:
-		var alive: Array = world.missions.foes.filter(func(a) -> bool: return is_instance_valid(a) and not a.dead)
-		if alive.is_empty():
-			break
-		var f: Actor = alive[0]
-		if world.player.global_position.distance_to(f.global_position) > 18.0:
-			await _walk_to(f.global_position, 4.0, 6.0)
-		_face(f.global_position)
-		Input.action_press("attack")
-		await _wait(0.12)
-		Input.action_release("attack")
-		await _wait(0.05)
-		if k == 60:
-			await _snap("10_mid_fight", 1)
-		if world.player.dead:
-			_note("player knocked out during the shadow fight!")
-			await _wait(5.0)
-	_note("shadow fight over: hp %.0f -> %.0f, step now %s" % [hp0, world.player.hp, world.missions.current_step().get("do", "")])
-	# On to Queen Consolidated and Malcolm.
-	for leg in 2:
-		target = world.missions.target_pos()
-		if target == Vector3.INF:
-			await _wait(1.0)
-			continue
-		var ok2 := await _walk_to(target, 60.0, 20.0)
-		_note("walked to %s: %s" % [world.missions.current_step().get("label", ""), ok2])
-		await _wait(1.0)
-	await _wait(1.0)
-	_note("boss cutscene active=%s, boss=%s" % [world.cutscene.active, world.boss_fight.boss.display_name if world.boss_fight.active() else "none"])
-	if world.cutscene.active:
-		await _wait(2.5)
-		await _snap("11_malcolm_intro", 1)
-		while world.cutscene.active:
-			await _wait(2.0)
-			await _tap("jump")
-	await _wait(1.0)
-	await _snap("12_boss_fight", 2)
-	# Fight Malcolm properly: attack, dodge now and then, handle QTEs.
-	var t_boss := Time.get_ticks_msec()
-	var qtes_seen := 0
-	while world.boss_fight.active() and Time.get_ticks_msec() - t_boss < 150000:
-		var b: Actor = world.boss_fight.boss
-		if world.qte.active:
-			qtes_seen += 1
-			await _snap("13_qte_%s_%d" % [world.qte.kind, qtes_seen], 1)
-			var acts: Array = world.qte._actions.duplicate()
-			if world.qte.kind == "mash":
-				for m in 20:
-					world.qte.press(acts[0])
-					await _wait(0.06)
-			else:
-				for a in acts:
-					await _wait(0.25)
-					world.qte.press(a)
-			await _wait(0.5)
-			continue
-		if world.cutscene.active:
-			await _wait(1.0)
-			continue
-		if world.player.dead:
-			_note("player knocked out by the boss")
-			await _wait(5.0)
-			continue
-		if world.player.global_position.distance_to(b.global_position) > 10.0:
-			await _walk_to(b.global_position, 3.0, 4.0)
-		_face(b.global_position)
-		Input.action_press("attack")
-		await _wait(0.12)
-		Input.action_release("attack")
-		if randf() < 0.05:
-			await _tap("dodge")
-		await _wait(0.05)
-	_note("boss fight: %.0fs, %d QTEs, boss active=%s, player hp %.0f" % [(Time.get_ticks_msec() - t_boss) / 1000.0, qtes_seen,
-		world.boss_fight.active(), world.player.hp])
-	await _wait(1.0)
-	if world.cutscene.active:
-		await _snap("14_malcolm_outro", 1)
-		while world.cutscene.active:
-			await _wait(2.0)
-			await _tap("jump")
-	await _wait(2.0)
-	await _snap("15_mission_complete", 1)
-	_note("after mission 01: mission=%s step=%d, unlocked=%s" % [world.missions.current().get("id", ""), world.missions.step, str(Game.progress["unlocked"])])
+	# Play the story with real input: whatever the current step asks for.
+	await _play_story(5, 900.0)
+	_note("after the story run: mission=%s step=%d, unlocked=%s" % [world.missions.current().get("id", ""), world.missions.step, str(Game.progress["unlocked"])])
 	_note("HUD tracker: " + world.hud.mission_label.text.replace("\n", " | ").left(300))
+	await _snap("15_after_story_run", 1)
 	# Menus: pause, story missions, map, character select.
 	world.pause_menu.open()
 	await _snap("16_pause", 3)
@@ -255,3 +145,111 @@ func _ready() -> void:
 	FileAccess.open(out_dir.path_join("log.txt"), FileAccess.WRITE).store_string("\n".join(log_lines))
 	_note("done")
 	get_tree().quit()
+
+
+## Plays story steps until mission index `until` is reached or time runs out.
+func _play_story(until: int, limit: float) -> void:
+	var t_end := Time.get_ticks_msec() + int(limit * 1000.0)
+	var last := ""
+	var step_t := Time.get_ticks_msec()
+	var deaths := 0
+	var shots := {}
+	while world.missions.chapter < until and Time.get_ticks_msec() < t_end:
+		var st: Dictionary = world.missions.current_step()
+		var key := "%s/%d %s" % [world.missions.current().get("id", ""), world.missions.step, st.get("do", "")]
+		if key != last:
+			if last != "":
+				_note("step %s took %.1fs" % [last, (Time.get_ticks_msec() - step_t) / 1000.0])
+			last = key
+			step_t = Time.get_ticks_msec()
+			_note("STEP %s: %s" % [key, st.get("label", "")])
+			if not shots.has(key):
+				shots[key] = true
+				await _snap("step_" + key.replace("/", "_").replace(" ", "_"), 3)
+		if world.player.dead:
+			deaths += 1
+			_note("knocked out (%d)" % deaths)
+			while world.player.dead:
+				await _wait(0.5)
+			continue
+		if world.cutscene.active:
+			await _wait(1.0)
+			await _tap("jump")
+			continue
+		if world.qte.active:
+			var acts: Array = world.qte._actions.duplicate()
+			_note("QTE %s %s" % [world.qte.kind, acts])
+			await _snap("qte_%s" % world.qte.kind, 1)
+			if world.qte.kind == "mash":
+				for m in 20:
+					if not world.qte.active:
+						break
+					await _tap(acts[0])
+			else:
+				for a in acts:
+					await _wait(0.2)
+					await _tap(a)
+			await _wait(0.3)
+			continue
+		match str(st.get("do", "")):
+			"goto", "liberate":
+				var t: Vector3 = world.missions.target_pos()
+				if t != Vector3.INF and world.player.global_position.distance_to(t) > 700.0:
+					_note("far objective (%.0f m): fast travel" % world.player.global_position.distance_to(t))
+					world.world_map.travel_to_objective(t)
+					await _wait(0.5)
+				elif t != Vector3.INF:
+					await _walk_to(t, 3.0, 10.0)
+				else:
+					await _wait(0.5)
+			"interior":
+				var t2: Vector3 = world.missions.target_pos()
+				if t2 != Vector3.INF and world.player.global_position.distance_to(t2) > 700.0:
+					_note("far objective (%.0f m): fast travel" % world.player.global_position.distance_to(t2))
+					world.world_map.travel_to_objective(t2)
+					await _wait(0.5)
+				elif t2 != Vector3.INF:
+					await _walk_to(t2, 3.0, 2.0)
+				else:
+					await _wait(0.5)
+			"rescue":
+				if world.missions.trapped.is_empty():
+					var t3: Vector3 = world.missions.target_pos()
+					await _walk_to(t3, 3.0, 20.0)
+				else:
+					var c: Actor = world.missions.trapped[0]
+					if is_instance_valid(c):
+						await _walk_to(c.global_position, 3.0, 2.0)
+						await _wait(0.4)
+			"defeat":
+				var alive: Array = world.missions.foes.filter(func(a) -> bool: return is_instance_valid(a) and not a.dead)
+				if alive.is_empty():
+					var t4: Vector3 = world.missions.target_pos()
+					if t4 != Vector3.INF:
+						await _walk_to(t4, 3.0, 30.0)
+					else:
+						await _wait(0.5)
+				else:
+					var f: Actor = alive[0]
+					for a in alive:
+						if a.global_position.distance_to(world.player.global_position) < f.global_position.distance_to(world.player.global_position):
+							f = a
+					if world.player.global_position.distance_to(f.global_position) > 14.0:
+						await _walk_to(f.global_position, 2.0, 8.0)
+					_face(f.global_position)
+					Input.action_press("attack")
+					await _wait(0.15)
+					Input.action_release("attack")
+					if randf() < 0.08:
+						await _tap("dodge")
+					await _wait(0.05)
+			"travel":
+				# Use the travel menu's breach, like Vibe or the Waverider would.
+				_note("travelling to %s" % st["place"])
+				world.travel_to(str(st["place"]), "time" if str(st["place"]) in ["1942", "2046", "3030", "old_west"] else "breach")
+				await _wait(2.0)
+			_:
+				await _wait(0.3)
+	if last != "":
+		_note("step %s took %.1fs (stopped)" % [last, (Time.get_ticks_msec() - step_t) / 1000.0])
+	_note("deaths: %d" % deaths)

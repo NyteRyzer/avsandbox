@@ -164,7 +164,7 @@ func set_character(def: Dictionary) -> void:
 	char_id = str(def.get("id", ""))
 	steps = story_for(def)
 	index = int(Game.progress["char_missions"].get(char_id, 0))
-	if not is_complete() and world.hud:
+	if not is_complete() and world.hud and not world.missions.story_focus():
 		var s := current()
 		world.notify("PERSONAL MISSION: %s - %s" % [s["title"], s["brief"]], Color("#9fd8ff"))
 
@@ -272,7 +272,8 @@ func target_pos() -> Vector3:
 
 
 func _process(_delta: float) -> void:
-	if not enabled or world == null or world.player == null or not is_instance_valid(world.player) or is_complete() or char_id == "":
+	if not enabled or world == null or world.player == null or not is_instance_valid(world.player) or is_complete() or char_id == "" \
+			or world.missions.story_focus():
 		return
 	if str(world.player.def.get("id", "")) != char_id:
 		return
@@ -403,8 +404,11 @@ func _spawn_trapped(n: int) -> void:
 		var m := StandardMaterial3D.new()
 		m.albedo_color = Color("#6a6460")
 		slab.material_override = m
-		slab.position = Vector3(0, 0.9, 0)
-		slab.rotation = Vector3(0.2, randf() * TAU, 0.15)
+		# Lying in the street with the slab across them.
+		c.model.rotation.x = PI * 0.5
+		c.model.position.y = 0.25
+		slab.position = Vector3(0, 0.55, 0.85)
+		slab.rotation = Vector3(0.08, randf_range(-0.4, 0.4), 0.06)
 		c.add_child(slab)
 	world.notify("Reach them before it's too late!", Color("#60ff90"))
 

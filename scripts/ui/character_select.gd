@@ -27,6 +27,7 @@ var _selected := ""
 var _filter_buttons: Dictionary = {}
 var _team_pick: OptionButton
 var _team := ""
+var _count: Label
 
 
 func _ready() -> void:
@@ -52,7 +53,8 @@ func _ready() -> void:
 	left.add_theme_constant_override("separation", 12)
 	cols.add_child(left)
 	left.add_child(UITheme.label("CHOOSE YOUR CHARACTER", 34, UITheme.ACCENT))
-	left.add_child(UITheme.label("%d heroes and %d villains from across the multiverse" % [Game.heroes().size(), Game.villains().size()], 16, UITheme.DIM))
+	_count = UITheme.label("", 16, UITheme.DIM)
+	left.add_child(_count)
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 8)
 	for f in [["all", "All"], ["hero", "Heroes"], ["villain", "Villains"]]:
@@ -150,6 +152,10 @@ func _ready() -> void:
 func open(swap: bool) -> void:
 	swap_mode = swap
 	visible = true
+	if Game.mode == "story":
+		_count.text = "Story Mode: %d of %d characters unlocked. Unlock more by playing the story." % [Game.unlocked_count(), Game.roster.size()]
+	else:
+		_count.text = "%d heroes and %d villains from across the multiverse" % [Game.heroes().size(), Game.villains().size()]
 	_rebuild()
 	var first := _selected if _selected != "" else Game.selected_id
 	if not Game.is_unlocked(first):
@@ -300,7 +306,7 @@ func _card(c: Dictionary) -> Button:
 	var b := Button.new()
 	var id: String = c["id"]
 	var locked := not Game.is_unlocked(id)
-	b.text = ("🔒 " if locked else "") + str(c["alias"])
+	b.text = str(c["alias"]) + ("  ·  LOCKED" if locked else "")
 	b.custom_minimum_size = Vector2(170, 64)
 	b.clip_text = true
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL

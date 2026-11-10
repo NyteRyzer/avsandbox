@@ -61,6 +61,10 @@ static func _copy_parts(parts_data: Array, parent: Node3D, lights: Array) -> Dic
 			m = m.duplicate()
 			own_lights.append(m)
 		mi.material_override = m
+		# Thousands of parked cars: only draw the ones near enough to see.
+		mi.visibility_range_end = 260.0
+		mi.visibility_range_end_margin = 20.0
+		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 		parent.add_child(mi)
 		parts.append(mi)
 	return {"parts": parts, "lights": own_lights}

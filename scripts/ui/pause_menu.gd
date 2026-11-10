@@ -118,11 +118,11 @@ func _open_story() -> void:
 		var act: Array = Missions.ACTS.get(int(mi["act"]), ["", ""])
 		var label := "%s  ·  %s" % [act[0], mi["title"]]
 		if i > furthest:
-			_story_list.add_child(UITheme.label("🔒  " + label, 15, UITheme.DIM))
+			_story_list.add_child(UITheme.label("Locked  ·  " + label, 15, UITheme.DIM))
 			continue
 		var done := i < m.chapter or m.is_complete()
 		var idx := i
-		var b := UITheme.button(("✓  " if done else "▶  ") + label, func() -> void:
+		var b := UITheme.button(("Replay  ·  " if done else "Current  ·  ") + label, func() -> void:
 			close()
 			m.replay(idx), 580)
 		_story_list.add_child(b)

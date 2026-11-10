@@ -36,6 +36,9 @@ func _process(delta: float) -> void:
 	if not enabled or world.player == null or not is_instance_valid(world.player):
 		return
 	if active.is_empty():
+		# Story Mode has Crisis Events instead of random street events.
+		if world.missions.story_focus():
+			return
 		cooldown -= delta
 		if cooldown <= 0.0:
 			start_random()

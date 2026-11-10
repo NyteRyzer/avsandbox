@@ -45,7 +45,7 @@ const VOICES := {
 
 const MISSIONS := [
 	# ---------------------------------------------------------------- PROLOGUE
-	{"id": "prologue", "act": 0, "title": "The End of Everything", "hero": "green_arrow", "steps": [
+	{"id": "prologue", "act": 0, "title": "The End of Everything", "hero": "green_arrow", "weather": "storm", "hour": 19.0, "steps": [
 		{"do": "scene", "shots": [
 			["black", "Oliver Queen", "For years, I believed my mission was simple. Protect my city. Save the innocent. Stop the monsters hiding behind money, power, and corruption."],
 			["black", "Oliver Queen", "Then I learned the truth. My city was only one piece of something much bigger."],
@@ -64,7 +64,7 @@ const MISSIONS := [
 		]},
 	]},
 	# ------------------------------------------------------------------- ACT I
-	{"id": "m01", "act": 1, "title": "A City Without Tomorrow", "hero": "green_arrow",
+	{"id": "m01", "act": 1, "title": "A City Without Tomorrow", "hero": "green_arrow", "weather": "storm", "hour": 19.0,
 		"unlock": ["spartan", "overwatch", "black_canary", "speedy", "arsenal"],
 		"unlock_note": "UNLOCKED: Star City open world", "next": "NEW OBJECTIVE: Reach S.T.A.R. Labs.", "steps": [
 		{"do": "rooftop", "at": "Star City Downtown"},
@@ -77,7 +77,7 @@ const MISSIONS := [
 		{"do": "defeat", "at": "Star City Downtown", "foes": ["shadow_demon", "shadow_demon", "shadow_demon", "shadow_demon"],
 			"label": "Fight the shadow creatures"},
 		{"do": "goto", "at": "Queen Consolidated", "label": "Locate the source of the temporal disturbance"},
-		{"do": "defeat", "at": "Queen Consolidated", "foes": ["malcolm_merlyn"], "boss": true, "escape": true,
+		{"do": "defeat", "at": "Queen Consolidated", "foes": ["malcolm_merlyn"], "boss": true, "escape": true, "mult": 2.0,
 			"label": "Survive the arrival of an unexpected enemy",
 			"intro": [["player", "No. You're dead."],
 				["boss", "You really should stop saying that, Oliver. It keeps becoming embarrassing."],
@@ -97,7 +97,7 @@ const MISSIONS := [
 			["player", "Caitlin Snow", "Barry, there's a speed signature downtown. Yellow lightning."],
 			["player", "Barry Allen", "Thawne."]]},
 		{"do": "switch", "hero": "flash", "line": "Barry Allen suits up."},
-		{"do": "defeat", "at": "Central City Downtown", "foes": ["reverse_flash"], "boss": true, "label": "Stop the Reverse-Flash",
+		{"do": "defeat", "at": "Central City Downtown", "foes": ["reverse_flash"], "boss": true, "mult": 2.5, "label": "Stop the Reverse-Flash",
 			"intro": [["boss", "Hello, Barry. Someone finally offered me a world where you never existed."],
 				["player", "Whoever's using you, Eobard, they'll throw you away."],
 				["boss", "Maybe. But I get to erase you first."]],
@@ -262,6 +262,18 @@ func story_on() -> bool:
 	return Game.mode == "story"
 
 
+## Story Mode with the campaign still to finish: the story is what the HUD
+## talks about (no personal missions or challenges competing with it).
+func story_focus() -> bool:
+	return story_on() and not is_complete()
+
+
+## In the middle of a scripted story moment (a fight, a rescue, a scene):
+## random events, side jobs and muggings hold off.
+func story_busy() -> bool:
+	return story_focus() and str(current_step().get("do", "")) in ["scene", "rescue", "defeat", "choose", "rooftop", "switch"]
+
+
 func current() -> Dictionary:
 	return MISSIONS[chapter] if chapter < MISSIONS.size() else {}
 
@@ -343,6 +355,12 @@ func _begin_mission() -> void:
 	var act: Array = ACTS.get(int(m["act"]), ["", ""])
 	if step == 0:
 		world.hud.show_banner("%s: %s" % [act[0], str(m["title"]).to_upper()], Color("#ff9a6a"))
+	# Some missions set the mood: Star City under a storm at dusk.
+	if m.has("weather"):
+		world.day_night.set_weather(str(m["weather"]))
+		world.day_night.hour = float(m.get("hour", world.day_night.hour))
+	elif world.day_night.weather == "storm" and chapter > 0 and MISSIONS[chapter - 1].has("weather"):
+		world.day_night.set_weather("clear")
 	var hero := str(m.get("hero", ""))
 	if hero != "" and world.player and is_instance_valid(world.player) and str(world.player.def.get("id", "")) != hero:
 		Game.unlock(hero)
@@ -410,9 +428,11 @@ func _process(_delta: float) -> void:
 			_next_step()
 		"goto":
 			_ensure_marker(_where(str(s["at"])))
+			_long_way_hint(p)
 			if Vector2(p.x - _target.x, p.z - _target.z).length() < float(s.get("radius", 30.0)) and world.inside == "":
 				_next_step()
 		"interior":
+			_long_way_hint(p)
 			if world.inside == str(s["target"]):
 				_next_step()
 		"travel":
@@ -454,6 +474,23 @@ func _process(_delta: float) -> void:
 			_next_step()
 		"choose":
 			_open_chooser()
+
+
+## Far-off objectives: point out the map's fast travel, once per step.
+var _hinted_step := ""
+
+
+func _long_way_hint(p: Vector3) -> void:
+	var key := "%d/%d" % [chapter, step]
+	if _hinted_step == key:
+		return
+	var t := target_pos()
+	if t == Vector3.INF:
+		return
+	_hinted_step = key
+	var d := p.distance_to(t)
+	if d > 700.0:
+		world.notify("That's %.1f km away. Press M and pick \"Fast travel to your story objective\" to get there quickly." % (d / 1000.0), Color("#a0d0ff"))
 
 
 func _next_step() -> void:
@@ -652,8 +689,11 @@ func _spawn_trapped(at: Vector3, n: int) -> void:
 		var m := StandardMaterial3D.new()
 		m.albedo_color = Color("#6a6460")
 		slab.material_override = m
-		slab.position = Vector3(0, 0.9, 0)
-		slab.rotation = Vector3(0.2, randf() * TAU, 0.15)
+		# Lying in the street with the slab across them.
+		c.model.rotation.x = PI * 0.5
+		c.model.position.y = 0.25
+		slab.position = Vector3(0, 0.55, 0.85)
+		slab.rotation = Vector3(0.08, randf_range(-0.4, 0.4), 0.06)
 		c.add_child(slab)
 		trapped.append(c)
 	world.notify("People are trapped under the rubble. Get to them!", Color("#60ff90"))
